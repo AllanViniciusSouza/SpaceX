@@ -1,0 +1,1386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="VTD_FB" Id="{b631bcf3-d447-48f0-93d1-d58a0615883e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK VTD_FB
+VAR_INPUT
+	System_no:  UINT;
+	Safety_OK:  BOOL;
+	Cnv_Sensors:  Cnv_Inputs_DUT;
+	VTD_Settings:  VTD_Settings_DUT;
+	Bypass_DP:  BOOL;
+// 	Bypass:  Safety_Bypass_RemotePanel;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR_IN_OUT
+	VTD_Control:  VTD_Control_DUT;
+	LE_Bypass_HMI:  BOOL;
+END_VAR
+VAR
+	State:  UINT;
+	Last_State:  UINT;
+	I_State:  UInt;
+	LD_Timer_1:  TON;
+	LD_Timer:  TON;
+	DP_Timer:  TON;
+	Watchdog:  TON;
+	CS_TImer:  TON;
+	Interlock_Timer:  TON;
+	MainSetpoint:  Int;
+	Position_Offset:  Real;
+	ChangeToLow:  Array[1..4] of DInt;
+	DestPosition:  Real;
+	SetUpSpeed:  UInt;
+	LevelBelowExtractor:  UInt;
+	IEC_Timer_0_Instance:  TON;
+	DestinationLevel:  UInt;
+	CurrentlLevel:  UInt;
+	VTD_ID_Decoded:  ID_Decoded_DUT;
+	Cnv_ID_Decoded:  ARRAY[1..2] OF ID_Decoded_DUT;
+	IEC_Timer_0_Instance_1:  TON;
+	IEC_Timer_0_Instance_2:  TON;
+	VTD_ControlInstructionTask_ID_Old:  Int;
+	R_Execulte:  R_TRIG;
+	R_AutomatcMode:  R_TRIG;
+	T_Encoders_Difference:  TON;
+	T_LE_Error:  TON;
+	T_Setpoint_Delay:  TON;
+	Distance_mm:  Real;
+	TravelTime_s:  UInt;
+	LE_Prev_mm:  Real;
+	DeltaPos_mm:  Real;
+	SampleTime_s:  Real;
+	VTDSpeed_mm_s:  Real;
+	T_Speed:  TON;
+	Speed_mm_per_percent:  Real;
+	Speed_mm_s:  Real;
+	TravelTime_ms:  UInt;
+	Watchdog_PT:  Time;
+	Position_OLD:  Real;
+	R_Position_OLD:  R_TRIG;
+END_VAR
+
+VAR_TEMP
+	Level_Accuracy:  STRING;
+	i:  UINT;
+	Upper_limit:  Bool;
+	Ultimate_SlowDown:  Bool;
+	Ultimate_Creep:  Bool;
+	Lower_Limit:  Bool;
+	Level_Detect:  Bool;
+	Level_Detect1:  Bool;
+	Level_Detect2:  Bool;
+	DP2_Extended:  Bool;
+	DP2_Retracted:  Bool;
+	DP1_Extended:  Bool;
+	DP1_Retracted:  Bool;
+	Chain_Slack_1:  Bool;
+	Chain_Slack_2:  Bool;
+	Chain_Slack_3:  Bool;
+	Chain_Slack_4:  Bool;
+	DP1_Retract:  Bool;
+	DP1_Extend:  Bool;
+	DP2_Retract:  Bool;
+	DP2_Extend:  Bool;
+	Cnvs1_NotExtended:  Bool;
+	Cnvs2_NotExtended:  Bool;
+	Stoppers_NotExtended:  Bool;
+	MainSetpoint1:  Int;
+	HMI_Reset:  BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Execute
+R_Execulte(CLK := VTD_Control.Instruction.Execulte);
+
+IF VTD_Control.Mode = 3 THEN
+    VTD_Control.Instruction.Enable := TRUE;
+END_IF;
+
+VTD_Control.Enabled := VTD_Control.Instruction.Enable;
+
+VTD_Control.Mode := VTD_Control.Instruction.Mode_Change;
+
+IF NOT VTD_Control.Enabled AND NOT VTD_Control.Error THEN
+    State := 0;
+END_IF;
+
+//MANUAL MODE
+IF (VTD_Control.Mode = 1 OR VTD_Control.Mode = 5) AND NOT VTD_Control.Error AND VTD_Control.Enabled THEN
+    State := 500;
+END_IF;
+
+(*
+TODO:
+
+Mode select is done via the HMI. Might add external mode select switches.
+        
+        Mode select mask:
+        0: Disabled
+        1: Manual
+        2: Semi-Auto
+        3: Auto
+        4: Teach
+        5: Maintenance
+        
+Device ID Format: XXYYZZ    
+XX = Device type   
+    01   VTD
+    10  Cnv_Front_of_VTD
+    11  Cnv_Rear_of_VTD
+    12  Cnv_On_Extractor
+    20  Safety_Stop_Front_of_VTD
+    21  Safety_Stop_Rear_of_VTD
+YY = Floor   
+ZZ = VTD Connected to 
+*)
+
+{region "Sensor allocations"}
+    //Assign inputs to local vars
+    Upper_limit := VTD_Control.Inputs.Upper_limit;
+    Ultimate_SlowDown := VTD_Control.Inputs.Ultimate_SlowDown;
+    Ultimate_Creep := VTD_Control.Inputs.Ultimate_Creep;
+    Lower_Limit := VTD_Control.Inputs.Lower_Limit;
+    Level_Detect1 := VTD_Control.Inputs.Level_Detect1;
+    Level_Detect2 := VTD_Control.Inputs.Level_Detect2;
+    DP1_Extended := VTD_Control.Inputs.DP1_Extended;
+    DP1_Retracted := VTD_Control.Inputs.DP1_Retracted;
+    DP2_Extended := VTD_Control.Inputs.DP2_Extended;
+    DP2_Retracted := VTD_Control.Inputs.DP2_Retracted;
+    Chain_Slack_1 := VTD_Control.Inputs.Chain_Slack_1;
+    Chain_Slack_2 := VTD_Control.Inputs.Chain_Slack_2;
+    Chain_Slack_3 := VTD_Control.Inputs.Chain_Slack_3;
+    Chain_Slack_4 := VTD_Control.Inputs.Chain_Slack_4;
+    VTD_Control.LinearEnc := VTD_Control.Inputs.LE_Position;
+    VTD_Control.AE := VTD_Control.Inputs.AE_Position_1;
+{endregion}
+
+{region "Cyclic Checks"}
+    // Check for Pallet
+    IF Cnv_Sensors.Forward_Sensor OR Cnv_Sensors.Backward_Sensor THEN
+        VTD_Control.Pallet_Loaded := 1;//'Unknown';
+    ELSE
+        //No Pallet
+        VTD_Control.Pallet_Loaded := 0;//'None';
+    END_IF;
+    
+    //Docking pins
+        IF DP1_Extended AND DP2_Extended THEN
+            VTD_Control.LP_State := 1; //'Extended'
+        ELSIF DP1_Retracted AND DP2_Retracted THEN
+            VTD_Control.LP_State := 2; //'Retracted'
+        ELSE
+            VTD_Control.LP_State := 0; //'Unknown'
+        END_IF;
+        
+        VTD_Control.DP_Extended := VTD_Control.LP_State = 1;
+    
+    // Level detect
+    Level_Detect := Level_Detect1 AND Level_Detect2;
+    
+    //VTD extractor is docked
+    IF DP1_Extended AND DP2_Extended AND Level_Detect AND
+        (VTD_Control.LinearEnc - VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor]) <= VTD_Settings.Level_Detect_LE THEN
+        VTD_Control.Docked := TRUE;
+    ELSE
+        VTD_Control.Docked := FALSE;
+    END_IF;
+    
+    //Ultimate stop checks
+    IF (VTD_Control.LinearEnc < VTD_Settings.Slowdown_Count_LE OR VTD_Control.LinearEnc > VTD_Settings.Teach_Values.Levels_LE[VTD_Settings.Highest_Level] - VTD_Settings.Slowdown_Count_LE) AND
+        Ultimate_Creep AND Ultimate_SlowDown AND VTD_Control.Running THEN
+        VTD_Control.Motor_Speed := VTD_Settings.Creep_Speed;
+        VTD_Control.Warning := 3; // Overtravel creep zone reached
+    ELSIF (VTD_Control.LinearEnc < VTD_Settings.Slowdown_Count_LE OR VTD_Control.LinearEnc > VTD_Settings.Teach_Values.Levels_LE[VTD_Settings.Highest_Level] - VTD_Settings.Slowdown_Count_LE) AND
+        NOT Ultimate_Creep AND Ultimate_SlowDown AND VTD_Control.Running THEN
+        VTD_Control.Motor_Speed := VTD_Settings.Slow_Speed; // Overtravel slow zone reached
+    END_IF;
+    
+    //Update Variables
+    IF VTD_Control.Current_Task_Type = 0 OR VTD_Control.Current_Task_Type = 1 THEN
+        VTD_Control.SM_State := State;
+    ELSIF VTD_Control.Current_Task_Type = 2 OR VTD_Control.Current_Task_Type = 3 THEN
+        VTD_Control.SM_State := I_State;
+    END_IF;
+    
+    FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
+        IF NOT Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+            Cnvs1_NotExtended := true;
+        END_IF;
+        IF NOT Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+            Cnvs2_NotExtended := true;
+        END_IF;
+    END_FOR;
+    
+    //Confirm whish level is below the extractor
+    FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
+        IF VTD_Control.LinearEnc >= (VTD_Settings.Teach_Values.Levels_LE[i] - VTD_Settings.Level_Detect_LE) THEN
+            LevelBelowExtractor := i;
+        END_IF;
+    END_FOR;
+    
+    Stoppers_NotExtended := Cnvs1_NotExtended (*AND Cnvs2_NotExtended*);
+    
+    //AE ERROR
+    IF VTD_Control.Inputs.AE_Status_2.15 THEN
+        VTD_Control.AE_Error := 1;
+    ELSE
+        VTD_Control.AE_Error := 0;
+    END_IF;
+    
+    //Encoder Delta
+    VTD_Control.Encoder_Delta := ABS(VTD_Control.AE - VTD_Control.LinearEnc);
+    
+    //CURRENT LEVEL
+    FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
+        IF ABS(VTD_Control.LinearEnc - VTD_Settings.Teach_Values.Levels_LE[i]) <= VTD_Settings.VTD_Level_Granularity AND Level_Detect THEN
+            VTD_Control.Current_Level := i;
+            EXIT;
+        ELSE
+            VTD_Control.Current_Level := 0;
+        END_IF;
+    END_FOR;
+    
+    //SPEED mm/S
+    T_Speed(IN := TRUE,
+             PT := T#100MS);
+    
+    IF T_Speed.Q THEN
+        DeltaPos_mm := ABS(VTD_Control.LinearEnc - LE_Prev_mm);
+        VTDSpeed_mm_s := DeltaPos_mm / SampleTime_s;
+        LE_Prev_mm := VTD_Control.LinearEnc;
+        T_Speed(IN := FALSE,
+                 PT := T#0MS);
+    END_IF;
+{endregion}
+
+{region "Auto/Semi-Auto Mode"}
+    CASE State OF
+        0: //Idle
+            Last_State := State;
+            VTD_Control.Motor_UP := FALSE;
+            VTD_Control.Motor_Down := FALSE;
+            VTD_Control.Motor.Speed := 0;
+            DestinationLevel := CurrentlLevel := 0;
+            VTD_Control.Stopped := TRUE;
+            Watchdog(IN := FALSE,
+                          PT := T#0S);
+            IF VTD_Control.Mode = 3 OR VTD_Control.Mode = 2 THEN
+                IF VTD_Control.Instruction.Enable AND NOT VTD_Control.Error THEN
+                    State := 10;
+                END_IF;
+            END_IF;
+            
+        10: //Standby
+            Last_State := State;
+            IF VTD_Control.Enabled AND NOT VTD_Control.Running AND VTD_Control.Instruction.Move_To_Level >= VTD_Settings.Lowest_Level AND
+                VTD_Control.Instruction.Move_To_Level <= VTD_Settings.Highest_Level AND VTD_Control.Pallet_Loaded <> 1 AND
+                ((VTD_Control.Instruction.Task_ID > 0 OR VTD_Control.Instruction.Task_Metadata <> '' AND VTD_Control.Mode = 3 AND Control_GVL.VTD_Order_Table[System_no].Task_Type = 1) OR
+                (VTD_Control.Mode = 2 (*AND R_Execulte.Q*)))
+            THEN
+                IF VTD_Control.Instruction.Move_To_Level = VTD_Control.Current_Level AND VTD_Control.Instruction.Move_To_Level <> 0 THEN
+                    VTD_Control.Warning := 1; //VTD already at level requested
+                    VTD_Control.Instruction.Move_To_Level := 0;
+                    //Go straght to the travel complete feedabck 
+                ELSIF ((VTD_Control.Shuttle_Loaded = 0 OR VTD_Control.Shuttle_Loaded = 1) AND System_no <= 3)
+                    OR System_no > 3
+                THEN //EVERYTHING OK
+                    DestinationLevel := VTD_Control.Instruction.Move_To_Level;
+                    CurrentlLevel := VTD_Control.Current_Level;
+                    VTD_Control.Current_Task_ID := VTD_Control.Instruction.Task_ID;
+                    VTD_Control.Running := TRUE;
+                    State := 20;
+                END_IF;
+            END_IF;
+
+        20: //Extend all safety stoppers that are not in the up position
+            Last_State := State;
+            VTD_Control.Done := FALSE;// To report to order table
+            FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
+                IF NOT Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                END_IF;
+                IF NOT Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                END_IF;
+            END_FOR;
+            State := 25;
+            
+        25: //Check to ensure the Safety stoppers are in the up position.
+            Last_State := State;
+            FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
+                IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                END_IF;
+                IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                END_IF;
+            END_FOR;
+            
+            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended
+            THEN
+                State := 30;
+            END_IF;
+            
+        30: //Undock the VTD
+            Last_State := State;
+            IF LevelBelowExtractor >= VTD_Settings.Lowest_Level AND LevelBelowExtractor < VTD_Settings.Highest_Level THEN
+                IF VTD_Control.Docked OR
+                    (VTD_Control.LinearEnc < VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor] + 50) OR
+                    (VTD_Control.LinearEnc < VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor + 1] AND
+                    VTD_Control.LinearEnc > VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor + 1] - 10) THEN
+                    IF VTD_Control.LP_State = 1 THEN //extended
+                        VTD_Control.Motor_Speed := VTD_Settings.Dock_speed;
+                        VTD_Control.Motor_UP := TRUE;
+                        Position_Offset := VTD_Control.LinearEnc + 40;
+                        State := 35;
+                    ELSIF VTD_Control.LP_State = 2 THEN //retracted
+                        State := 45;
+                    ELSE //24:4 Docking pins in an known state
+                        Set_Bit_F(Bit_Number := 5,
+                                    Bit_Value := 1,
+                                    Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+                    END_IF;
+                ELSE
+                    Position_Offset := VTD_Control.LinearEnc - 5;
+                    State := 35;
+                END_IF;
+            ELSIF LevelBelowExtractor = VTD_Settings.Highest_Level THEN
+                IF VTD_Control.Docked OR
+                    (VTD_Control.LinearEnc < VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor] + 50) THEN
+                    IF VTD_Control.LP_State = 1 THEN //extended
+                        VTD_Control.Motor_Speed := VTD_Settings.Dock_speed;
+                        VTD_Control.Motor_UP := TRUE;
+                        Position_Offset := VTD_Control.LinearEnc + 40;
+                        State := 35;
+                    ELSIF VTD_Control.LP_State = 2 THEN //retracted
+                        State := 45;
+                    ELSE //24:4 Docking pins in an known state
+                        Set_Bit_F(Bit_Number := 5,
+                                    Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+                    END_IF;
+                ELSE
+                    Position_Offset := VTD_Control.LinearEnc - 5;
+                    State := 35;
+                END_IF;
+            END_IF;
+            
+        35: //Stop motor
+            Last_State := State;
+            IF NOT Level_Detect AND VTD_Control.LinearEnc >= Position_Offset THEN
+                VTD_Control.Motor_Speed := 0;
+                VTD_Control.Motor_UP := FALSE;
+                State := 36;
+            END_IF;
+            
+        36: //Retract the docking pins
+            Last_State := State;
+                DP2_Retract := DP1_Retract := TRUE;
+                DP_Timer(IN := TRUE,
+                          PT := UINT_TO_TIME(VTD_Settings.Lockpins_Timeout_Retract));
+                
+                IF DP2_Retracted THEN
+                    DP2_Retract := FALSE;
+                END_IF;
+                IF VTD_Control.Inputs.DP1_Retracted THEN
+                    DP1_Retract := FALSE;
+                END_IF;
+                
+                IF VTD_Control.LP_State = 2 THEN
+                    State := 40;
+                END_IF;
+                
+            40: //Check docking pins have been retracted
+                Last_State := State;
+            IF VTD_Control.LP_State = 2 THEN
+                DP_Timer(IN := FALSE,
+                          PT := T#0S);
+                DP2_Retract := DP1_Retract := FALSE;
+                State := 45;
+            END_IF;
+            
+        45: //Start moving towards the level required
+            Last_State := State;
+            //Check load type and set extractor speed
+            IF VTD_Control.Shuttle_Loaded = 0 AND VTD_Control.Pallet_Loaded = 0 THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Empty_Speed;
+            ELSIF VTD_Control.Shuttle_Loaded = 1 AND VTD_Control.Pallet_Loaded = 0 THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Shuttle_Speed;
+            ELSIF VTD_Control.Shuttle_Loaded = 0 AND (VTD_Control.Pallet_Loaded > 0) THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Pallet_Speed;
+            ELSIF VTD_Control.Shuttle_Loaded = 1 AND (VTD_Control.Pallet_Loaded > 0) THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Loaded_Speed;
+            END_IF;
+            
+            DestPosition := VTD_Settings.Teach_Values.Levels_LE[VTD_Control.Instruction.Move_To_Level];
+            SetUpSpeed := VTD_Control.Motor_Speed;
+            
+            // === DINAMIC WATCHDOG ===
+            Speed_mm_s := SetUpSpeed * Speed_mm_per_percent;
+            Distance_mm := ABS(DestPosition - VTD_Control.LinearEnc);
+            
+            //VTD needs to move up
+            IF VTD_Control.LinearEnc < DestPosition THEN
+                VTD_Control.Motor_UP := TRUE;
+                State := 50;
+                //VTD needs to move down
+            ELSIF VTD_Control.LinearEnc > DestPosition THEN
+                VTD_Control.Motor_Down := TRUE;
+                State := 65; //change to 65
+            END_IF;
+            
+        50: //travel upwards to designated level
+            Last_State := State;
+            ChangeToLow[1] := ABS((VTD_Settings.Slowdown_Count_LE / 100) * 80); (* 80% *) //80  600mm
+            ChangeToLow[2] := ABS((VTD_Settings.Slowdown_Count_LE / 100) * 60); (* 60% *) //60
+            ChangeToLow[3] := ABS((VTD_Settings.Slowdown_Count_LE / 100) * 40); (* 40% *) //40
+            ChangeToLow[4] := ABS((VTD_Settings.Slowdown_Count_LE / 100) * 20); (* 20% *) //20 60
+            
+            //switch to fast freq Low UP
+            IF ABS(DestPosition - VTD_Control.LinearEnc) > VTD_Settings.Slowdown_Count_LE THEN
+                VTD_Control.Motor_Speed := SetUpSpeed; //5
+                //switch to low freq
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= VTD_Settings.Slowdown_Count_LE
+                AND ABS(DestPosition - VTD_Control.LinearEnc) > ChangeToLow[1] THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Slow_Calib_Speed * 1.8; //5 * 1.8 = 9%
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= ChangeToLow[1]
+                AND ABS(DestPosition - VTD_Control.LinearEnc) > ChangeToLow[2] THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Slow_Calib_Speed * 1.6; //5 * 1.6 = 8%
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= ChangeToLow[2]
+                AND ABS(DestPosition - VTD_Control.LinearEnc) > ChangeToLow[3] THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Slow_Calib_Speed * 1.4; //5 * 1.4 = 7%
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= ChangeToLow[3]
+                AND ABS(DestPosition - VTD_Control.LinearEnc) > ChangeToLow[4] THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Slow_Calib_Speed * 1.2; //5 * 1.2 = 6%
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= ChangeToLow[4] THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Slow_Calib_Speed; //5%
+                State := 55;
+            END_IF;
+            
+            // Timeout in ms
+            IF Speed_mm_s > 0 THEN
+                TravelTime_ms := REAL_TO_UINT((Distance_mm / Speed_mm_s) * 1500.0);  // 1.5x safety factor
+                IF TravelTime_ms < 5000 THEN
+                    TravelTime_ms := 5000; // mínimum 5s
+                END_IF;
+            ELSE
+                TravelTime_ms := 30000; // fallback 30s 
+            END_IF;
+            
+            Watchdog_PT := UINT_TO_TIME(TravelTime_ms);
+            
+            Watchdog.TON(IN := TRUE,
+                          PT := Watchdog_PT);
+            
+            
+        55: // Travel upwards using slow speed towards required floor
+            Last_State := State;
+            IF VTD_Control.LinearEnc > VTD_Settings.Teach_Values.Levels_LE[VTD_Control.Instruction.Move_To_Level] - VTD_Settings.Creep_Count_LE
+            THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Creep_Speed; //3% - 60mm 
+                State := 60;
+            END_IF;
+            
+        60: // Travel past the level in order to extend the docking pins
+            Last_State := State;
+            IF VTD_Control.LinearEnc > VTD_Settings.Teach_Values.Levels_LE[VTD_Control.Instruction.Move_To_Level] + VTD_Settings.Creep_Count_LE
+            THEN
+                VTD_Control.Motor_Speed := 0;
+                VTD_Control.Motor_UP := FALSE;
+                VTD_Control.Motor_Down := FALSE;
+                State := 80;
+            END_IF;
+            
+        65: //travel Downwards to designated level   
+            Last_State := State;
+            ChangeToLow[1] := ABS((VTD_Settings.Slowdown_Count_LE / 100) * 80); (* 80% *) //80
+            ChangeToLow[2] := ABS((VTD_Settings.Slowdown_Count_LE / 100) * 60); (* 60% *) //60
+            ChangeToLow[3] := ABS((VTD_Settings.Slowdown_Count_LE / 100) * 40); (* 40% *) //40
+            ChangeToLow[4] := ABS((VTD_Settings.Slowdown_Count_LE / 100) * 20); (* 20% *) //20
+            //switch to fast freq Low UP
+            IF ABS(DestPosition - VTD_Control.LinearEnc) > VTD_Settings.Slowdown_Count_LE THEN
+                VTD_Control.Motor_Speed := SetUpSpeed;
+                //switch to low freq
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= VTD_Settings.Slowdown_Count_LE
+                AND ABS(DestPosition - VTD_Control.LinearEnc) > ChangeToLow[1] THEN
+                VTD_Control.Motor_Speed := REAL_TO_UINT(VTD_Settings.Slow_Calib_Speed * 1.8);
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= ChangeToLow[1]
+                AND ABS(DestPosition - VTD_Control.LinearEnc) > ChangeToLow[2] THEN
+                VTD_Control.Motor_Speed := REAL_TO_UINT(VTD_Settings.Slow_Calib_Speed * 1.6);
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= ChangeToLow[2]
+                AND ABS(DestPosition - VTD_Control.LinearEnc) > ChangeToLow[3] THEN
+                VTD_Control.Motor_Speed := REAL_TO_UINT(VTD_Settings.Slow_Calib_Speed * 1.4);
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= ChangeToLow[3]
+                AND ABS(DestPosition - VTD_Control.LinearEnc) > ChangeToLow[4] THEN
+                VTD_Control.Motor_Speed := REAL_TO_UINT(VTD_Settings.Slow_Calib_Speed * 1.2);
+            ELSIF ABS(DestPosition - VTD_Control.LinearEnc) <= ChangeToLow[4] THEN
+                VTD_Control.Motor_Speed := VTD_Settings.Slow_Calib_Speed;
+                State := 70;
+            END_IF;
+            
+            // Timeout in ms
+            IF Speed_mm_s > 0 THEN
+                TravelTime_ms := REAL_TO_UINT((Distance_mm / Speed_mm_s) * 2000.0);  // 1.5x safety factor
+                IF TravelTime_ms < 5000 THEN
+                    TravelTime_ms := 5000; // mínimum 5s
+                END_IF;
+            ELSE
+                TravelTime_ms := 30000; // fallback 30s 
+            END_IF;
+            
+            Watchdog_PT := UINT_TO_TIME(TravelTime_ms);
+            
+            Watchdog(IN := TRUE,
+                     PT := Watchdog_PT);
+            
+        70: // Travel downwards using slow speed towards required floor 
+            Last_State := State;
+            IF VTD_Control.LinearEnc < VTD_Settings.Teach_Values.Levels_LE[VTD_Control.Instruction.Move_To_Level] + VTD_Settings.Creep_Count_LE
+            THEN
+                VTD_Control.Motor_Speed := 0;
+                VTD_Control.Motor_UP := FALSE;
+                VTD_Control.Motor_Down := FALSE;
+                State := 80;
+            END_IF;
+            
+        80: //Extend Docking pins
+            Last_State := State;
+            IF VTD_Control.LP_State = 2 AND NOT Level_Detect THEN
+                DP1_Extend := DP2_Extend := TRUE;
+                DP_Timer(IN := TRUE,
+                          PT := UINT_TO_TIME(VTD_Settings.Lockpins_Timeout_Extend));
+            ELSIF VTD_Control.LP_State <> 1 AND NOT Level_Detect THEN
+                DP1_Extend := DP2_Extend := TRUE;
+            ELSIF VTD_Control.LP_State = 1 THEN
+                State := 85;
+            END_IF;
+            
+            
+        85: // Wait for docking pins to extend
+            Last_State := State;
+            IF VTD_Control.LP_State = 1 AND NOT Level_Detect THEN
+                DP_Timer(IN := FALSE,
+                          PT := T#0S);
+                DP1_Extend := DP2_Extend := FALSE;
+                VTD_Control.Motor_Speed := VTD_Settings.Dock_speed;
+                VTD_Control.Motor_Down := TRUE;
+                State := 90;
+            END_IF;
+            
+        90: // Dock the VTD
+            Last_State := State;
+            //Using the LE for comparation and Release tension in the VTD chain
+            IF ABS(VTD_Control.LinearEnc - DestPosition) <= (VTD_Settings.Level_Detect_LE) AND NOT CS_TImer.Q THEN
+                CS_TImer(IN := TRUE,
+                          PT := UINT_TO_TIME(VTD_Settings.Chain_Slack_Timeout));
+            END_IF;
+            IF CS_TImer.Q THEN
+                VTD_Control.Motor_Speed := 0;
+                VTD_Control.Motor_Down := FALSE;
+                CS_TImer(IN := FALSE,
+                          PT := T#0S);
+                State := 95;
+            END_IF;
+            
+        95: // Dock the VTD
+            Last_State := State;
+            //Check the level detect sensors
+            IF (Level_Detect1 AND NOT Level_Detect2) OR
+                (NOT Level_Detect1 AND Level_Detect2) THEN
+                LD_Timer(IN := TRUE,
+                          PT := UINT_TO_TIME(VTD_Settings.Level_Detect_Timeout));
+            ELSIF NOT Level_Detect1 AND NOT Level_Detect2 THEN
+                LD_Timer_1(IN := TRUE,
+                            PT := UINT_TO_TIME(VTD_Settings.Level_Detect_Timeout * 5));
+            ELSE
+                LD_Timer(IN := FALSE,
+                          PT := T#0S);
+                LD_Timer_1(IN := FALSE,
+                            PT := T#0S);
+            END_IF;
+            
+            IF Level_Detect THEN
+                Watchdog(IN := FALSE,
+                          PT := T#0S);
+                State := 100;
+            END_IF;
+            
+        100: //Wait for Movement completion ack  
+            Last_State := State;
+            //Reset timers
+            VTD_Control.Instruction.Move_To_Level := 0;
+            DP_Timer(IN := FALSE,
+                      PT := T#0S);
+            Watchdog(IN := FALSE,
+                      PT := T#0S);
+            LD_Timer(IN := FALSE,
+                      PT := T#0S);
+            CS_TImer(IN := FALSE,
+                      PT := T#0S);
+            LD_Timer_1(IN := FALSE,
+                        PT := T#0S);
+            
+            VTD_Control.Motor_Speed := 0;
+            VTD_Control.Current_Task_ID := 0;
+            VTD_Control.Running := FALSE;
+            State := 0;
+            
+        400: // Error state
+            VTD_Control.Instruction.Move_To_Level := 0;
+            VTD_Control.Done := FALSE;// To report to order table
+            VTD_Control.Motor.Enable := FALSE;
+            VTD_Control.Motor_UP := FALSE;
+            VTD_Control.Motor_Down := FALSE;
+            VTD_Control.Running := FALSE;
+            VTD_Control.Stopped := TRUE;
+            VTD_Control.Motor.Speed := 0;
+            VTD_Control.Motor.Forward := FALSE;
+            VTD_Control.Motor.Reverse := FALSE;
+            DP1_Extend := DP2_Extend := FALSE;
+            DP1_Retract := DP2_Retract := FALSE;
+            FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+            END_FOR;
+            //Reset timers
+            DP_Timer(IN := FALSE,
+                      PT := T#0S);
+            Watchdog(IN := FALSE,
+                      PT := T#0S);
+            LD_Timer(IN := FALSE,
+                      PT := T#0S);
+            CS_TImer(IN := FALSE,
+                      PT := T#0S);
+            LD_Timer_1(IN := FALSE,
+                        PT := T#0S);
+            IF VTD_Control.Instruction.Reset OR Reset_All OR HMI_Reset THEN
+                VTD_Control.Error := FALSE;
+                VTD_Control.Warning := 0;
+                VTD_Control.Stopped := FALSE;
+                VTD_Control.Current_Task_Type := 0;
+                VTD_Control.VTD_Errors.Error_Word_1 := 0;
+                VTD_Control.VTD_Errors.Error_Word_2 := 0;
+                VTD_Control.VTD_Errors.Error_Word_3 := 0;
+                VTD_Control.VTD_Errors.Error_Word_4 := 0;
+                VTD_Control.VTD_Errors.Error_Word_5 := 0;
+                State := 0;
+            END_IF;
+            
+        500: //MANUAL MODE
+            IF VTD_Control.Error = 0 AND VTD_Control.Enabled THEN
+                //VTD
+                IF VTD_Control.Instruction.Manual_Up AND NOT Upper_limit THEN
+                    VTD_Control.Motor_UP := TRUE;
+                    VTD_Control.Stopped := FALSE;
+                    VTD_Control.Running := TRUE;
+                    IF NOT (Ultimate_SlowDown OR Ultimate_Creep) THEN
+                        VTD_Control.Motor_Speed := VTD_Settings.Manual_Speed;
+                    END_IF;
+                ELSIF VTD_Control.Instruction.Manual_Down AND NOT Lower_Limit THEN
+                    VTD_Control.Motor_Down := TRUE;
+                    VTD_Control.Stopped := FALSE;
+                    VTD_Control.Running := TRUE;
+                    IF VTD_Control.LinearEnc <= VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor] + 300 AND VTD_Control.LP_State = 1 THEN
+                        VTD_Control.Motor_Speed := VTD_Settings.Creep_Speed;
+                    ELSIF NOT (Ultimate_SlowDown OR Ultimate_Creep) THEN
+                        VTD_Control.Motor_Speed := VTD_Settings.Manual_Speed;
+                    END_IF;
+                ELSE
+                    VTD_Control.Motor_Speed := 0;
+                    VTD_Control.Stopped := TRUE;
+                    VTD_Control.Running := FALSE;
+                    VTD_Control.Motor_Down := FALSE;
+                    VTD_Control.Motor_UP := FALSE;
+                END_IF;
+                
+                //DOCKING PINS 2 
+                IF NOT VTD_Control.Running AND VTD_Control.Instruction.Manual_LP_Extend
+                    AND NOT DP2_Extended THEN
+                    DP2_Extend := TRUE;
+                ELSIF NOT VTD_Control.Running AND VTD_Control.Instruction.Manual_LP_Retract
+                    AND NOT DP2_Retracted THEN
+                    DP2_Retract := TRUE;
+                ELSE
+                    DP2_Extend := FALSE;
+                    DP2_Retract := FALSE;
+                END_IF;
+                
+                //DOCKING PINS 1 
+                IF NOT VTD_Control.Running AND VTD_Control.Instruction.Manual_LP_Extend
+                    AND NOT DP1_Extended THEN
+                    DP1_Extend := TRUE;
+                ELSIF NOT VTD_Control.Running AND VTD_Control.Instruction.Manual_LP_Retract
+                    AND NOT DP1_Retracted THEN
+                    DP1_Retract := TRUE;
+                ELSE
+                    DP1_Extend := FALSE;
+                    DP1_Retract := FALSE;
+                END_IF;
+                
+                IF VTD_Control.Mode <> 1 AND VTD_Control.Mode <> 5 THEN
+                    State := 0;
+                END_IF;
+                
+                IF DP2_Extend OR DP1_Extend THEN
+                    DP_Timer(IN := TRUE,
+                              PT := UINT_TO_TIME(VTD_Settings.Lockpins_Timeout_Extend));
+                ELSIF DP2_Retract OR DP1_Retract THEN
+                    DP_Timer(IN := TRUE,
+                              PT := UINT_TO_TIME(VTD_Settings.Lockpins_Timeout_Retract));
+                ELSE
+                    DP_Timer(IN := FALSE,
+                              PT := T0S);
+                END_IF;
+            END_IF;
+    END_CASE;
+{endregion}
+
+{region "Shuttle Interlock"}
+    // VTD needs to be in Auto mode to perform a Shuttle interlock
+    CASE I_State OF
+        0:
+            IF VTD_Control.Mode = 3 AND VTD_Control.Shuttle_Interlock.Interlock_Request AND VTD_Control.Shuttle_Interlock.Shuttle_Interlock_Task_ID > 0 THEN
+                I_State := 10;
+            END_IF;
+            
+        10: //Standby
+            
+            //Start by decoding all the IDs of the devices pertaining to the VTD in question on that level
+            "ID_Decode_F"(ID := VTD_Settings.ID,
+                          ID_Decoded := VTD_ID_Decoded);
+            "ID_Decode_F"(ID := "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.ID,
+                          ID_Decoded := Cnv_ID_Decoded[1]);
+            "ID_Decode_F"(ID := "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.ID,
+                          ID_Decoded := Cnv_ID_Decoded[2]);
+            
+            // Ensure the VTD is in a state that it can perform an interlock
+            IF VTD_Control.Docked AND NOT VTD_Control.Running AND (VTD_Control.Shuttle_Loaded = 0 OR VTD_Control.Shuttle_Loaded = 1) AND VTD_Control.Error = 0 THEN
+                // Check to make sure the VTD and Shuttle are not both loaded
+                IF VTD_Control.Pallet_Loaded = 1 THEN
+                    VTD_Control.Warning := 1; // Both the VTD and Shuttles are loaded, can't perform the interlock
+                ELSE
+                    //Check that shuttle is on the correct floor, that the start location given and the shuttle actual position matches and the destination is the correct extractor barcode
+                    IF (*VTD_Control.Current_Level = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Floor
+                            AND*)VTD_Control.Shuttle_Interlock.Shuttle_Start_Location = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Position_ID
+                            (*AND "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Destination_ID = "Settings_DB".ECnv_Settings.Barcode_ID*)THEN
+                        
+                        //Check in which Buffer conveyor the shuttle is located
+                        IF "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Barcode_ID =
+                            VTD_Control.Shuttle_Interlock.Shuttle_Start_Location THEN
+                            VTD_Control.Running := TRUE;
+                            I_State := 20;
+                        ELSIF "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Barcode_ID =
+                            VTD_Control.Shuttle_Interlock.Shuttle_Start_Location THEN
+                            VTD_Control.Running := TRUE;
+                            I_State := 25;
+                        ELSIF "Settings_DB".ECnv_Sys[System_no].Barcode_ID =
+                            VTD_Control.Shuttle_Interlock.Shuttle_Start_Location AND
+                            Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Barcode_ID THEN
+                            VTD_Control.Running := TRUE;
+                            I_State := 20;
+                        ELSIF "Settings_DB".ECnv_Sys[System_no].Barcode_ID =
+                            VTD_Control.Shuttle_Interlock.Shuttle_Start_Location AND
+                            Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Barcode_ID THEN
+                            VTD_Control.Running := TRUE;
+                            I_State := 25;
+                        ELSE
+                            VTD_Control.Warning := 2; // Shuttle interlock start location not buffer conveyor of VTD
+                        END_IF;
+                    ELSE
+                        VTD_Control.Warning := 3; // Cant interlock as shuttle and VTD level mismatch
+                    END_IF;
+                END_IF;
+            ELSE
+                VTD_Control.Warning := 4; // VTD not ready for interlock 
+            END_IF;
+            
+            
+        20: //Drop safety stops
+            IF Cnv_ID_Decoded[1].Level = VTD_Control.Current_Level THEN
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Retract := TRUE;
+                I_State := 30;
+            ELSE
+                VTD_Control.Error := TRUE; //24:16 Cannot find the correct safety pins to drop.
+                Set_Bit_F(Bit_Number := 1,
+                            Bit_Value := 1,
+                            Variavel := VTD_Control.VTD_Errors.Error_Word_3);
+                // I_State := 400;
+            END_IF;
+            
+        25: //Drop safety pins   
+            IF Cnv_ID_Decoded[2].Level = VTD_Control.Current_Level THEN
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Retract := TRUE;
+                I_State := 35;
+            ELSE
+                VTD_Control.Error := TRUE; //24:16 Cannot find the correct safety pins to drop.
+                Set_Bit_F(Bit_Number := 1,
+                            Bit_Value := 1,
+                            Variavel := VTD_Control.VTD_Errors.Error_Word_3);
+                // I_State := 400;
+            END_IF;
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+        30: //Confirm safety stops are down at the correct location
+            //Send ready to interlock
+            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.LP_State = 0 THEN //RETRACTED
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
+                VTD_Control.Shuttle_Interlock.Ready_To_Interlock := TRUE;
+                I_State := 40;
+            END_IF;
+            
+        35: //Confirm safety stops are down at the correct location
+            //Send ready to interlock
+            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.LP_State = 0 THEN //RETRACTED
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
+                VTD_Control.Shuttle_Interlock.Ready_To_Interlock := TRUE;
+                I_State := 45;
+            END_IF;
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        40: //Wait for shuttle to move in or out VTD
+            IF Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".ECnv_Sys[System_no].Barcode_ID THEN
+                IF "Settings_DB".ECnv_Sys[System_no].Barcode_ID = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Position_ID
+                    AND "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Operational_State = 'IDLE' THEN
+                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                    I_State := 50;
+                END_IF;
+            ELSIF Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Barcode_ID THEN
+                IF "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Barcode_ID = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Position_ID
+                    AND "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Operational_State = 'IDLE' THEN
+                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                    I_State := 50;
+                END_IF;
+            END_IF;
+            
+        45: //Wait for shuttle to move in or out VTD
+            IF Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".ECnv_Sys[System_no].Barcode_ID THEN
+                IF "Settings_DB".ECnv_Sys[System_no].Barcode_ID = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Position_ID
+                    AND "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Operational_State = 'IDLE' THEN
+                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                    I_State := 55;
+                END_IF;
+            ELSIF Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Barcode_ID THEN
+                IF "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Barcode_ID = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Position_ID
+                    AND "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Operational_State = 'IDLE' THEN
+                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                    I_State := 55;
+                END_IF;
+            END_IF;
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
+        50: //Check own sensors for shuttle/pallet state
+            IEC_Timer_0_Instance_1(IN := TRUE,
+                                    PT := T5S);
+            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.LP_State = 1 //EXTENDED
+                THEN
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                VTD_Control.Shuttle_Interlock.Interlock_Complete := TRUE;
+                I_State := 60;
+            ELSIF IEC_Timer_0_Instance_1.Q THEN
+                VTD_Control.Error := TRUE; //24:17 Error occured during interlock final check
+                Set_Bit_F(Bit_Number := 2,
+                            Bit_Value := 1,
+                            Variavel := VTD_Control.VTD_Errors.Error_Word_3);
+                I_State := 400;
+            END_IF;
+            
+        55: //Check own sensors for shuttle/pallet state
+            IEC_Timer_0_Instance_1(IN := TRUE,
+                                    PT := T5S);
+            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.LP_State = 1 //EXTENDED
+                THEN
+                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                VTD_Control.Shuttle_Interlock.Interlock_Complete := TRUE;
+                I_State := 60;
+            ELSIF IEC_Timer_0_Instance_1.Q THEN
+                VTD_Control.Error := TRUE; //24:17 Error occured during interlock final check
+                Set_Bit_F(Bit_Number := 2,
+                            Bit_Value := 1,
+                            Variavel := VTD_Control.VTD_Errors.Error_Word_3);
+                I_State := 400;
+            END_IF;
+            
+        60://Clear Vars
+            IEC_Timer_0_Instance_1(IN := FALSE,
+                                    PT := T0s);
+            IEC_Timer_0_Instance_2(IN := FALSE,
+                                    PT := T0s);
+            IF VTD_Control.Shuttle_Interlock.Interlock_Complete_Ack THEN
+                VTD_Control.Shuttle_Interlock.Ready_To_Interlock := FALSE;
+                VTD_Control.Shuttle_Interlock.Interlock_Complete := FALSE;
+                VTD_Control.Running := FALSE;
+                I_State := 0;
+            END_IF;
+            
+        400://ERROR MODE
+            IEC_Timer_0_Instance_1(IN := FALSE,
+                                    PT := T#0S);
+            IEC_Timer_0_Instance_2(IN := FALSE,
+                                    PT := T#0S);
+            Interlock_Timer(IN := FALSE,
+                             PT := T#0S);
+            VTD_Control.Running := FALSE;
+            VTD_Control.Shuttle_Interlock.Interlock_Complete := FALSE;
+            VTD_Control.Shuttle_Interlock.Ready_To_Interlock := FALSE;
+            Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+            Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+            Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
+            Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
+            IF VTD_Control.Instruction.Reset THEN
+                VTD_Control.VTD_Errors.Error_Word_3 := 0;
+                I_State := 0;
+            END_IF;
+    END_CASE;
+    Interlock_Timer(IN := I_State >= 40 AND I_State <= 50,
+                     PT := UINT_TO_TIME("Settings_DB".System.Shuttle_Interlock_Timeout) * 1000);
+    
+{endregion}
+
+
+// IF System_no <> 3 THEN
+{region "Cyclic Error Checks"}
+    IF NOT Safety_OK THEN //SAFETY
+        Set_Bit_F(Bit_Number := 0,
+                  Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+    END_IF;
+    
+    IF VTD_Control.Instruction.Stop THEN //HMI STOP
+        Set_Bit_F(Bit_Number := 1,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+    END_IF;
+    
+    IF NOT VTD_Control.Inputs.Upper_Overtravel AND NOT Bypass.Upper_limit THEN //UPPER OVERTRAVEL
+        Set_Bit_F(Bit_Number := 2,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+    END_IF;
+    
+    IF NOT VTD_Control.Inputs.Lower_Overtravel AND NOT Bypass.Lower_limit THEN //LOWER OVERTRAVEL
+        Set_Bit_F(Bit_Number := 3,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+    END_IF;
+    
+    //CHAIN SLACK
+    IF Chain_Slack_1 AND NOT Bypass.Chain_Slack_1 THEN
+        Set_Bit_F(Bit_Number := 0,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_5);
+    END_IF;
+    
+    IF Chain_Slack_2 AND NOT Bypass.Chain_Slack_2 THEN
+        Set_Bit_F(Bit_Number := 1,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_5);
+    END_IF;
+    
+    IF Chain_Slack_3 AND NOT Bypass.Chain_Slack_3 THEN
+        Set_Bit_F(Bit_Number := 2,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_5);
+    END_IF;
+    
+    IF Chain_Slack_4 AND NOT Bypass.Chain_Slack_4 THEN
+        Set_Bit_F(Bit_Number := 3,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_5);
+    END_IF;
+    
+    //VFD ERROR
+    IF VTD_Control.Motor.Error THEN
+        Set_Bit_F(Bit_Number := 7,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_4);
+    END_IF;
+    
+    //HIGH LIMITS
+    IF VTD_Control.LinearEnc > VTD_Settings.VTD_Max_Heigh AND NOT LE_Bypass_HMI AND NOT "VTD_HMI".LE_Bypass[System_no] THEN //21:5
+        Set_Bit_F(Bit_Number := 4,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+    END_IF;
+    
+    IF VTD_Control.LinearEnc < VTD_Settings.VTD_Min_Height AND NOT LE_Bypass_HMI AND NOT "VTD_HMI".LE_Bypass[System_no] THEN //21:5
+        Set_Bit_F(Bit_Number := 5,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+    END_IF;
+    
+    //AUTOMATIC MODE NOT DOCKED
+    R_AutomatcMode(CLK := VTD_Control.Mode = 3);
+    IF NOT VTD_Control.Docked AND R_AutomatcMode.Q THEN //22:1
+        Set_Bit_F(Bit_Number := 8,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+    END_IF;
+    
+    IF NOT Level_Detect AND R_AutomatcMode.Q THEN //22:2
+        Set_Bit_F(Bit_Number := 9,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+    END_IF;
+    
+    //TRYING RETRACT WHILE DOCKED
+    IF VTD_Control.Docked AND (DP1_Retract OR DP2_Retract) THEN //22:5
+        Set_Bit_F(Bit_Number := 12,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+    END_IF;
+    
+    //LE ERROR
+    T_LE_Error.TON(IN := VTD_Control.Inputs.LE_Status.%X0 OR VTD_Control.Inputs.LE_Status.%X1 OR
+                    VTD_Control.LinearEnc < VTD_Settings.VTD_Min_Height OR
+                    VTD_Control.LinearEnc > VTD_Settings.VTD_Max_Heigh,
+                    PT := t500ms);
+    IF NOT LE_Bypass_HMI AND NOT "VTD_HMI".LE_Bypass[System_no] AND T_LE_Error.Q THEN
+        Set_Bit_F(Bit_Number := 4,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_3);
+        T_LE_Error.TON(IN := FALSE,
+                        PT := T0s);
+    END_IF;
+    
+    
+    
+    //ABSOLUTE ENCODER
+    IF VTD_Control.AE_Error > 0 THEN
+        Set_Bit_F(Bit_Number := 5,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_3);
+        VTD_Control.Outputs.AE_Control_Word_1.7 := VTD_Control.Instruction.Reset OR Reset_All OR HMI_Reset;
+    ELSE
+        VTD_Control.Outputs.AE_Control_Word_1.7 := FALSE;
+    END_IF;
+    
+    IEC_Timer_0_Instance(IN := VTD_Control.LinearEnc <= (VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor] + 1) AND VTD_Control.Instruction.Manual_Down,
+                          PT := T#300MS);
+    
+    //Errors while running
+    IF VTD_Control.Running THEN
+        IF LevelBelowExtractor < 7 THEN
+            IF NOT (VTD_Control.LP_State = 2) AND // NOT 'Retracted'
+                (VTD_Control.LinearEnc > (VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor] + VTD_Settings.Slowdown_Count_LE) AND
+                VTD_Control.LinearEnc < (VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor + 1] - VTD_Settings.Creep_Count_LE) AND
+                VTD_Control.Instruction.Manual_Up)
+                OR
+                IEC_Timer_0_Instance.Q
+            THEN //22:4
+                IF NOT Bypass_LP THEN
+                    IF System_no <> 5 THEN
+                        Set_Bit_F(Bit_Number := 11,
+                                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+                    END_IF;
+                END_IF;
+            END_IF;
+        ELSIF LevelBelowExtractor = 8 THEN
+            IF NOT (VTD_Control.LP_State = 2) AND // NOT 'Retracted'
+                (VTD_Control.LinearEnc > (VTD_Settings.Teach_Values.Levels_LE[LevelBelowExtractor] + VTD_Settings.Slowdown_Count_LE) AND
+                VTD_Control.Instruction.Manual_Up)
+                OR
+                IEC_Timer_0_Instance.Q
+            THEN //22:4
+                IF NOT Bypass_LP THEN
+                    IF System_no <> 5 THEN
+                        Set_Bit_F(Bit_Number := 11,
+                                    Variavel := VTD_Control.VTD_Errors.Error_Word_1);
+                    END_IF;
+                END_IF;
+            END_IF;
+        END_IF;
+        
+        IF VTD_Control.Motor.Error THEN //VFD ERROR
+            Set_Bit_F(Bit_Number := 0,
+                        Variavel := VTD_Control.VTD_Errors.Error_Word_4);
+        ELSIF VTD_Control.LinearEnc_Error > 0 THEN //LE ERROR
+            Set_Bit_F(Bit_Number := 1,
+                        Variavel := VTD_Control.VTD_Errors.Error_Word_4);
+        ELSIF VTD_Control.AE_Error > 0 THEN //AE ERROR
+            Set_Bit_F(Bit_Number := 2,
+                        Variavel := VTD_Control.VTD_Errors.Error_Word_4);
+            
+        ELSIF (DP1_Extended AND DP1_Retracted) OR (DP2_Extended AND DP2_Retracted) THEN // 25:4
+            IF System_no <> 5 THEN
+                Set_Bit_F(Bit_Number := 3,
+                            Variavel := VTD_Control.VTD_Errors.Error_Word_4);
+            ELSE
+                ;
+            END_IF;
+        ELSIF Lower_Limit AND NOT Upper_limit AND NOT Bypass.Overtravel_Lower_limit THEN // 25:5
+            Set_Bit_F(Bit_Number := 4,
+                        Variavel := VTD_Control.VTD_Errors.Error_Word_4);
+        ELSIF NOT Lower_Limit AND Upper_limit AND NOT Bypass.Overtravel_Upper_limit THEN // 25:6
+            Set_Bit_F(Bit_Number := 5,
+                        Variavel := VTD_Control.VTD_Errors.Error_Word_4);
+        ELSIF Lower_Limit AND Upper_limit THEN // 25:7
+            Set_Bit_F(Bit_Number := 6,
+                        Variavel := VTD_Control.VTD_Errors.Error_Word_4);
+        END_IF;
+    END_IF;
+    
+    //Check if overtravel limit switches has been hit
+    IF Upper_limit AND VTD_Control.Instruction.Manual_Up
+    THEN //24:6 Top overtravel limit reached.
+        Set_Bit_F(Bit_Number := 7,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+        IF VTD_Control.Mode = 2 OR VTD_Control.Mode = 3 THEN
+            State := 400;
+        ELSE
+            State := 0;
+        END_IF;
+    ELSIF Lower_Limit AND VTD_Control.Instruction.Manual_Down
+    THEN //24:7 Bottom overtravel limit reached.
+        Set_Bit_F(Bit_Number := 8,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+        IF VTD_Control.Mode = 2 OR VTD_Control.Mode = 3 THEN
+            State := 400;
+        ELSE
+            State := 0;
+        END_IF;
+    END_IF;
+    
+    //Need to monitor both encoders
+    IF ABS(VTD_Control.Encoder_Delta) > VTD_Settings.Encoder_Delta_Warning THEN
+        VTD_Control.Warning := 2;
+    END_IF;
+    
+    T_Encoders_Difference(IN := ABS(VTD_Control.Encoder_Delta) > VTD_Settings.Encoder_Delta_Error,
+                           PT := T#500MS);
+    
+    IF T_Encoders_Difference.Q AND NOT LE_Bypass_HMI AND NOT "VTD_HMI".LE_Bypass[System_no] THEN
+        //Send error message that encoder error is to large
+        Set_Bit_F(Bit_Number := 2,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+    END_IF;
+    
+    // Level detect timer 
+    IF LD_Timer.Q OR LD_Timer_1.Q THEN
+        LD_Timer(IN := FALSE,
+                  PT := T#0S);
+        LD_Timer_1(IN := FALSE,
+                    PT := T#0S);
+            Set_Bit_F(Bit_Number := 11,
+                        Variavel := VTD_Control.VTD_Errors.Error_Word_4);
+    END_IF;
+    
+    //Locking pin timer
+    IF DP_Timer.Q AND (DP1_Retract OR DP1_Extend) THEN //24:2 Locking pins took to long to extend
+        Set_Bit_F(Bit_Number := 3,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+    ELSIF DP_Timer.Q AND (DP2_Retract AND DP2_Extend) THEN //24:3 Locking pins took to long to retract
+        Set_Bit_F(Bit_Number := 4,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+    END_IF;
+    
+    IF Interlock_Timer.Q THEN //Interlock process timed out
+        Set_Bit_F(Bit_Number := 3,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_3);
+        I_State := 400;
+    END_IF;
+    
+    //MOVIVENT VTD UNEXPECTED
+    //Take the position old
+    R_Position_OLD(CLK:= NOT VTD_Control.Motor_UP AND NOT VTD_Control.Motor_Down AND MainSetpoint1 = 0);
+    
+    IF R_Position_OLD.Q THEN
+        Position_OLD := VTD_Control.LinearEnc;
+    ELSIF NOT R_Position_OLD.CLK THEN
+        Position_OLD := 0;
+    END_IF;
+    
+    //VTD STILL MOVING
+    IF ABS(VTD_Control.LinearEnc - Position_OLD) > Tol_VTD_Still_Moving THEN
+        Set_Bit_F(Bit_Number := 6,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_3);
+    END_IF;
+    
+    // Watchdog bit
+    // IF Watchdog.Q THEN
+    //     VTD_Control.Running := FALSE;
+    //     IF VTD_Control.Mode = 4 THEN //24:9 Teach timed out
+    //         Set_Bit_F(Bit_Number := 10,
+    //                     Bit_Value := 1,
+    //                     Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+    //     ELSIF VTD_Control.Mode = 3 THEN //24:9 Auto timed out
+    //         Set_Bit_F(Bit_Number := 10,
+    //                     Bit_Value := 1,
+    //                     Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+    //     ELSIF VTD_Control.Mode = 2 THEN //24:9 Semi auto timed out
+    //         Set_Bit_F(Bit_Number := 10,
+    //                     Bit_Value := 1,
+    //                     Variavel := VTD_Control.VTD_Errors.Error_Word_2);
+    //     END_IF;
+    // END_IF;
+    
+    IF ((System_no = 1 AND "Errors_Profinet_1".%X8) OR
+        (System_no = 2 AND "Errors_Profinet_3".%X7) OR
+        (System_no = 3 AND "Errors_Profinet_5".%X4) OR
+        (System_no = 4 AND "Errors_Profinet_7".%X1) OR
+        (System_no = 5 AND "Errors_Profinet_8".%X6)) AND VTD_Control.Mode = 3
+    THEN //Interface Profinet error
+        Set_Bit_F(Bit_Number := 3,
+                    Variavel := VTD_Control.VTD_Errors.Error_Word_3);
+    END_IF;
+    
+    // go to error state
+    IF VTD_Control.VTD_Errors.Error_Word_1 <> 0 OR
+        VTD_Control.VTD_Errors.Error_Word_2 <> 0 OR
+        VTD_Control.VTD_Errors.Error_Word_3 <> 0 OR
+        VTD_Control.VTD_Errors.Error_Word_4 <> 0 OR
+        VTD_Control.VTD_Errors.Error_Word_5 <> 0 THEN
+        VTD_Control.Error := TRUE;
+        State := 400;
+    END_IF;
+{endregion}
+// END_IF;
+
+{region "VFD"}
+    //Status
+    VTD_Control.Motor.Ready := (VTD_Control.Inputs.VFD_Status.%X0 OR VTD_Control.Inputs.VFD_Status.%X1) AND NOT VTD_Control.Motor.Error;
+    VTD_Control.Motor.Error := VTD_Control.Inputs.VFD_Status.%X3 OR VTD_Control.Inputs.VFD_Status.%X7 OR NOT VTD_Control.Inputs.VFD_Status.%X13;
+    VTD_Control.Motor.Enabled := VTD_Control.Inputs.VFD_Status.%X2;
+    VTD_Control.Motor.Actual_Current := VTD_Control.Inputs.VFD_ActualCurrent;
+    VTD_Control.Motor.Actual_Torque := SCALE_X(MIN := 0,
+                                                VALUE := NORM_X(MIN := 0,
+                                                                VALUE := VTD_Control.Inputs.VFD_ActualTorque,
+                                                                MAX := 65536),
+                                                MAX := 100);
+    
+    //Actual Speed
+    IF MainSetpoint > 0 THEN
+        VTD_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
+                                                   VALUE := NORM_X(MIN := 0,
+                                                                   VALUE := VTD_Control.Inputs.VFD_Speed_Actual,
+                                                                   MAX := 16384),
+                                                   MAX := 120);
+        VTD_Control.Motor.Actual_Torque := SCALE_X(MIN := 0,
+                                                    VALUE := NORM_X(MIN := 0,
+                                                                    VALUE := VTD_Control.Inputs.VFD_ActualTorque * -1,
+                                                                    MAX := 16384),
+                                                    MAX := 100);
+    ELSIF MainSetpoint < 0 THEN
+        VTD_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
+                                                   VALUE := NORM_X(MIN := 0,
+                                                                   VALUE := VTD_Control.Inputs.VFD_Speed_Actual * -1,
+                                                                   MAX := 16384),
+                                                   MAX := 120);
+        VTD_Control.Motor.Actual_Torque := SCALE_X(MIN := 0,
+                                                    VALUE := NORM_X(MIN := 0,
+                                                                    VALUE := VTD_Control.Inputs.VFD_ActualTorque * -1,
+                                                                    MAX := 16384),
+                                                    MAX := 100);
+    ELSE
+        VTD_Control.Motor.Speed_Actual := 0;
+        VTD_Control.Motor.Actual_Torque := 0;
+    END_IF;
+    
+    //SETPOINT
+    IF VTD_Control.Motor_UP THEN
+        MainSetpoint := SCALE_X(MIN := 0,
+                                 VALUE := NORM_X(MIN := 0,
+                                                 VALUE := VTD_Control.Motor_Speed,
+                                                 MAX := 120),
+                                 MAX := 1762);
+    ELSIF VTD_Control.Motor_Down THEN
+        MainSetpoint := (SCALE_X(MIN := 0,
+                                  VALUE := NORM_X(MIN := 0,
+                                                  VALUE := VTD_Control.Motor_Speed,
+                                                  MAX := 120),
+                                  MAX := 1762)) * -1;
+    ELSE
+        MainSetpoint := 0;
+    END_IF;
+    
+    T_Setpoint_Delay(IN := MainSetpoint <> 0,
+                          PT := T#0MS);
+    
+    IF T_Setpoint_Delay.Q THEN
+        MainSetpoint1 := MainSetpoint;
+    ELSE
+        MainSetpoint1 := 0;
+    END_IF;
+    
+    //Acceleration
+    IF VTD_Control.Pallet_Loaded = 0 AND VTD_Control.Shuttle_Loaded = 0 THEN
+        VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
+                                                 VALUE := NORM_X(MIN := 0,
+                                                                 VALUE := 60.0,
+                                                                 MAX := 100),
+                                                 MAX := 16384);
+    ELSIF Control_GVL.VTD_Order_Table[System_no].Pallet_Weight > 0 AND
+        Control_GVL.VTD_Order_Table[System_no].Pallet_Weight <= "Settings_DB".VTD_Sys[System_no].Weight_Range_1 THEN
+        VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
+                                                 VALUE := NORM_X(MIN := 0,
+                                                                 VALUE := "Settings_DB".VTD_Sys[System_no].Acc_Range_1,
+                                                                 MAX := 100),
+                                                 MAX := 16384);
+    ELSIF Control_GVL.VTD_Order_Table[System_no].Pallet_Weight > "Settings_DB".VTD_Sys[System_no].Weight_Range_1 AND
+        Control_GVL.VTD_Order_Table[System_no].Pallet_Weight <= "Settings_DB".VTD_Sys[System_no].Weight_Range_2 THEN
+        VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
+                                                 VALUE := NORM_X(MIN := 0,
+                                                                 VALUE := "Settings_DB".VTD_Sys[System_no].Acc_Range_2,
+                                                                 MAX := 100),
+                                                 MAX := 16384);
+    ELSIF Control_GVL.VTD_Order_Table[System_no].Pallet_Weight > "Settings_DB".VTD_Sys[System_no].Weight_Range_2 AND
+        Control_GVL.VTD_Order_Table[System_no].Pallet_Weight <= "Settings_DB".VTD_Sys[System_no].Weight_Range_3 THEN
+        VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
+                                                 VALUE := NORM_X(MIN := 0,
+                                                                 VALUE := "Settings_DB".VTD_Sys[System_no].Acc_Range_3,
+                                                                 MAX := 100),
+                                                 MAX := 16384);
+    ELSIF Control_GVL.VTD_Order_Table[System_no].Pallet_Weight > "Settings_DB".VTD_Sys[System_no].Weight_Range_3 OR
+        Control_GVL.VTD_Order_Table[System_no].Pallet_Weight = 0 THEN
+        VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
+                                                 VALUE := NORM_X(MIN := 0,
+                                                                 VALUE := 100.0,
+                                                                 MAX := 100),
+                                                 MAX := 16384);
+    ELSE
+        VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
+                                                 VALUE := NORM_X(MIN := 0,
+                                                                 VALUE := 100.0,
+                                                                 MAX := 100),
+                                                 MAX := 16384);
+    END_IF;
+    
+    SinaSpeed(EnableAxis := VTD_Control.Motor_UP OR VTD_Control.Motor_Down,
+              AckError := VTD_Control.Instruction.Reset OR "Reset_All" OR HMI_Reset,
+              SpeedSp := MainSetpoint1,
+              RefSpeed := 1762,
+              HWIDSTW := VTD_Settings.G120_Hardware_ID,
+              HWIDZSW := VTD_Settings.G120_Hardware_ID);
+    
+    //PARAMETERS
+    //1082
+    //2000
+    //971
+    //1820
+{endregion}
+
+HMI_Reset := (("Screen_DB_1".Reset_All[1] OR "VTD_HMI".Reset[1]) AND
+("HMI_Box_Connected_1" = 11 AND "KEY REMOTE/LOCAL L1 - CH1(1)") OR
+("HMI_Box_Connected_1" = 12 AND "KEY REMOTE/LOCAL L2 - CH1(1)") OR
+("HMI_Box_Connected_1" = 13 AND "KEY REMOTE/LOCAL L3 - CH1(1)") OR
+("HMI_Box_Connected_1" = 14 AND "KEY REMOTE/LOCAL L4 - CH1(1)") OR
+("HMI_Box_Connected_1" = 15 AND "KEY REMOTE/LOCAL L5 - CH1(1)") OR
+("HMI_Box_Connected_1" = 16 AND "KEY REMOTE/LOCAL L6 - CH1(1)") OR
+("HMI_Box_Connected_1" = 21 AND "KEY REMOTE/LOCAL L1 - CH1(2)") OR
+("HMI_Box_Connected_1" = 22 AND "KEY REMOTE/LOCAL L2 - CH1(2)") OR
+("HMI_Box_Connected_1" = 23 AND "KEY REMOTE/LOCAL L3 - CH1(2)") OR
+("HMI_Box_Connected_1" = 24 AND "KEY REMOTE/LOCAL L4 - CH1(2)") OR
+("HMI_Box_Connected_1" = 25 AND "KEY REMOTE/LOCAL L5 - CH1(2)") OR
+("HMI_Box_Connected_1" = 26 AND "KEY REMOTE/LOCAL L6 - CH1(2)"))
+OR
+(("Screen_DB_1".Reset_All[2] OR "VTD_HMI".Reset[2]) AND
+("HMI_Box_Connected_2" = 11 AND "KEY REMOTE/LOCAL L1 - CH1(1)") OR
+("HMI_Box_Connected_2" = 12 AND "KEY REMOTE/LOCAL L2 - CH1(1)") OR
+("HMI_Box_Connected_2" = 13 AND "KEY REMOTE/LOCAL L3 - CH1(1)") OR
+("HMI_Box_Connected_2" = 14 AND "KEY REMOTE/LOCAL L4 - CH1(1)") OR
+("HMI_Box_Connected_2" = 15 AND "KEY REMOTE/LOCAL L5 - CH1(1)") OR
+("HMI_Box_Connected_2" = 16 AND "KEY REMOTE/LOCAL L6 - CH1(1)") OR
+("HMI_Box_Connected_2" = 21 AND "KEY REMOTE/LOCAL L1 - CH1(2)") OR
+("HMI_Box_Connected_2" = 22 AND "KEY REMOTE/LOCAL L2 - CH1(2)") OR
+("HMI_Box_Connected_2" = 23 AND "KEY REMOTE/LOCAL L3 - CH1(2)") OR
+("HMI_Box_Connected_2" = 24 AND "KEY REMOTE/LOCAL L4 - CH1(2)") OR
+("HMI_Box_Connected_2" = 25 AND "KEY REMOTE/LOCAL L5 - CH1(2)") OR
+("HMI_Box_Connected_2" = 26 AND "KEY REMOTE/LOCAL L6 - CH1(2)"));
+
+//Assign local vars to outputs
+VTD_Control.Outputs.LP1_Retract := DP1_Retract;
+VTD_Control.Outputs.LP1_Extend := DP1_Extend;
+VTD_Control.Outputs.LP2_Retract := DP2_Retract;
+VTD_Control.Outputs.LP2_Extend := DP2_Extend;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

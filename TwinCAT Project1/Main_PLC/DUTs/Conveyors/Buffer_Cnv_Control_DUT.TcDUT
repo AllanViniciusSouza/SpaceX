@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Buffer_Cnv_Control_DUT" Id="{7f24eb02-7b76-44f1-8e9c-bd32dc7d49c3}">
+    <Declaration><![CDATA[TYPE Buffer_Cnv_Control_DUT :
+STRUCT
+	Mode:	UINT;
+	Error:	BOOL;
+	Warning:	UINT;
+	Enabled:	BOOL;
+	Stopped:	BOOL;
+	Done:	BOOL;
+	Running:	BOOL;
+	Ready_For_Task:	BOOL;
+	Current_Task_Type:	UINT;
+	Current_Task_ID:	UINT;
+	Cnv_Occupied:	BOOL;
+	SM_State:	UINT;
+	Motor:	Cnv_Motor_DUT;
+	Instruction:	Cnv_Instruction_DUT;
+	Inputs:	Buffer_Cnv_Inputs_DUT;
+	Safety_Stop_Cnrl:	Sfts_Control_DUT;
+	Cnv_Errors:	Cnv_Errors_DUT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

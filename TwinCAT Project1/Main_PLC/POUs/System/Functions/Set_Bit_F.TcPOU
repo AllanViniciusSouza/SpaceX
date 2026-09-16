@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Set_Bit_F" Id="{aedeb09c-f1da-484a-814b-f14b895e9511}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION Set_Bit_F : BOOL
+VAR_INPUT
+	BIT_Number:  UINT;
+END_VAR
+VAR
+END_VAR
+VAR_IN_OUT
+	Variavel: WORD;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Set the bit
+Variavel := Variavel OR SHL(WORD#1,BIT_Number);
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

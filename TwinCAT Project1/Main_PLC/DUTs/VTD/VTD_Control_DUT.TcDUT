@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="VTD_Control_DUT" Id="{514e2bc8-7325-4af1-91e1-173517af48d6}">
+    <Declaration><![CDATA[TYPE VTD_Control_DUT :
+STRUCT
+	Mode:	UINT;
+	Error:	BOOL;
+	Warning:	UINT;
+	Enabled:	BOOL;
+	Stopped:	BOOL;
+	Running:	BOOL;
+	Done:	BOOL;
+	Current_Task_Type:	UINT;
+	Current_Task_ID:	UINT;
+	AbsoluteEnc:	REAL;
+	LinearEnc:	REAL;
+	Current_Level:	UINT;
+	Docked:	BOOL;
+	LP_State:	UINT;
+	DP_Extended:	BOOL;
+	Pallet_Loaded:	UINT;
+	Shuttle_Loaded:	UINT;
+	SM_State:	UINT;
+	Motor_UP:	BOOL;
+	Motor_Down:	BOOL;
+	Motor_Speed:	UINT;
+	VFD_Error:	UINT;
+	LE_Error:	UINT;
+	AE_Error:	UINT;
+	Encoder_Delta:	INT;
+	Instruction:	VTD_Instruction_DUT;
+	Shuttle_Interlock:	VTD_Shuttle_Interlock_DUT;
+	Inputs:	VTD_Inputs_DUT;
+	Outputs:	VTD_Outputs_DUT;
+	Motor:	VTD_Motor_DUT;
+	VTD_Errors:	VTD_Errors_DUT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
