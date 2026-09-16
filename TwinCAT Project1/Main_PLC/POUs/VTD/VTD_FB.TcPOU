@@ -203,10 +203,10 @@ ZZ = VTD Connected to
     END_IF;
     
     FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
-        IF NOT Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+        IF NOT Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
             Cnvs1_NotExtended := true;
         END_IF;
-        IF NOT Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+        IF NOT Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
             Cnvs2_NotExtended := true;
         END_IF;
     END_FOR;
@@ -274,7 +274,7 @@ ZZ = VTD Connected to
             Last_State := State;
             IF VTD_Control.Enabled AND NOT VTD_Control.Running AND VTD_Control.Instruction.Move_To_Level >= VTD_Settings.Lowest_Level AND
                 VTD_Control.Instruction.Move_To_Level <= VTD_Settings.Highest_Level AND VTD_Control.Pallet_Loaded <> 1 AND
-                ((VTD_Control.Instruction.Task_ID > 0 OR VTD_Control.Instruction.Task_Metadata <> '' AND VTD_Control.Mode = 3 AND Control_GVL.VTD_Order_Table[System_no].Task_Type = 1) OR
+                ((VTD_Control.Instruction.Task_ID > 0 OR VTD_Control.Instruction.Task_Metadata <> '' AND VTD_Control.Mode = 3 AND Control.VTD_Order_Table[System_no].Task_Type = 1) OR
                 (VTD_Control.Mode = 2 (*AND R_Execulte.Q*)))
             THEN
                 IF VTD_Control.Instruction.Move_To_Level = VTD_Control.Current_Level AND VTD_Control.Instruction.Move_To_Level <> 0 THEN
@@ -296,11 +296,11 @@ ZZ = VTD Connected to
             Last_State := State;
             VTD_Control.Done := FALSE;// To report to order table
             FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
-                IF NOT Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
-                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                IF NOT Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+                    Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
                 END_IF;
-                IF NOT Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
-                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                IF NOT Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+                    Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
                 END_IF;
             END_FOR;
             State := 25;
@@ -308,24 +308,24 @@ ZZ = VTD Connected to
         25: //Check to ensure the Safety stoppers are in the up position.
             Last_State := State;
             FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
-                IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
-                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                IF Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+                    Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
                 END_IF;
-                IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
-                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                IF Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended THEN
+                    Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
                 END_IF;
             END_FOR;
             
-            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended
+            IF Control.LCnv_Sys[System_no].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control.LCnv_Sys[System_no].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control.LCnv_Sys[System_no].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control.LCnv_Sys[System_no].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control.LCnv_Sys[System_no].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control.LCnv_Sys[System_no].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control.LCnv_Sys[System_no].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control.LCnv_Sys[System_no].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control.LCnv_Sys[System_no].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+                Control.LCnv_Sys[System_no].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended
             THEN
                 State := 30;
             END_IF;
@@ -647,8 +647,8 @@ ZZ = VTD Connected to
             DP1_Extend := DP2_Extend := FALSE;
             DP1_Retract := DP2_Retract := FALSE;
             FOR i := VTD_Settings.Lowest_Level TO VTD_Settings.Highest_Level DO
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                Control.LCnv_Sys[System_no].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
             END_FOR;
             //Reset timers
             DP_Timer(IN := FALSE,
@@ -805,7 +805,7 @@ ZZ = VTD Connected to
             
         20: //Drop safety stops
             IF Cnv_ID_Decoded[1].Level = VTD_Control.Current_Level THEN
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Retract := TRUE;
+                Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Retract := TRUE;
                 I_State := 30;
             ELSE
                 VTD_Control.Error := TRUE; //24:16 Cannot find the correct safety pins to drop.
@@ -817,7 +817,7 @@ ZZ = VTD Connected to
             
         25: //Drop safety pins   
             IF Cnv_ID_Decoded[2].Level = VTD_Control.Current_Level THEN
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Retract := TRUE;
+                Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Retract := TRUE;
                 I_State := 35;
             ELSE
                 VTD_Control.Error := TRUE; //24:16 Cannot find the correct safety pins to drop.
@@ -829,16 +829,16 @@ ZZ = VTD Connected to
             //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
         30: //Confirm safety stops are down at the correct location
             //Send ready to interlock
-            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.LP_State = 0 THEN //RETRACTED
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
+            IF Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.LP_State = 0 THEN //RETRACTED
+                Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
                 VTD_Control.Shuttle_Interlock.Ready_To_Interlock := TRUE;
                 I_State := 40;
             END_IF;
             
         35: //Confirm safety stops are down at the correct location
             //Send ready to interlock
-            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.LP_State = 0 THEN //RETRACTED
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
+            IF Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.LP_State = 0 THEN //RETRACTED
+                Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
                 VTD_Control.Shuttle_Interlock.Ready_To_Interlock := TRUE;
                 I_State := 45;
             END_IF;
@@ -847,13 +847,13 @@ ZZ = VTD Connected to
             IF Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".ECnv_Sys[System_no].Barcode_ID THEN
                 IF "Settings_DB".ECnv_Sys[System_no].Barcode_ID = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Position_ID
                     AND "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Operational_State = 'IDLE' THEN
-                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                    Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
                     I_State := 50;
                 END_IF;
-            ELSIF Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Barcode_ID THEN
+            ELSIF Control.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Barcode_ID THEN
                 IF "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Barcode_ID = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Position_ID
                     AND "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Operational_State = 'IDLE' THEN
-                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                    Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
                     I_State := 50;
                 END_IF;
             END_IF;
@@ -862,13 +862,13 @@ ZZ = VTD Connected to
             IF Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".ECnv_Sys[System_no].Barcode_ID THEN
                 IF "Settings_DB".ECnv_Sys[System_no].Barcode_ID = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Position_ID
                     AND "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Operational_State = 'IDLE' THEN
-                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                    Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
                     I_State := 55;
                 END_IF;
-            ELSIF Control_GVL.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Barcode_ID THEN
+            ELSIF Control.VTD_Order_Table[System_no].Destination_Location = "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Barcode_ID THEN
                 IF "Settings_DB".LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Barcode_ID = "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Position_ID
                     AND "Shuttle_MQTT_DB".Shuttle_MQTT[VTD_Control.Shuttle_Interlock.Shuttle_ID].Message.Shuttle_Status.Operational_State = 'IDLE' THEN
-                    Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
+                    Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := TRUE;
                     I_State := 55;
                 END_IF;
             END_IF;
@@ -876,9 +876,9 @@ ZZ = VTD Connected to
         50: //Check own sensors for shuttle/pallet state
             IEC_Timer_0_Instance_1(IN := TRUE,
                                     PT := T5S);
-            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.LP_State = 1 //EXTENDED
+            IF Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.LP_State = 1 //EXTENDED
                 THEN
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
                 VTD_Control.Shuttle_Interlock.Interlock_Complete := TRUE;
                 I_State := 60;
             ELSIF IEC_Timer_0_Instance_1.Q THEN
@@ -892,9 +892,9 @@ ZZ = VTD Connected to
         55: //Check own sensors for shuttle/pallet state
             IEC_Timer_0_Instance_1(IN := TRUE,
                                     PT := T5S);
-            IF Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.LP_State = 1 //EXTENDED
+            IF Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.LP_State = 1 //EXTENDED
                 THEN
-                Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+                Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
                 VTD_Control.Shuttle_Interlock.Interlock_Complete := TRUE;
                 I_State := 60;
             ELSIF IEC_Timer_0_Instance_1.Q THEN
@@ -927,10 +927,10 @@ ZZ = VTD Connected to
             VTD_Control.Running := FALSE;
             VTD_Control.Shuttle_Interlock.Interlock_Complete := FALSE;
             VTD_Control.Shuttle_Interlock.Ready_To_Interlock := FALSE;
-            Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
-            Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
-            Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
-            Control_GVL.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
+            Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+            Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Extend := FALSE;
+            Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv1.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
+            Control.LCnv_Sys[System_no].Cnv_Level[VTD_Control.Current_Level].Cnv2.Safety_Stop_Cnrl.Instruction.Retract := FALSE;
             IF VTD_Control.Instruction.Reset THEN
                 VTD_Control.VTD_Errors.Error_Word_3 := 0;
                 I_State := 0;
@@ -1297,28 +1297,28 @@ ZZ = VTD Connected to
                                                                  VALUE := 60.0,
                                                                  MAX := 100),
                                                  MAX := 16384);
-    ELSIF Control_GVL.VTD_Order_Table[System_no].Pallet_Weight > 0 AND
-        Control_GVL.VTD_Order_Table[System_no].Pallet_Weight <= "Settings_DB".VTD_Sys[System_no].Weight_Range_1 THEN
+    ELSIF Control.VTD_Order_Table[System_no].Pallet_Weight > 0 AND
+        Control.VTD_Order_Table[System_no].Pallet_Weight <= "Settings_DB".VTD_Sys[System_no].Weight_Range_1 THEN
         VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
                                                  VALUE := NORM_X(MIN := 0,
                                                                  VALUE := "Settings_DB".VTD_Sys[System_no].Acc_Range_1,
                                                                  MAX := 100),
                                                  MAX := 16384);
-    ELSIF Control_GVL.VTD_Order_Table[System_no].Pallet_Weight > "Settings_DB".VTD_Sys[System_no].Weight_Range_1 AND
+    ELSIF Control.VTD_Order_Table[System_no].Pallet_Weight > "Settings_DB".VTD_Sys[System_no].Weight_Range_1 AND
         Control_GVL.VTD_Order_Table[System_no].Pallet_Weight <= "Settings_DB".VTD_Sys[System_no].Weight_Range_2 THEN
         VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
                                                  VALUE := NORM_X(MIN := 0,
                                                                  VALUE := "Settings_DB".VTD_Sys[System_no].Acc_Range_2,
                                                                  MAX := 100),
                                                  MAX := 16384);
-    ELSIF Control_GVL.VTD_Order_Table[System_no].Pallet_Weight > "Settings_DB".VTD_Sys[System_no].Weight_Range_2 AND
+    ELSIF Control.VTD_Order_Table[System_no].Pallet_Weight > "Settings_DB".VTD_Sys[System_no].Weight_Range_2 AND
         Control_GVL.VTD_Order_Table[System_no].Pallet_Weight <= "Settings_DB".VTD_Sys[System_no].Weight_Range_3 THEN
         VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
                                                  VALUE := NORM_X(MIN := 0,
                                                                  VALUE := "Settings_DB".VTD_Sys[System_no].Acc_Range_3,
                                                                  MAX := 100),
                                                  MAX := 16384);
-    ELSIF Control_GVL.VTD_Order_Table[System_no].Pallet_Weight > "Settings_DB".VTD_Sys[System_no].Weight_Range_3 OR
+    ELSIF Control.VTD_Order_Table[System_no].Pallet_Weight > "Settings_DB".VTD_Sys[System_no].Weight_Range_3 OR
         Control_GVL.VTD_Order_Table[System_no].Pallet_Weight = 0 THEN
         VTD_Control.Motor.Acc_Factor := SCALE_X(MIN := 0,
                                                  VALUE := NORM_X(MIN := 0,
