@@ -8,7 +8,7 @@
     <DownloadApplicationInfo>true</DownloadApplicationInfo>
     <WriteProductVersion>false</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
-    <Name>Main_PLC</Name>
+    <Name>Sys1_PLC</Name>
     <ProgramVersion>3.1.4026.26</ProgramVersion>
     <Application>{ef91d314-ab50-4cf3-b201-c2a902ee15c9}</Application>
     <TypeSystem>{06d20dc8-5ffb-4bbc-a4fb-99e123dd0b2d}</TypeSystem>
@@ -132,6 +132,10 @@
     <Compile Include="DUTs\VTD\VTD_Shuttle_Interlock_DUT.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GVLs\Bypass.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
     <Compile Include="GVLs\CNV_HMI_IO.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
@@ -144,7 +148,15 @@
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
+    <Compile Include="GVLs\Force.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
     <Compile Include="GVLs\HMI\CNV_HMI.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="GVLs\IO\IO_Panel.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
@@ -159,7 +171,16 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Conveyors\Buffer_Conveyor_FB.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\System\Conveyors_Transfer.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\System\Functions\ID_Decode_F.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\System\Functions\Set_Bit_F.TcPOU">
@@ -177,6 +198,8 @@
     <Folder Include="DUTs\VTD" />
     <Folder Include="GVLs" />
     <Folder Include="GVLs\HMI" />
+    <Folder Include="GVLs\IO" />
+    <Folder Include="POUs\Conveyors" />
     <Folder Include="POUs\System" />
     <Folder Include="POUs\System\Functions" />
     <Folder Include="POUs\VTD" />
