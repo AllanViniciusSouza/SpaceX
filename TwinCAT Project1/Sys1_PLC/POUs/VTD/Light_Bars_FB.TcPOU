@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Light_Bars_FB" Id="{bd2dfdfe-46fb-4935-8f5b-b79006588dc3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Light_Bars_FB
+VAR_INPUT
+	VTD_Mode:  UINT;
+	VTD_Speed:  INT;
+	Fault:  BOOL;
+END_VAR
+VAR_OUTPUT
+	Animation_B1:  BYTE;
+	Color_B1:  BYTE;
+	Speed_B1:  Byte;
+	Animation_B2:  Byte;
+	Color_B2:  Byte;
+	Speed_B2:  BYTE;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Commands for Light Bar
+
+IF VTD_Mode = 0 AND NOT Fault THEN // (0)Disabled = No light  
+    Animation_B1:= Animation_B2:= 0;
+    
+ELSIF VTD_Mode = 1 AND VTD_Speed = 0 AND  NOT Fault AND NOT "SinaSpeed_VTD_DB_1".EnableAxis THEN // (1)Manual= Yellow Stop
+    Animation_B1 := Animation_B2 := 1;
+    Color_B1 := Color_B2 := 4;
+    
+ELSIF VTD_Mode = 1 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND "SinaSpeed_VTD_DB_1".EnableAxis THEN // (1)Manual= Yellow until 33%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 2;
+    Color_B1 := Color_B2 := 4;
+    
+ELSIF VTD_Mode = 1 AND VTD_Speed > 33 AND VTD_Speed <= 100 AND  NOT Fault THEN // (1)Manual= Yellow until 66%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 0;
+    Color_B1 := Color_B2 := 4;
+    
+// ELSIF VTD_Mode = 1 AND VTD_Speed > 66 AND VTD_Speed <= 100 AND  NOT Fault THEN // (1)Manual= Yellow until 100%
+//     Animation_B1 := Animation_B2 := 2;
+//     Speed_B1 := Speed_B2 := 1;
+//     Color_B1 := Color_B2 := 4;
+    
+ELSIF VTD_Mode = 2 AND VTD_Speed = 0 AND  NOT Fault AND NOT "SinaSpeed_VTD_DB_1".EnableAxis THEN // (2)Semi-auto = Blue Stop
+    Animation_B1 := Animation_B2 := 1;
+    Color_B1 := Color_B2 := 9;
+    Speed_B1 := Speed_B2 := 0;
+    
+ELSIF VTD_Mode = 2 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND "SinaSpeed_VTD_DB_1".EnableAxis THEN // (2)Semi-auto = Blue until 33%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 2;
+    Color_B1 := Color_B2 := 9;
+    
+ELSIF VTD_Mode = 2 AND VTD_Speed > 33 AND VTD_Speed <= 100 AND  NOT Fault THEN // (2)Semi-auto = Blue until 66%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 0;
+    Color_B1 := Color_B2 := 9;
+    
+// ELSIF VTD_Mode = 2 AND VTD_Speed > 66 AND VTD_Speed <= 100 AND  NOT Fault THEN // (2)Semi-auto = Blue until 100%
+//     Animation_B1 := Animation_B2 := 2;
+//     Speed_B1 := Speed_B2 := 1;
+//     Color_B1 := Color_B2 := 9;
+    
+ELSIF VTD_Mode = 3 AND VTD_Speed = 0 AND  NOT Fault AND NOT "SinaSpeed_VTD_DB_1".EnableAxis THEN // (3)Auto = Green Stop
+    Animation_B1 := Animation_B2 := 1;
+    Color_B1 := Color_B2 := 0;
+    
+ELSIF VTD_Mode = 3 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND "SinaSpeed_VTD_DB_1".EnableAxis THEN // (3)Auto = Green until 33%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 2;
+    Color_B1 := Color_B2 := 0;
+    
+ELSIF VTD_Mode = 3 AND VTD_Speed > 33 AND VTD_Speed <= 100 AND  NOT Fault THEN // (3)Auto = Green until 66%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 0;
+    Color_B1 := Color_B2 := 0;
+    
+// ELSIF VTD_Mode = 3 AND VTD_Speed > 66 AND VTD_Speed <= 100 AND  NOT Fault THEN // (3)Auto = Green until 100%
+//     Animation_B1 := Animation_B2 := 2;
+//     Speed_B1 := Speed_B2 := 1;
+//     Color_B1 := Color_B2 := 0;
+    
+ELSIF VTD_Mode = 4 AND VTD_Speed = 0 AND  NOT Fault THEN // (4)Tech = Orange Stop
+    Animation_B1 := Animation_B2 := 1;
+    Color_B1 := Color_B2 := 2;
+    
+ELSIF VTD_Mode = 4 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault THEN // (4)Tech = Orange until 33%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 2;
+    Color_B1 := Color_B2 := 2;
+    
+ELSIF VTD_Mode = 4 AND VTD_Speed > 33 AND VTD_Speed <= 66 AND  NOT Fault THEN // (4)Tech = Orange until 66%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 0;
+    Color_B1 := Color_B2 := 2;
+    
+ELSIF VTD_Mode = 4 AND VTD_Speed > 66 AND VTD_Speed <= 100 AND  NOT Fault THEN // (4)Tech = Orange until 100%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 1;
+    Color_B1 := Color_B2 := 2;
+    
+ELSIF VTD_Mode = 5 AND VTD_Speed = 0 AND  NOT Fault THEN // (5)Maintenance = White Stop
+    Animation_B1 := Animation_B2 := 1;
+    Color_B1 := Color_B2 := 19;
+    
+ELSIF VTD_Mode = 5 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault THEN // (5)Maintenance = White until 33%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 2;
+    Color_B1 := Color_B2 := 19;
+    
+ELSIF VTD_Mode = 5 AND VTD_Speed > 33 AND VTD_Speed <= 66 AND  NOT Fault THEN // (5)Maintenance = White until 66%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 0;
+    Color_B1 := Color_B2 := 19;
+    
+ELSIF VTD_Mode = 5 AND VTD_Speed > 66 AND VTD_Speed <= 100 AND  NOT Fault THEN // (5)Maintenance = White until 100%
+    Animation_B1 := Animation_B2 := 2;
+    Speed_B1 := Speed_B2 := 1;
+    Color_B1 := Color_B2 := 19;
+    
+ELSIF Fault THEN // Fault = Flash Red
+    Animation_B1:= Animation_B2 := 2;
+    Color_B1:=Color_B2 := 1;
+END_IF;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

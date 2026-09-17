@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Stack_Lights_FB" Id="{5eb0a5ab-70bd-402b-8af4-6db71314454e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Stack_Lights_FB
+VAR_INPUT
+	System_Auto:  BOOL;
+	Fault:  BOOL;
+END_VAR
+VAR_OUTPUT
+	Red:  BOOL;
+	Green:  BOOL;
+	Orange:  BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Commands for Stack Light
+
+IF Fault THEN  // Fault = Red
+    Red := "Clock_0.5Hz";
+    Green := FALSE;
+    Orange := FALSE;
+ELSIF System_Auto THEN  // (1)Manual = Yellow
+    Orange := FALSE;
+    Red := FALSE;
+    Green := TRUE;
+ELSIF NOT System_Auto THEN  // (2)Semi-Auto = Blue
+    Green := FALSE;
+    Orange := TRUE;
+    Red := FALSE;
+// ELSIF System_Auto = 3 THEN  // (3)Auto = Green
+//     Green := FALSE;
+//     Red := FALSE;
+//     Yellow := TRUE;
+
+ELSE
+    Green := FALSE;
+    Red := FALSE;
+    Orange := FALSE;
+END_IF;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
