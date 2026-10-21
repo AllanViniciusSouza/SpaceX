@@ -1,0 +1,245 @@
+FUNCTION "Screens"   // FC 12, author 
+
+VAR_TEMP
+   i : UInt;
+   j : UInt;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+REGION MAIN SCREEN
+    REGION AUTOMATIC BUTTON - VTD SYSTEM 1
+        IF "Automatic_Button_VTD_1" THEN
+            FOR #i := 2 TO "Settings_DB".VTD_Sys[1].Highest_Level DO
+                "Control_DB".VTD_Sys[1].Instruction.Mode_Change :=
+                "Control_DB".ECnv_Sys[1].Instruction.Mode_Change :=
+                "Control_DB".LCnv_Sys[1].Cnv_Level[#i].Cnv1.Instruction.Mode_Change :=
+                "Control_DB".LCnv_Sys[1].Cnv_Level[#i].Cnv1.Safety_Stop_Cnrl.Mode := 3;
+                
+                "Control_DB".VTD_Sys[1].Instruction.Enable :=
+                "Control_DB".ECnv_Sys[1].Instruction.Enable :=
+                "Control_DB".LCnv_Sys[1].Cnv_Level[#i].Cnv1.Instruction.Enable := TRUE;
+            END_FOR;
+        END_IF;
+    END_REGION
+    
+    REGION AUTOMATIC BUTTON - VTD SYSTEM 2
+        IF "Automatic_Button_VTD_2" THEN
+            FOR #i := 2 TO "Settings_DB".VTD_Sys[2].Highest_Level DO
+                "Control_DB".VTD_Sys[2].Instruction.Mode_Change :=
+                "Control_DB".ECnv_Sys[2].Instruction.Mode_Change :=
+                "Control_DB".LCnv_Sys[2].Cnv_Level[#i].Cnv1.Instruction.Mode_Change :=
+                "Control_DB".LCnv_Sys[2].Cnv_Level[#i].Cnv1.Safety_Stop_Cnrl.Mode := 3;
+                
+                "Control_DB".VTD_Sys[2].Instruction.Enable :=
+                "Control_DB".ECnv_Sys[2].Instruction.Enable :=
+                "Control_DB".LCnv_Sys[2].Cnv_Level[#i].Cnv1.Instruction.Enable := TRUE;
+            END_FOR;
+        END_IF;
+    END_REGION
+    
+    REGION AUTOMATIC BUTTON - BUFFERs SYSTEM 1
+        IF "Automatic_Button_Buffers_1" THEN
+            FOR #i := 2 TO "Settings_DB".VTD_Sys[1].Highest_Level DO
+                "Control_DB".LCnv_Sys[1].Cnv_Level[#i].Cnv1.Instruction.Mode_Change :=
+                "Control_DB".LCnv_Sys[1].Cnv_Level[#i].Cnv1.Safety_Stop_Cnrl.Mode :=
+                "Control_DB".LCnv_Sys[1].Cnv_Level[#i].Cnv2.Instruction.Mode_Change := 3;
+                
+                "Control_DB".LCnv_Sys[1].Cnv_Level[#i].Cnv1.Instruction.Enable :=
+                "Control_DB".LCnv_Sys[1].Cnv_Level[#i].Cnv2.Instruction.Enable := TRUE;
+            END_FOR;
+        END_IF;
+    END_REGION
+    
+    REGION AUTOMATIC BUTTON - BUFFERs SYSTEM 2
+        IF "Automatic_Button_Buffers_2" THEN
+            FOR #i := 2 TO "Settings_DB".VTD_Sys[2].Highest_Level DO
+                "Control_DB".LCnv_Sys[2].Cnv_Level[#i].Cnv1.Instruction.Mode_Change :=
+                "Control_DB".LCnv_Sys[2].Cnv_Level[#i].Cnv1.Safety_Stop_Cnrl.Mode :=
+                "Control_DB".LCnv_Sys[2].Cnv_Level[#i].Cnv2.Instruction.Mode_Change := 3;
+                
+                "Control_DB".LCnv_Sys[2].Cnv_Level[#i].Cnv1.Instruction.Enable :=
+                "Control_DB".LCnv_Sys[2].Cnv_Level[#i].Cnv2.Instruction.Enable := TRUE;
+            END_FOR;
+        END_IF;
+    END_REGION
+    
+    REGION ALL IN AUTOMATIC - VTD SYSTEM 1
+        "All_In_Automatic_VTD_1" := "Control_DB".VTD_Sys[1].Mode = 3 AND //VTD
+        "Control_DB".ECnv_Sys[1].Mode = 3 AND //ECONVEYOR
+        //CONVEYORS
+        "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Mode = 3 AND
+        //SAFETY STOP
+        "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Mode = 3;
+    END_REGION
+    
+    REGION ALL IN AUTOMATIC - VTD SYSTEM 2
+        "All_In_Automatic_VTD_2" := "Control_DB".VTD_Sys[2].Mode = 3 AND //VTD
+        "Control_DB".ECnv_Sys[2].Mode = 3 AND //ECONVEYOR
+        //CONVEYORS
+        "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Mode = 3 AND
+        //SAFETY STOP
+        "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Mode = 3;
+    END_REGION
+    
+    REGION ALL IN AUTOMATIC - BUFFERs SYSTEM 1
+        "All_In_Automatic_Buffers_1" := 
+        //CONVEYORS
+        "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Mode = 3 AND
+        "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Mode = 3;
+    END_REGION
+    
+    REGION ALL IN AUTOMATIC - BUFFERs SYSTEM 2
+        "All_In_Automatic_Buffers_2" :=
+        //CONVEYORS
+        "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Mode = 3 AND
+        "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Mode = 3;
+    END_REGION
+END_REGION;
+
+REGION SHUTTLES
+    CASE "Screen_DB".Shuttle_Select OF
+        1:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[1].Message.Shuttle_Status;
+        2:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[2].Message.Shuttle_Status;
+        3:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[3].Message.Shuttle_Status;
+        4:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[4].Message.Shuttle_Status;
+        5:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[5].Message.Shuttle_Status;
+        6:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status;
+        7:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[7].Message.Shuttle_Status;
+        8:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[8].Message.Shuttle_Status;
+        9:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[9].Message.Shuttle_Status;
+        10:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[10].Message.Shuttle_Status;
+    END_CASE;
+    
+    //E-STOP
+    IF "Charge_Shuttle_Commands" THEN
+        CASE "Shuttle_Level_Selected" OF
+            2:
+                "Shuttle_Level_EStop" := "L2_Estop";
+            3:
+                "Shuttle_Level_EStop" := "L3_Estop";
+            4:
+                "Shuttle_Level_EStop" := "L4_Estop";
+            5:
+                "Shuttle_Level_EStop" := "L5_Estop";
+            6:
+                "Shuttle_Level_EStop" := "L6_Estop";
+        END_CASE;
+    ELSE
+        CASE "Shuttle_Level_Selected" OF
+            2:
+                "L2_Estop" := "Shuttle_Level_EStop";
+            3:
+                "L3_Estop" := "Shuttle_Level_EStop";
+            4:
+                "L4_Estop" := "Shuttle_Level_EStop";
+            5:
+                "L5_Estop" := "Shuttle_Level_EStop";
+            6:
+                "L6_Estop" := "Shuttle_Level_EStop";
+        END_CASE;
+    END_IF;
+END_REGION
+
+REGION ORDER TABLE
+    //CHARGE OT DATA
+    IF "Screen_DB".Charge_OT THEN
+        CASE "Main_OrderTable_Selected" OF
+            1:
+                OT_Charge_Commands("Auto_Test_1_DB");
+            2:
+                OT_Charge_Commands("Auto_Test_2_DB");
+        END_CASE;
+        "T_Charge_OT".TON(IN := TRUE,
+                          PT := T#1000ms);
+        IF "T_Charge_OT".Q THEN
+            "T_Charge_OT".TON(IN := FALSE,
+                              PT := T#0ms);
+            "Screen_DB".Charge_OT := FALSE;
+        END_IF;
+    END_IF;
+    
+    IF NOT "Screen_DB".Charge_OT THEN
+        "T_Charge_OT".TON(IN := FALSE,
+                          PT := T#0ms);
+        
+        //Feed HMI data
+        CASE "Main_OrderTable_Selected" OF
+            1:
+                "Clear_OT_VTD(1)" := "Clear_OT";
+                FC_Orders(Sys := 1,
+                            System := "System_VTD_DB_1",
+                            Auto_Test := "Auto_Test_1_DB",
+                            VTD_CurrentOrder := "Order_Table_VTD_FB_DB_1".VTD_CurrentOrder,
+                            Pallet_InOut_CurrentOrder := "Order_Table_VTD_FB_DB_1".Pallet_InOut_CurrentOrder,
+                            Shuttle_InOut_CurrentOrder := "Order_Table_VTD_FB_DB_1".Shuttle_InOut_CurrentOrder,
+                            System_Busy := "System_1_Busy");
+                
+            2:
+                "Clear_OT_VTD(2)" := "Clear_OT";
+                FC_Orders(Sys := 2,
+                            System := "System_VTD_DB_2",
+                            Auto_Test := "Auto_Test_2_DB",
+                            VTD_CurrentOrder := "Order_Table_VTD_FB_DB_2".VTD_CurrentOrder,
+                            Pallet_InOut_CurrentOrder := "Order_Table_VTD_FB_DB_2".Pallet_InOut_CurrentOrder,
+                            Shuttle_InOut_CurrentOrder := "Order_Table_VTD_FB_DB_2".Shuttle_InOut_CurrentOrder,
+                            System_Busy := "System_2_Busy");
+                
+            3:
+                "Clear_OT_Buffers(1)" := "Clear_OT";
+                FC_Orders(Sys := 1,
+                            System := "System_Buffers_DB_1",
+                            Auto_Test := "Auto_Test_1_DB",
+                            VTD_CurrentOrder := "Order_Table_VTD_FB_DB_2".VTD_CurrentOrder,
+                            Pallet_InOut_CurrentOrder := "Order_Table_VTD_FB_DB_2".Pallet_InOut_CurrentOrder,
+                            Shuttle_InOut_CurrentOrder := "Order_Table_VTD_FB_DB_2".Shuttle_InOut_CurrentOrder,
+                            System_Busy := "System_2_Busy");
+        END_CASE;
+    END_IF;
+END_REGION
+
+"HMI_DB".Password := '12345';
+
+END_FUNCTION

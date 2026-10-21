@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="TBCnv_Control_DUT" Id="{13304b57-406b-42b0-8a25-07a8bd5881bf}">
+    <Declaration><![CDATA[// Internal state of the turntable roller conveyor (Control.TBCnv).
+// Same layout as ECnv_Control_DUT. Drive: SEW MOVIKIT Velocity Drive, 5 PD.
+TYPE TBCnv_Control_DUT :
+STRUCT
+	Mode:	UINT;	// 0 Disabled, 1 Manual, 2 Semi-Auto, 3 Auto, 5 Maintenance
+	Error:	BOOL;
+	Warning:	UINT;
+	Enabled:	BOOL;
+	Stopped:	BOOL;
+	Done:	BOOL;
+	Running:	BOOL;
+	Ready_For_Task:	BOOL;
+	Current_Task_Type:	UINT;
+	Current_Task_ID:	UINT;
+	Cnv_Occupied:	BOOL;
+	SM_State:	UINT;	// State machine value
+	Motor:	Cnv_Motor_DUT;
+	Instruction:	Cnv_Instruction_DUT;
+	Inputs:	Cnv_Inputs_DUT;	// Forward/Backward_Sensor; VFD_* words not used with SEW
+	Cnv_Errors:	Cnv_Errors_DUT;
+
+	// Interlock with Control.Turn_Table: turntable rotation and turntable roller never run at the same time
+	Interlock:	Cnv_Interlock_DUT;	// Run_Request / Motor_Stopped by this FB, Run_Allowed by the group FB_Conveyor_MotorInterlock
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

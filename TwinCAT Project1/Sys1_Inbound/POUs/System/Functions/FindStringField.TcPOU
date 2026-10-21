@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FindStringField" Id="{abf8041e-2232-49e9-814e-c0a2e6047aeb}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FindStringField : STRING(254)
+VAR_INPUT
+    FieldName : STRING(254);
+    JsonStr : STRING(254);
+END_VAR
+VAR
+    pattern : STRING(254);
+    character : STRING(1);
+    foundPos : INT;
+    cursor : INT;
+    valueStart : INT;
+    length : INT;
+    scan : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Adapted from Reference_Project/Barcode_Station_FB.scl.
+// Extract a plain quoted field from the flat SICK payload format.
+// Whitespace around ':' is accepted. Escaped values are rejected.
+// This is not a general-purpose JSON validator or MQTT parser.
+FindStringField := '';
+IF (LEN(FieldName) = 0) OR (LEN(FieldName) > 250) THEN
+    RETURN;
+END_IF;
+pattern := CONCAT('"', FieldName);
+pattern := CONCAT(pattern, '"');
+foundPos := FIND(JsonStr, pattern);
+IF foundPos = 0 THEN
+    RETURN;
+END_IF;
+length := LEN(JsonStr);
+cursor := foundPos + LEN(pattern);
+// Skip JSON whitespace before the colon, with a bounded scan.
+FOR scan := cursor TO length DO
+    character := MID(JsonStr, 1, scan);
+    IF (character <> ' ') AND (character <> '$T') AND
+       (character <> '$R') AND (character <> '$N') THEN
+        EXIT;
+    END_IF;
+END_FOR;
+IF scan > length THEN
+    RETURN;
+END_IF;
+IF MID(JsonStr, 1, scan) <> ':' THEN
+    RETURN;
+END_IF;
+cursor := scan + 1;
+FOR scan := cursor TO length DO
+    character := MID(JsonStr, 1, scan);
+    IF (character <> ' ') AND (character <> '$T') AND
+       (character <> '$R') AND (character <> '$N') THEN
+        EXIT;
+    END_IF;
+END_FOR;
+IF scan > length THEN
+    RETURN;
+END_IF;
+IF MID(JsonStr, 1, scan) <> '"' THEN
+    RETURN;
+END_IF;
+valueStart := scan + 1;
+FOR scan := valueStart TO length DO
+    character := MID(JsonStr, 1, scan);
+    IF (character = '$5C') OR (character = '$R') OR
+       (character = '$N') OR (character = '$T') THEN
+        RETURN;
+    END_IF;
+    IF character = '"' THEN
+        IF scan > valueStart THEN
+            FindStringField := MID(JsonStr, scan - valueStart, valueStart);
+        END_IF;
+        RETURN;
+    END_IF;
+END_FOR;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

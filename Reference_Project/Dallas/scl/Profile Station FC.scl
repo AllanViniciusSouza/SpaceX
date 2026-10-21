@@ -1,0 +1,96 @@
+FUNCTION "Profile Station FC"   // FC 32, author 
+
+VAR_INPUT
+   MaxLength : Real;
+   ConveyorSpeed_mm_s : Real;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+"R_TRIG_DB_26"(CLK:="Control_DB"."Profiling Station".Start);
+
+ "R_TRIG_DB_27"(CLK:=NOT "Profile Station - Cross 1" AND NOT "Profile Station - Cross 2",Q => "SensorUp");
+
+ "IEC_Timer_0_DB_3".TON(IN:="Profile Station - Cross 1" AND "Profile Station - Cross 2",
+                        PT:=T#2s,Q=>"SensorDown");
+ 
+
+CASE "State_PS" OF
+        
+        //-------------------------------------------------
+        // 0 - IDLE
+        //-------------------------------------------------
+    0:
+        "Control_DB"."Profiling Station".Error_ID := 0;
+        "Control_DB"."Profiling Station".Ready := TRUE;
+        "Control_DB"."Profiling Station".Running := FALSE;
+        IF "R_TRIG_DB_26".Q THEN
+            "Control_DB"."Profiling Station".Ready := FALSE;
+            "Control_DB"."Profiling Station".Done := FALSE;
+            "Control_DB"."Profiling Station".Valid := FALSE;
+            "Control_DB"."Profiling Station".OverWidth := FALSE;
+            "Control_DB"."Profiling Station".OverHeight := FALSE;
+            "Control_DB"."Profiling Station".OverLength := FALSE;
+            "Control_DB"."Profiling Station".Error_ID := 0;
+            "Control_DB"."Profiling Station".Running := TRUE;
+            "State_PS" := 10;
+        END_IF;
+        
+    10:
+        IF "SensorUp" THEN
+            "State_PS" := 20;
+        END_IF;
+        
+    20:
+        "LengthTimer".TON(IN := TRUE,
+                          PT := T#60S);
+        
+        IF NOT "Profile Station - Left" OR NOT "Profile Station - Right" THEN
+            "Control_DB"."Profiling Station".OverWidth := TRUE;
+        END_IF;
+        
+        IF NOT "Profile Station - High" THEN
+            "Control_DB"."Profiling Station".OverHeight := TRUE;
+        END_IF;
+        
+        IF "SensorDown" THEN
+            "MeasuredTime_s" := DINT_TO_REAL(TIME_TO_DINT("LengthTimer".ET)) / 1000.0;
+            "CalculatedLength" := "MeasuredTime_s" * #ConveyorSpeed_mm_s;
+            
+            // IF "CalculatedLength" > #MaxLength THEN
+            //     "Control_DB"."Profiling Station".OverLength := TRUE;
+            // END_IF;
+            
+            // Resultado final
+            IF "Control_DB"."Profiling Station".OverWidth OR "Control_DB"."Profiling Station".OverHeight OR "Control_DB"."Profiling Station".OverLength THEN
+                "Control_DB"."Profiling Station".Valid := FALSE;
+                "Control_DB"."Profiling Station".Error_ID.%X0 := 1;
+            ELSE
+                "Control_DB"."Profiling Station".Valid := TRUE;
+                "Control_DB"."Profiling Station".Error_ID := 0;
+            END_IF;
+            
+            "LengthTimer".TON(IN := FALSE,
+                              PT := T#0S);
+            "State_PS" := 100;
+        END_IF;
+        
+    100:
+        "Control_DB"."Profiling Station".Running := FALSE;
+            "Control_DB"."Profiling Station".Done := TRUE;
+            "State_PS" := 0;
+            
+       
+    END_CASE;
+    
+    "IEC_Timer_0_DB_12".TON(IN:="Control_DB"."Profiling Station".Running,
+                            PT:=t#30s);
+    
+    IF "IEC_Timer_0_DB_12".Q THEN
+        "Control_DB"."Profiling Station".Valid := FALSE;
+        "Control_DB"."Profiling Station".Error_ID := 1;
+        "State_PS" := 100;
+    END_IF;
+    
+
+END_FUNCTION

@@ -1,0 +1,658 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Order_Table_FB" Id="{a4b52a41-00ab-556b-aecc-7b73b8874ec7}" SpecialFunc="None">
+    <Declaration><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/Screens.scl, object Order_Table_FB.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+FUNCTION_BLOCK Order_Table_FB
+// 
+//    VAR_INPUT
+//       System_Selected   : Bool;
+//       AutoMan_Switch : Bool;
+//       CurrentTime   : String;
+//       CurrentDTL   : DTL;
+//       Watchdog : Watchdog_Settings_UDT;
+//       OPC_UA_State_VTD : UInt;
+//       OPC_UA_State_Shuttle : UInt;
+//       OPC_UA_State_CNV : UInt;
+//       Clear_OrderTable : Bool;
+//    END_VAR
+// 
+//    VAR_IN_OUT
+//       VTD : VTD_Control;
+//       Extrator_Conveyor : ECnv_Control;
+//       Cnv_Buffer_11 : Buffer_Cnv_Control;
+//       Cnv_Buffer_21 : Buffer_Cnv_Control;
+//       Cnv_Buffer_31 : Buffer_Cnv_Control;
+//       Cnv_Buffer_41 : Buffer_Cnv_Control;
+//       Cnv_Buffer_51 : Buffer_Cnv_Control;
+//       Cnv_Buffer_61 : Buffer_Cnv_Control;
+//       Cnv_Buffer_71 : Buffer_Cnv_Control;
+//       Cnv_Buffer_81 : Buffer_Cnv_Control;
+//       Cnv_Buffer_12 : Buffer_Cnv_Control;
+//       Cnv_Buffer_22 : Buffer_Cnv_Control;
+//       Cnv_Buffer_32 : Buffer_Cnv_Control;
+//       Cnv_Buffer_42 : Buffer_Cnv_Control;
+//       Cnv_Buffer_52 : Buffer_Cnv_Control;
+//       Cnv_Buffer_62 : Buffer_Cnv_Control;
+//       Cnv_Buffer_72 : Buffer_Cnv_Control;
+//       Cnv_Buffer_82 : Buffer_Cnv_Control;
+//       System : System_UDT;
+//       Control_OPC_Ua : WMS_OPC_UA;
+//    END_VAR
+// 
+//    VAR
+//       VTD_CurrentOrder   : UDInt := 0;
+//       Pallet_InOut_CurrentOrder : UDInt;
+//       Shuttle_InOut_CurrentOrder : UDInt;
+//       VTDDoneRTrig   : R_TRIG;
+//       Pallet_InOut_RTrig   : R_TRIG;
+//       Shuttle_InOut_RTrig   : R_TRIG;
+//       PalletRefused_RTrig   : R_TRIG;
+//       ErrorRTrig   : R_TRIG;
+//       CancelRTrig   : R_TRIG;
+//       PauseRTrig   : R_TRIG;
+//       ResumeRTrig   : R_TRIG;
+//       Clear_Store   : R_TRIG;
+//       Clear_Retrieve   : R_TRIG;
+//       Canceling : Bool;
+//       VTD_WatchdogTimer   : TON;
+//       Pallet_InOut_WatchdogTimer   : TON;
+//       Shuttle_InOut_WatchdogTimer   : TON;
+//       VTD_WatchdogStart : Bool;
+//       Pallet_InOut_WatchdogStart : Bool;
+//       Shuttle_InOut_WatchdogStart : Bool;
+//       F_AutoMode   : F_TRIG;
+//    END_VAR
+// 
+//    VAR_TEMP
+//       i : DInt;
+//       n : DInt;
+//       EmptyOrder : OrderTable_UDT;
+//       MaxRunningOrderNo : UInt;
+//    END_VAR
+// 
+//    VAR CONSTANT
+//       VTD_DEVICE : String := 'VTD';
+//       PALLET_INOUT_DEVICE : String := 'Pallet In Out';
+//       SHUTTLE_INOUT_DEVICE : String := 'Shuttle In Out';
+//       RUNNING_STATUS : String := 'Running';
+//       COMPLETED_STATUS : String := 'Completed';
+//       QUEUED_STATUS : String := 'Queued';
+//       PALLET_REFUSED_STATUS : String := 'Pallet Refused';
+//       ERROR_STATUS : String := 'Error';
+//       CANCELED_STATUS : String := 'Canceled';
+//       PAUSED_STATUS : String := 'Paused';
+//       ORDER_REFUSED : String := 'Refused';
+//       ERROR_CANCELED_STATUS : String := 'Error\Cancel';
+//    END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/Screens.scl, object Order_Table_FB.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+// IF System.OrderTable[1].OPC_Control.Task_Type = 1 THEN
+// 	    System.OrderTable[1].Device := 'VTD';
+// 	ELSIF System.OrderTable[1].OPC_Control.Task_Type = 4 OR System.OrderTable[1].OPC_Control.Task_Type = 5  THEN
+// 	    System.OrderTable[1].Device := 'Pallet In Out';
+// 	ELSIF System.OrderTable[1].OPC_Control.Task_Type = 2 OR System.OrderTable[1].OPC_Control.Task_Type = 3 THEN
+// 	    System.OrderTable[1].Device := 'Shuttle In Out';
+// 	ELSE
+// 	    System.OrderTable[1].Device := '';
+// 	END_IF;
+// 
+// 	    IF System.OrderSent THEN
+// 
+// 	        FOR i := 0 TO 20 DO
+// 	            IF System.StepTable[i].OrderNo <> 0
+// 	                AND System.StepTable[i].StepNo <> 0
+// 	                AND System.StepTable[i].PlaceTime <> ''
+// 	            THEN
+// 	                System.StepTable[i].Status := QUEUED_STATUS;
+// 	                n += 1;
+// 	            ELSE
+// 	                EXIT;
+// 	            END_IF;
+// 	        END_FOR;
+// 	        IF n > 0 THEN
+// 
+// 	            FOR i := 99 TO (n + 1) BY -1 DO
+// 	                System.OrderTable[i] := System.OrderTable[i - n];
+// 	            END_FOR;
+// 
+// 	            FOR i := 0 (*1*) TO n DO
+// 	                System.OrderTable[n - i (*+ 1*)] := System.StepTable[i];
+// 	            END_FOR;
+// 
+// 	            FOR i := 0 (*1*) TO 20 DO
+// 	                System.StepTable[i] := EmptyOrder;
+// 	            END_FOR;
+// 	            System.CurrentOrder += n;
+// 
+// 
+// 	            IF VTD_CurrentOrder <> 0 THEN
+// 	                VTD_CurrentOrder += n;
+// 	            END_IF;
+// 
+// 
+// 	            IF Pallet_InOut_CurrentOrder <> 0 THEN
+// 	                Pallet_InOut_CurrentOrder += n;
+// 	            END_IF;
+// 
+// 
+// 	            IF Shuttle_InOut_CurrentOrder <> 0 THEN
+// 	                Shuttle_InOut_CurrentOrder += n;
+// 	            END_IF;
+// 
+// 	                    END_IF;
+// 	        System.OrderSent := FALSE;
+// 	    END_IF;
+// 
+// 
+// 	    IF System.Auto_Man THEN
+// 
+// 	        VTD.Instruction.Enable :=
+// 	        Extrator_Conveyor.Enabled :=
+// 	        Cnv_Buffer_11.Instruction.Enable :=
+// 	        Cnv_Buffer_21.Instruction.Enable :=
+// 	        Cnv_Buffer_31.Instruction.Enable :=
+// 	        Cnv_Buffer_41.Instruction.Enable :=
+// 	        Cnv_Buffer_51.Instruction.Enable :=
+// 	        Cnv_Buffer_61.Instruction.Enable :=
+// 	        Cnv_Buffer_71.Instruction.Enable :=
+// 	        Cnv_Buffer_81.Instruction.Enable :=
+// 	        Cnv_Buffer_12.Instruction.Enable :=
+// 	        Cnv_Buffer_22.Instruction.Enable :=
+// 	        Cnv_Buffer_32.Instruction.Enable :=
+// 	        Cnv_Buffer_42.Instruction.Enable :=
+// 	        Cnv_Buffer_52.Instruction.Enable :=
+// 	        Cnv_Buffer_62.Instruction.Enable :=
+// 	        Cnv_Buffer_72.Instruction.Enable :=
+// 	        Cnv_Buffer_82.Instruction.Enable := TRUE;
+// 	    END_IF;
+// 
+// 	       F_AutoMode(CLK:=System.Auto_Man);
+// 
+// 	       IF F_AutoMode.Q THEN
+// 	           VTD.Instruction.Enable :=
+// 	           Extrator_Conveyor.Enabled :=
+// 	           Cnv_Buffer_11.Instruction.Enable :=
+// 	           Cnv_Buffer_21.Instruction.Enable :=
+// 	           Cnv_Buffer_31.Instruction.Enable :=
+// 	           Cnv_Buffer_41.Instruction.Enable :=
+// 	           Cnv_Buffer_51.Instruction.Enable :=
+// 	           Cnv_Buffer_61.Instruction.Enable :=
+// 	           Cnv_Buffer_71.Instruction.Enable :=
+// 	           Cnv_Buffer_81.Instruction.Enable :=
+// 	           Cnv_Buffer_12.Instruction.Enable :=
+// 	           Cnv_Buffer_22.Instruction.Enable :=
+// 	           Cnv_Buffer_32.Instruction.Enable :=
+// 	           Cnv_Buffer_42.Instruction.Enable :=
+// 	           Cnv_Buffer_52.Instruction.Enable :=
+// 	           Cnv_Buffer_62.Instruction.Enable :=
+// 	           Cnv_Buffer_72.Instruction.Enable :=
+// 	           Cnv_Buffer_82.Instruction.Enable := FALSE;
+// 	       END_IF;
+// 
+// 
+// 	    IF System.OrderTable[1].StepNo <> 0
+// 	        AND System.OrderTable[1].Device = VTD_DEVICE
+// 	        AND System.OrderTable[1].Status = QUEUED_STATUS
+// 	        AND NOT (OPC_UA_State_VTD > 0 AND OPC_UA_State_VTD < 400)
+// 	        AND NOT (OPC_UA_State_CNV > 0 AND OPC_UA_State_CNV < 400)
+// 	        AND NOT (OPC_UA_State_Shuttle > 0 AND OPC_UA_State_Shuttle < 400)
+// 	        AND NOT System.Error
+// 	        AND NOT Canceling
+// 	    THEN
+// 	        VTD_CurrentOrder := 1;
+// 	    END_IF;
+// 	    IF System.OrderTable[VTD_CurrentOrder].StepNo <> 0
+// 	        AND System.OrderTable[VTD_CurrentOrder].Device = VTD_DEVICE
+// 	        AND System.OrderTable[VTD_CurrentOrder].Status = QUEUED_STATUS
+// 	        AND NOT (OPC_UA_State_VTD > 0 AND OPC_UA_State_VTD < 400)
+// 	        AND NOT (OPC_UA_State_CNV > 0 AND OPC_UA_State_CNV < 400)
+// 	        AND NOT (OPC_UA_State_Shuttle > 0 AND OPC_UA_State_Shuttle < 400)
+// 	        AND NOT System.Error
+// 	        AND NOT Canceling
+// 	    THEN
+// 
+// 
+// 
+// 
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available:= TRUE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type:= System.OrderTable[VTD_CurrentOrder].OPC_Control.Task_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type:= System.OrderTable[VTD_CurrentOrder].OPC_Control.Pallet_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID:=System.OrderTable[VTD_CurrentOrder].OPC_Control.Task_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata:=System.OrderTable[VTD_CurrentOrder].OPC_Control.Task_Metadata;
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location:= System.OrderTable[VTD_CurrentOrder].OPC_Control.Destination_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Weight := System.OrderTable[VTD_CurrentOrder].OPC_Control.Pallet_Weight;
+// 	        VTD_WatchdogStart := TRUE;
+// 	    END_IF;
+// 
+// 
+// 	    IF VTD.Running AND System.Auto_Man THEN
+// 	        System.OrderTable[VTD_CurrentOrder].Status := RUNNING_STATUS;
+// 
+// 	    END_IF;
+// 
+// 
+// 	    IF Canceling AND NOT VTD.Running AND VTD_CurrentOrder <> 0 THEN
+// 	        System.OrderTable[VTD_CurrentOrder].Status := CANCELED_STATUS;
+// 	        System.OrderTable[VTD_CurrentOrder].CompleteTime := CurrentTime;
+// 	        VTD_CurrentOrder := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := FALSE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := ' ';
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := '';
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Weight := 0;
+// 	    END_IF;
+// 
+// 
+// 	    IF VTD.Error THEN
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := FALSE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := ' ';
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := '';
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Weight := 0;
+// 	        System.OrderTable[VTD_CurrentOrder].ErrorID := VTD.VTD_Errors.Error_Word_1;
+// 	    END_IF;
+// 
+// 
+// 	    VTDDoneRTrig(CLK := Control.WCS_OPC_Control[System.Id].Movement_Request_Complete );
+// 	    IF VTDDoneRTrig.Q THEN
+// 	        VTD_WatchdogStart := FALSE;
+// 	        System.OrderTable[VTD_CurrentOrder].Status := COMPLETED_STATUS;
+// 	        System.OrderTable[VTD_CurrentOrder].CompleteTime := CurrentTime;
+// 	        VTD_CurrentOrder := 0;
+// 	    END_IF;
+// 
+// 
+// 	    IF System.OrderTable[1].StepNo <> 0
+// 	        AND System.OrderTable[1].Device = PALLET_INOUT_DEVICE
+// 	        AND System.OrderTable[1].Status = QUEUED_STATUS
+// 	        AND NOT (OPC_UA_State_CNV > 0 AND OPC_UA_State_CNV < 400)
+// 	        AND NOT (OPC_UA_State_VTD > 0 AND OPC_UA_State_VTD < 400)
+// 	        AND NOT (OPC_UA_State_Shuttle > 0 AND OPC_UA_State_Shuttle < 400)
+// 	        AND NOT System.Error
+// 	        AND NOT Canceling
+// 	    THEN
+// 	        Pallet_InOut_CurrentOrder := 1;
+// 	    END_IF;
+// 	    IF System.OrderTable[Pallet_InOut_CurrentOrder].StepNo <> 0
+// 	        AND System.OrderTable[Pallet_InOut_CurrentOrder].Device = PALLET_INOUT_DEVICE
+// 	        AND System.OrderTable[Pallet_InOut_CurrentOrder].Status = QUEUED_STATUS
+// 	        AND NOT (OPC_UA_State_CNV > 0 AND OPC_UA_State_CNV < 400)
+// 	        AND NOT (OPC_UA_State_VTD > 0 AND OPC_UA_State_VTD < 400)
+// 	        AND NOT (OPC_UA_State_Shuttle > 0 AND OPC_UA_State_Shuttle < 400)
+// 	        AND NOT System.Error
+// 	        AND NOT Canceling
+// 	    THEN
+// 
+// 
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := TRUE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_Metadata;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Source_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Destination_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Alignment := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Alignment;
+// 	        Pallet_InOut_WatchdogStart := TRUE;
+// 	    END_IF;
+// 
+// 
+// 
+// 
+// 
+// 	    IF OPC_UA_State_CNV > 0 AND OPC_UA_State_CNV < 400
+// 	        AND System.Auto_Man THEN
+// 	        System.OrderTable[Pallet_InOut_CurrentOrder].Status := RUNNING_STATUS;
+// 	    END_IF;
+// 
+// 
+// 	    IF Canceling AND NOT (Extrator_Conveyor.Running OR Cnv_Buffer_11.Running OR Cnv_Buffer_21.Running OR Cnv_Buffer_31.Running OR Cnv_Buffer_41.Running OR Cnv_Buffer_51.Running OR Cnv_Buffer_61.Running OR Cnv_Buffer_71.Running OR Cnv_Buffer_81.Running
+// 	        OR Cnv_Buffer_12.Running OR Cnv_Buffer_22.Running OR Cnv_Buffer_32.Running OR Cnv_Buffer_42.Running OR Cnv_Buffer_52.Running OR Cnv_Buffer_62.Running OR Cnv_Buffer_72.Running OR Cnv_Buffer_82.Running)
+// 	        AND Pallet_InOut_CurrentOrder <> 0 THEN
+// 	        System.OrderTable[Pallet_InOut_CurrentOrder].Status := CANCELED_STATUS;
+// 	        System.OrderTable[Pallet_InOut_CurrentOrder].CompleteTime := CurrentTime;
+// 	        Pallet_InOut_CurrentOrder := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := FALSE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_Metadata;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Source_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Destination_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Alignment := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Alignment;
+// 	    END_IF;
+// 
+// 
+// 	    IF (Extrator_Conveyor.Error OR Cnv_Buffer_11.Error OR Cnv_Buffer_21.Error OR Cnv_Buffer_31.Error OR Cnv_Buffer_41.Error OR Cnv_Buffer_51.Error OR Cnv_Buffer_61.Error OR Cnv_Buffer_71.Error OR Cnv_Buffer_81.Error
+// 	        OR Cnv_Buffer_12.Error OR Cnv_Buffer_22.Error OR Cnv_Buffer_32.Error OR Cnv_Buffer_42.Error OR Cnv_Buffer_52.Error OR Cnv_Buffer_62.Error OR Cnv_Buffer_72.Error OR Cnv_Buffer_82.Error) THEN
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := FALSE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_Metadata;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Source_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Destination_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Alignment := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Alignment;
+// 	        System.OrderTable[Pallet_InOut_CurrentOrder].Status := ERROR_STATUS;
+// 
+// 
+// 
+// 	    END_IF;
+// 
+// 
+// 	    Pallet_InOut_RTrig(CLK := Control.WCS_OPC_Control[System.Id].Movement_Request_Complete);
+// 	    IF Pallet_InOut_RTrig.Q THEN
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := FALSE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Task_Metadata;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Source_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Destination_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Alignment := System.OrderTable[Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Alignment;
+// 	        System.OrderTable[Pallet_InOut_CurrentOrder].Status := COMPLETED_STATUS;
+// 	        System.OrderTable[Pallet_InOut_CurrentOrder].CompleteTime := CurrentTime;
+// 	        Pallet_InOut_CurrentOrder := 0;
+// 	    END_IF;
+// 
+// 
+// 	    IF System.OrderTable[1].StepNo <> 0
+// 	        AND System.OrderTable[1].Device = SHUTTLE_INOUT_DEVICE
+// 	        AND System.OrderTable[1].Status = QUEUED_STATUS
+// 	        AND NOT (OPC_UA_State_Shuttle > 0 AND OPC_UA_State_Shuttle < 400)
+// 	        AND NOT (OPC_UA_State_CNV > 0 AND OPC_UA_State_CNV < 400)
+// 	        AND NOT (OPC_UA_State_VTD > 0 AND OPC_UA_State_VTD < 400)
+// 	        AND NOT System.Error
+// 	        AND NOT Canceling
+// 	    THEN
+// 	        Shuttle_InOut_CurrentOrder := 1;
+// 	    END_IF;
+// 	    IF System.OrderTable[Shuttle_InOut_CurrentOrder].StepNo <> 0
+// 	        AND System.OrderTable[Shuttle_InOut_CurrentOrder].Device = SHUTTLE_INOUT_DEVICE
+// 	        AND System.OrderTable[Shuttle_InOut_CurrentOrder].Status = QUEUED_STATUS
+// 	        AND NOT (OPC_UA_State_Shuttle > 0 AND OPC_UA_State_Shuttle < 400)
+// 	        AND NOT (OPC_UA_State_CNV > 0 AND OPC_UA_State_CNV < 400)
+// 	        AND NOT (OPC_UA_State_VTD > 0 AND OPC_UA_State_VTD < 400)
+// 	        AND NOT System.Error
+// 	        AND NOT Canceling
+// 	    THEN
+// 
+// 
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := TRUE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_Metadata;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Shuttle_ID := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Shuttle_Loaded := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_Loaded;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Source_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Destination_Location;
+// 	        Shuttle_InOut_WatchdogStart := TRUE;
+// 	    END_IF;
+// 
+// 
+// 	    IF OPC_UA_State_Shuttle > 0 AND OPC_UA_State_Shuttle < 400 AND System.Auto_Man THEN
+// 	        System.OrderTable[Shuttle_InOut_CurrentOrder].Status := RUNNING_STATUS;
+// 	    END_IF;
+// 
+// 
+// 	    IF Canceling AND NOT (VTD.Running) AND Shuttle_InOut_CurrentOrder <> 0 THEN
+// 	        System.OrderTable[Shuttle_InOut_CurrentOrder].Status := CANCELED_STATUS;
+// 	        System.OrderTable[Shuttle_InOut_CurrentOrder].CompleteTime := CurrentTime;
+// 	        Shuttle_InOut_CurrentOrder := 0;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := FALSE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_Metadata;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Shuttle_ID := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Shuttle_Loaded := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_Loaded;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Source_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Destination_Location;
+// 	    END_IF;
+// 
+// 
+// 	    IF OPC_UA_State_Shuttle = 400 THEN
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := FALSE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_Metadata;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Shuttle_ID := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Shuttle_Loaded := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_Loaded;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Source_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Destination_Location;
+// 	        System.OrderTable[Shuttle_InOut_CurrentOrder].Status := ERROR_STATUS;
+// 	        System.OrderTable[Shuttle_InOut_CurrentOrder].ErrorID := (VTD.VTD_Errors.Error_Word_3);
+// 	    END_IF;
+// 
+// 
+// 	    Shuttle_InOut_RTrig(CLK := VTD.Shuttle_Interlock.Interlock_Complete);
+// 	    IF Shuttle_InOut_RTrig.Q THEN
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := FALSE;
+// 	        Control.WCS_OPC_Control[System.Id].Task_ID := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Metadata := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_Metadata;
+// 	        Control.WCS_OPC_Control[System.Id].Pallet_Type := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Type := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Task_Type;
+// 	        Control.WCS_OPC_Control[System.Id].Shuttle_ID := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_ID;
+// 	        Control.WCS_OPC_Control[System.Id].Shuttle_Loaded := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_Loaded;
+// 	        Control.WCS_OPC_Control[System.Id].Source_Location := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Source_Location;
+// 	        Control.WCS_OPC_Control[System.Id].Destination_Location := System.OrderTable[Shuttle_InOut_CurrentOrder].OPC_Control.Destination_Location;
+// 
+// 	        Shuttle_InOut_WatchdogStart := FALSE;
+// 	        System.OrderTable[Shuttle_InOut_CurrentOrder].Status := COMPLETED_STATUS;
+// 	        System.OrderTable[Shuttle_InOut_CurrentOrder].CompleteTime := CurrentTime;
+// 	        Shuttle_InOut_CurrentOrder := 0;
+// 	    END_IF;
+// 
+// 
+// 	    MaxRunningOrderNo := MAX(IN1 := VTD_CurrentOrder, IN2 := Pallet_InOut_CurrentOrder,
+// 	                              IN3 := Shuttle_InOut_CurrentOrder, IN4 := System.CurrentOrder);
+// 
+// 
+// 	    ErrorRTrig(CLK := System.Error);
+// 	    PauseRTrig(CLK := System.PauseOrders OR NOT System.Auto_Man);
+// 	    IF ErrorRTrig.Q OR PauseRTrig.Q THEN
+// 	        System.PauseOrders := FALSE;
+// 	        System.Paused := MaxRunningOrderNo > 0;
+// 	        IF System.Paused THEN
+// 	            FOR i := 1 TO UDINT_TO_DINT(MaxRunningOrderNo) DO
+// 	                IF System.OrderTable[i].Status = '' THEN
+// 	                    EXIT;
+// 	                ELSIF System.OrderTable[i].Status = QUEUED_STATUS THEN
+// 	                    System.OrderTable[i].Status := PAUSED_STATUS;
+// 	                ELSIF System.OrderTable[i].Status = RUNNING_STATUS AND NOT System.Auto_Man THEN
+// 	                    System.OrderTable[i].Status := CANCELED_STATUS;
+// 	                END_IF;
+// 	            END_FOR;
+// 	        END_IF;
+// 	    END_IF;
+// 	    IF System.Paused AND MaxRunningOrderNo = 0 THEN
+// 	        System.Paused := FALSE;
+// 	    END_IF;
+// 
+// 
+// 	    CancelRTrig(CLK := System.CancelOrders);
+// 	    (*WeighingStation.Cancel := ProfileStation.Cancel:= CancelRTrig.Q*);
+// 	    IF CancelRTrig.Q THEN
+// 	        Canceling := TRUE;
+// 	        System.CancelOrders := FALSE;
+// 	        System.Paused := FALSE;
+// 	        FOR i := 1 TO UDINT_TO_DINT(MaxRunningOrderNo) DO
+// 	            IF System.OrderTable[i].Status = '' THEN
+// 	                CONTINUE;
+// 	            ELSIF System.OrderTable[i].Status = PAUSED_STATUS
+// 	                OR System.OrderTable[i].Status = QUEUED_STATUS
+// 	            THEN
+// 	                System.OrderTable[i].Status := CANCELED_STATUS;
+// 	                System.OrderTable[i].CompleteTime := CurrentTime;
+// 	            ELSIF System.OrderTable[i].Status = ERROR_STATUS
+// 	            THEN
+// 	                System.OrderTable[i].Status := ERROR_CANCELED_STATUS;
+// 	                System.OrderTable[i].CompleteTime := CurrentTime;
+// 	            END_IF;
+// 	        END_FOR;
+// 	        System.CurrentOrder := 0;
+// 	    END_IF;
+// 	    IF Canceling AND NOT (VTD.Running OR Extrator_Conveyor.Running OR Cnv_Buffer_11.Running OR Cnv_Buffer_21.Running OR Cnv_Buffer_41.Running) THEN
+// 	        Canceling := FALSE;
+// 	        VTD_CurrentOrder := Pallet_InOut_CurrentOrder:= Shuttle_InOut_CurrentOrder := 0;
+// 	    END_IF;
+// 
+// 
+// 	    ResumeRTrig(CLK := System.ResumeOrders);
+// 	    IF ResumeRTrig.Q THEN
+// 	        System.ResumeOrders := FALSE;
+// 	        System.CurrentOrder := MaxRunningOrderNo;
+// 	        IF NOT System.Error THEN
+// 	            System.Paused := FALSE;
+// 	            FOR i := 1 TO UDINT_TO_DINT(MaxRunningOrderNo) DO
+// 	                IF System.OrderTable[i].Status = '' THEN
+// 	                    EXIT;
+// 	                ELSIF System.OrderTable[i].Status = PAUSED_STATUS
+// 	                    OR System.OrderTable[i].Status = ERROR_STATUS
+// 	                THEN
+// 	                    System.OrderTable[i].Status := QUEUED_STATUS;
+// 	                END_IF;
+// 	            END_FOR;
+// 	        END_IF;
+// 
+// 	    END_IF;
+// 
+// 
+// 	    IF System.Running AND NOT System.Error
+// 	        AND (System.OrderTable[System.CurrentOrder].Status = COMPLETED_STATUS
+// 	        OR System.OrderTable[System.CurrentOrder].Status = ERROR_STATUS
+// 	        OR System.OrderTable[System.CurrentOrder].Status = ERROR_CANCELED_STATUS
+// 	        OR System.OrderTable[System.CurrentOrder].Sequence = 0)
+// 	    THEN
+// 	        IF System.CurrentOrder > 0 THEN
+// 	            System.CurrentOrder -= 1;
+// 	        ELSE
+// 	            System.CurrentOrder := 0;
+// 	        END_IF;
+// 	    END_IF;
+// 
+// 
+// 	    VTD_WatchdogTimer(IN := VTD_WatchdogStart,
+// 	                       PT := UDINT_TO_TIME(Watchdog.VTD * 60000),
+// 	                       Q => System.Watchdog_TimeOut.VTD);
+// 	    Pallet_InOut_WatchdogTimer(IN := Pallet_InOut_WatchdogStart,
+// 	                                PT := UDINT_TO_TIME(Watchdog.Pallet_INOut * 60000),
+// 	                                Q => System.Watchdog_TimeOut.Pallet_InOut);
+// 	    Shuttle_InOut_WatchdogTimer(IN := Shuttle_InOut_WatchdogStart,
+// 	                                 PT := UDINT_TO_TIME(Watchdog.Shuttle_INOut * 60000),
+// 	                                 Q => System.Watchdog_TimeOut.Shuttle_InOut);
+// 
+// 
+// 	    IF System.Error OR CancelRTrig.Q OR PauseRTrig.Q OR Reset_All OR
+// 	        (Screen_DB_1.Reset_All[1] AND
+// 	        (HMI_Box_Connected_1 = 1) OR (HMI_Box_Connected_1 = 2) OR (HMI_Box_Connected_1 = 3) OR (HMI_Box_Connected_1 = 4) OR (HMI_Box_Connected_1 = 5) OR
+// 	        (HMI_Box_Connected_1 = 11 AND KEY_REMOTE_LOCAL_L1___CH1_1_) OR
+// 	        (HMI_Box_Connected_1 = 12 AND KEY_REMOTE_LOCAL_L2___CH1_1_) OR
+// 	        (HMI_Box_Connected_1 = 13 AND KEY_REMOTE_LOCAL_L3___CH1_1_) OR
+// 	        (HMI_Box_Connected_1 = 14 AND KEY_REMOTE_LOCAL_L4___CH1_1_) OR
+// 	        (HMI_Box_Connected_1 = 15 AND KEY_REMOTE_LOCAL_L5___CH1_1_) OR
+// 	        (HMI_Box_Connected_1 = 16 AND KEY_REMOTE_LOCAL_L6___CH1_1_) OR
+// 	        (HMI_Box_Connected_1 = 17 AND KEY_REMOTE_LOCAL_L7___CH1_1_) OR
+// 	        (HMI_Box_Connected_1 = 18 AND KEY_REMOTE_LOCAL_L8___CH1_1_) OR
+// 	        (HMI_Box_Connected_1 = 21 AND KEY_REMOTE_LOCAL_L1___CH1_2_) OR
+// 	        (HMI_Box_Connected_1 = 22 AND KEY_REMOTE_LOCAL_L2___CH1_2_) OR
+// 	        (HMI_Box_Connected_1 = 23 AND KEY_REMOTE_LOCAL_L3___CH1_2_) OR
+// 	        (HMI_Box_Connected_1 = 24 AND KEY_REMOTE_LOCAL_L4___CH1_2_) OR
+// 	        (HMI_Box_Connected_1 = 25 AND KEY_REMOTE_LOCAL_L5___CH1_2_) OR
+// 	        (HMI_Box_Connected_1 = 26 AND KEY_REMOTE_LOCAL_L6___CH1_2_) OR
+// 	        (HMI_Box_Connected_1 = 27 AND KEY_REMOTE_LOCAL_L7___CH1_2_) OR
+// 	        (HMI_Box_Connected_1 = 28 AND KEY_REMOTE_LOCAL_L8___CH1_2_) OR
+// 	        (HMI_Box_Connected_1 = 31 AND KEY_REMOTE_LOCAL_L1___CH1_3_) OR
+// 	        (HMI_Box_Connected_1 = 32 AND KEY_REMOTE_LOCAL_L2___CH1_3_) OR
+// 	        (HMI_Box_Connected_1 = 33 AND KEY_REMOTE_LOCAL_L3___CH1_3_) OR
+// 	        (HMI_Box_Connected_1 = 34 AND KEY_REMOTE_LOCAL_L4___CH1_3_) OR
+// 	        (HMI_Box_Connected_1 = 35 AND KEY_REMOTE_LOCAL_L5___CH1_3_) OR
+// 	        (HMI_Box_Connected_1 = 36 AND KEY_REMOTE_LOCAL_L6___CH1_3_) OR
+// 	        (HMI_Box_Connected_1 = 37 AND KEY_REMOTE_LOCAL_L7___CH1_3_) OR
+// 	        (HMI_Box_Connected_1 = 38 AND KEY_REMOTE_LOCAL_L8___CH1_3_) OR
+// 	        (HMI_Box_Connected_1 = 41 AND KEY_REMOTE_LOCAL_L1___CH1_4_) OR
+// 	        (HMI_Box_Connected_1 = 42 AND KEY_REMOTE_LOCAL_L2___CH1_4_) OR
+// 	        (HMI_Box_Connected_1 = 43 AND KEY_REMOTE_LOCAL_L3___CH1_4_) OR
+// 	        (HMI_Box_Connected_1 = 44 AND KEY_REMOTE_LOCAL_L4___CH1_4_) OR
+// 	        (HMI_Box_Connected_1 = 45 AND KEY_REMOTE_LOCAL_L5___CH1_4_) OR
+// 	        (HMI_Box_Connected_1 = 46 AND KEY_REMOTE_LOCAL_L6___CH1_4_) OR
+// 	        (HMI_Box_Connected_1 = 47 AND KEY_REMOTE_LOCAL_L7___CH1_4_) OR
+// 	        (HMI_Box_Connected_1 = 48 AND KEY_REMOTE_LOCAL_L8___CH1_4_) OR
+// 	        (HMI_Box_Connected_1 = 51 AND KEY_REMOTE_LOCAL_L1___CH1_5_) OR
+// 	        (HMI_Box_Connected_1 = 52 AND KEY_REMOTE_LOCAL_L2___CH1_5_) OR
+// 	        (HMI_Box_Connected_1 = 53 AND KEY_REMOTE_LOCAL_L3___CH1_5_) OR
+// 	        (HMI_Box_Connected_1 = 54 AND KEY_REMOTE_LOCAL_L4___CH1_5_) OR
+// 	        (HMI_Box_Connected_1 = 55 AND KEY_REMOTE_LOCAL_L5___CH1_5_) OR
+// 	        (HMI_Box_Connected_1 = 56 AND KEY_REMOTE_LOCAL_L6___CH1_5_) OR
+// 	        (HMI_Box_Connected_1 = 57 AND KEY_REMOTE_LOCAL_L7___CH1_5_) OR
+// 	        (HMI_Box_Connected_1 = 58 AND KEY_REMOTE_LOCAL_L8___CH1_5_))
+// 	    THEN
+// 
+// 	        VTD_WatchdogStart := FALSE;
+// 	        Pallet_InOut_WatchdogStart := FALSE;
+// 	        Shuttle_InOut_WatchdogStart := FALSE;
+// 
+// 	    END_IF;
+// 
+// 
+// 	    IF System.NextOrder > 1
+// 	        AND CurrentDTL.HOUR = 0
+// 	        AND CurrentDTL.MINUTE = 0
+// 	        AND CurrentDTL.SECOND = 0
+// 	    THEN
+// 	        System.NextOrder := 1;
+// 	    END_IF;
+// 
+// 
+// 	    System.Selected := System_Selected;
+// 	    System.Ready := NOT System.Error AND System.Selected;
+// 	    System.Auto_Man := AutoMan_Switch;
+// 	    System.Running := VTD.Running OR Extrator_Conveyor.Running OR Cnv_Buffer_11.Running OR Cnv_Buffer_21.Running OR
+// 	    Cnv_Buffer_21.Running OR Cnv_Buffer_31.Running OR Cnv_Buffer_41.Running OR Cnv_Buffer_51.Running OR
+// 	    Cnv_Buffer_61.Running OR Cnv_Buffer_71.Running OR Cnv_Buffer_81.Running OR Cnv_Buffer_12.Running OR
+// 	    Cnv_Buffer_22.Running OR Cnv_Buffer_32.Running OR Cnv_Buffer_42.Running OR Cnv_Buffer_52.Running OR
+// 	    Cnv_Buffer_62.Running OR Cnv_Buffer_72.Running OR Cnv_Buffer_82.Running;
+// 
+// 	    System.Error := VTD.Error OR Extrator_Conveyor.Error OR Cnv_Buffer_11.Error OR Cnv_Buffer_21.Error OR
+// 	    Cnv_Buffer_21.Error OR Cnv_Buffer_31.Error OR Cnv_Buffer_41.Error OR Cnv_Buffer_51.Error OR
+// 	    Cnv_Buffer_61.Error OR Cnv_Buffer_71.Error OR Cnv_Buffer_81.Error OR Cnv_Buffer_12.Error OR
+// 	    Cnv_Buffer_22.Error OR Cnv_Buffer_32.Error OR Cnv_Buffer_42.Error OR Cnv_Buffer_52.Error OR
+// 	    Cnv_Buffer_62.Error OR Cnv_Buffer_72.Error OR Cnv_Buffer_82.Error OR OPC_UA_State_VTD = 400 OR OPC_UA_State_Shuttle = 400 OR OPC_UA_State_CNV = 400;
+// 
+// 	    System.IDLE := NOT System.Running AND NOT System.Paused AND NOT System.Error;
+// 	    IF System.Running THEN
+// 	        System.State := 1;
+// 	    ELSIF System.Paused AND NOT System.Error THEN
+// 	        System.State := 2;
+// 	    ELSIF System.Error THEN
+// 	        System.State := 3;
+// 	    ELSE
+// 	        System.State := 0;
+// 	    END_IF;
+// 
+// 
+// 	    IF Clear_OrderTable THEN
+// 	        FOR i := 0 TO 99 DO
+// 	            System.OrderTable[i] := EmptyOrder;
+// 	        END_FOR;
+// 	        Control.WCS_OPC_Control[System.Id].Task_Data_Available := FALSE;
+// 	    END_IF;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

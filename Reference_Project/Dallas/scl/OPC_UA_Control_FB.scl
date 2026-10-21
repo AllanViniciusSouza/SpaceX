@@ -1,0 +1,1712 @@
+FUNCTION_BLOCK "OPC_UA_Control_FB"   // FB 8, author 
+
+VAR_INPUT
+   OPC_Enable : Bool;
+   Mode_Change : UInt;
+END_VAR
+
+VAR_OUTPUT
+   Mode_Current : UInt;
+END_VAR
+
+VAR
+   Source_Location_VTD : "ID_Decoded";
+   Destination_Location_VTD : "ID_Decoded";
+   Source_Location_Carousel : "ID_Decoded";
+   Destination_Location_Carousel : "ID_Decoded";
+   State_VTD : UInt;
+   State_Carrousel_Weigh : UInt;
+   State_Carrousel_Main : UInt;
+   State_Carrousel_PICKTP1 : UInt;
+   State_Carrousel_P4TPICK : UInt;
+   State_Carrousel_CTC : UInt;
+   State_Carrousel_ITP1 : UInt;
+   State_Carrousel_P1TP2 : UInt;
+   State_Carrousel_P3TP4 : UInt;
+   State_Carrousel_P4TO : UInt;
+   State_Carrousel : UInt;
+END_VAR
+
+VAR_TEMP
+   i : UInt;
+   j : UInt;
+   f : UInt;
+END_VAR
+
+BEGIN
+
+REGION TODO
+    (*
+    1. Need to confirm how the mode control is going to work, does switching the VTD to auto force all conveyors to auto as well or do we do seperate checks
+    2. Need to review the shuttle interlock procedure inside the VTD function block
+    *)
+    
+END_REGION
+
+IF "FirstScan" THEN
+    "OPC_Enable" := TRUE;
+END_IF;
+
+REGION Mode Control
+    (*
+        Mode select is done via the HMI. Might add external mode select switches.
+        
+        Mode select mask:
+        0: Disabled
+        1: Manual
+        2: Semi-Auto
+        3: Auto
+        4: Teach
+        5: Maintenance
+    *)
+    
+    // IF #Mode_Change <> #Mode_Current THEN
+    //     //Disable all devices
+    //     "Mode_Change_F"(Mode := #Mode_Change);
+    // END_IF;
+END_REGION
+
+REGION Errors VTD STATE
+    IF #State_VTD > 30 AND #State_VTD < 120 THEN
+        IF #Source_Location_VTD.Device_Type = 10 OR #Destination_Location_VTD.Device_Type = 10 THEN
+            IF "Control_DB".LCnv_Control[#Source_Location_VTD.Level].Error
+                OR
+                "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Error THEN
+                "Error_Word_1".%X3 := TRUE;
+                #State_VTD := 400;
+            END_IF;
+        END_IF;
+        IF "Control_DB".ECnv_Control.Error THEN
+            "Error_Word_1".%X4 := TRUE;
+            #State_VTD := 400;
+        END_IF;
+        IF "VTD_FB_DB".I_State = 400 THEN
+            "Error_Word_1".%X5 := TRUE;
+            #State_VTD := 400;
+        END_IF;
+        
+    END_IF;
+END_REGION
+
+// REGION Errors CAROUSEL STATE
+//     IF #State_Carrousel > 30 AND #State_Carrousel < 120 THEN
+//         IF #Source_Location_Carousel.Device_Type = 10 OR #Destination_Location_VTD.Device_Type = 10 THEN
+//             IF "Control_DB".LCnv_Control[#Source_Location_Carousel.Level].Error
+//                 OR
+//                 "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Error THEN
+//                 #State_Carrousel := 400;
+//             END_IF;
+//         ELSIF #Source_Location_Carousel.Device_Type = 11 OR #Destination_Location_VTD.Device_Type = 11 THEN
+//             IF "Control_DB".LCnv_Control[#Source_Location_Carousel.Level].Error
+//                 OR
+//                 "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Error
+//             THEN
+//                 #State_Carrousel := 400;
+//             END_IF;
+//         END_IF;
+//         IF "Control_DB".ECnv_Control.Error THEN
+//             #State_Carrousel := 400;
+//         END_IF;
+//         IF "VTD_FB_DB".I_State = 400 THEN
+//             #State_Carrousel := 400;
+//         END_IF;
+        
+//     END_IF;
+// END_REGION
+
+//Bit OPC in Error
+IF #State_VTD = 400 OR #State_Carrousel_CTC = 400 OR #State_Carrousel_ITP1 = 400 OR #State_Carrousel_P1TP2 = 400
+    OR #State_Carrousel_P3TP4 = 400 OR #State_Carrousel_P4TO = 400 OR #State_Carrousel_P4TPICK = 400
+    OR #State_Carrousel_PICKTP1 = 400
+THEN
+    "Error_Word_1".%X0 := TRUE;
+ELSE
+    "Error_Word_1".%X0 := FALSE;
+END_IF;
+
+REGION OPC UA Control
+    (*
+    Type of task to be performed:
+        1 = Move to Floor
+        2 = Shuttle Transfer into VTD
+        3 = Shuttle Transfer out of VTD
+        4 = Transfer Pallet into VTD
+        5 = Transfer Pallet out of VTD
+        6 = Transfer Pallet Roller to Roller
+        7 = Transfer Pallet Chain to Chain  
+        8 = Transfer to pick station 
+        9 = Transfer from Pick station 
+        10 = Weigh Pallet
+        11 = Set chain Cnv as active (lower) // no use for now
+        12 = Set Roller Cnv as active (raise) // no use for now
+
+        Need to isolate ZZ in XXYYZZ to confirm #i = ZZ
+        
+        Extract XX (first two digits)
+        xx := inputNumber / 10000;
+            
+        Extract YY (middle two digits)
+        yy := (inputNumber / 100) MOD 100;
+            
+        Extract ZZ (last two digits)
+        zz := inputNumber MOD 100;    
+    *)
+    
+    REGION VTDs and Buffer conveyors
+        IF "VTD_Buffers_In_Automatic" AND #OPC_Enable THEN
+            CASE #State_VTD OF
+                0:  //Pre operational state
+                    #State_VTD := 10;
+                    
+                10: //Idle waiting for task
+                    IF "Control_DB"."VTD_Order Table".Task_Data_Available AND "Control_DB".VTD_Control.Mode = 3 AND
+                        NOT "Control_DB".VTD_Control.Running AND NOT "Control_DB"."VTD_Order Table".Movement_Ready AND "Control_DB".VTD_Control.SM_State <= 10 THEN
+                            // "Control_DB".WMS_OPC_UA.Task_Data_Available := FALSE;
+                            #State_VTD := 20;
+                        END_IF;
+                        
+                20: //Determine the type of task
+                    ID_Decode_F(ID := "Control_DB"."VTD_Order Table".Source_Location,
+                                  ID_Decoded := #Source_Location_VTD);
+                    ID_Decode_F(ID := "Control_DB"."VTD_Order Table".Destination_Location,
+                                  ID_Decoded := #Destination_Location_VTD);
+                    
+                    //VTD move to floor
+                    IF "Control_DB"."VTD_Order Table".Task_Type = 1
+                        AND NOT "Control_DB".VTD_Control.Running THEN
+                        #State_VTD := 30;
+                        
+                        //Shuttle transfer in/out of the VTD
+                    ELSIF "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3
+                    THEN
+                        #State_VTD := 70;
+                            
+                        //Transfer Pallet in/out of the VTD
+                    ELSIF "Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+                    THEN
+                        #State_VTD := 100;
+                    END_IF;
+                        
+                        //=========================== VTD Move to floor ===========================
+                    30: //Set all the Move to level variables
+                        "Control_DB".VTD_Control.Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                        "Control_DB".VTD_Control.Instruction.Pallet_Type := "Control_DB"."VTD_Order Table".Pallet_Type;
+                        "Control_DB".VTD_Control.Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                        "Control_DB".VTD_Control.Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                        "Control_DB".VTD_Control.Instruction.Move_To_Level := INT_TO_UINT(#Destination_Location_VTD.Level);
+                        #State_VTD := 35;
+                        
+                    35://Wait for the VTD to start its movement
+                        "Control_DB"."VTD_Order Table".SM_State := "Control_DB".VTD_Control.SM_State;
+                        IF "Control_DB".VTD_Control.Enabled AND "Control_DB".VTD_Control.Running THEN
+                            "Control_DB"."VTD_Order Table".Movement_Ready := TRUE;
+                           // "Control_DB"."VTD_Order Table".Task_Data_Available := FALSE;//
+                            #State_VTD := 40;
+                        END_IF;
+                        
+                    40: //Wait for the VTD to complete its movement
+                        "Control_DB"."VTD_Order Table".SM_State := "Control_DB".VTD_Control.SM_State;
+                        IF "Control_DB".VTD_Control.SM_State = 100 THEN
+                            
+                            #State_VTD := 41;
+                        END_IF;
+                        
+                    41: //Wait for XXs for report done
+                        "IEC_Timer_0_DB_6".TON(IN := TRUE,
+                                                PT := T#2000ms);
+                         IF "IEC_Timer_0_DB_6".Q THEN
+                             "Control_DB"."VTD_Order Table".Movement_Request_Complete := TRUE;
+                             #State_VTD := 45;
+                        END_IF;
+                        
+                    45: //Wait for the ACK before we go back to Idle
+                        "Control_DB"."VTD_Order Table".SM_State := "Control_DB".VTD_Control.SM_State;
+                        IF "Control_DB"."VTD_Order Table".Movement_Request_Complete_Ack THEN///////////////////////////////////////////////////////////////////
+                            // "Control_DB".WMS_OPC_UA.Task_Type := 0;
+                            // "Control_DB".VTD_Control.Instruction.Reset := TRUE;///////////////////////////////////////////////////////////////////
+                            #State_VTD := 250;
+                        END_IF;
+                        
+                        //=========================== Transfer Shuttle in/out of the VTD ===========================
+                        
+                    70: //Set all the shuttle interlock variables
+                        "Control_DB".VTD_Control.Instruction.Task_ID := "Control_DB"."VTD_Order Table".Task_ID; //Assign task ID to WCS Task ID
+                        "Control_DB".VTD_Control.Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                        "Control_DB".VTD_Control.Instruction.Pallet_Type := "Control_DB"."VTD_Order Table".Pallet_Type;
+                        "Control_DB".VTD_Control.Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Interlock_Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Interlock_Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Shuttle_ID);
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Loaded := "Control_DB"."VTD_Order Table".Shuttle_Loaded;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Start_Location := "Control_DB"."VTD_Order Table".Source_Location;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Target_Location := "Control_DB"."VTD_Order Table".Destination_Location;
+                        
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Interlock_Request := TRUE;
+                        #State_VTD := 75;
+                        
+                    75: //Inform WCS that the VTD is ready to interlock
+                        "Control_DB"."VTD_Order Table".SM_State := "Control_DB".VTD_Control.SM_State;
+                        IF "Control_DB".VTD_Control.Shuttle_Interlock.Ready_To_Interlock THEN
+                            "Control_DB"."VTD_Order Table".Movement_Ready := TRUE;
+                            "Control_DB"."VTD_Order Table".Task_Data_Available := FALSE;
+                            #State_VTD := 80;
+                        END_IF;
+                        
+                    80://Inform WCS that the interlock is complete
+                        IF "Control_DB".VTD_Control.Shuttle_Interlock.Interlock_Complete THEN
+                            "Control_DB".VTD_Control.Shuttle_Interlock.Interlock_Request := FALSE;
+                            "Control_DB"."VTD_Order Table".Movement_Request_Complete := TRUE;
+                            #State_VTD := 81;
+                        END_IF;
+                        
+                    81: //Wait for XXs for report done
+                        "IEC_Timer_0_DB_7".TON(IN := TRUE,
+                                                PT := T#500mS);
+                        IF "IEC_Timer_0_DB_7".Q THEN
+                            #State_VTD := 90;
+                        END_IF;
+                        
+                    90: //Reset VTD back to idle state
+                        IF "Control_DB"."VTD_Order Table".Movement_Request_Complete_Ack THEN
+                            "Control_DB".VTD_Control.Shuttle_Interlock.Interlock_Complete_Ack := TRUE;
+                            #State_VTD := 250;
+                        END_IF;
+                        
+                        //=========================== Transfer Pallet in/out of the VTD ===========================
+                        
+                    100: //Set the destination conveyor variables
+                        
+                        //Assign task to receiving conveyor
+                        IF #Destination_Location_VTD.Level >= "Settings_DB".VTD_Settings.Lowest_Level AND #Destination_Location_VTD.Level <= "Settings_DB".VTD_Settings.Highest_Level THEN
+                            
+                            //Buffer conveyors
+                            IF #Destination_Location_VTD.Device_Type = 10 AND "Control_DB".ECnv_Control.Cnv_Occupied AND
+                                NOT "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Cnv_Occupied
+                            THEN
+                                "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Instruction.Transfer_From_ID := "Control_DB"."VTD_Order Table".Source_Location;
+                                "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Instruction.Transfer_To_ID := 0;
+                                
+                                //Enable the conveyor and start the transfer
+                                "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Instruction.Start_Transfer := TRUE;
+                                #State_VTD := 105;
+                                
+                               //Extractor Cnv
+                            ELSIF (#Destination_Location_VTD.Device_Type = 12 AND #Source_Location_VTD.Device_Type = 10 AND NOT "Control_DB".ECnv_Control.Cnv_Occupied AND "Control_DB".LCnv_Control[#Destination_Location_VTD.Level].Cnv_Occupied)
+                            THEN //FROM ECONVEYOR TO CNV1 OR CNV2
+                                "Control_DB".ECnv_Control.Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".ECnv_Control.Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".ECnv_Control.Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := "Control_DB"."VTD_Order Table".Source_Location;
+                                "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := 0;
+                                
+                                //Enable the conveyor and start the transfer
+                                "Control_DB".ECnv_Control.Instruction.Start_Transfer := TRUE;
+                                #State_VTD := 105;
+                            ELSE
+                                "Error_Word_1".%X1 := TRUE; //DESTINATION CONVEYOR IS OCCUPIED
+                                "Error_Word_1".%X6 := TRUE;
+                                #State_VTD := 400; //ERROR
+                            END_IF;
+                            
+                        ELSIF #Destination_Location_VTD.Level = 0 THEN
+                            //Popup 2
+                            IF #Destination_Location_VTD.Device_Type = 16 AND "Control_DB".ECnv_Control.Cnv_Occupied AND
+                                NOT "Control_DB".PopUp_Cnv[2].Cnv_Occupied AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down"
+                            THEN//ALL GOOD
+                                "Control_DB".PopUp_Cnv[2].Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".PopUp_Cnv[2].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".PopUp_Cnv[2].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".PopUp_Cnv[2].Instruction.Transfer_From_ID := "Control_DB"."VTD_Order Table".Source_Location;
+                                "Control_DB".PopUp_Cnv[2].Instruction.Transfer_To_ID := 0;
+                                
+                                //Enable the conveyor and start the transfer
+                                "Control_DB".PopUp_Cnv[2].Instruction.Start_Transfer := TRUE;
+                                #State_VTD := 105;
+                                
+                                //Popup 2 LIFT
+                            ELSIF #Destination_Location_VTD.Device_Type = 16 AND "Control_DB".ECnv_Control.Cnv_Occupied AND
+                                NOT "Control_DB".PopUp_Cnv[2].Cnv_Occupied AND NOT "Control_DB".PopUp_Cnv[2].Inputs."Lift Down"
+                            THEN//NEED TO LIFT DOWN
+                                "Control_DB".PopUp_Cnv[2].Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".PopUp_Cnv[2].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".PopUp_Cnv[2].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".PopUp_Cnv[2].Instruction.Transfer_From_ID := "Control_DB"."VTD_Order Table".Source_Location;
+                                "Control_DB".PopUp_Cnv[2].Instruction.Transfer_To_ID := 0;
+                                "Control_DB".PopUp_Cnv[2].Instruction.Lift_Down := NOT "Control_DB".PopUp_Cnv[2].Running AND NOT "Control_DB".PopUp_Cnv[2].Inputs."Lift Down";
+                                IF "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" THEN
+                                    //Enable the conveyor and start the transfer
+                                    "Control_DB".PopUp_Cnv[2].Instruction.Start_Transfer := TRUE;
+                                    #State_VTD := 105;
+                                END_IF;
+                                
+                                //Extractor Cnv
+                            ELSIF (#Destination_Location_VTD.Device_Type = 12 AND #Source_Location_VTD.Device_Type = 16 AND NOT "Control_DB".ECnv_Control.Cnv_Occupied AND "Control_DB".PopUp_Cnv[2].Cnv_Occupied)
+                            THEN //FROM ECONVEYOR TO CNV1 OR CNV2
+                                "Control_DB".ECnv_Control.Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".ECnv_Control.Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".ECnv_Control.Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := "Control_DB"."VTD_Order Table".Source_Location;
+                                "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := 0;
+                                
+                                //Enable the conveyor and start the transfer
+                                "Control_DB".ECnv_Control.Instruction.Start_Transfer := TRUE;
+                                #State_VTD := 105;
+                            ELSE
+                                "Error_Word_1".%X1 := TRUE; //DESTINATION CONVEYOR IS OCCUPIED
+                                "Error_Word_1".%X7 := TRUE;
+                                #State_VTD := 400; //ERROR
+                            END_IF;
+                        ELSE
+                            ; //Error: the destination location is not possible
+                            "Error_Word_1".%X8 := TRUE;
+                            #State_VTD := 400;
+                        END_IF;
+                        
+                    105:  //Set the source conveyor variables
+                        
+                        //Assign task to sending conveyor
+                        IF #Source_Location_VTD.Level >= "Settings_DB".VTD_Settings.Lowest_Level AND #Source_Location_VTD.Level <= "Settings_DB".VTD_Settings.Highest_Level THEN
+                            
+                            //Cnv_Front_of_VTD
+                            IF #Source_Location_VTD.Device_Type = 10 AND NOT "Control_DB".ECnv_Control.Cnv_Occupied AND "Control_DB".LCnv_Control[#Source_Location_VTD.Level].Cnv_Occupied THEN //FROM CONV1 TO ECONVEYOR
+                                "Control_DB".LCnv_Control[#Source_Location_VTD.Level].Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".LCnv_Control[#Source_Location_VTD.Level].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".LCnv_Control[#Source_Location_VTD.Level].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".LCnv_Control[#Source_Location_VTD.Level].Instruction.Transfer_To_ID := "Control_DB"."VTD_Order Table".Destination_Location;
+                                "Control_DB".LCnv_Control[#Source_Location_VTD.Level].Instruction.Transfer_From_ID := 0;
+                                
+                                //Enable the conveyor and start the transfer
+                                "Control_DB".LCnv_Control[#Source_Location_VTD.Level].Instruction.Start_Transfer := TRUE;
+                                #State_VTD := 110;
+                                
+                                //Extractor Cnv
+                            ELSIF (#Source_Location_VTD.Device_Type = 12 AND #Destination_Location_VTD.Device_Type = 10 AND "Control_DB".ECnv_Control.Cnv_Occupied AND NOT "Control_DB".LCnv_Control[#Source_Location_VTD.Level].Cnv_Occupied)
+                            THEN //FROM ECONVEYOR TO CNV1 OR CNV2
+                                "Control_DB".ECnv_Control.Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".ECnv_Control.Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".ECnv_Control.Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := "Control_DB"."VTD_Order Table".Destination_Location;
+                                "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := 0;
+                                
+                                //Enable the conveyor and start the transfer
+                                "Control_DB".ECnv_Control.Instruction.Start_Transfer := TRUE;
+                                #State_VTD := 110;
+                            ELSE
+                                "Error_Word_1".%X1 := TRUE; //DESTINATION CONVEYOR IS OCCUPIED
+                                "Error_Word_1".%X9 := TRUE;
+                                #State_VTD := 400; //ERROR
+                            END_IF;
+                            
+                        ELSIF #Source_Location_VTD.Level = 0 THEN
+                            //PopUp conveyor 2   
+                            IF #Source_Location_VTD.Device_Type = 16 AND NOT "Control_DB".ECnv_Control.Cnv_Occupied AND
+                                "Control_DB".PopUp_Cnv[2].Cnv_Occupied AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" THEN //FROM CONV2 TO ECONVEYOR
+                                "Control_DB".PopUp_Cnv[2].Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".PopUp_Cnv[2].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".PopUp_Cnv[2].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".PopUp_Cnv[2].Instruction.Transfer_To_ID := "Control_DB"."VTD_Order Table".Destination_Location;
+                                "Control_DB".PopUp_Cnv[2].Instruction.Transfer_From_ID := 0;
+                                
+                                //Enable the conveyor and start the transfer
+                                "Control_DB".PopUp_Cnv[2].Instruction.Start_Transfer := TRUE;
+                                #State_VTD := 110;
+                                
+                                //Popup 2 LIFT
+                            ELSIF #Source_Location_VTD.Device_Type = 16 AND NOT "Control_DB".ECnv_Control.Cnv_Occupied AND
+                                "Control_DB".PopUp_Cnv[2].Cnv_Occupied AND NOT "Control_DB".PopUp_Cnv[2].Inputs."Lift Down"
+                            THEN//NEED TO LIFT DOWN
+                                "Control_DB".PopUp_Cnv[2].Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".PopUp_Cnv[2].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".PopUp_Cnv[2].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".PopUp_Cnv[2].Instruction.Transfer_From_ID := 0;
+                                "Control_DB".PopUp_Cnv[2].Instruction.Transfer_To_ID := "Control_DB"."VTD_Order Table".Destination_Location;
+                                "Control_DB".PopUp_Cnv[2].Instruction.Lift_Down := NOT "Control_DB".PopUp_Cnv[2].Running AND NOT "Control_DB".PopUp_Cnv[2].Inputs."Lift Down";
+                                IF "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" THEN
+                                    //Enable the conveyor and start the transfer
+                                    "Control_DB".PopUp_Cnv[2].Instruction.Start_Transfer := TRUE;
+                                    #State_VTD := 110;
+                                END_IF;
+                                
+                                //Extractor Cnv
+                            ELSIF (#Source_Location_VTD.Device_Type = 12 AND #Destination_Location_VTD.Device_Type = 16 AND "Control_DB".ECnv_Control.Cnv_Occupied AND NOT "Control_DB".PopUp_Cnv[2].Cnv_Occupied)
+                            THEN //FROM ECONVEYOR TO CNV1 OR CNV2
+                                "Control_DB".ECnv_Control.Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_ID);
+                                "Control_DB".ECnv_Control.Instruction.Task_Metadata := "Control_DB"."VTD_Order Table".Task_Metadata;
+                                "Control_DB".ECnv_Control.Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table".Task_Type);
+                                "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := "Control_DB"."VTD_Order Table".Destination_Location;
+                                "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := 0;
+                                
+                                //Enable the conveyor and start the transfer
+                                "Control_DB".ECnv_Control.Instruction.Start_Transfer := TRUE;
+                                #State_VTD := 110;
+                            END_IF;
+                        ELSE
+                            ; //Error: the destination location is not possible
+                            "Error_Word_1".%X10 := TRUE;
+                            #State_VTD := 400;
+                        END_IF;
+                        
+                    110: //Start the transfer
+                        "Control_DB"."VTD_Order Table".SM_State := "Control_DB".ECnv_Control.SM_State;
+                        IF "Control_DB".ECnv_Control.Enabled AND "Control_DB".ECnv_Control.Running THEN
+                            "Control_DB"."VTD_Order Table".Movement_Ready := TRUE;
+                            "Control_DB"."VTD_Order Table".Task_Data_Available := FALSE;
+                            #State_VTD := 115;
+                        END_IF;
+                        
+                    115: //Wait for the transfer to complete
+                        "Control_DB"."VTD_Order Table".SM_State := "Control_DB".ECnv_Control.SM_State;
+                        IF "Control_DB".ECnv_Control.Done THEN
+                            "Control_DB".ECnv_Control.Instruction.Start_Transfer := FALSE;
+                            "Control_DB".LCnv_Control[1].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".LCnv_Control[2].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".LCnv_Control[3].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".PopUp_Cnv[2].Instruction.Start_Transfer := FALSE;
+                            "Control_DB"."VTD_Order Table".Movement_Request_Complete := TRUE;
+                            #State_VTD := 116;
+                        END_IF;
+                        
+                    116: //Wait for XXs for report done
+                        "IEC_Timer_0_DB_5".TON(IN := TRUE,
+                                                PT := T#500mS);
+                         IF "IEC_Timer_0_DB_5".Q THEN
+                             #State_VTD := 120;
+                        END_IF;
+                        
+                    120: //Wait for the ACK before we go back to Idle
+                        "Control_DB"."VTD_Order Table".SM_State := "Control_DB".ECnv_Control.SM_State;
+                        IF "Control_DB"."VTD_Order Table".Movement_Request_Complete_Ack THEN
+                            // "Control_DB".ECnv_Control.Instruction.Reset := TRUE;
+                            #State_VTD := 250;
+                        END_IF;
+                        
+                        //=========================== Reset and Error States ===========================
+                    250: //Reset all variable and return to idle
+                        
+                        //Reset the OPC control variables
+                        "Control_DB"."VTD_Order Table".SM_State := 0;
+                        "Control_DB"."VTD_Order Table".Movement_Ready := FALSE;
+                        "Control_DB"."VTD_Order Table".Movement_Request_Complete := FALSE;
+                        "Control_DB"."VTD_Order Table".Movement_Request_Complete_Ack := FALSE;
+                        "Control_DB"."VTD_Order Table".Task_Metadata := '';
+                        "IEC_Timer_0_DB_5".TON(IN := FALSE,
+                                               PT := T#0S);
+                        "IEC_Timer_0_DB_6".TON(IN := FALSE,
+                                               PT := T#0S);
+                        "IEC_Timer_0_DB_7".TON(IN := FALSE,
+                                               PT := T#0S);
+                        
+                        // Reset Order table VTD variables
+                        "Control_DB"."VTD_Order Table".Task_Type := 0;
+                        "Control_DB"."VTD_Order Table".Pallet_Type:='C';
+                        "Control_DB"."VTD_Order Table".Task_ID:= 0;
+                        "Control_DB"."VTD_Order Table".Task_Metadata:='';
+                        "Control_DB"."VTD_Order Table".Source_Location := 0;
+                        "Control_DB"."VTD_Order Table".Destination_Location := 0;
+                        #Destination_Location_VTD.Level:=0;
+                        #Source_Location_VTD.Level := 0;
+                        "Control_DB"."VTD_Order Table".Shuttle_ID := 0;
+                        "Control_DB"."VTD_Order Table".Shuttle_Loaded := FALSE;
+                        
+                        
+                        //Reset VTD variables
+                        "Control_DB".VTD_Control.Instruction.Reset := FALSE;
+                        "Control_DB".VTD_Control.Instruction.Pallet_Type := 0;
+                        "Control_DB".VTD_Control.Instruction.Task_ID := 0;
+                        "Control_DB".VTD_Control.Instruction.Task_Metadata := '';
+                        "Control_DB".VTD_Control.Instruction.Move_To_Level := 99;
+                        "Control_DB".VTD_Control.Current_Task_Type := 0;
+                        
+                        //Reset Shuttle interlock
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Interlock_Request := FALSE;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Start_Location := 0;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Target_Location := 0;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Loaded := 0;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_ID := 0;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Interlock_Task_ID := 0;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Interlock_Task_Metadata := '';
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Interlock_Complete_Ack := FALSE;
+                        
+                        //Reset conveyor variables
+                        "Control_DB".ECnv_Control.Instruction.Reset := FALSE;
+                        // "Control_DB".ECnv_Control.Instruction.Enable := FALSE;
+                        "Control_DB".ECnv_Control.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".ECnv_Control.Instruction.Task_ID := 0;
+                        "Control_DB".ECnv_Control.Instruction.Task_Metadata := '';
+                        "Control_DB".ECnv_Control.Current_Task_Type := 0;
+                        "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := 0;
+                        
+                        FOR #i := "Settings_DB".VTD_Settings.Lowest_Level TO "Settings_DB".VTD_Settings.Highest_Level DO
+                            "Control_DB".LCnv_Control[#i].Instruction.Reset := FALSE;
+                            "Control_DB".LCnv_Control[#i].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".LCnv_Control[#i].Instruction.Task_ID := 0;
+                            "Control_DB".LCnv_Control[#i].Instruction.Task_Metadata := '';
+                            "Control_DB".LCnv_Control[#i].Current_Task_Type := 0;
+                            "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := 0;
+                            "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := 0;
+                            
+                            "Control_DB".LCnv_Control[#i].Instruction.Reset := FALSE;
+                            "Control_DB".LCnv_Control[#i].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".LCnv_Control[#i].Instruction.Task_ID := 0;
+                            "Control_DB".LCnv_Control[#i].Instruction.Task_Metadata := '';
+                            "Control_DB".LCnv_Control[#i].Current_Task_Type := 0;
+                            "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := 0;
+                            "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := 0;
+                        END_FOR;
+                        
+                        "Control_DB".PopUp_Cnv[2].Instruction.Start_Transfer := FALSE;
+                        "Control_DB".PopUp_Cnv[2].Instruction.Task_ID := 0;
+                        "Control_DB".PopUp_Cnv[2].Instruction.Task_Metadata := '';
+                        "Control_DB".PopUp_Cnv[2].Current_Task_Type := 0;
+                        "Control_DB".PopUp_Cnv[2].Instruction.Transfer_From_ID := 0;
+                        "Control_DB".PopUp_Cnv[2].Instruction.Transfer_To_ID := 0;
+                        
+                        "Error_Word_1".%X1 := FALSE;
+                        
+                        #State_VTD := 0;
+                        
+                    400:// Error state
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Interlock_Request := FALSE;
+                        "Control_DB".VTD_Control.Shuttle_Interlock.Interlock_Complete_Ack := FALSE;
+                        "Control_DB"."VTD_Order Table".Task_Metadata := '';
+                        // Reset Order table VTD variables
+                        "Control_DB"."VTD_Order Table".Task_Type := 0;
+                        "Control_DB"."VTD_Order Table".Pallet_Type := 'C';
+                        "Control_DB"."VTD_Order Table".Task_ID := 0;
+                        "Control_DB"."VTD_Order Table".Task_Metadata := '';
+                        "Control_DB"."VTD_Order Table".Source_Location := 0;
+                        "Control_DB"."VTD_Order Table".Destination_Location := 0;
+                        #Destination_Location_VTD.Level := 0;
+                        #Source_Location_VTD.Level := 0;
+                        "Control_DB"."VTD_Order Table".Shuttle_ID := 0;
+                        "Control_DB"."VTD_Order Table".Shuttle_Loaded := FALSE;
+                        
+                        IF "Control_DB".VTD_Control.Instruction.Reset
+                        THEN
+                            #State_VTD := 250;
+                        END_IF;
+                            
+                        ELSE
+                            ;
+                    END_CASE;
+                ELSIF "VTD_Buffers_In_Automatic" AND NOT #OPC_Enable THEN
+                    "Control_DB"."VTD_Order Table".Task_Metadata := '';
+                    //Reset all variable and return to idle
+                    
+                    //Reset the OPC control variables
+                    "Control_DB"."VTD_Order Table".SM_State := 0;
+                    "Control_DB"."VTD_Order Table".Movement_Ready := FALSE;
+                    "Control_DB"."VTD_Order Table".Movement_Request_Complete := FALSE;
+                    
+                    // Reset Order table VTD variables
+                    "Control_DB"."VTD_Order Table".Task_Type := 0;
+                    "Control_DB"."VTD_Order Table".Pallet_Type := 'C';
+                    "Control_DB"."VTD_Order Table".Task_ID := 0;
+                    "Control_DB"."VTD_Order Table".Task_Metadata := '';
+                    "Control_DB"."VTD_Order Table".Source_Location := 0;
+                    "Control_DB"."VTD_Order Table".Destination_Location := 0;
+                    #Destination_Location_VTD.Level := 0;
+                    #Source_Location_VTD.Level := 0;
+                    "Control_DB"."VTD_Order Table".Shuttle_ID := 0;
+                    "Control_DB"."VTD_Order Table".Shuttle_Loaded := FALSE;
+                    
+                    //Reset VTD variables
+                    "Control_DB".VTD_Control.Instruction.Reset := FALSE;
+                    "Control_DB".VTD_Control.Instruction.Pallet_Type := 0;
+                    "Control_DB".VTD_Control.Instruction.Task_ID := 0;
+                    "Control_DB".VTD_Control.Instruction.Task_Metadata := '';//
+                    "Control_DB".ECnv_Control.Current_Task_Type := 0;
+                    "Control_DB".VTD_Control.Instruction.Move_To_Level := 99;
+                    "Control_DB".VTD_Control.Current_Task_Type := 0;
+                    
+                    //Reset Shuttle interlock
+                    "Control_DB".VTD_Control.Shuttle_Interlock.Interlock_Request := FALSE;
+                    "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Start_Location := 0;
+                    "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Target_Location := 0;
+                    "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Loaded := 0;
+                    "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_ID := 0;
+                    "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Interlock_Task_ID := 0;
+                    "Control_DB".VTD_Control.Shuttle_Interlock.Shuttle_Interlock_Task_Metadata := '';//
+                    
+                    //Reset conveyor variables
+                    "Control_DB".ECnv_Control.Instruction.Reset := FALSE;
+                    // "Control_DB".ECnv_Control.Instruction.Enable := FALSE;
+                    "Control_DB".ECnv_Control.Instruction.Start_Transfer := FALSE;
+                    "Control_DB".ECnv_Control.Instruction.Task_ID := 0;
+                    "Control_DB".ECnv_Control.Instruction.Task_Metadata := '';//
+                    "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := 0;
+                    "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := 0;
+                    
+                    FOR #i := "Settings_DB".VTD_Settings.Lowest_Level TO "Settings_DB".VTD_Settings.Highest_Level DO
+                        "Control_DB".LCnv_Control[#i].Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Control[#i].Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Control[#i].Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Control[#i].Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Control[#i].Current_Task_Type := 0;
+                        "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := 0;
+                        
+                        "Control_DB".LCnv_Control[#i].Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Control[#i].Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Control[#i].Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Control[#i].Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Control[#i].Current_Task_Type := 0;
+                        "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := 0;
+                    END_FOR;
+                END_IF;
+            END_REGION
+            
+    REGION Carrousel
+        IF "Carrousel_In_Automatic" AND #OPC_Enable THEN
+            
+            REGION CAROSEL MAIN STATE
+                CASE #State_Carrousel_Main OF
+                    0:  //Pre operational state
+                        #State_Carrousel_Main := 10;
+                        
+                    10: //Idle waiting for task
+                        IF "Control_DB"."Carrousel_Order Table".Task_Data_Available THEN
+                            #State_Carrousel_Main := 20;
+                        END_IF;
+                        
+                    20: //Determine the type of task
+                        ID_Decode_F(ID := "Control_DB"."Carrousel_Order Table".Source_Location,
+                                      ID_Decoded := #Source_Location_Carousel);
+                        ID_Decode_F(ID := "Control_DB"."Carrousel_Order Table".Destination_Location,
+                                      ID_Decoded := #Destination_Location_Carousel);
+                        
+                        // Transfer Pallet Roller to Roller  
+                        IF "Control_DB"."Carrousel_Order Table".Task_Type = 6 AND
+                            #Source_Location_Carousel.Device_Type = 17 AND #Destination_Location_Carousel.Device_Type = 18 THEN // Roller to Roller POP UP 3 TO 4
+                            #State_Carrousel_P3TP4 := 30;//30
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                        ELSIF "Control_DB"."Carrousel_Order Table".Task_Type = 6 AND
+                            #Source_Location_Carousel.Device_Type = 18 AND #Destination_Location_Carousel.Device_Type = 14 THEN // Roller to Roller POP4 TO OUTBOUND
+                            #State_Carrousel_P4TO := 30;//30
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                        ELSIF "Control_DB"."Carrousel_Order Table".Task_Type = 6 AND
+                            #Source_Location_Carousel.Device_Type = 13 AND #Destination_Location_Carousel.Device_Type = 15 THEN // Roller to Roller POP4 TO OUTBOUND
+                            #State_Carrousel_ITP1 := 30;//30
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                        ELSIF "Control_DB"."Carrousel_Order Table".Task_Type = 6 AND
+                            #Source_Location_Carousel.Device_Type = 15 AND #Destination_Location_Carousel.Device_Type = 16 THEN // Roller to Roller POP4 TO OUTBOUND
+                            #State_Carrousel_P1TP2 := 30;//30
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                        ELSIF "Control_DB"."Carrousel_Order Table".Task_Type = 16 THEN //Barcode scanner OR Roller To Roller
+                            #State_Carrousel_ITP1 := 30;//30
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                        ELSIF "Control_DB"."Carrousel_Order Table".Task_Type = 14 THEN// Profile Station 
+                            #State_Carrousel_P1TP2 := 30;//30
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                            
+                            // Transfer Pallet Chain to Chain
+                        ELSIF "Control_DB"."Carrousel_Order Table".Task_Type = 7 THEN
+                            #State_Carrousel_CTC := 80;//80
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                            // Transfer to pick station (From Pop Conveyor 4)
+                        ELSIF "Control_DB"."Carrousel_Order Table".Task_Type = 8 THEN
+                            #State_Carrousel_P4TPICK := 130;//130
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                            // Transfer from Pick station (To Pop Conveyor 1)
+                        ELSIF "Control_DB"."Carrousel_Order Table".Task_Type = 9 THEN
+                            #State_Carrousel_PICKTP1 := 180;//180
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                            // Start weigh measurement (Weigh Station)
+                        ELSIF "Control_DB"."Carrousel_Order Table".Task_Type = 10 THEN
+                            #State_Carrousel_Weigh := 230;//230
+                            
+                        END_IF;
+                END_CASE;
+            END_REGION
+            
+            REGION Transfer Pallet Roller to Roller POP UP 3 TO POP UP 4
+                CASE #State_Carrousel_P3TP4 OF
+                    0: //IDLE
+                        ;
+                    30: //Check which conveyor
+                        #State_Carrousel_Main := 0;//Reset Main OPC State 
+                        
+                        //Pop conveyor 3 to popup conveyor 4    
+                        IF "Control_DB".PopUp_Cnv[3].Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[4].Cnv_Occupied AND "Control_DB".PopUp_Cnv[3].Inputs."Lift Up" AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Up"
+                        THEN //All good
+                            #State_Carrousel_P3TP4 := 50;// Roller Transfer
+                        ELSIF "Control_DB".PopUp_Cnv[3].Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[4].Cnv_Occupied AND (NOT "Control_DB".PopUp_Cnv[3].Inputs."Lift Up" OR NOT "Control_DB".PopUp_Cnv[4].Inputs."Lift Up")
+                        THEN //Lift
+                            #State_Carrousel_P3TP4 := 40;// Lift pop up 3 OR 4
+                        ELSE
+                            ; //Error: the destination location is not possible
+                            #State_Carrousel_P3TP4 := 400;
+                        END_IF;
+                        
+                    40:  //Lift PopUps
+                        //POPUP 3 TO 4
+                        "Control_DB".PopUp_Cnv[3].Instruction.Lift_Up := NOT "Control_DB".PopUp_Cnv[3].Running AND NOT "Control_DB".PopUp_Cnv[3].Inputs."Lift Up";
+                        "Control_DB".PopUp_Cnv[4].Instruction.Lift_Up := NOT "Control_DB".PopUp_Cnv[4].Running AND NOT "Control_DB".PopUp_Cnv[4].Inputs."Lift Up";
+                        IF "Control_DB".PopUp_Cnv[3].Inputs."Lift Up" AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Up" THEN
+                            #State_Carrousel_P3TP4 := 50;
+                        END_IF;
+                        
+                    50: //Start the transfer
+                        //Popup 3 TO Popup 4 conveyors
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[4].SM_State;//Current machine state
+                        "Control_DB".PopUp_Cnv[4].Instruction.Start_Transfer := NOT "Control_DB".PopUp_Cnv[4].Running;
+                        "Control_DB".PopUp_Cnv[3].Instruction.Start_Transfer := NOT "Control_DB".PopUp_Cnv[3].Running;
+                        IF "Control_DB".PopUp_Cnv[4].Running AND "Control_DB".PopUp_Cnv[3].Running THEN
+                            "Control_DB"."Carrousel_Order Table".Movement_Ready := TRUE;
+                            "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;
+                            #State_Carrousel_P3TP4 := 60;
+                        END_IF;
+                        
+                    60: //Wait for the transfer to complete
+                        //Popup 3 TO PopUp 4 conveyors
+                        IF "Control_DB".PopUp_Cnv[4].Done AND "Control_DB".PopUp_Cnv[3].Done
+                        THEN
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[4].SM_State;
+                            "Control_DB".Movement_Completed.RTR_P3TP4 := TRUE;
+                            #State_Carrousel_P3TP4 := 70;
+                        END_IF;
+                        
+                        
+                    70: //Wait for the ACK before we go back to Idle
+                        //Popup 3 TO PopUp 4 conveyors
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[4].SM_State;
+                        
+                        IF "Control_DB"."Carrousel_Order Table".Movement_Request_Complete_Ack THEN
+                            #State_Carrousel_P3TP4 := 250;
+                        END_IF;
+                        
+                    250: //Reset all variable and return to idle
+                        FOR #i := 3 TO 4 DO
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_Metadata := '';
+                            "Control_DB".PopUp_Cnv[#i].Current_Task_Type := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                        END_FOR;
+                        
+                        "Error_Word_1".%X1 := FALSE;
+                        
+                        #State_Carrousel_P3TP4 := 0;
+                        
+                    400:// Error state
+                        IF "Reset_All"
+                        THEN
+                            #State_Carrousel_P3TP4 := 250;
+                        END_IF;
+                END_CASE;
+            END_REGION
+            
+            REGION Transfer Pallet Roller TO Roller POP UP 4 TO OUTBOUND
+                CASE #State_Carrousel_P4TO OF
+                    0: //IDLE
+                        ;
+                        
+                    30: //Check which conveyor
+                        #State_Carrousel_Main := 0;//Reset Main OPC State 
+                            //Pop conveyor 4 to Outbound conveyor
+                        IF "Control_DB".PopUp_Cnv[4].Cnv_Occupied AND
+                            NOT "Control_DB".Outbound_Cnv.Cnv_Occupied AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Up"
+                        THEN //All good
+                            #State_Carrousel_P4TO := 50;// Roller Transfer
+                        ELSIF "Control_DB".PopUp_Cnv[4].Cnv_Occupied AND
+                            NOT "Control_DB".Outbound_Cnv.Cnv_Occupied AND NOT "Control_DB".PopUp_Cnv[4].Inputs."Lift Up"
+                        THEN //Lift
+                            #State_Carrousel_P4TO := 40;// Lift pop up 4
+                        ELSE
+                            ; //Error: the destination location is not possible
+                            #State_Carrousel_P4TO := 400;
+                        END_IF;
+                        
+                    40:  //Lift PopUps
+                            //POPUP 4 TO OUTBOUND CONVEYOR
+                            "Control_DB".PopUp_Cnv[4].Instruction.Lift_Up := NOT "Control_DB".PopUp_Cnv[4].Running AND NOT "Control_DB".PopUp_Cnv[4].Inputs."Lift Up";
+                            IF "Control_DB".PopUp_Cnv[4].Inputs."Lift Up" THEN
+                                #State_Carrousel_P4TO := 50;
+                            END_IF;
+                        
+                    50: //Start the transfer
+                        //Popup 4 TO Outbound conveyors
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Outbound_Cnv.SM_State;//Current machine state
+                            "Control_DB".Outbound_Cnv.Instruction.Start_Transfer := NOT "Control_DB".Outbound_Cnv.Running;
+                            "Control_DB".PopUp_Cnv[4].Instruction.Start_Transfer := NOT "Control_DB".PopUp_Cnv[4].Running;
+                            IF "Control_DB".Outbound_Cnv.Running AND "Control_DB".PopUp_Cnv[4].Running THEN
+                                "Control_DB"."Carrousel_Order Table".Movement_Ready := TRUE;
+                                #State_Carrousel_P4TO := 60;
+                            END_IF;
+                            
+                    60: //Wait for the transfer to complete
+                        //Popup 4 TO Outbound conveyors
+                        IF "Control_DB".Outbound_Cnv.Done AND "Control_DB".PopUp_Cnv[4].Done
+                        THEN
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Outbound_Cnv.SM_State;
+                            "Control_DB".Movement_Completed.RTR_P4TO := TRUE;
+                            #State_Carrousel_P4TO := 70;
+                        END_IF;
+                        
+                    70: //Wait for the ACK before we go back to Idle
+                            //Popup 4 TO Outbound conveyors
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Outbound_Cnv.SM_State;
+                        
+                        IF "Control_DB"."Carrousel_Order Table".Movement_Request_Complete_Ack THEN
+                            #State_Carrousel_P4TO := 250;
+                        END_IF;
+                        
+                    250: //Reset all variable and return to idle
+                        
+                        //Reset conveyor variables
+                        "Control_DB".Outbound_Cnv.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".Outbound_Cnv.Instruction.Task_ID := 0;
+                        "Control_DB".Outbound_Cnv.Instruction.Task_Metadata := '';
+                        "Control_DB".Outbound_Cnv.Current_Task_Type := 0;
+                        "Control_DB".Outbound_Cnv.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".Outbound_Cnv.Instruction.Transfer_To_ID := 0;
+                        
+                        FOR #i := 4 TO 4 DO
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_Metadata := '';
+                            "Control_DB".PopUp_Cnv[#i].Current_Task_Type := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                        END_FOR;
+                        
+                        "Error_Word_1".%X1 := FALSE;
+                        
+                        #State_Carrousel_P4TO := 0;
+                        
+                    400:// Error state
+                        IF "Reset_All"
+                        THEN
+                            #State_Carrousel_P4TO := 250;
+                        END_IF;
+                END_CASE;
+            END_REGION
+            
+            REGION Transfer Pallet Roller TO Roller INBOUND TO POP UP 1
+                CASE #State_Carrousel_ITP1 OF
+                    0: //IDLE
+                            "Control_DB".PopUp_Cnv[1].Instruction.Stop := FALSE;
+                            
+                    30: //Check which conveyor
+                        #State_Carrousel_Main := 0;//Reset Main OPC State 
+                        //Inbound conveyor to popup conveyor 1
+                        IF "Control_DB".Inbound_Cnv.Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[1].Cnv_Occupied AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Up"
+                        THEN //All good
+                            #State_Carrousel_ITP1 := 50;// Roller Transfer
+                        ELSIF "Control_DB".Inbound_Cnv.Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[1].Cnv_Occupied AND NOT "Control_DB".PopUp_Cnv[1].Inputs."Lift Up"
+                        THEN //Lift
+                            #State_Carrousel_ITP1 := 40;// Lift pop up 1 
+                        ELSE
+                            ; //Error: the destination location is not possible
+                            #State_Carrousel_ITP1 := 400;
+                        END_IF;
+                        
+                    40:  //Lift PopUps
+                        //INBOUND CONVEYOR TO POPUP 1
+                            "Control_DB".PopUp_Cnv[1].Instruction.Lift_Up := NOT "Control_DB".PopUp_Cnv[1].Running AND NOT "Control_DB".PopUp_Cnv[1].Inputs."Lift Up";
+                            IF "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" THEN
+                                "Control_DB".PopUp_Cnv[1].Instruction.Lift_Up := FALSE;
+                                #State_Carrousel_ITP1 := 50;
+                            END_IF;
+                            
+                    50: //Start the transfer
+                        //Inbound to popup 1 conveyors
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[1].SM_State;//Current machine state
+                            "Control_DB".PopUp_Cnv[1].Instruction.Start_Transfer := NOT "Control_DB".PopUp_Cnv[1].Running AND "Control_DB".Inbound_Cnv.SM_State = 30;
+                            "Control_DB".Inbound_Cnv.Instruction.Start_Transfer := NOT "Control_DB".Inbound_Cnv.Running;
+                            IF "Control_DB".PopUp_Cnv[1].Running AND "Control_DB".Inbound_Cnv.Running THEN
+                                "Control_DB"."Carrousel_Order Table".Movement_Ready := TRUE;
+                                #State_Carrousel_ITP1 := 60;
+                            END_IF;
+                        
+                    60: //Wait for the transfer to complete
+                        //Inbound to popup 1 conveyors
+                        IF "Control_DB".PopUp_Cnv[1].Done AND "Control_DB".Inbound_Cnv.Done
+                        THEN
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[1].SM_State;
+                            "Control_DB".Movement_Completed.RTR_ITP1 := TRUE;
+                            #State_Carrousel_ITP1 := 70;
+                        END_IF;
+                        
+                    70: //Wait for the ACK before we go back to Idle
+                        //Inbound to popup 1 conveyors
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[1].SM_State;
+                            
+                        IF "Control_DB"."Carrousel_Order Table".Movement_Request_Complete_Ack THEN
+                            #State_Carrousel_ITP1 := 250;
+                        END_IF;
+                        
+                    250: //Reset all variable and return to idle
+                        
+                        //Reset conveyor variables
+                        "Control_DB".Inbound_Cnv.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".Inbound_Cnv.Instruction.Task_ID := 0;
+                        "Control_DB".Inbound_Cnv.Instruction.Task_Metadata := '';
+                        "Control_DB".Inbound_Cnv.Current_Task_Type := 0;
+                        "Control_DB".Inbound_Cnv.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".Inbound_Cnv.Instruction.Transfer_To_ID := 0;
+                        
+                        FOR #i := 1 TO 1 DO
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_Metadata := '';
+                            "Control_DB".PopUp_Cnv[#i].Current_Task_Type := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Stop := TRUE;
+                        END_FOR;
+                        
+                        "Error_Word_1".%X1 := FALSE;
+                        
+                        #State_Carrousel_ITP1 := 0;
+                        
+                    400:// Error state
+                        IF "Reset_All"
+                        THEN
+                            #State_Carrousel_ITP1 := 250;
+                        END_IF;
+                END_CASE;
+            END_REGION
+            
+            REGION Transfer Pallet Roller TO Roller POP UP 1 TO POP UP 2
+                CASE #State_Carrousel_P1TP2 OF
+                    0: //IDLE
+                        ;
+                        
+                    30: //Check which conveyor
+                        #State_Carrousel_Main := 0;//Reset Main OPC State 
+                        
+                            //Pop conveyor 1 to popup conveyor 2    
+                        IF "Control_DB".PopUp_Cnv[1].Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[2].Cnv_Occupied AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Up"
+                        THEN //All good
+                            #State_Carrousel_P1TP2 := 50;// Roller Transfer
+                        ELSIF "Control_DB".PopUp_Cnv[1].Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[2].Cnv_Occupied AND (NOT "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" OR NOT "Control_DB".PopUp_Cnv[2].Inputs."Lift Up")
+                        THEN //Lift
+                            #State_Carrousel_P1TP2 := 40;// Lift pop up 1 OR 2
+                        ELSE
+                            ; //Error: the destination location is not possible
+                            #State_Carrousel_P1TP2 := 400;
+                        END_IF;
+                        
+                    40:  //Lift PopUps
+                            //POPUP 1 TO 2
+                            "Control_DB".PopUp_Cnv[1].Instruction.Lift_Up := NOT "Control_DB".PopUp_Cnv[1].Running AND NOT "Control_DB".PopUp_Cnv[1].Inputs."Lift Up";
+                            "Control_DB".PopUp_Cnv[2].Instruction.Lift_Up := NOT "Control_DB".PopUp_Cnv[2].Running AND NOT "Control_DB".PopUp_Cnv[2].Inputs."Lift Up";
+                            IF "Control_DB".PopUp_Cnv[2].Inputs."Lift Up" AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" THEN
+                                "Control_DB".PopUp_Cnv[1].Instruction.Lift_Up := FALSE;
+                                "Control_DB".PopUp_Cnv[2].Instruction.Lift_Up := FALSE;
+                                #State_Carrousel_P1TP2 := 50;
+                            END_IF;
+                            
+                    50: //Start the transfer
+                        //Popup 1 TO Popup 2 conveyors
+                            "Control_DB".PopUp_Cnv[2].Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[1].ID;
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[2].SM_State;//Current machine state
+                            "Control_DB".PopUp_Cnv[2].Instruction.Start_Transfer := NOT "Control_DB".PopUp_Cnv[2].Running;
+                            "Control_DB".PopUp_Cnv[1].Instruction.Start_Transfer := NOT "Control_DB".PopUp_Cnv[1].Running;
+                            IF "Control_DB".PopUp_Cnv[2].Running AND "Control_DB".PopUp_Cnv[1].Running THEN
+                                "Control_DB"."Carrousel_Order Table".Movement_Ready := TRUE;
+                                #State_Carrousel_P1TP2 := 60;
+                            END_IF;
+                        
+                    60: //Wait for the transfer to complete
+                        //Popup 1 TO PopUp 2 conveyors
+                        IF "Control_DB".PopUp_Cnv[2].Done AND "Control_DB".PopUp_Cnv[1].Done
+                        THEN
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[2].SM_State;
+                            "Control_DB".Movement_Completed.RTR_P1TP2 := TRUE;
+                            #State_Carrousel_P1TP2 := 70;
+                        END_IF;
+                        
+                    70: //Wait for the ACK before we go back to Idle
+                        //Popup 1 TO PopUp 2 conveyors
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[2].SM_State;
+                            
+                        IF "Control_DB"."Carrousel_Order Table".Movement_Request_Complete_Ack THEN
+                            #State_Carrousel_P1TP2 := 250;
+                        END_IF;
+                        
+                    250: //Reset all variable and return to idle
+                        FOR #i := 1 TO 2 DO
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_Metadata := '';
+                            "Control_DB".PopUp_Cnv[#i].Current_Task_Type := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                        END_FOR;
+                        
+                        "Error_Word_1".%X1 := FALSE;
+                        
+                        #State_Carrousel_P1TP2 := 0;
+                        
+                    400:// Error state
+                        IF "Reset_All"
+                        THEN
+                            #State_Carrousel_P1TP2 := 250;
+                        END_IF;
+                END_CASE;
+            END_REGION
+            
+            REGION Transfer Pallet Chain TO Chain POP UP 2 TO POP UP 3
+                CASE #State_Carrousel_CTC OF
+                    0: //IDLE
+                        ;
+                        
+                    80: //Check which conveyor
+                        #State_Carrousel_Main := 0;//Reset Main OPC State 
+                        //Popup 2 conveyor to popup conveyor 3
+                        IF "Control_DB".PopUp_Cnv[2].Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[3].Cnv_Occupied AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" AND "Control_DB".PopUp_Cnv[3].Inputs."Lift Down"
+                        THEN //All good
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[3].SM_State;
+                            #State_Carrousel_CTC := 100;// Chain Transfer
+                        ELSIF "Control_DB".PopUp_Cnv[2].Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[3].Cnv_Occupied AND (NOT "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" OR NOT "Control_DB".PopUp_Cnv[3].Inputs."Lift Down")
+                        THEN //Lift
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[3].SM_State;
+                            #State_Carrousel_CTC := 90;// Lift pop up 2 OR 3 
+                        ELSE
+                            ; //Error: the destination location is not possible
+                            #State_Carrousel_CTC := 400;
+                        END_IF;
+                        
+                    90:  //Lift PopUps
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[3].SM_State;
+                        "Control_DB".PopUp_Cnv[2].Instruction.Lift_Down := NOT "Control_DB".PopUp_Cnv[2].Running AND NOT "Control_DB".PopUp_Cnv[2].Inputs."Lift Down";
+                        "Control_DB".PopUp_Cnv[3].Instruction.Lift_Down := NOT "Control_DB".PopUp_Cnv[3].Running AND NOT "Control_DB".PopUp_Cnv[3].Inputs."Lift Down";
+                        IF "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" AND "Control_DB".PopUp_Cnv[3].Inputs."Lift Down" THEN
+                            #State_Carrousel_CTC := 100;
+                        END_IF;
+                        
+                    100: //Start the transfer
+                        //Popup 2 to popup 3 conveyors
+                        "Control_DB".PopUp_Cnv[2].Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[3].ID;
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[3].SM_State;//Current machine state
+                        "Control_DB".PopUp_Cnv[3].Instruction.Start_Transfer := NOT "Control_DB".PopUp_Cnv[3].Running;
+                        "Control_DB".PopUp_Cnv[2].Instruction.Start_Transfer := NOT "Control_DB".PopUp_Cnv[2].Running;
+                        IF "Control_DB".PopUp_Cnv[3].Running AND "Control_DB".PopUp_Cnv[2].Running THEN
+                            "Control_DB"."Carrousel_Order Table".Movement_Ready := TRUE;
+                            //"Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;
+                            #State_Carrousel_CTC := 110;
+                        END_IF;
+                        
+                    110: //Wait for the transfer to complete
+                        //Popup 2 to popup 3 conveyors
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[3].SM_State;
+                        IF "Control_DB".PopUp_Cnv[3].Done AND "Control_DB".PopUp_Cnv[2].Done
+                        THEN
+                            "Control_DB".Movement_Completed.RTR_P2TP3 := TRUE;
+                            #State_Carrousel_CTC := 120;
+                        END_IF;
+                        
+                    120: //Wait for the ACK before we go back to Idle
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[3].SM_State;
+                        IF "Control_DB"."Carrousel_Order Table".Movement_Request_Complete_Ack THEN
+                            #State_Carrousel_CTC := 250;
+                        END_IF;
+                        
+                        //=========================== Reset and Error States ===========================
+                    250: //Reset all variable and return to idle
+                        FOR #i := 2 TO 3 DO
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer := FALSE;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Task_Metadata := '';
+                            "Control_DB".PopUp_Cnv[#i].Current_Task_Type := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                            "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                        END_FOR;
+                        
+                        "Error_Word_1".%X1 := FALSE;
+                        
+                        #State_Carrousel_CTC := 0;
+                        
+                    400:// Error state
+                        IF "Reset_All"
+                        THEN
+                            #State_Carrousel_CTC := 250;
+                        END_IF;
+                END_CASE;
+            END_REGION
+                        
+            REGION Transfer TO pick station (From Pop Conveyor 4)
+                CASE #State_Carrousel_P4TPICK OF
+                    0: //IDLE
+                        ;
+                        
+                    130: //Check which conveyor
+                        #State_Carrousel_Main := 0;//Reset Main OPC State 
+                        //Pop conveyor 4 to popup conveyor 1 (Pick Station)    
+                        IF "Control_DB".PopUp_Cnv[4].Cnv_Occupied AND
+                            NOT "Control_DB".Pick_Station.Cnv_Occupied AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Down" AND NOT "Control_DB".Pick_Station.Cnv_Occupied
+                        THEN //All good
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Pick_Station.SM_State;
+                            #State_Carrousel_P4TPICK := 150;// Chain Transfer
+                        ELSIF "Control_DB".PopUp_Cnv[4].Cnv_Occupied AND
+                            NOT "Control_DB".Pick_Station.Cnv_Occupied AND "Control_DB".Pick_Station.Cnv_Occupied AND
+                            (NOT "Control_DB".PopUp_Cnv[4].Inputs."Lift Down" OR NOT "Control_DB".PopUp_Cnv[1].Inputs."Lift Up")
+                        THEN //Lift
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Pick_Station.SM_State;
+                            #State_Carrousel_P4TPICK := 140;// Lift pop up 1 AND 4
+                        ELSIF "Control_DB".PopUp_Cnv[4].Cnv_Occupied AND
+                            NOT "Control_DB".Pick_Station.Cnv_Occupied AND NOT "Control_DB".Pick_Station.Cnv_Occupied AND
+                            (NOT "Control_DB".PopUp_Cnv[4].Inputs."Lift Down")
+                        THEN //Lift
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Pick_Station.SM_State;
+                            #State_Carrousel_P4TPICK := 135;// Lift pop up 4
+                        ELSE
+                            ; //Error: the destination location is not possible
+                            #State_Carrousel_P4TPICK := 400;
+                        END_IF;
+                        
+                    135:  //LIFT DOWN POP UP 4
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[4].SM_State;
+                        "Control_DB".PopUp_Cnv[4].Instruction.Lift_Down := NOT "Control_DB".PopUp_Cnv[4].Running AND NOT "Control_DB".PopUp_Cnv[4].Inputs."Lift Down";
+                        IF "Control_DB".PopUp_Cnv[4].Inputs."Lift Down" THEN
+                            #State_Carrousel_P4TPICK := 150;
+                        END_IF;
+                        
+                    140:  //Lift UP PopUp 1 LIFT DOWN POP UP 4
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[1].SM_State;
+                        "Control_DB".PopUp_Cnv[1].Instruction.Lift_Up := NOT "Control_DB".PopUp_Cnv[1].Running AND NOT "Control_DB".PopUp_Cnv[1].Inputs."Lift Up";
+                        "Control_DB".PopUp_Cnv[4].Instruction.Lift_Down := NOT "Control_DB".PopUp_Cnv[4].Running AND NOT "Control_DB".PopUp_Cnv[4].Inputs."Lift Down";
+                        IF "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Down" THEN
+                            #State_Carrousel_P4TPICK := 150;
+                        END_IF;
+                        
+                    150: //Start the transfer
+                        //Popup 4 TO Pick station conveyors
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Pick_Station.SM_State;//Current machine state
+                        "Control_DB".Pick_Station.Instruction.Start_Transfer := NOT "Control_DB".Pick_Station.Running;
+                        IF "Control_DB".Pick_Station.Running THEN
+                            "Control_DB"."Carrousel_Order Table".Movement_Ready := TRUE;
+                            #State_Carrousel_P4TPICK := 160;
+                        END_IF;
+                        
+                    160: //Wait for the transfer to complete
+                        //Popup 4 TO Pick station conveyors
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Pick_Station.SM_State;
+                        IF 
+                            "Control_DB".Pick_Station.Done
+                        THEN
+                            "Control_DB".Movement_Completed.Pop4_To_Pick := TRUE;
+                            #State_Carrousel_P4TPICK := 170;
+                        END_IF;
+                        
+                    170: //Wait for the ACK before we go back to Idle
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Pick_Station.SM_State;
+                        IF "Control_DB"."Carrousel_Order Table".Movement_Request_Complete_Ack THEN
+                            #State_Carrousel_P4TPICK := 250;
+                        END_IF;
+                        
+                    250: //Reset all variable and return to idle
+                        "Control_DB".Pick_Station.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".Pick_Station.Instruction.Task_ID := 0;
+                        "Control_DB".Pick_Station.Instruction.Task_Metadata := '';
+                        "Control_DB".Pick_Station.Current_Task_Type := 0;
+                        "Control_DB".Pick_Station.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".Pick_Station.Instruction.Transfer_To_ID := 0;
+                        
+                        "Error_Word_1".%X1 := FALSE;
+                        
+                        #State_Carrousel_P4TPICK := 0;
+                        
+                    400:// Error state
+                        IF "Reset_All"
+                        THEN
+                            #State_Carrousel_P4TPICK := 250;
+                        END_IF;
+                END_CASE;
+            END_REGION
+                        
+            REGION Transfer from Pick station (TO Pop Conveyor 1) 
+                CASE #State_Carrousel_PICKTP1 OF
+                    0: //IDLE
+                        ;
+                        
+                    180: //Check which conveyor
+                        #State_Carrousel_Main := 0;//Reset Main OPC State 
+                        //Pick to popup conveyor 1   
+                        IF "Control_DB".Pick_Station.Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[1].Cnv_Occupied AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Down"
+                        THEN //All good
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[1].SM_State;
+                            #State_Carrousel_PICKTP1 := 200;// Chain Transfer
+                        ELSIF "Control_DB".Pick_Station.Cnv_Occupied AND
+                            NOT "Control_DB".PopUp_Cnv[1].Cnv_Occupied AND NOT "Control_DB".PopUp_Cnv[1].Inputs."Lift Down"
+                        THEN //Lift
+                            "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[1].SM_State;
+                            #State_Carrousel_PICKTP1 := 190;// Lift pop up 1
+                        ELSE
+                            ; //Error: the destination location is not possible
+                            #State_Carrousel_PICKTP1 := 400;
+                        END_IF;
+                        
+                    190:  //Lift PopUps
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[1].SM_State;
+                        "Control_DB".PopUp_Cnv[1].Instruction.Lift_Down := NOT "Control_DB".PopUp_Cnv[1].Running AND NOT "Control_DB".PopUp_Cnv[1].Inputs."Lift Down";
+                        IF "Control_DB".PopUp_Cnv[1].Inputs."Lift Down" THEN
+                            #State_Carrousel_PICKTP1 := 200;
+                        END_IF;
+                        
+                    200: //Start the transfer
+                        //Pick station TO Popup 1 conveyors
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".PopUp_Cnv[1].SM_State;//Current machine state
+                        "Control_DB".Pick_Station.Instruction.Start_Transfer := NOT "Control_DB".Pick_Station.Running;
+                        IF "Control_DB".Pick_Station.Running AND NOT "Control_DB".Pick_Station.Done THEN
+                            "Control_DB"."Carrousel_Order Table".Movement_Ready := TRUE;
+                            //"Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;
+                            #State_Carrousel_PICKTP1 := 210;
+                        END_IF;
+                        
+                    210: //Wait for the transfer to complete
+                        //Pick station TO PopUp 1 conveyors
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Pick_Station.SM_State;
+                        IF "Control_DB".Pick_Station.Done THEN
+                            "Control_DB".Movement_Completed.Pick_To_Pop1 := TRUE;
+                            #State_Carrousel_PICKTP1 := 220;
+                        END_IF;
+                        
+                    220: //Wait for the ACK before we go back to Idle
+                        "Control_DB"."Carrousel_Order Table".SM_State := "Control_DB".Pick_Station.SM_State;
+                        IF "Control_DB"."Carrousel_Order Table".Movement_Request_Complete_Ack THEN
+                            #State_Carrousel_PICKTP1 := 250;
+                        END_IF;
+                        
+                    250: //Reset all variable and return to idle
+                        "Control_DB".Pick_Station.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".Pick_Station.Instruction.Task_ID := 0;
+                        "Control_DB".Pick_Station.Instruction.Task_Metadata := '';
+                        "Control_DB".Pick_Station.Current_Task_Type := 0;
+                        "Control_DB".Pick_Station.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".Pick_Station.Instruction.Transfer_To_ID := 0;
+                        
+                        "Error_Word_1".%X1 := FALSE;
+                        
+                        #State_Carrousel_PICKTP1 := 0;
+                        
+                    400:// Error state
+                        IF "Reset_All"
+                        THEN
+                            #State_Carrousel_PICKTP1 := 250;
+                        END_IF;
+                END_CASE;
+            END_REGION
+            
+            REGION Weigh Pallet 
+                CASE #State_Carrousel_Weigh OF
+                    0: //IDLE
+                        "IEC_Timer_0_DB_11".TON(IN := fALSE,
+                                                PT := T#0MS);
+                        "Control_DB"."Weighing Station".Start := fALSE;
+                        
+                    230:
+                        #State_Carrousel_Main := 0;//Reset Main OPC State 
+                        "Control_DB"."Weighing Station".Start := fALSE;
+                        #State_Carrousel_Weigh := 231;
+                        "Control_DB"."Carrousel_Order Table".Task_Data_Available := 0;
+                        
+                    231:
+                        "Control_DB"."Weighing Station".Start := TRUE;
+                        "Control_DB"."Carrousel_Order Table".Movement_Ready := TRUE;
+                        "Control_DB"."Carrousel_Order Table".SM_State := INT_TO_UINT("State_WS");
+                        //Lift PopUp 1
+                        "Control_DB".PopUp_Cnv[1].Instruction.Lift_Up := NOT "Control_DB".PopUp_Cnv[1].Running AND NOT "Control_DB".PopUp_Cnv[1].Inputs."Lift Up";
+                        "IEC_Timer_0_DB_11".TON(IN := "Control_DB".PopUp_Cnv[1].Inputs."Lift Up",
+                                               PT := T#1S);
+                       IF "Control_DB"."Weighing Station".Running AND ("IEC_Timer_0_DB_11".Q OR "Control_DB".PopUp_Cnv[1].Inputs."Lift Up") THEN
+                           "Control_DB"."Weighing Station".Start := fALSE;
+                           #State_Carrousel_Weigh := 232;
+                       ELSIF "IEC_Timer_0_DB_11".Q AND NOT "Control_DB"."Weighing Station".Running THEN
+                           #State_Carrousel_Weigh := 230;
+                       END_IF;
+                        
+                    232:
+                        "IEC_Timer_0_DB_11".TON(IN := fALSE,
+                                                PT := T#0MS);
+                        "Control_DB"."Carrousel_Order Table".SM_State := INT_TO_UINT("State_WS");
+                        IF "Control_DB"."Weighing Station".Done THEN
+                                #State_Carrousel_Weigh := 233;
+                            END_IF;
+                            
+                    233:
+                        "Control_DB".Movement_Completed.WeighingStation := TRUE;
+                        IF "Control_DB"."Carrousel_Order Table".Movement_Request_Complete_Ack THEN
+                            "Control_DB".Movement_Completed.WeighingStation :=FALSE;
+                            #State_Carrousel_Weigh := 0;
+                        END_IF;
+                    // ELSE
+                    //     ;
+                END_CASE;
+            END_REGION
+                
+                ELSIF "Carrousel_In_Automatic" AND NOT #OPC_Enable THEN
+                    "Control_DB"."Carrousel_Order Table".Task_Metadata := '';
+                    //Reset all variable and return to idle
+                    
+                    //Reset the OPC control variables
+                    "Control_DB"."Carrousel_Order Table".SM_State := 0;
+                    "Control_DB"."Carrousel_Order Table".Movement_Ready := FALSE;
+                    "Control_DB"."Carrousel_Order Table".Movement_Request_Complete := FALSE;
+                    
+                    "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+                    "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+                    "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+                    "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+                    "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location
+                    
+                    #Destination_Location_Carousel.Device_Type := 0;
+                    #Source_Location_Carousel.Device_Type := 0;
+                    
+                    //Reset conveyor variables
+                    "Control_DB".Inbound_Cnv.Instruction.Start_Transfer := FALSE;
+                    "Control_DB".Inbound_Cnv.Instruction.Task_ID := 0;
+                    "Control_DB".Inbound_Cnv.Instruction.Task_Metadata := '';//
+                    "Control_DB".Inbound_Cnv.Instruction.Transfer_From_ID := 0;
+                    "Control_DB".Inbound_Cnv.Instruction.Transfer_To_ID := 0;
+                    
+                    "Control_DB".Outbound_Cnv.Instruction.Start_Transfer := FALSE;
+                    "Control_DB".Outbound_Cnv.Instruction.Task_ID := 0;
+                    "Control_DB".Outbound_Cnv.Instruction.Task_Metadata := '';//
+                    "Control_DB".Outbound_Cnv.Instruction.Transfer_From_ID := 0;
+                    "Control_DB".Outbound_Cnv.Instruction.Transfer_To_ID := 0;
+                    
+                    FOR #i := 1 TO 4 DO
+                        "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer := FALSE;
+                        "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID := 0;
+                        "Control_DB".PopUp_Cnv[#i].Instruction.Task_Metadata := '';
+                        "Control_DB".PopUp_Cnv[#i].Current_Task_Type := 0;
+                        "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                        "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                    END_FOR;
+                END_IF;
+    END_REGION
+END_REGION
+
+REGION SHUTTLES POSITION
+    FOR #f := 1 TO "Settings_DB".System_Settings.Shuttle_Count DO
+        "Control_DB".Shuttles_Position[#f].x := "Shuttle_MQTT_DB".Shuttle_MQTT[#f].Message.Shuttle_Status.Position_X;
+        "Control_DB".Shuttles_Position[#f].y := "Shuttle_MQTT_DB".Shuttle_MQTT[#f].Message.Shuttle_Status.Position_Y;
+    END_FOR;
+END_REGION
+
+REGION SM STATE MAESTRO
+    // Statement section - Send the State machine to Maestro "Emulating" openTCS states
+    // 
+   // // "Control_DB".WMS_OPC_UA.SM_State_Maestro; // State to send Devices to Maestro
+   //  IF #State_VTD = 0 THEN
+        
+   //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 0;//"LIMBO" condition 
+        
+   //  ELSIF "Control_DB"."VTD_Order Table".SM_State = 10 THEN
+   //      ;
+   //      // "Control_DB".WMS_OPC_UA.SM_State_Maestro := 1;//RAW conidtion => Maestro will write this condition
+        
+   //      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
+   //      // QUEUED ANY DEVICE    
+   //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Data_Available AND #State >= 10 AND #State <= 20 THEN
+   //  ELSIF "Control_DB"."VTD_Order Table".Task_Data_Available AND NOT "Control_DB"."VTD_Order Table".Movement_Ready AND "Control_DB"."VTD_Order Table".SM_State_Maestro = 1 THEN
+   //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 2;//QUEUED condition =>ANY device (Conveyor, VTD OR Shuttle)  
+        
+   //      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////       
+   //      // Any Device RUNNING on the system (VTD - Conveyor Transfer - Shuttle Transfer) 
+   //  ELSIF ("Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+   //      OR "Control_DB"."VTD_Order Table".Task_Type = 1 OR "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3)
+   //      AND "Control_DB"."VTD_Order Table".Movement_Ready AND NOT "Control_DB"."VTD_Order Table".Movement_Request_Complete THEN
+        
+   //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 3;//RUNNING condition
+        
+   //      // Any Device DONE on the system (VTD - Coneveyor Transfer - Shuttle Transfer) 
+   //  ELSIF ("Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+   //      OR "Control_DB"."VTD_Order Table".Task_Type = 1 OR "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3)
+   //      AND (*"Control_DB".WMS_OPC_UA.Movement_Request_Complete AND "Control_DB".WMS_OPC_UA.Movement_Ready*)#State_VTD = 120 OR #State_VTD = 45 OR #State_VTD = 90 THEN
+        
+   //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 4;//DONE condition
+        
+   //      // Any Device ERRORS on the system (VTD - Coneveyor Transfer - Shuttle Transfer)  
+   //  ELSIF ("Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+   //      OR "Control_DB"."VTD_Order Table".Task_Type = 1 OR "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3)
+   //      AND "Control_DB"."VTD_Order Table".SM_State = 400 THEN
+        
+   //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 5;//ERROR condition => Conveyors   
+   //  END_IF;
+   //      /////////////////////////////////////////////////////////////////////////////////////////////        
+   
+   
+   
+    // "Control_DB".WMS_OPC_UA.SM_State_Maestro; // State to send Devices to Maestro
+     IF #State_VTD = 0 THEN
+         ;
+         //"System_DB_VTD".OrderTable[1].OPC_Control.SM_State_Maestro := 0;//"LIMBO" condition 
+    
+     ELSIF "Control_DB"."VTD_Order Table".SM_State = 10 THEN
+         ;
+         // "Control_DB".WMS_OPC_UA.SM_State_Maestro := 1;//RAW conidtion => Maestro will write this condition
+    
+         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
+         // QUEUED ANY DEVICE    
+     // ELSIF "Control_DB".WMS_OPC_UA.Task_Data_Available AND #State >= 10 AND #State <= 20 THEN
+     ELSIF "Control_DB"."VTD_Order Table".Task_Data_Available AND NOT "Control_DB"."VTD_Order Table".Movement_Ready AND "System_DB_VTD".OrderTable[1].OPC_Control.SM_State_Maestro = 1 THEN
+         "System_DB_VTD".OrderTable[1].OPC_Control.SM_State_Maestro := 2;//QUEUED condition =>ANY device (Conveyor, VTD OR Shuttle)  
+    
+         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////       
+         // Any Device RUNNING on the system (VTD - Conveyor Transfer - Shuttle Transfer) 
+     ELSIF ("Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+         OR "Control_DB"."VTD_Order Table".Task_Type = 1 OR "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3)
+         AND "Control_DB"."VTD_Order Table".Movement_Ready AND NOT "Control_DB"."VTD_Order Table".Movement_Request_Complete THEN
+    
+         "System_DB_VTD".OrderTable[1].OPC_Control.SM_State_Maestro  := 3;//RUNNING condition
+    
+         // Any Device DONE on the system (VTD - Coneveyor Transfer - Shuttle Transfer) 
+     ELSIF ("Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+         OR "Control_DB"."VTD_Order Table".Task_Type = 1 OR "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3)
+         AND (*"Control_DB".WMS_OPC_UA.Movement_Request_Complete AND "Control_DB".WMS_OPC_UA.Movement_Ready*)#State_VTD = 120 OR #State_VTD = 45 OR #State_VTD = 90 THEN
+    
+         "System_DB_VTD".OrderTable[1].OPC_Control.SM_State_Maestro := 4;//DONE condition
+    
+         // Any Device ERRORS on the system (VTD - Coneveyor Transfer - Shuttle Transfer)  
+     ELSIF ("Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+         OR "Control_DB"."VTD_Order Table".Task_Type = 1 OR "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3)
+         AND "Control_DB"."VTD_Order Table".SM_State = 400 THEN
+    
+         "System_DB_VTD".OrderTable[1].OPC_Control.SM_State_Maestro := 5;//ERROR condition => Conveyors   
+     END_IF;
+         /////////////////////////////////////////////////////////////////////////////////////////////        
+         
+   
+   //  //     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////       
+   //  //     // Any VTD RUNNING on the system (VTD) 
+   //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 1
+   //  //     AND "Control_DB".WMS_OPC_UA.SM_State >= 35 AND "Control_DB".WMS_OPC_UA.SM_State < 100 AND #State > 20 THEN
+        
+   //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 3;//RUNNING condition => VTD
+        
+   //  //     // Any VTD DONE on the system (VTD) 
+   //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 1
+   //  //     AND "Control_DB".WMS_OPC_UA.SM_State = 100 AND #State > 20 THEN
+        
+   //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 4;//DONE condition => VTD
+        
+   //  //     // Any VTD ERRORS on the system (VTD) 
+   //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 1
+   //  //     AND "Control_DB".WMS_OPC_UA.SM_State = 400 THEN
+        
+   //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 5;//ERROR condition => VTD   
+        
+        
+        
+   //  //     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////       
+   //  //     // Any Shuttle Interlock RUNNING on the system (Shuttle) 
+   //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 2 OR "Control_DB".WMS_OPC_UA.Task_Type = 3
+   //  //     AND "Control_DB".WMS_OPC_UA.SM_State >= 35 AND "Control_DB".WMS_OPC_UA.SM_State < 100 AND #State > 20 THEN
+        
+   //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 3;//RUNNING condition => Shuttle
+        
+   //  //     // Any Shuttle Interlock  DONE on the system (Shuttle) 
+   //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 2 OR "Control_DB".WMS_OPC_UA.Task_Type = 3
+   //  //     AND "Control_DB".WMS_OPC_UA.SM_State = 100 AND #State > 20 THEN
+        
+   //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 4;//DONE condition => Shuttle
+        
+   //  //     // Any Shuttle Interlock ERRORS on the system (Shuttle) 
+   //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 2 OR "Control_DB".WMS_OPC_UA.Task_Type = 3
+   //  //     AND "Control_DB".WMS_OPC_UA.SM_State = 400 THEN
+        
+   //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 5;//ERROR condition => Shuttle          
+        
+   //  // END_IF;
+    
+    
+    // // "Control_DB".WMS_OPC_UA.SM_State_Maestro; // State to send Devices to Maestro
+    //  IF #State_VTD = 0 THEN
+    
+    //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 0;//"LIMBO" condition 
+    
+    //  ELSIF "Control_DB"."VTD_Order Table".SM_State = 10 THEN
+    //      ;
+    //      // "Control_DB".WMS_OPC_UA.SM_State_Maestro := 1;//RAW conidtion => Maestro will write this condition
+    
+    //      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
+    //      // QUEUED ANY DEVICE    
+    //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Data_Available AND #State >= 10 AND #State <= 20 THEN
+    //  ELSIF "Control_DB"."VTD_Order Table".Task_Data_Available AND NOT "Control_DB"."VTD_Order Table".Movement_Ready AND "Control_DB"."VTD_Order Table".SM_State_Maestro = 1 THEN
+    //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 2;//QUEUED condition =>ANY device (Conveyor, VTD OR Shuttle)  
+    
+    //      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////       
+    //      // Any Device RUNNING on the system (VTD - Conveyor Transfer - Shuttle Transfer) 
+    //  ELSIF ("Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+    //      OR "Control_DB"."VTD_Order Table".Task_Type = 1 OR "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3)
+    //      AND "Control_DB"."VTD_Order Table".Movement_Ready AND NOT "Control_DB"."VTD_Order Table".Movement_Request_Complete THEN
+    
+    //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 3;//RUNNING condition
+    
+    //      // Any Device DONE on the system (VTD - Coneveyor Transfer - Shuttle Transfer) 
+    //  ELSIF ("Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+    //      OR "Control_DB"."VTD_Order Table".Task_Type = 1 OR "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3)
+    //      AND (*"Control_DB".WMS_OPC_UA.Movement_Request_Complete AND "Control_DB".WMS_OPC_UA.Movement_Ready*)#State_VTD = 120 OR #State_VTD = 45 OR #State_VTD = 90 THEN
+    
+    //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 4;//DONE condition
+    
+    //      // Any Device ERRORS on the system (VTD - Coneveyor Transfer - Shuttle Transfer)  
+    //  ELSIF ("Control_DB"."VTD_Order Table".Task_Type = 4 OR "Control_DB"."VTD_Order Table".Task_Type = 5
+    //      OR "Control_DB"."VTD_Order Table".Task_Type = 1 OR "Control_DB"."VTD_Order Table".Task_Type = 2 OR "Control_DB"."VTD_Order Table".Task_Type = 3)
+    //      AND "Control_DB"."VTD_Order Table".SM_State = 400 THEN
+    
+    //      "Control_DB"."VTD_Order Table".SM_State_Maestro := 5;//ERROR condition => Conveyors   
+    //  END_IF;
+    //      /////////////////////////////////////////////////////////////////////////////////////////////        
+    
+    //  //     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////       
+    //  //     // Any VTD RUNNING on the system (VTD) 
+    //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 1
+    //  //     AND "Control_DB".WMS_OPC_UA.SM_State >= 35 AND "Control_DB".WMS_OPC_UA.SM_State < 100 AND #State > 20 THEN
+    
+    //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 3;//RUNNING condition => VTD
+    
+    //  //     // Any VTD DONE on the system (VTD) 
+    //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 1
+    //  //     AND "Control_DB".WMS_OPC_UA.SM_State = 100 AND #State > 20 THEN
+    
+    //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 4;//DONE condition => VTD
+    
+    //  //     // Any VTD ERRORS on the system (VTD) 
+    //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 1
+    //  //     AND "Control_DB".WMS_OPC_UA.SM_State = 400 THEN
+    
+    //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 5;//ERROR condition => VTD   
+    
+    
+    
+    //  //     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////       
+    //  //     // Any Shuttle Interlock RUNNING on the system (Shuttle) 
+    //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 2 OR "Control_DB".WMS_OPC_UA.Task_Type = 3
+    //  //     AND "Control_DB".WMS_OPC_UA.SM_State >= 35 AND "Control_DB".WMS_OPC_UA.SM_State < 100 AND #State > 20 THEN
+    
+    //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 3;//RUNNING condition => Shuttle
+    
+    //  //     // Any Shuttle Interlock  DONE on the system (Shuttle) 
+    //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 2 OR "Control_DB".WMS_OPC_UA.Task_Type = 3
+    //  //     AND "Control_DB".WMS_OPC_UA.SM_State = 100 AND #State > 20 THEN
+    
+    //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 4;//DONE condition => Shuttle
+    
+    //  //     // Any Shuttle Interlock ERRORS on the system (Shuttle) 
+    //  // ELSIF "Control_DB".WMS_OPC_UA.Task_Type = 2 OR "Control_DB".WMS_OPC_UA.Task_Type = 3
+    //  //     AND "Control_DB".WMS_OPC_UA.SM_State = 400 THEN
+    
+    //  //     "Control_DB".WMS_OPC_UA.SM_State_Maestro := 5;//ERROR condition => Shuttle          
+    
+    //  // END_IF;
+    
+END_REGION
+
+
+REGION SM STATE MAESTRO - Carousel
+    // Statement section - Send the State machine to Maestro "Emulating" openTCS states
+    // 
+    
+    (*
+    IF #State_Carrousel = 0 THEN
+        
+        "Control_DB"."Carrousel_Order Table".SM_State_Maestro := 0;//"LIMBO" condition 
+        
+    ELSIF "Control_DB"."Carrousel_Order Table".SM_State = 10 THEN
+        ;
+        // "Control_DB".WMS_OPC_UA.SM_State_Maestro := 1;//RAW conidtion => Maestro will write this condition
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
+        // QUEUED ANY DEVICE    
+        // ELSIF "Control_DB".WMS_OPC_UA.Task_Data_Available AND #State >= 10 AND #State <= 20 THEN
+    ELSIF "Control_DB"."Carrousel_Order Table".Task_Data_Available AND NOT "Control_DB"."Carrousel_Order Table".Movement_Ready AND "Control_DB"."Carrousel_Order Table".SM_State_Maestro = 1 THEN
+        "Control_DB"."Carrousel_Order Table".SM_State_Maestro := 2;//QUEUED condition =>ANY device (Conveyor, VTD OR Shuttle)  
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////       
+        // Any Device RUNNING on the system (VTD - Conveyor Transfer - Shuttle Transfer) 
+    ELSIF ("Control_DB"."Carrousel_Order Table".Task_Type = 6 OR "Control_DB"."Carrousel_Order Table".Task_Type = 7
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 8 OR "Control_DB"."Carrousel_Order Table".Task_Type = 9
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 10 OR "Control_DB"."Carrousel_Order Table".Task_Type = 14 OR "Control_DB"."Carrousel_Order Table".Task_Type = 16)
+        AND "Control_DB"."Carrousel_Order Table".Movement_Ready AND NOT "Control_DB"."Carrousel_Order Table".Movement_Request_Complete THEN
+        
+        "Control_DB"."Carrousel_Order Table".SM_State_Maestro := 3;//RUNNING condition
+        
+        // Any Device DONE on the system (VTD - Coneveyor Transfer - Shuttle Transfer) 
+    ELSIF ("Control_DB"."Carrousel_Order Table".Task_Type = 6 OR "Control_DB"."Carrousel_Order Table".Task_Type = 7
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 8 OR "Control_DB"."Carrousel_Order Table".Task_Type = 9
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 10 OR "Control_DB"."Carrousel_Order Table".Task_Type = 14 OR "Control_DB"."Carrousel_Order Table".Task_Type = 16)
+        AND (*"Control_DB".WMS_OPC_UA.Movement_Request_Complete AND "Control_DB".WMS_OPC_UA.Movement_Ready*)#State_Carrousel = 70 OR #State_Carrousel = 120 OR #State_Carrousel = 170 OR #State_Carrousel = 220 OR #State_Carrousel = 232 THEN
+        
+        "Control_DB"."Carrousel_Order Table".SM_State_Maestro := 4;//DONE condition
+        
+        // Any Device ERRORS on the system (VTD - Coneveyor Transfer - Shuttle Transfer)  
+    ELSIF ("Control_DB"."Carrousel_Order Table".Task_Type = 6 OR "Control_DB"."Carrousel_Order Table".Task_Type = 7
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 8 OR "Control_DB"."Carrousel_Order Table".Task_Type = 9
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 10 OR "Control_DB"."Carrousel_Order Table".Task_Type = 14 OR "Control_DB"."Carrousel_Order Table".Task_Type = 16)
+        AND "Control_DB"."Carrousel_Order Table".SM_State = 400 THEN
+        
+        "Control_DB"."Carrousel_Order Table".SM_State_Maestro := 5;//ERROR condition => Conveyors   
+    END_IF;
+    /////////////////////////////////////////////////////////////////////////////////////////////        
+    *)
+    
+    
+    IF #State_Carrousel = 0 THEN
+        ;
+        //"Control_DB"."Carrousel_Order Table".SM_State_Maestro := 0;//"LIMBO" condition 
+        //"System_DB_Carousel".OrderTable[1].OPC_Control.SM_State_Maestro := 0;
+        
+    ELSIF "Control_DB"."Carrousel_Order Table".SM_State = 10 THEN
+        ;
+        // "Control_DB".WMS_OPC_UA.SM_State_Maestro := 1;//RAW conidtion => Maestro will write this condition
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////      
+        // QUEUED ANY DEVICE    
+        // ELSIF "Control_DB".WMS_OPC_UA.Task_Data_Available AND #State >= 10 AND #State <= 20 THEN
+    ELSIF "Control_DB"."Carrousel_Order Table".Task_Data_Available AND NOT "Control_DB"."Carrousel_Order Table".Movement_Ready AND "System_DB_Carousel".OrderTable[1].OPC_Control.SM_State_Maestro = 1 THEN
+        "System_DB_Carousel".OrderTable[1].OPC_Control.SM_State_Maestro := 2;//QUEUED condition =>ANY device (Conveyor, VTD OR Shuttle)  
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////       
+        // Any Device RUNNING on the system (VTD - Conveyor Transfer - Shuttle Transfer) 
+    ELSIF ("Control_DB"."Carrousel_Order Table".Task_Type = 6 OR "Control_DB"."Carrousel_Order Table".Task_Type = 7
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 8 OR "Control_DB"."Carrousel_Order Table".Task_Type = 9
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 10 OR "Control_DB"."Carrousel_Order Table".Task_Type = 14 OR "Control_DB"."Carrousel_Order Table".Task_Type = 16)
+        AND "Control_DB"."Carrousel_Order Table".Movement_Ready AND NOT "Control_DB"."Carrousel_Order Table".Movement_Request_Complete THEN
+        
+        "System_DB_Carousel".OrderTable[1].OPC_Control.SM_State_Maestro := 3;//RUNNING condition
+        
+        // Any Device DONE on the system (VTD - Coneveyor Transfer - Shuttle Transfer) 
+    ELSIF ("Control_DB"."Carrousel_Order Table".Task_Type = 6 OR "Control_DB"."Carrousel_Order Table".Task_Type = 7
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 8 OR "Control_DB"."Carrousel_Order Table".Task_Type = 9
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 10 OR "Control_DB"."Carrousel_Order Table".Task_Type = 14 OR "Control_DB"."Carrousel_Order Table".Task_Type = 16)
+        AND (*"Control_DB".WMS_OPC_UA.Movement_Request_Complete AND "Control_DB".WMS_OPC_UA.Movement_Ready*)#State_Carrousel = 70 OR #State_Carrousel = 120 OR #State_Carrousel = 170 OR #State_Carrousel = 220 OR #State_Carrousel = 232 THEN
+        
+        "System_DB_Carousel".OrderTable[1].OPC_Control.SM_State_Maestro := 4;//DONE condition
+        
+        // Any Device ERRORS on the system (VTD - Coneveyor Transfer - Shuttle Transfer)  
+    ELSIF ("Control_DB"."Carrousel_Order Table".Task_Type = 6 OR "Control_DB"."Carrousel_Order Table".Task_Type = 7
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 8 OR "Control_DB"."Carrousel_Order Table".Task_Type = 9
+        OR "Control_DB"."Carrousel_Order Table".Task_Type = 10 OR "Control_DB"."Carrousel_Order Table".Task_Type = 14 OR "Control_DB"."Carrousel_Order Table".Task_Type = 16)
+        AND "Control_DB"."Carrousel_Order Table".SM_State = 400 THEN
+        
+        "System_DB_Carousel".OrderTable[1].OPC_Control.SM_State_Maestro:= 5;//ERROR condition => Conveyors   
+    END_IF;
+    /////////////////////////////////////////////////////////////////////////////////////////////        
+    
+    
+    
+    
+    
+END_REGION
+
+END_FUNCTION_BLOCK

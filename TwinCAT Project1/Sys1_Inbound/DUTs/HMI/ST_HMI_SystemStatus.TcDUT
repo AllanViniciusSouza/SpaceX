@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_HMI_SystemStatus" Id="{ffc1220a-1a0f-43eb-86fa-b48fb3fc1f4e}">
+    <Declaration><![CDATA[// PLC -> HMI: status of this system (one VTD panel) for the header and the screen Main.
+TYPE ST_HMI_SystemStatus :
+STRUCT
+    iSystemNumber : INT;       // VTD number of this panel (1..10)
+    sSystemName : STRING(40);  // For example 'VTD 1'
+    dtNow : DT;                // PLC local time shown in the header
+    bAutoMode : BOOL;
+    bManualMode : BOOL;
+    bSafetyOk : BOOL;          // Safety circuit OK (TwinSAFE status, display only)
+    bError : BOOL;
+    bWarning : BOOL;
+    uiActiveAlarms : UINT;
+    sMessage : STRING(80);     // Operator message line
+    bMessageAlarm : BOOL;      // TRUE = message line red
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

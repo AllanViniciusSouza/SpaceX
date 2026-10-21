@@ -1,0 +1,172 @@
+FUNCTION "Screens_2"   // FC 61, author 
+
+VAR_INPUT
+   HMI_No : UInt;
+   Sys_No : UInt;
+END_VAR
+
+VAR_TEMP
+   i : UInt;
+   j : UInt;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+REGION MAIN SCREEN
+    //main background - DEVICES
+    IF "HMI_DB".ScreenNo[#HMI_No] = 1 THEN //VTD SCREEN
+    //     IF "Control_DB".VTD_Sys["VTD_System_Selected_HMI"]."Error" THEN
+    //         "Screen_DB_1".MainTemplate_Background := 1;
+    //     ELSE
+    //         "Screen_DB_1".MainTemplate_Background := 0;
+    //     END_IF;
+    // ELSIF "HMI_DB".ScreenNo = 2 AND "CNV_System_Selected" <> 0 AND "CNV2_Selected" <> 0 THEN //CONVEYOR SCREEN
+    //     IF "CNV2_Selected" = 1 AND ("Control_DB".LCnv_Sys["CNV_System_Selected"].Cnv_Level["CNV_Level_Selected"].Cnv1.Error OR
+    //         "Control_DB".ECnv_Sys["CNV_System_Selected"].Error) THEN
+    //         "Screen_DB_1".MainTemplate_Background := 1;
+    //     ELSIF "CNV2_Selected" = 2 AND ("Control_DB".LCnv_Sys["CNV_System_Selected"].Cnv_Level["CNV_Level_Selected"].Cnv2.Error OR
+    //         "Control_DB".ECnv_Sys["CNV_System_Selected"].Error) THEN
+    //         "Screen_DB_1".MainTemplate_Background := 1;
+    //     ELSE
+    //         "Screen_DB_1".MainTemplate_Background := 0;
+    //     END_IF;
+    //     
+        ;
+    ELSE
+        "Screen_DB_1".MainTemplate_Background[#HMI_No] := 0;
+    END_IF;
+END_REGION;
+
+REGION SHUTTLES
+    CASE "Screen_DB_1".Shuttle_Select[#HMI_No] OF
+        1:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[1].Message.Shuttle_Status;
+        2:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[2].Message.Shuttle_Status;
+        3:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[3].Message.Shuttle_Status;
+        4:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[4].Message.Shuttle_Status;
+        5:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[5].Message.Shuttle_Status;
+        6:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status;
+        7:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[7].Message.Shuttle_Status;
+        8:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[8].Message.Shuttle_Status;
+        9:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[9].Message.Shuttle_Status;
+        10:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[10].Message.Shuttle_Status;
+        11:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[11].Message.Shuttle_Status;
+        12:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[12].Message.Shuttle_Status;
+        13:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[13].Message.Shuttle_Status;
+        14:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[14].Message.Shuttle_Status;
+        15:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[15].Message.Shuttle_Status;
+        16:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[16].Message.Shuttle_Status;
+        17:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[17].Message.Shuttle_Status;
+        18:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[18].Message.Shuttle_Status;
+        19:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[19].Message.Shuttle_Status;
+        20:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[20].Message.Shuttle_Status;
+        21:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[21].Message.Shuttle_Status;
+        22:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[22].Message.Shuttle_Status;
+        23:
+            "Screen_DB_1".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[23].Message.Shuttle_Status;
+    END_CASE;
+END_REGION
+
+REGION ORDER TABLE
+        CASE #Sys_No OF
+            1:
+                "Clear_OT(1)" := "Clear_OT";
+                FC_Orders_1(Sys := 1,
+                            System := "System_DB_1",
+                            VTD_CurrentOrder := "Order_Table_FB_DB_1".VTD_CurrentOrder,
+                            Pallet_InOut_CurrentOrder := "Order_Table_FB_DB_1".Pallet_InOut_CurrentOrder,
+                            Shuttle_InOut_CurrentOrder := "Order_Table_FB_DB_1".Shuttle_InOut_CurrentOrder);
+                
+            2:
+                "Clear_OT(2)" := "Clear_OT";
+                FC_Orders_1(Sys := 2,
+                            System := "System_DB_2",
+                            VTD_CurrentOrder := "Order_Table_FB_DB_2".VTD_CurrentOrder,
+                            Pallet_InOut_CurrentOrder := "Order_Table_FB_DB_2".Pallet_InOut_CurrentOrder,
+                            Shuttle_InOut_CurrentOrder := "Order_Table_FB_DB_2".Shuttle_InOut_CurrentOrder);
+                
+            3:
+                "Clear_OT(3)" := "Clear_OT";
+                FC_Orders_1(Sys := 3,
+                            System := "System_DB_3",
+                            VTD_CurrentOrder := "Order_Table_FB_DB_3".VTD_CurrentOrder,
+                            Pallet_InOut_CurrentOrder := "Order_Table_FB_DB_3".Pallet_InOut_CurrentOrder,
+                            Shuttle_InOut_CurrentOrder := "Order_Table_FB_DB_3".Shuttle_InOut_CurrentOrder);
+                
+            4:
+                "Clear_OT(4)" := "Clear_OT";
+                FC_Orders_1(Sys := 4,
+                            System := "System_DB_4",
+                            VTD_CurrentOrder := "Order_Table_FB_DB_4".VTD_CurrentOrder,
+                            Pallet_InOut_CurrentOrder := "Order_Table_FB_DB_4".Pallet_InOut_CurrentOrder,
+                            Shuttle_InOut_CurrentOrder := "Order_Table_FB_DB_4".Shuttle_InOut_CurrentOrder);
+                
+            5:
+                "Clear_OT(5)" := "Clear_OT";
+                FC_Orders_1(Sys := 5,
+                            System := "System_DB_5",
+                            VTD_CurrentOrder := "Order_Table_FB_DB_5".VTD_CurrentOrder,
+                            Pallet_InOut_CurrentOrder := "Order_Table_FB_DB_5".Pallet_InOut_CurrentOrder,
+                            Shuttle_InOut_CurrentOrder := "Order_Table_FB_DB_5".Shuttle_InOut_CurrentOrder);
+                
+        END_CASE;
+END_REGION
+
+REGION ALARMS
+    //HMI 1
+    IF "HMI_Box_Connected_1" = 6 OR ("HMI_Box_Connected_1" >= 11 AND "HMI_Box_Connected_1" <= 19) THEN
+        IF "Screen_DB_1".Alarm_Current_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 1;
+        ELSIF "Screen_DB_1".Alarm_History_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 11;
+        END_IF;
+    ELSIF "HMI_Box_Connected_1" >= 21 AND "HMI_Box_Connected_1" <= 29 THEN
+        IF "Screen_DB_1".Alarm_Current_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 2;
+        ELSIF "Screen_DB_1".Alarm_History_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 21;
+        END_IF;
+    ELSIF "HMI_Box_Connected_1" >= 31 AND "HMI_Box_Connected_1" <= 39 THEN
+        IF "Screen_DB_1".Alarm_Current_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 3;
+        ELSIF "Screen_DB_1".Alarm_History_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 31;
+        END_IF;
+    ELSIF "HMI_Box_Connected_1">= 41 AND"HMI_Box_Connected_1" <= 49 THEN
+        IF "Screen_DB_1".Alarm_Current_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 4;
+        ELSIF "Screen_DB_1".Alarm_History_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 41;
+        END_IF;
+    ELSIF "HMI_Box_Connected_1" >= 51 AND "HMI_Box_Connected_1" <= 59 THEN
+        IF "Screen_DB_1".Alarm_Current_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 5;
+        ELSIF "Screen_DB_1".Alarm_History_Buttons[#HMI_No] THEN
+            "Screen_DB_1".Alarms_ActiveTable[#HMI_No] := 51;
+        END_IF;
+    END_IF;
+END_REGION ;
+
+
+END_FUNCTION

@@ -1,0 +1,39 @@
+DATA_BLOCK "VTD_FB_DB"   // InstanceDB 25  instance of "VTD_FB"
+
+VAR_INPUT
+   Cnv_Sensors : "ECnv_Inputs";
+   VTD_Settings : "VTD_Settings";
+END_VAR
+
+VAR_IN_OUT
+   VTD_Control : "VTD_Control";
+   SinaSpeed : SinaSpeed;
+END_VAR
+
+VAR
+   State : UInt;
+   I_State : UInt;
+   LD_Timer : TON_TIME;
+   LP_Timer : TON_TIME;
+   Watchdog : TON_TIME;
+   CS_TImer : TON_TIME;
+   Interlock_Timer : TON_TIME;
+   MainSetpoint : Int;
+   Position_Offset : Real;
+   ChangeToLow : Array[1..4] of DInt;
+   DestPosition : Real;
+   SetUpSpeed : UInt;
+   LevelBelowExtractor : UInt;
+   IEC_Timer_0_Instance : TON_TIME;
+   DestinationLevel : UInt;
+   CurrentlLevel : UInt;
+   VTD_ID_Decoded : "ID_Decoded";
+   Cnv_ID_Decoded : "ID_Decoded";
+   IEC_Timer_0_Instance_1 : TON_TIME;
+   IEC_Timer_0_Instance_2 : TON_TIME;
+   VTD_ControlInstructionTask_ID_Old : Int;
+   R_Execulte : R_TRIG;
+END_VAR
+
+
+// ---- start values (path : type := value)

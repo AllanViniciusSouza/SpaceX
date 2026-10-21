@@ -1,0 +1,85 @@
+FUNCTION "PopUp_Screens"   // FC 9, author 
+
+   // RETURN : Void
+BEGIN
+//VTD SETTINGS
+IF "VTD_System_Selected_HMI" <> 0 (*AND "HMI_DB".ScreenNo_Main = 11*) AND "PopUps_DB".VTD_Settings.ID = "Settings_System_Selected" THEN
+    CASE "Settings_System_Selected" OF
+        1:
+            "Settings_DB".VTD_Sys[1] := "PopUps_DB".VTD_Settings;
+            Settings_Limits_FC("Settings_DB".VTD_Sys[1]);
+        2:
+            "Settings_DB".VTD_Sys[2] := "PopUps_DB".VTD_Settings;
+            Settings_Limits_FC("Settings_DB".VTD_Sys[2]);
+    END_CASE;
+END_IF;
+
+//SHUTTLE MQTT SETTINGS
+"Settings_DB".Shuttle_MQTT := "PopUps_DB".Shuttle_MQTT_Settings;
+
+//CONVEYORS SETTINGS
+// IF "HMI_DB".ScreenNo_Main = 10 THEN
+    CASE "CNV_System_Selected" OF
+        1: //SYSTEM 1
+            CASE "CNV_Level_Selected" OF
+                // 1:
+                //     "Settings_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                //     "Settings_DB".ECnv_Sys[1] := "PopUps_DB".ECnv_Settings;
+                //     "Settings_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                2:
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[1] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                3:
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[1] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                4:
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[1] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                5:
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[1] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                6:
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[1] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+            END_CASE;
+        2: //SYSTEM 2
+            CASE "CNV_Level_Selected" OF
+                // 1:
+                //     "Settings_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                //     "Settings_DB".ECnv_Sys[2] := "PopUps_DB".ECnv_Settings;
+                //     "Settings_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                2:
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[2] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                3:
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[2] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                4:
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[2] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                5:
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[2] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+                6:
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1 := "PopUps_DB".Buffer_Cnv_Settings_1;
+                    "Settings_DB".ECnv_Sys[2] := "PopUps_DB".ECnv_Settings;
+                    "Settings_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2 := "PopUps_DB".Buffer_Cnv_Settings_2;
+            END_CASE;
+    END_CASE;
+// END_IF;
+
+
+
+
+
+
+END_FUNCTION

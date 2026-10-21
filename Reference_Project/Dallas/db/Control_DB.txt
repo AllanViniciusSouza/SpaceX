@@ -1,0 +1,98 @@
+DATA_BLOCK "Control_DB"   // GlobalDB 69
+
+VAR
+   Inbound_Cnv : "Inbound_Cnv_Control_UDT";
+   PopUp_Cnv : Array[1..4] of "PopUp_Cnv_Control";
+   Outbound_Cnv : "Outbound_Cnv_Control";
+   ECnv_Control : "ECnv_Control";
+   LCnv_Control : Array[1..3] of "Buffer_Cnv_Control";
+   VTD_Control : "VTD_Control";
+   VTD_Order Table : "WMS_OPC_UA";
+   Carrousel_Order Table : "WMS_OPC_UA";
+   Shuttles_Position : Array[1..3] of Struct;
+   Weighing Station : Struct
+      Start : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Done : Bool;
+      Valid : Bool;
+      Weight : Real;
+      Error_ID : Word;
+   END_STRUCT;
+   Profiling Station : Struct
+      Start : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Done : Bool;
+      Valid : Bool;
+      OverWidth : Bool;
+      OverHeight : Bool;
+      OverLength : Bool;
+      Error_ID : Word;
+   END_STRUCT;
+   Pick_Station : Struct
+      Cnv_Occupied : Bool;
+      PushButton : Bool;
+      LightGuard : Bool;
+      PushButtonLight : Bool;
+      Mode : UInt;
+      Error : Bool;
+      Warning : UInt;
+      Enabled : Bool;
+      Stopped : Bool;
+      Done : Bool;
+      Running : Bool;
+      Ready_For_Task : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID : UInt;
+      Pallet_Type : UInt;
+      SM_State : UInt;
+      Motor : "Cnv_Motor";
+      Instruction : "OutCnv_Instruction";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+   InBarcode_Station : Struct
+      Start : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Done : Bool;
+      Valid : Bool;
+      Barcode : String;
+      Reading Gate number : String;
+      Reading Gate number OLD : String;
+      Number of Reading Gates : String;
+      Number of Reading Gates OLD : String;
+   END_STRUCT;
+   OutBarcode_Station : Struct
+      Start : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Done : Bool;
+      Valid : Bool;
+      Barcode : String;
+      Barcode_Old : Array[1..16] of Char;
+   END_STRUCT;
+   VTDBarcode_Station : Struct
+      Start : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Done : Bool;
+      Valid : Bool;
+      Barcode : String;
+      Barcode_Old : String;
+   END_STRUCT;
+   Movement_Completed : Struct
+      RTR_ITP1 : Bool;
+      RTR_P1TP2 : Bool;
+      RTR_P2TP3 : Bool;
+      RTR_P3TP4 : Bool;
+      RTR_P4TO : Bool;
+      Chain_To_Chain : Bool;
+      Pop4_To_Pick : Bool;
+      Pick_To_Pop1 : Bool;
+      WeighingStation : Bool;
+   END_STRUCT;
+END_VAR
+
+
+// ---- start values (path : type := value)

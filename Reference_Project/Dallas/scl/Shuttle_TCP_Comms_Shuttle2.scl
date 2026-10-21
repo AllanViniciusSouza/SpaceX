@@ -1,0 +1,69 @@
+FUNCTION_BLOCK "Shuttle_TCP_Comms_Shuttle2"   // FB 23, author 
+
+VAR_INPUT
+   Enable : Bool;
+   TCP_Configuration : "LCom_typeConfig";
+END_VAR
+
+VAR_OUTPUT
+   Connected : Bool;
+   Busy : Bool;
+   Status : Word;
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   TCP_Diag : "LCom_typeDiagnostics";
+END_VAR
+
+VAR
+   SendBuffer : Array[0..1] of Byte;
+   ReceiveBuffer : Array[0..1] of Byte;
+   Send : Bool;
+   SendDataLength : USInt := 2;
+   Sending : Bool;
+END_VAR
+
+BEGIN
+IF "Global_Estop" THEN
+    #SendBuffer[0] := 83;
+    IF NOT #Send THEN
+        #Send := TRUE;
+    END_IF;
+ELSE
+    #SendBuffer[0] := 0;
+END_IF;
+
+"LCom_Communication_Shuttle2_DB"(enable := #Enable,
+                                 send := #Send,
+                                 sendDataLength := #SendDataLength,
+                                 readDataLength := 16#FFFF_FFFF,
+                                 configuration := #TCP_Configuration,
+                                 connected => #Connected,
+                                 sending => #Sending,
+                                 busy => #Busy,
+                                 error => #Error,
+                                 status => #Status,
+                                 sendBuffer := #SendBuffer,
+                                 receiveBuffer := #ReceiveBuffer,
+                                 diagnostics := #TCP_Diag);
+
+#SendBuffer[1] := UINT_TO_BYTE("Control_DB".VTD_Control.Current_Level);
+
+"Control_DB".Shuttles_Position[2].Charging := "Shuttle_MQTT_DB".Shuttle_MQTT[2].Message.Shuttle_Status.Paused;
+
+IF #Send AND NOT #Sending THEN
+    #Send := FALSE;
+END_IF;
+
+IF NOT #Send THEN
+    "TCP_Send_Timer_DB".TON(IN := TRUE,
+                            PT := T#500ms);
+END_IF;
+       
+IF "TCP_Send_Timer_DB".Q THEN
+    #Send := TRUE;
+    "TCP_Send_Timer_DB".TON(IN := FALSE,
+                            PT := T#0ms);
+END_IF;
+END_FUNCTION_BLOCK

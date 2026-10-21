@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_HMI_VtdOverview" Id="{24b5b5af-d88a-46f8-8fc9-08bf437eaa14}">
+    <Declaration><![CDATA[// PLC -> HMI: VTD summary for the screen Main.
+TYPE ST_HMI_VtdOverview :
+STRUCT
+    stSummary : ST_HMI_DeviceSummary;
+    uiCurrentLevel : UINT;  // 0 = between levels
+    uiTargetLevel : UINT;   // 0 = no target
+    rPosition_mm : REAL;    // Carriage position in mm (only after the MOVISUITE user units are confirmed)
+    bDocked : BOOL;
+    bPalletLoaded : BOOL;
+    bShuttleLoaded : BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

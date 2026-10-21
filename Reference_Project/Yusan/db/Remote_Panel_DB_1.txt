@@ -1,0 +1,138 @@
+DATA_BLOCK "Remote_Panel_DB_1"   // InstanceDB 8  instance of "Remote_Panel"
+
+VAR_INPUT
+   ID : Int;
+   Overtravel_Lower_limit : Bool;
+   Overtravel_Upper_limit : Bool;
+   Estop : Bool;
+   Reset : Bool;
+   Chain_Slack_1 : Bool;
+   Chain_Slack_2 : Bool;
+   Chain_Slack_3 : Bool;
+   Chain_Slack_4 : Bool;
+   Light Guards CX101 : Bool;
+   Light Guards CX201 : Bool;
+   Gate_1 : Bool;
+   Gate_2 : Bool;
+   EStop_Lock_1 : Bool;
+   EStop_Lock_2 : Bool;
+   Lock_Secured_1 : Bool;
+   Lock_Secured_2 : Bool;
+   EStop Level 1 : Bool;
+   EStop Level 2 : Bool;
+   EStop Level 3 : Bool;
+   EStop Level 4 : Bool;
+   EStop Level 5 : Bool;
+   EStop Level 6 : Bool;
+   EStop Level 7 : Bool;
+   EStop Level 8 : Bool;
+   Bypass : "F_Bypass_RemotePanel";
+   Material_Selection_1 : Bool;
+   MR_1 : Bool;
+   Material_Selection_2 : Bool;
+   MR_2 : Bool;
+   Overhang_Left : Bool;
+   Overhang_Right : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Safety_OK : Bool;
+   Bypass_Warning : Bool;
+   STO VTD - CH1 : Bool;
+   STO VTD - CH2 : Bool;
+   STO CONVEYOR VTD - CH1 : Bool;
+   STO CONVEYOR VTD - CH2 : Bool;
+   STO CNV VFD (Level 1,2,3 - Side1) - CH1 : Bool;
+   STO CNV VFD (Level 1,2,3 - Side1) - CH2 : Bool;
+   STO CNV VFD (Level 1,2,3 - Side2) - CH1 : Bool;
+   STO CNV VFD (Level 1,2,3 - Side2) - CH2 : Bool;
+   STO CNV VFD (Level 4,5,6 - Side1) - CH1 : Bool;
+   STO CNV VFD (Level 4,5,6 - Side1) - CH2 : Bool;
+   STO CNV VFD (Level 4,5,6 - Side2) - CH1 : Bool;
+   STO CNV VFD (Level 4,5,6 - Side2) - CH2 : Bool;
+   STO CNV VFD (Level 7,8 - Side1) - CH1 : Bool;
+   STO CNV VFD (Level 7,8 - Side1) - CH2 : Bool;
+   STO CNV VFD (Level 7,8 - Side2) - CH1 : Bool;
+   STO CNV VFD (Level 7,8 - Side2) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side1) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side1) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side2) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side2) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side1) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side1) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side2) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side2) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 7,8 - Side1) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 7,8 - Side1) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 7,8 - Side2) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 7,8 - Side2) - CH2 : Bool;
+   VTU Hoist Brake Sfty Enable - CH1 : Bool;
+   VTU Hoist Brake Sfty Enable - CH2 : Bool;
+   ACK : Bool;
+   L1_OK : Bool;
+   L2_OK : Bool;
+   L3_OK : Bool;
+   L4_OK : Bool;
+   L5_OK : Bool;
+   L6_OK : Bool;
+   L7_OK : Bool;
+   L8_OK : Bool;
+   EStop_Lock_1_OK : Bool;
+   EStop_Lock_2_OK : Bool;
+   Lock_Secured_1_OK : Bool;
+   Lock_Secured_2_OK : Bool;
+   Safety_Ok_Conf : Bool;
+END_VAR
+
+VAR
+   Overtravel_Lower_Limit_DB : ESTOP1;
+   Overtravel_Upper_Limit_DB : ESTOP1;
+   Estop_Cabinet_DB : ESTOP1;
+   Chain_Slack_1_DB : ESTOP1;
+   Chain_Slack_2_DB : ESTOP1;
+   Chain_Slack_3_DB : ESTOP1;
+   Chain_Slack_4_DB : ESTOP1;
+   Light_Guards_CX101 : ESTOP1;
+   Light_Guards_CX201 : ESTOP1;
+   Gate_1_DB : ESTOP1;
+   Gate_2_DB : ESTOP1;
+   EStop_Lock_1_DB : ESTOP1;
+   EStop_Lock_2_DB : ESTOP1;
+   Lock_Secured_1_DB : ESTOP1;
+   Lock_Secured_2_DB : ESTOP1;
+   EStop Level 1_DB : ESTOP1;
+   EStop Level 2_DB : ESTOP1;
+   EStop Level 3_DB : ESTOP1;
+   EStop Level 4_DB : ESTOP1;
+   EStop Level 5_DB : ESTOP1;
+   EStop Level 6_DB : ESTOP1;
+   EStop Level 7_DB : ESTOP1;
+   EStop Level 8_DB : ESTOP1;
+   Mute_LG_1_DB : "SICK Safe Entry Exit HW PLC V02";
+   Distance_Materia_To_LG : DInt;
+   Mute_LG_2_DB : "SICK Safe Entry Exit HW PLC V02";
+   F_T_Delay_Sae_OK : TOF;
+   F_T_Delay_CL_4 : TOF;
+   F_T_Delay_CL_3 : TOF;
+   F_T_Delay_CL_2 : TOF;
+   F_T_Delay_CL_1 : TOF;
+   Chain_Slack_1_Filtered : Bool;
+   Chain_Slack_2_Filtered : Bool;
+   Chain_Slack_3_Filtered : Bool;
+   Chain_Slack_4_Filtered : Bool;
+   Light_Guard_Tuned : Bool;
+   Light_Guard_Tuned_Euro : Bool;
+   Light_Guard_Tuned_UK : Bool;
+   Light_Guard_Tuned_UK_Infeed : Bool;
+   Light_Guard_Tuned_Euro_Infeed : Bool;
+   Light_Guard_Tuned_Infeed : Bool;
+   F_Timer_Infeed_UK : TP;
+   F_Timer_Infeed_E : TP;
+   F_Timer_Outfeed_UK : TP;
+   F_Timer_Outfeed_E : TP;
+   Overhang_Left_DB : ESTOP1;
+   Overhang_Right_DB : ESTOP1;
+END_VAR
+
+
+// ---- start values (path : type := value)

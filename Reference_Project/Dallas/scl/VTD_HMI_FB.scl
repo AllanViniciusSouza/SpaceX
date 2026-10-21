@@ -1,0 +1,80 @@
+FUNCTION_BLOCK "VTD_HMI_FB"   // FB 14, author 
+
+BEGIN
+//CHARGE DATA
+"R_TRIG_DB_6"(CLK:="Screen_DB".Charge_VTD_Commands);
+
+IF "R_TRIG_DB_6".Q THEN
+    "VTD_Mode_Change_HMI_Tag" := "Control_DB".VTD_Control.Mode;
+    "VTD_Enable_HMI_Tag" := "Control_DB".VTD_Control.Instruction.Enable;
+    "IEC_Timer_0_DB_2_IN" := TRUE;
+END_IF;
+"IEC_Timer_0_DB_2".TON(IN := "IEC_Timer_0_DB_2_IN",
+                       PT := T#1S);
+IF "IEC_Timer_0_DB_2".Q THEN
+    "IEC_Timer_0_DB_2_IN" := FALSE;
+    "Screen_DB".Charge_VTD_Commands := 0;
+END_IF;
+
+REGION VTD HMI Assignments
+    // Statement section REGION
+
+    //Status
+    "VTD_Error_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Error;
+    "VTD_Warning_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Warning <> 0;
+    "VTD_Enabled_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Enabled;
+    "VTD_Stopped_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Stopped;
+    "VTD_Running_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Running;
+    "VTD_Docked_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Docked;
+    "VTD_Current_Task_Type_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Current_Task_Type;
+    "VTD_Current_Task_ID_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Current_Task_ID;
+    "VTD_Current_Level_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Current_Level;
+    "VTD_LP_State_Feedback_HMI_Tag" := "Control_DB".VTD_Control.LP_State;
+    "VTD_Pallet_Loaded_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Pallet_Loaded;
+    "VTD_Shuttle_Loaded_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Shuttle_Loaded;
+    "VTD_SM_State_Feedback_HMI_Tag" := "Control_DB".VTD_Control.SM_State;
+    "VTD_LE_Error_Feedback_HMI_Tag" := "LE_Status".%X0;
+    "VTD_AE_Error_Feedback_HMI_Tag" := "AE_Status_2".%X15;
+    "VTD_Encoder_Delta_Feedback_HMI_Tag" := "Control_DB".VTD_Control.Encoder_Delta;
+    "VTD_AE_Feedback_HMI_Tag" := "Control_DB".VTD_Control.AE;
+    "VTD_LE_Feedback_HMI_Tag" := "Control_DB".VTD_Control.LE;
+    
+    "VTD_Progress_HMI_Tag" := "Control_DB".VTD_Control.LE;
+    
+    //Inputs
+    "VTD_Upper_Limet_HMI_Tag" := "Upper Ultimate";
+    "VTD_Lower_Limit_HMI_Tag" := "Lower Ultimate";
+    "VTD_Lower_Overtravel_HMI_Tag" := "Overtravel Lower Limit - CH1";
+    "VTD_Upper_Overtravel_HMI_Tag" := "Overtravel Upper Limit - CH1";
+    "VTD_Level_Detect1_HMI_Tag" := "Docking Sensor Front";
+    "VTD_Level_Detect2_HMI_Tag" := "Docking Sensor Rear";
+    "VTD_Ultimate_Slow_HMI_Tag" := "Slowdown";
+    "VTD_Ultimate_Creep_HMI_Tag" := "Creep speed";
+    "VTD_LPL_Extended_HMI_Tag" := "Locking Pins Extended left";
+    "VTD_LPR_Extended_HMI_Tag" := "Locking Pins Extended Right";
+    "VTD_LPL_Retracted_HMI_Tag" := "Locking Pins Retracted left";
+    "VTD_LPR_Retracted_HMI_Tag" := "Locking Pins Retracted Right";
+    
+    //Instruction
+    IF "HMI_DB".ScreenNo = 1 AND NOT "Screen_DB".Charge_VTD_Commands THEN
+        "Control_DB".VTD_Control.Instruction.Reset := "VTD_Reset_HMI_Tags";
+        "Control_DB".VTD_Control.Instruction.Execulte := "VTD_Execute";
+        "Control_DB".VTD_Control.Instruction.Mode_Change := "VTD_Mode_Change_HMI_Tag";
+        "Control_DB".VTD_Control.Instruction.Enable := "VTD_Enable_HMI_Tag";
+        
+        IF "Control_DB".VTD_Control.Mode <> 3 THEN
+            
+            // "Control_DB".VTD_Control.Instruction.Stop := "VTD_Stop_HMI_Tag";
+            "Control_DB".VTD_Control.Instruction.Pallet_Type := "VTD_Pallet_Type_HMI_Tag";
+            "Control_DB".VTD_Control.Instruction.Task_ID := "VTD_Task_ID_HMI_Tag";
+            "Control_DB".VTD_Control.Instruction.Move_To_Level := "VTD_Move_To_Level_HMI_Tag";
+            "Control_DB".VTD_Control.Instruction.Manual_Up := "VTD_Manual_Up_HMI_Tag";
+            "Control_DB".VTD_Control.Instruction.Manual_Down := "VTD_Manual_Down_HMI_Tag";
+            "Control_DB".VTD_Control.Instruction.Manual_LP_Retract := "VTD_Manual_LP_Retract_HMI_Tags";
+            "Control_DB".VTD_Control.Instruction.Manual_LP_Extend := "VTD_Manual_LP_Extend_HMI_Tags";
+            "Control_DB".VTD_Control.Instruction.Start_Teach := "VTD_Start_Teach_HMI_Tags";
+        END_IF;
+    END_IF;
+END_REGION
+
+END_FUNCTION_BLOCK

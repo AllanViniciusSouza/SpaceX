@@ -33,6 +33,14 @@ VAR
 	T_CheckNoPallet:  TON;
 	Time_SlowDown_Ramp:  Time;
 	T_CheckPallet:  TON;
+
+	// SEW MOVIKIT Velocity Drive (region "VFD")
+	fbVelocityDrive:  FB_SEW_VelocityDrive;
+	bDriveMoveRequest:  BOOL;
+	bDriveEnable:  BOOL;
+	bDriveFaultReset:  BOOL;
+	bDriveParamsValid:  BOOL;             // SEW scaling and ramps configured in Cnv_Settings
+	rSpeedSetpoint:  REAL;                // [user units], signed
 END_VAR
 VAR_TEMP
 	Execute_Old:  BOOL;
@@ -89,6 +97,7 @@ XX = Device type
     10  Cnv_Front_of_VTD
     11  Cnv_Rear_of_VTD
     12  Cnv_On_Extractor
+	13  Turn_Table
     20  Safety_Stop_Front_of_VTD
     21  Safety_Stop_Rear_of_VTD
   
@@ -97,7 +106,7 @@ ZZ = VTD Connected to
 Example: 110203 Conveyor at the rear of VTD 3 on level 2    
 *)
 
-{REGION Sensor allocations}
+{region "Sensor allocations"}
     //PALLET DETECT
     Forward := Cnv_Control.Inputs.Forward_Sensor;
     Backward := Cnv_Control.Inputs.Backward_Sensor;
@@ -105,9 +114,9 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
     //SAFETY PINS (IT DOESN'T EXIST IN ECONVEYORS)
     SftyPinUp := Cnv_Control.Safety_Stop_Cnrl.Inputs.DP_Extended;
     SftyPinDown := Cnv_Control.Safety_Stop_Cnrl.Inputs.DP_Retracted;
-{END_REGION}
+{endregion}
 
-{REGION Cyclic Checks} 
+{region "Cyclic Checks"}
     // Check Pallet
     T_CheckPallet(IN:=Forward AND Backward,
                    PT:=Time_CheckPallet);
@@ -142,14 +151,14 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
     ELSIF ID_Decoded.Device_Type = 11 THEN
         Settings.LCnv_Sys[ID_Decoded.VTD].Cnv_Level[ID_Decoded.Level].Cnv2.Cnv_Level := INT_TO_UINT(ID_Decoded.Level);
     END_IF;
-{END_REGION}
+{endregion}
 
-{REGION Auto/Semi auto mode}
+{region "Auto/Semi auto mode"}
     CASE State OF
         0: //Initialization
             Cnv_Control.Instruction.Inbound_Ready := FALSE;
             Cnv_Control.Instruction.Outbound_Ready := FALSE;
-            Cnv_Control.Instruction.Transfer_Complete := 0;
+            Cnv_Control.Instruction.Transfer_Complete := FALSE;
             Cnv_Control.Instruction.Transfer_in_Progress := FALSE;
             Cnv_Control.Running := FALSE;
             Cnv_Control.Motor.Forward := FALSE;
@@ -159,7 +168,7 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
                             PT := T#0S);
             T_Ramp(IN := FALSE,
                     PT := t#0s);
-            IF Cnv_Control.Enabled AND (Cnv_Control.Mode = 3 OR Cnv_Control.Mode = 2) AND Cnv_Control.Error = 0 THEN
+            IF Cnv_Control.Enabled AND (Cnv_Control.Mode = 3 OR Cnv_Control.Mode = 2) AND NOT Cnv_Control.Error THEN
                 State := 10;
             END_IF;
             
@@ -328,9 +337,9 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
                 State := 0;
             END_IF;
     END_CASE;
-{END_REGION}
+{endregion}
 
-{REGION Cyclic Error Checks}
+{region "Cyclic Error Checks"}
     IF NOT Safety_OK THEN //11:1
         Set_Bit_F(BIT_Number := 0,
                     Variavel := Cnv_Control.Cnv_Errors.Error_Word_1);
@@ -352,7 +361,7 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
     END_IF;
     
     IF ((ID_Decoded.VTD = 1 AND ERRORS.Errors_Profinet_1.8) OR
-        (ID_Decoded.VTD = 2 AND Errors_Profinet_3.7)) AND Cnv_Control.Mode <> 1
+        (ID_Decoded.VTD = 2 AND Errors.Errors_Profinet_3.7)) AND Cnv_Control.Mode <> 1
     THEN //Profinet error
         Set_Bit_F(BIT_Number := 3,
                     Variavel := Cnv_Control.Cnv_Errors.Error_Word_3);
@@ -368,76 +377,152 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
         Cnv_Control.Error := TRUE;
         State := 400;
     END_IF;
-{END_REGION}
+{endregion}
 
-{REGION VFD}
+{region "VFD - SEW MOVIKIT Velocity Drive (5 PD)"}
+    // Converted from the former G120/SinaSpeed region (kept below as SIEMENS-LEGACY comments).
+    // The state machine above still commands the motor exactly as before:
+    //   Cnv_Control.Motor.Forward / Reverse = direction
+    //   Cnv_Control.Motor.Speed             = speed in the units of Cnv_Settings.Full/Slow/Manual_Speed
+    // MOVIKIT Velocity process data: SEW manual 33959862, chapter 9 (PO/PI 1..5, mode 200 implicit).
+    // Raw process data: Cnv_Control.Motor.stProcessInput (from FC Inputs) and
+    // Cnv_Control.Motor.aProcessOutput (to FC Outputs).
+    // ASSUMPTION (verify on the first test): Forward = negative speed setpoint, as in the
+    // legacy G120 code. If the conveyor runs the wrong way, correct the direction of
+    // rotation in MOVISUITE, not here.
+
+    bDriveParamsValid := Cnv_Settings.rSewSpeedPerUnit > 0.0
+                         AND Cnv_Settings.uiSewAcceleration > 0
+                         AND Cnv_Settings.uiSewDeceleration > 0;
+
+    //SETPOINT (signed, user units)
+    IF Cnv_Control.Motor.Forward AND NOT Cnv_Control.Motor.Reverse THEN
+        rSpeedSetpoint := -1.0 * Cnv_Control.Motor.Speed * Cnv_Settings.rSewSpeedPerUnit;
+    ELSIF Cnv_Control.Motor.Reverse AND NOT Cnv_Control.Motor.Forward THEN
+        rSpeedSetpoint := Cnv_Control.Motor.Speed * Cnv_Settings.rSewSpeedPerUnit;
+    ELSE
+        rSpeedSetpoint := 0.0;
+    END_IF
+    MainSetpoint := REAL_TO_INT(LIMIT(-32767.0, rSpeedSetpoint, 32767.0));
+
+    //ENABLE / START
+    bDriveMoveRequest := (Cnv_Control.Motor.Forward XOR Cnv_Control.Motor.Reverse)
+                         AND MainSetpoint <> 0
+                         AND bDriveParamsValid;
+
+    // Keep the enable until the motor has stopped, so a normal stop (start = 0)
+    // decelerates with the PO 4 ramp. Safety_OK or a conveyor error removes the
+    // enable immediately (FCB 14 emergency stop ramp).
+    bDriveEnable := Safety_OK AND NOT Cnv_Control.Error
+                    AND (bDriveMoveRequest OR Cnv_Control.Motor.stStatus.bMotorTurning);
+
+    bDriveFaultReset := Cnv_Control.Instruction.Reset OR System_Control.Reset_All OR HMI_Reset;
+
+    fbVelocityDrive(i_stProcessInput := Cnv_Control.Motor.stProcessInput,
+                    i_bEnable := bDriveEnable,
+                    i_bStart := bDriveMoveRequest AND bDriveEnable,
+                    i_bFaultReset := bDriveFaultReset,
+                    i_iSpeedSetpoint := MainSetpoint,
+                    i_uiAcceleration := Cnv_Settings.uiSewAcceleration,
+                    i_uiDeceleration := Cnv_Settings.uiSewDeceleration);
+
+    Cnv_Control.Motor.aProcessOutput := fbVelocityDrive.q_aProcessOutput;
+    Cnv_Control.Motor.stStatus := fbVelocityDrive.q_stStatus;
+
     //Status
-    Cnv_Control.Motor.Ready := (Cnv_Control.Inputs.VFD_Status.%X0 OR Cnv_Control.Inputs.VFD_Status.%X1) AND NOT Cnv_Control.Motor.Error;
-    Cnv_Control.Motor.Error := Cnv_Control.Inputs.VFD_Status.%X3 OR Cnv_Control.Inputs.VFD_Status.%X7 OR NOT Cnv_Control.Inputs.VFD_Status.%X13;
-    Cnv_Control.Motor.Enabled := Cnv_Control.Inputs.VFD_Status.%X2;
-    Cnv_Control.Motor.Actual_Current := SCALE_X(MIN := 0,
-                                                 VALUE := NORM_X(MIN := 0,
-                                                                 VALUE := Cnv_Control.Inputs.VFD_ActualCurrent,
-                                                                 MAX := 16384),
-                                                 MAX := 1.98);
-    
-    
-    //Actual Speed
-    IF MainSetpoint > 0 THEN
-        Cnv_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
-                                                   VALUE := NORM_X(MIN := 0,
-                                                                   VALUE := Cnv_Control.Inputs.VFD_Speed_Actual,
-                                                                   MAX := 16384),
-                                                   MAX := 130);
-        
-        Cnv_Control.Motor.Actual_Torque := SCALE_X(MIN := 0,
-                                                    VALUE := NORM_X(MIN := 0,
-                                                                    VALUE := Cnv_Control.Inputs.VFD_ActualTorque,
-                                                                    MAX := 16384),
-                                                    MAX := 100);
-    ELSIF MainSetpoint < 0 THEN
-        Cnv_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
-                                                   VALUE := NORM_X(MIN := 0,
-                                                                   VALUE := Cnv_Control.Inputs.VFD_Speed_Actual * -1,
-                                                                   MAX := 16384),
-                                                   MAX := 130);
-        
-        Cnv_Control.Motor.Actual_Torque := SCALE_X(MIN := 0,
-                                                    VALUE := NORM_X(MIN := 0,
-                                                                    VALUE := Cnv_Control.Inputs.VFD_ActualTorque * -1,
-                                                                    MAX := 16384),
-                                                    MAX := 100);
-    ELSE
-        Cnv_Control.Motor.Speed_Actual := 0;
-        Cnv_Control.Motor.Actual_Torque := 0;
-    END_IF;
-    
-    //MAIN SETPOINT
-    IF Cnv_Control.Motor.Forward THEN
-        MainSetpoint := (SCALE_X(MIN := 0,
-                                  VALUE := NORM_X(MIN := 0,
-                                                  VALUE := Cnv_Control.Motor.Speed (** 1.681*),
-                                                  MAX := 130),
-                                  MAX := 1865.0) * -1);
-    ELSIF Cnv_Control.Motor.Reverse THEN
-        MainSetpoint := SCALE_X(MIN := 0,
-                                 VALUE := NORM_X(MIN := 0,
-                                                 VALUE := Cnv_Control.Motor.Speed (** 1.681*),
-                                                 MAX := 130),
-                                 MAX := 1865.0);
-    ELSE
-        MainSetpoint := 0;
-    END_IF;
-    
-    SinaSpeed(EnableAxis := Cnv_Control.Motor.Forward OR Cnv_Control.Motor.Reverse,
-               AckError := Cnv_Control.Instruction.Reset OR "Reset_All" OR HMI_Reset,
-               SpeedSp := MainSetpoint,
-               RefSpeed := 1865.0,
-               HWIDSTW := Cnv_Settings.G120_Hardware_ID,
-               HWIDZSW := Cnv_Settings.G120_Hardware_ID);
-{END_REGION}
+    Cnv_Control.Motor.Status := fbVelocityDrive.q_stStatus.wStatusWord;
+    Cnv_Control.Motor.Ready := fbVelocityDrive.q_bReady;
+    Cnv_Control.Motor.Enabled := fbVelocityDrive.q_stStatus.bOutputStageEnabled;
+    // Drive error, communication error, or a move requested without valid SEW scaling.
+    Cnv_Control.Motor.Error := fbVelocityDrive.q_bError
+                               OR ((Cnv_Control.Motor.Forward OR Cnv_Control.Motor.Reverse) AND NOT bDriveParamsValid);
 
-HMI_Reset := "Screen_DB_1".Reset_All[1] OR "Screen_DB_1".Reset_All[2] OR "CNV_HMI"."Reset(1)"[1] OR "CNV_HMI"."Reset(1)"[2];
+    //Actual speed, in the units of Motor.Speed (unsigned, as before)
+    IF Cnv_Settings.rSewSpeedPerUnit > 0.0 THEN
+        Cnv_Control.Motor.Speed_Actual := ABS(INT_TO_REAL(fbVelocityDrive.q_stStatus.iActualSpeed))
+                                          / Cnv_Settings.rSewSpeedPerUnit;
+    ELSE
+        Cnv_Control.Motor.Speed_Actual := 0.0;
+    END_IF
+
+    //Actual torque: PI 4 is signed [0.1 % nominal motor torque]; Actual_Torque keeps the unsigned [%] format
+    Cnv_Control.Motor.Actual_Torque := DINT_TO_UINT(ABS(INT_TO_DINT(fbVelocityDrive.q_stStatus.iActualTorque_0p1pct)) / 10);
+
+    // Actual_Current is not part of the MOVIKIT Velocity 5 PD profile. It needs the
+    // "additional process values of the inverter" option in MOVISUITE; not written here.
+{endregion}
+
+// SIEMENS-LEGACY: former G120/SinaSpeed region, replaced by the region above.
+// SIEMENS-LEGACY: {REGION VFD}
+// SIEMENS-LEGACY:     //Status
+// SIEMENS-LEGACY:     Cnv_Control.Motor.Ready := (Cnv_Control.Inputs.VFD_Status.%X0 OR Cnv_Control.Inputs.VFD_Status.%X1) AND NOT Cnv_Control.Motor.Error;
+// SIEMENS-LEGACY:     Cnv_Control.Motor.Error := Cnv_Control.Inputs.VFD_Status.%X3 OR Cnv_Control.Inputs.VFD_Status.%X7 OR NOT Cnv_Control.Inputs.VFD_Status.%X13;
+// SIEMENS-LEGACY:     Cnv_Control.Motor.Enabled := Cnv_Control.Inputs.VFD_Status.%X2;
+// SIEMENS-LEGACY:     Cnv_Control.Motor.Actual_Current := SCALE_X(MIN := 0,
+// SIEMENS-LEGACY:                                                  VALUE := NORM_X(MIN := 0,
+// SIEMENS-LEGACY:                                                                  VALUE := Cnv_Control.Inputs.VFD_ActualCurrent,
+// SIEMENS-LEGACY:                                                                  MAX := 16384),
+// SIEMENS-LEGACY:                                                  MAX := 1.98);
+// SIEMENS-LEGACY:
+// SIEMENS-LEGACY:
+// SIEMENS-LEGACY:     //Actual Speed
+// SIEMENS-LEGACY:     IF MainSetpoint > 0 THEN
+// SIEMENS-LEGACY:         Cnv_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
+// SIEMENS-LEGACY:                                                    VALUE := NORM_X(MIN := 0,
+// SIEMENS-LEGACY:                                                                    VALUE := Cnv_Control.Inputs.VFD_Speed_Actual,
+// SIEMENS-LEGACY:                                                                    MAX := 16384),
+// SIEMENS-LEGACY:                                                    MAX := 130);
+// SIEMENS-LEGACY:
+// SIEMENS-LEGACY:         Cnv_Control.Motor.Actual_Torque := SCALE_X(MIN := 0,
+// SIEMENS-LEGACY:                                                     VALUE := NORM_X(MIN := 0,
+// SIEMENS-LEGACY:                                                                     VALUE := Cnv_Control.Inputs.VFD_ActualTorque,
+// SIEMENS-LEGACY:                                                                     MAX := 16384),
+// SIEMENS-LEGACY:                                                     MAX := 100);
+// SIEMENS-LEGACY:     ELSIF MainSetpoint < 0 THEN
+// SIEMENS-LEGACY:         Cnv_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
+// SIEMENS-LEGACY:                                                    VALUE := NORM_X(MIN := 0,
+// SIEMENS-LEGACY:                                                                    VALUE := Cnv_Control.Inputs.VFD_Speed_Actual * -1,
+// SIEMENS-LEGACY:                                                                    MAX := 16384),
+// SIEMENS-LEGACY:                                                    MAX := 130);
+// SIEMENS-LEGACY:
+// SIEMENS-LEGACY:         Cnv_Control.Motor.Actual_Torque := SCALE_X(MIN := 0,
+// SIEMENS-LEGACY:                                                     VALUE := NORM_X(MIN := 0,
+// SIEMENS-LEGACY:                                                                     VALUE := Cnv_Control.Inputs.VFD_ActualTorque * -1,
+// SIEMENS-LEGACY:                                                                     MAX := 16384),
+// SIEMENS-LEGACY:                                                     MAX := 100);
+// SIEMENS-LEGACY:     ELSE
+// SIEMENS-LEGACY:         Cnv_Control.Motor.Speed_Actual := 0;
+// SIEMENS-LEGACY:         Cnv_Control.Motor.Actual_Torque := 0;
+// SIEMENS-LEGACY:     END_IF;
+// SIEMENS-LEGACY:
+// SIEMENS-LEGACY:     //MAIN SETPOINT
+// SIEMENS-LEGACY:     IF Cnv_Control.Motor.Forward THEN
+// SIEMENS-LEGACY:         MainSetpoint := (SCALE_X(MIN := 0,
+// SIEMENS-LEGACY:                                   VALUE := NORM_X(MIN := 0,
+// SIEMENS-LEGACY:                                                   VALUE := Cnv_Control.Motor.Speed (** 1.681*),
+// SIEMENS-LEGACY:                                                   MAX := 130),
+// SIEMENS-LEGACY:                                   MAX := 1865.0) * -1);
+// SIEMENS-LEGACY:     ELSIF Cnv_Control.Motor.Reverse THEN
+// SIEMENS-LEGACY:         MainSetpoint := SCALE_X(MIN := 0,
+// SIEMENS-LEGACY:                                  VALUE := NORM_X(MIN := 0,
+// SIEMENS-LEGACY:                                                  VALUE := Cnv_Control.Motor.Speed (** 1.681*),
+// SIEMENS-LEGACY:                                                  MAX := 130),
+// SIEMENS-LEGACY:                                  MAX := 1865.0);
+// SIEMENS-LEGACY:     ELSE
+// SIEMENS-LEGACY:         MainSetpoint := 0;
+// SIEMENS-LEGACY:     END_IF;
+// SIEMENS-LEGACY:
+// SIEMENS-LEGACY:     SinaSpeed(EnableAxis := Cnv_Control.Motor.Forward OR Cnv_Control.Motor.Reverse,
+// SIEMENS-LEGACY:                AckError := Cnv_Control.Instruction.Reset OR "Reset_All" OR HMI_Reset,
+// SIEMENS-LEGACY:                SpeedSp := MainSetpoint,
+// SIEMENS-LEGACY:                RefSpeed := 1865.0,
+// SIEMENS-LEGACY:                HWIDSTW := Cnv_Settings.G120_Hardware_ID,
+// SIEMENS-LEGACY:                HWIDZSW := Cnv_Settings.G120_Hardware_ID);
+// SIEMENS-LEGACY: {END_REGION}
+
+// TODO: HMI reset. The Siemens screen DBs below have no TwinCAT equivalent yet;
+//       HMI_Reset stays FALSE until the conveyor HMI interface (GVL_HMI_*) exists.
+// SIEMENS-LEGACY: HMI_Reset := "Screen_DB_1".Reset_All[1] OR "Screen_DB_1".Reset_All[2] OR "CNV_HMI"."Reset(1)"[1] OR "CNV_HMI"."Reset(1)"[2];
 ;]]></ST>
     </Implementation>
   </POU>

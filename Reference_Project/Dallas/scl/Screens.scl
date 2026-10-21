@@ -1,0 +1,108 @@
+FUNCTION "Screens"   // FC 12, author 
+
+   // RETURN : Void
+BEGIN
+REGION MAIN
+    IF "VTD_Automatic_Button" THEN
+        "Control_DB".VTD_Control.Instruction.Mode_Change :=
+        "Control_DB".ECnv_Control.Instruction.Mode_Change :=
+        "Control_DB".LCnv_Control[1].Instruction.Mode_Change :=
+        "Control_DB".LCnv_Control[2].Instruction.Mode_Change :=
+        "Control_DB".LCnv_Control[3].Instruction.Mode_Change :=
+        "Control_DB".LCnv_Control[1].Safety_Stop_Cnrl.Mode :=
+        "Control_DB".LCnv_Control[2].Safety_Stop_Cnrl.Mode :=
+        "Control_DB".LCnv_Control[3].Safety_Stop_Cnrl.Mode := 3;
+        
+        "Control_DB".VTD_Control.Instruction.Enable :=
+        "Control_DB".ECnv_Control.Instruction.Enable :=
+        "Control_DB".LCnv_Control[1].Instruction.Enable :=
+        "Control_DB".LCnv_Control[2].Instruction.Enable :=
+        "Control_DB".LCnv_Control[3].Instruction.Enable := TRUE;
+    END_IF;
+    
+    IF "Carrousel_Automatic_Button" THEN
+        "Control_DB".Inbound_Cnv.Instruction.Mode_Change :=
+        "Control_DB".Outbound_Cnv.Instruction.Mode_Change :=
+        "Control_DB".Pick_Station.Instruction.Mode_Change :=
+        "Control_DB".PopUp_Cnv[1].Instruction.Mode_Change :=
+        "Control_DB".PopUp_Cnv[2].Instruction.Mode_Change :=
+        "Control_DB".PopUp_Cnv[3].Instruction.Mode_Change :=
+        "Control_DB".PopUp_Cnv[4].Instruction.Mode_Change := 3;
+        
+        "Control_DB".Inbound_Cnv.Instruction.Enable :=
+        "Control_DB".Outbound_Cnv.Instruction.Enable :=
+        "Control_DB".Pick_Station.Instruction.Enable :=
+        "Control_DB".PopUp_Cnv[1].Instruction.Enable :=
+        "Control_DB".PopUp_Cnv[2].Instruction.Enable :=
+        "Control_DB".PopUp_Cnv[3].Instruction.Enable :=
+        "Control_DB".PopUp_Cnv[4].Instruction.Enable := TRUE;
+    END_IF;
+    
+    "VTD_Buffers_In_Automatic" := "Control_DB".VTD_Control.Mode = 3 AND
+    "Control_DB".ECnv_Control.Mode = 3 AND
+    "Control_DB".LCnv_Control[1].Mode = 3 AND
+    "Control_DB".LCnv_Control[2].Mode = 3 AND
+    "Control_DB".LCnv_Control[3].Mode = 3 AND
+    "Control_DB".LCnv_Control[1].Safety_Stop_Cnrl.Mode = 3 AND
+    "Control_DB".LCnv_Control[2].Safety_Stop_Cnrl.Mode = 3 AND
+    "Control_DB".LCnv_Control[3].Safety_Stop_Cnrl.Mode = 3;
+    
+    "Carrousel_In_Automatic" :=
+    "Control_DB".Inbound_Cnv.Mode = 3 AND
+    "Control_DB".Outbound_Cnv.Mode = 3 AND
+    "Control_DB".Pick_Station.Mode = 3 AND
+    "Control_DB".PopUp_Cnv[1].Mode = 3 AND
+    "Control_DB".PopUp_Cnv[2].Mode = 3 AND
+    "Control_DB".PopUp_Cnv[3].Mode = 3 AND
+    "Control_DB".PopUp_Cnv[4].Mode = 3;
+    
+    IF "HMI_DB".ScreenNo = 0 THEN
+        "Control_DB".VTD_Control.Instruction.Reset :=
+        "Control_DB".ECnv_Control.Instruction.Reset :=
+        "Control_DB".LCnv_Control[1].Instruction.Reset :=
+        "Control_DB".LCnv_Control[2].Instruction.Reset :=
+        "Control_DB".LCnv_Control[3].Instruction.Reset :=
+        "Control_DB".Inbound_Cnv.Instruction.Reset :=
+        "Control_DB".Outbound_Cnv.Instruction.Reset :=
+        "Control_DB".Pick_Station.Instruction.Reset :=
+        "Control_DB".PopUp_Cnv[1].Instruction.Reset :=
+        "Control_DB".PopUp_Cnv[2].Instruction.Reset :=
+        "Control_DB".PopUp_Cnv[3].Instruction.Reset :=
+        "Control_DB".PopUp_Cnv[4].Instruction.Reset := "Reset_All";
+    END_IF;
+    
+    //empty background
+    IF "System_DB_VTD".Error OR "System_DB_Carousel".Error OR "Error_Word_1".%X0 THEN
+        "Screen_DB".EmptyTemplate_Background := 1;
+    ELSE
+        "Screen_DB".EmptyTemplate_Background := 0;
+    END_IF;
+    
+    //main background
+    IF "HMI_DB".ScreenNo = 1 AND "System_DB_VTD".Error THEN
+        "Screen_DB".MainTemplate_Background := 1;
+    ELSIF "HMI_DB".ScreenNo = 2 AND "System_DB_Carousel".Error THEN
+        "Screen_DB".MainTemplate_Background := 1;
+    ELSIF "HMI_DB".ScreenNo <> 1 AND "HMI_DB".ScreenNo <> 2 AND ("System_DB_VTD".Error OR "System_DB_Carousel".Error OR "Error_Word_1".%X0) THEN
+        "Screen_DB".MainTemplate_Background := 1;
+    ELSE
+        "Screen_DB".MainTemplate_Background := 0;
+    END_IF;
+END_REGION 
+
+REGION SHUTTLES
+    CASE "Screen_DB".Shuttle_Select OF
+        1:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[1].Message.Shuttle_Status;
+        2:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[2].Message.Shuttle_Status;
+        3:
+            "Screen_DB".Shuttle := "Shuttle_MQTT_DB".Shuttle_MQTT[3].Message.Shuttle_Status;
+    END_CASE;
+END_REGION
+
+
+
+
+
+END_FUNCTION

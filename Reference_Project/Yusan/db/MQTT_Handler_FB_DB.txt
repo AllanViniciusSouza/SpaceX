@@ -1,0 +1,49 @@
+DATA_BLOCK "MQTT_Handler_FB_DB"   // InstanceDB 44  instance of "MQTT_Handler_FB"
+
+VAR_INPUT
+   Enable : Bool;
+END_VAR
+
+VAR_IN_OUT
+   LMQTT_DB : "LMQTT_DB_UDT";
+END_VAR
+
+VAR
+   MQTT_Setup : Bool;
+   MQTT_Topic : WString;
+   Publish_Msg_Payload : Array[1..128] of Byte;
+   Received_Topic : WString;
+   Received_Msg_Payload : Array[0..1024] of Byte;
+   i : UInt;
+   j : UInt;
+   Subscribe : Bool;
+   Unsubscribe : Bool;
+   Received_Msg_Status : USInt;
+   Received_Msg_Length : UDInt;
+   Busy : Bool;
+   Valid : Bool;
+   Done : Bool;
+   Error : Bool;
+   Status : Word;
+   Diagnostics : "typeDiagnostics";
+   JSON_Tree : Array[1..18] of "LStream_typeElement";
+   Shuttle_No : UInt;
+   sSubTopic : Array[1..24] of String;
+   bSubscribed : Bool;
+   SubscribeState : Int;
+   SubscribeIndex : Int;
+   SubscribeCount : UInt;
+   SubscribeTopicList : Array[1..30] of String;
+   sPayloadRcv : String;
+   sPayloadRcv_1 : String;
+   sPayloadRcv_2 : String;
+   sPayloadRcv_3 : String;
+   sPayloadRcv_4 : String;
+   sPayloadRcv_5 : String;
+   MQTT_AutoReset : UInt;
+   Enable_AutoReset : Bool;
+   T_AutoReset : TON_TIME;
+END_VAR
+
+
+// ---- start values (path : type := value)

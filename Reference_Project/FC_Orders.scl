@@ -1,0 +1,1795 @@
+﻿TYPE "Sfts_Inputs"
+VERSION : 0.1
+   STRUCT
+      DP_Extended : Bool;
+      DP_Retracted : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Sfts_Instruction"
+VERSION : 0.1
+   STRUCT
+      Mode_Change : UInt;
+      Enable : Bool;
+      Extend : Bool;
+      Retract : Bool;
+      Manual_Extend : Bool;
+      Manual_Retract : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Buffer_Cnv_Inputs"
+VERSION : 0.1
+   STRUCT
+      Left : Bool;   // Sensor Conveyor Left (Fwd)
+      Lpd1 : Bool;   // Sensor Conveyor Left (Pallet detect 1)
+      Lpd2 : Bool;   // Sensor Conveyor Left (Pallet detect 2)
+      Right : Bool;   // Sensor Conveyor Right (Bwd)
+      Rpd1 : Bool;   // Sensor Conveyor Right (Pallet detect 1)
+      Rpd2 : Bool;   // Sensor Conveyor Right (Pallet detect 2)
+      Sdetect1 : Bool;   // Shuttle In Position 1
+      Sdetect2 : Bool;   // Shuttle In Position 2
+      Shuttle_High : Bool;
+      VFD_Status : Word;
+      VFD_Speed_Actual : Int;
+      VFD_ActualCurrent : Int;
+      VFD_ActualTorque : Int;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Errors"
+VERSION : 0.1
+   STRUCT
+      Error_Word_1 : UInt;
+      Error_Word_2 : UInt;
+      Error_Word_3 : UInt;
+      Error_Word_4 : UInt;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Motor"
+VERSION : 0.1
+   STRUCT
+      Enable : Bool;
+      Enabled : Bool;
+      Ready : Bool;
+      Forward : Bool;
+      Reverse : Bool;
+      Speed : Real;
+      Speed_Actual : Real;
+      Actual_Current : Real;
+      Actual_Torque : UInt;
+      Control_Word : Word;
+      Config_Axis : Word := 16#003F;
+      Error : Bool;
+      Status : Word;
+      Communication_Error : Word;
+      Lockout : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Sfts_Control"
+VERSION : 0.1
+   STRUCT
+      Mode { ExternalWritable := 'False'} : UInt;
+      Error { ExternalWritable := 'False'} : Bool;
+      Enabled { ExternalWritable := 'False'} : Bool;
+      Running { ExternalWritable := 'False'} : Bool;
+      LP_State : USInt;
+      Motor_Extend { ExternalWritable := 'False'} : Bool;
+      Motor_Retract { ExternalWritable := 'False'} : Bool;
+      SM_State : UInt;
+      Instruction { S7_SetPoint := 'False'} : "Sfts_Instruction";
+      Inputs : "Sfts_Inputs";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Instruction"
+VERSION : 0.1
+   STRUCT
+      Mode_Change : UInt;
+      Stop : Bool;
+      Enable : Bool;
+      Reset : Bool;
+      Pallet_Type : UInt;
+      Pallet_Allignment : Bool;
+      Execute : Bool;
+      Task_ID : UInt;
+      Task_Metadata : String;
+      Transfer_To_ID : DInt;
+      Transfer_From_ID : DInt;
+      Transfer_in_Progress : Bool;   // Transfer In progress
+      Inbound_Ready : Bool;   // Ready to receive
+      Transfer_Complete : Bool;   // Transfer complete
+      Outbound_Ready : Bool;   // Ready to send
+      Start_Transfer : Bool;
+      Pallet_Align_Left : Bool;
+      Pallet_Align_Right : Bool;
+      Pallet_Align_Center : Bool;
+      Start_Transfer_Backward : Bool;
+      Foward : Bool;
+      Backward : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Buffer_Cnv_Control"
+VERSION : 0.1
+   STRUCT
+      Mode { ExternalWritable := 'False'} : UInt;
+      Error { ExternalWritable := 'False'} : Bool;
+      Warning { ExternalWritable := 'False'} : UInt;
+      Enabled { ExternalWritable := 'False'} : Bool;
+      Stopped { ExternalWritable := 'False'} : Bool;
+      Done : Bool;
+      Running { ExternalWritable := 'False'} : Bool;
+      Ready_For_Task { ExternalWritable := 'False'} : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID { ExternalWritable := 'False'} : UInt;
+      Cnv_Occupied { ExternalWritable := 'False'} : Bool;
+      Pallet_Type { ExternalWritable := 'False'} : UInt;
+      SM_State { ExternalWritable := 'False'} : UInt;   // State Machine state
+      Shuttle_In_Place { ExternalWritable := 'False'} : Bool;
+      Motor { S7_SetPoint := 'False'} : "Cnv_Motor";
+      Instruction { S7_SetPoint := 'False'} : "Cnv_Instruction";
+      Inputs : "Buffer_Cnv_Inputs";
+      Safety_Stop_Cnrl : "Sfts_Control";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "WMS_OPC_UA"
+VERSION : 0.1
+   STRUCT
+      Task_ID : Int;   // ID of the Task
+      Task_Metadata : String[250];
+      Task_Type : Int;
+      Source_Location : DInt;
+      Destination_Location : DInt;
+      Task_Data_Available : Bool;   // This tag is used to inform the PLC that task data is ready to be read.
+      SM_State : UInt;   // The current state machine value of the Device/VTD
+      Movement_Ready : Bool;
+      Movement_Request_Complete : Bool;   // This PLC tag is set to true once the task is complete.
+      Movement_Request_Complete_Ack : Bool;   // The WCS will acknowledge the completion of the task. 
+      Shuttle_ID : Int;
+      Shuttle_Loaded : Bool;
+      Pallet_Type : Char;   // Values can be (C)hep or (E)uro.
+      Pallet_Alignment : Char;   // Values can be (L)eft or (R)ight.
+      SM_State_Maestro : UInt;   // SM State to mimic openTCS states from devices to Maestro
+      Pallet_Weight : Int;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Motor"
+VERSION : 0.1
+   STRUCT
+      Enable : Bool;
+      Enabled : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Forward : Bool;
+      Reverse : Bool;
+      Brake_Opened : Bool;
+      Speed : Int;
+      Speed_Actual : Int;
+      Actual_Current : Int;
+      Actual_Torque : UInt;
+      Acc_Factor : UInt;
+      Config_Axis : Word := 16#003F;
+      Error : Bool;
+      Status : Word;
+      Communication_Error : Word;
+      Lockout : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Errors"
+VERSION : 0.1
+   STRUCT
+      Error_Word_1 : UInt;
+      Error_Word_2 : UInt;
+      Error_Word_3 : UInt;
+      Error_Word_4 : UInt;
+      Error_Word_5 : UInt;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Shuttle_Interlock"
+VERSION : 0.1
+   STRUCT
+      Interlock_Complete { ExternalWritable := 'False'} : Bool;
+      Interlock_Complete_Ack : Bool;
+      Ready_To_Interlock { ExternalWritable := 'False'} : Bool;
+      Interlock_Request : Bool;
+      Shuttle_ID : UInt;
+      Shuttle_Target_Location : DInt;
+      Shuttle_Start_Location : DInt;
+      Shuttle_Loaded : Bool;
+      Shuttle_Interlock_Task_ID : UInt;
+      Shuttle_Interlock_Task_Metadata : String;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Level_Control"
+VERSION : 0.1
+   STRUCT
+      Cnv1 : "Buffer_Cnv_Control";
+      Cnv2 : "Buffer_Cnv_Control";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Inputs"
+VERSION : 0.1
+   STRUCT
+      Upper_Overtravel : Bool;
+      Upper_limit : Bool;   // Upper Limit
+      Ultimate_SlowDown : Bool;
+      Ultimate_Creep : Bool;
+      Lower_Limit : Bool;   // Lower Limit 
+      Lower_Overtravel : Bool;
+      Level_Detect1 : Bool;   // Level Detect Front
+      Level_Detect2 : Bool;   // Level Detect  Rear
+      DP1_Extended : Bool;   // Locking Pins Extended left
+      DP2_Extended : Bool;   // Locking Pins Extended Right
+      DP1_Retracted : Bool;   // Locking Pins Retracted left
+      DP2_Retracted : Bool;   // Locking Pins Retracted Right
+      Chain_Slack_1 : Bool;
+      Chain_Slack_2 : Bool;
+      Chain_Slack_3 : Bool;
+      Chain_Slack_4 : Bool;
+      PushToEnter : Bool;
+      PushToExit : Bool;
+      "Barcode 1" : String;
+      "Barcode 2" : String;
+      LE_Status : UInt;
+      LE_Position : DInt;
+      LE_Speed : Int;
+      LE_Warnings : Int;
+      LE_Quality_Decoded_Codes : Byte;
+      LE_Quality_Value : Byte;
+      AE_Status_1 : UInt;
+      AE_Status_2 : UInt;
+      AE_Position_1 : DInt;
+      AE_Position_2 : DInt;
+      AE_Speed : Int;
+      VFD_Status : Word;
+      VFD_Speed_Actual : Word;
+      VFD_ActualCurrent : Int;
+      VFD_ActualTorque : Int;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Instruction"
+VERSION : 0.1
+   STRUCT
+      Mode_Change : UInt;
+      Stop : Bool;
+      Enable : Bool;
+      Execulte : Bool;
+      Reset : Bool;
+      Pallet_Type : UInt;
+      Task_ID : UInt;
+      Task_Metadata : String;
+      Move_To_Level : UInt;
+      Manual_Up : Bool;
+      Manual_Down : Bool;
+      Manual_LP_Retract : Bool;
+      Manual_LP_Extend : Bool;
+      Start_Teach : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Inputs"
+VERSION : 0.1
+   STRUCT
+      Left : Bool;   // Sensor Conveyor Left (Fwd)
+      Lpd1 : Bool;   // Sensor Conveyor Left (Pallet detect 1)
+      Center : Bool;   // Sensor Conveyor Left (Pallet detect 2)
+      Right : Bool;   // Sensor Conveyor Right (Bwd)
+      Rpd1 : Bool;   // Sensor Conveyor Right (Pallet detect 1)
+      Sdetect1 : Bool;   // Shuttle In Position 1
+      Sdetect2 : Bool;   // Shuttle In Position 2
+      VFD_Status : Word;
+      VFD_Speed_Actual : Int;
+      VFD_ActualCurrent : Int;
+      VFD_ActualTorque : Int;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Auto_Test_UDT"
+VERSION : 0.1
+   STRUCT
+      Duration : Time;
+      Start_Time : String[20];
+      Stop_Time : String[20];
+      Time_Running : Time;
+      Total_Duration : Time;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "OrderTable_UDT"
+VERSION : 0.1
+   STRUCT
+      OrderNo : Int;   // Order Number
+      StepNo : Int;   // Step Number of Order
+      PlaceTime : String[20];   // Placede Time of Order
+      Device : String;   // Device name for Step Order
+      Sequence : UInt;   // 1 = Step in Sequence, 0 = No sequence of Steps
+      Status : String[12] := '';   // Status Of  Step Order
+      CompleteTime : String[20];   // Complete time
+      ErrorID : UInt;   // Error ID if error occured
+      OPC_Control : "WMS_OPC_UA";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Outputs"
+VERSION : 0.1
+   STRUCT
+      LP1_Retract : Bool;
+      LP1_Extend : Bool;
+      LP2_Retract : Bool;
+      LP2_Extend : Bool;
+      AE_Control_Word_1 : Word;
+      AE_Control_Word_2 : Word;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Barcode_Station_UDT"
+VERSION : 0.1
+   STRUCT
+      Start : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Done : Bool;
+      Valid : Bool;
+      "Reading Gate number" : String;
+      "Reading Gate number OLD" : String;
+      "Number of Reading Gates" : String;
+      "Number of Reading Gates OLD" : String;
+      Barcode : String;
+      Barcode_Old : String;
+   END_STRUCT;
+
+END_TYPE
+
+DATA_BLOCK "Time"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      CurrentLocalTime : String;
+      CurrentDTL {InstructionName := 'DTL'; LibVersion := '1.0'} : DTL;
+      PC_HeartBeat : Word;
+      PLC_HeartBeat : Word;
+   END_VAR
+
+
+BEGIN
+   CurrentLocalTime := '06/10/2022 09:04:28';
+   CurrentDTL.YEAR := 2022;
+   CurrentDTL.MONTH := 6;
+   CurrentDTL.DAY := 10;
+   CurrentDTL.WEEKDAY := 6;
+   CurrentDTL.HOUR := 9;
+   CurrentDTL.MINUTE := 4;
+   CurrentDTL.SECOND := 28;
+   CurrentDTL.NANOSECOND := 50899826;
+   CurrentDTL := DTL#2022-06-10-09:04:28.050899826;
+   PC_HeartBeat := 16#6E87;
+   PLC_HeartBeat := 16#B1AA;
+
+END_DATA_BLOCK
+
+TYPE "ECnv_Control"
+VERSION : 0.1
+   STRUCT
+      Mode { ExternalWritable := 'False'} : UInt;
+      Error { ExternalWritable := 'False'} : Bool;
+      Warning { ExternalWritable := 'False'} : UInt;
+      Enabled { ExternalWritable := 'False'} : Bool;
+      Stopped { ExternalWritable := 'False'} : Bool;
+      Done : Bool;
+      Running { ExternalWritable := 'False'} : Bool;
+      Ready_For_Task { ExternalWritable := 'False'} : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID { ExternalWritable := 'False'} : UInt;
+      Cnv_Occupied { ExternalWritable := 'False'} : Bool;
+      Pallet_Type { ExternalWritable := 'False'} : UInt;
+      SM_State { ExternalWritable := 'False'} : UInt;   // State Machine state
+      Shuttle_In_Place { ExternalWritable := 'False'} : Bool;
+      Motor { S7_SetPoint := 'False'} : "Cnv_Motor";
+      Instruction { S7_SetPoint := 'False'} : "Cnv_Instruction";
+      Inputs : "Cnv_Inputs";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+
+END_TYPE
+
+FUNCTION "Feed_Steptable_FC" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      CurrentTime : String;
+      Task_Type : Int;
+      Source_Location : DInt;
+      Destination_Location : DInt;
+      Pallet_Type : Char;
+      Pallet_Alignment : Char;
+      Shuttle_ID : Int;
+   END_VAR
+
+   VAR_IN_OUT 
+      StepTable : "OrderTable_UDT";
+   END_VAR
+
+
+BEGIN
+	#StepTable.OrderNo := "OrderNo" + 1;
+	#StepTable.StepNo := "OrderNo" + 1;
+	#StepTable.PlaceTime := #CurrentTime;
+	
+	#StepTable.OPC_Control.Task_ID := "OrderNo" + 1;
+	#StepTable.OPC_Control.Task_Type := #Task_Type;
+	#StepTable.OPC_Control.Source_Location := #Source_Location;
+	#StepTable.OPC_Control.Destination_Location := #Destination_Location;
+	#StepTable.OPC_Control.Pallet_Type := #Pallet_Type;
+	#StepTable.OPC_Control.Pallet_Alignment := #Pallet_Alignment;
+	#StepTable.OPC_Control.Shuttle_ID := #Shuttle_ID;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+END_FUNCTION
+
+TYPE "Gate_Station_UDT"
+VERSION : 0.1
+   STRUCT
+      Requested_Access { ExternalWritable := 'False'} : Bool;
+      Secure_Access : Bool;
+      Safe_To_Restart { ExternalWritable := 'False'} : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Auto_Test_DB_UDT"
+VERSION : 0.1
+   STRUCT
+      System { S7_SetPoint := 'False'} : Array[1..5] of "Auto_Test_UDT";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Shuttle_MQTT_Status_Msg"
+VERSION : 0.1
+   STRUCT
+      Request_ID : DInt;
+      Position_ID : DInt;
+      Destination_ID : DInt;
+      Distance_Remaining : DInt;
+      Position_X : DInt;
+      Position_Y : DInt;
+      Floor : Int;
+      Operation_Mode : String;
+      Operational_State : String;
+      Load_State : String;
+      Error_Vehicle_1 : UInt;
+      Error_Vehicle_2 : UInt;
+      Error_Vehicle_3 : UInt;
+      Error_Vehicle_4 : UInt;
+      Error_Vehicle_5 : UInt;
+      Error_Vehicle_6 : UInt;
+      Sensor_Inputs : UInt;
+      Sensor_Outputs : UInt;
+      Reader_Value : DInt;
+      Pallet_Type : String;
+      Energy_Level : UInt;
+      Battery_Voltage : UInt;
+      Paused : Bool;
+      Last_Received_Order_ID : Int;
+      Current_Order_ID : Int;
+      Last_Finished_Order_ID : Int;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Control"
+VERSION : 0.1
+   STRUCT
+      Mode : UInt;
+      Error { ExternalWritable := 'False'} : Bool;
+      Warning { ExternalWritable := 'False'} : UInt;
+      Enabled { ExternalWritable := 'False'} : Bool;
+      Stopped { ExternalWritable := 'False'} : Bool;
+      Running { ExternalWritable := 'False'} : Bool;
+      Done : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID { ExternalWritable := 'False'} : UInt;
+      AE { ExternalWritable := 'False'} : Real;
+      LE { ExternalWritable := 'False'} : Real;
+      Current_Level { ExternalWritable := 'False'} : UInt;
+      Docked { ExternalWritable := 'False'} : Bool;
+      LP_State { ExternalWritable := 'False'} : UInt;
+      DP_Extended { ExternalWritable := 'False'} : Bool;
+      Pallet_Loaded { ExternalWritable := 'False'} : UInt;
+      Shuttle_Loaded { ExternalWritable := 'False'} : UInt;
+      SM_State { ExternalWritable := 'False'} : UInt;   // State Machine state
+      Motor_UP { ExternalWritable := 'False'} : Bool;
+      Motor_Down { ExternalWritable := 'False'} : Bool;
+      Motor_Speed { ExternalWritable := 'False'} : UInt;
+      VFD_Error { ExternalWritable := 'False'} : UInt;
+      LE_Error { ExternalWritable := 'False'} : UInt;
+      AE_Error { ExternalWritable := 'False'} : UInt;
+      Encoder_Delta { ExternalWritable := 'False'} : Int;
+      Instruction { S7_SetPoint := 'False'} : "VTD_Instruction";
+      Shuttle_Interlock : "VTD_Shuttle_Interlock";
+      Inputs : "VTD_Inputs";
+      Outputs : "VTD_Outputs";
+      Motor : "VTD_Motor";
+      VTD_Errors : "VTD_Errors";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_VTD_Control"
+VERSION : 0.1
+   STRUCT
+      Cnv_Level { S7_SetPoint := 'False'} : Array[1..8] of "Cnv_Level_Control";
+   END_STRUCT;
+
+END_TYPE
+
+DATA_BLOCK "Control_DB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      ECnv_Sys : Array[1..5] of "ECnv_Control";
+      LCnv_Sys : Array[1..5] of "Cnv_VTD_Control";
+      VTD_Sys : Array[1..5] of "VTD_Control";
+      WCS_OPC_Control : Array[1..5] of "WMS_OPC_UA";
+      Shuttles_Position : Array[1..23] of Struct
+         x : DInt;
+         y : DInt;
+         Charging : Bool;
+      END_STRUCT;
+      VTDBarcode_Station { S7_SetPoint := 'False'} : Array[1..5] of "Barcode_Station_UDT";
+      Pallet_ID_Received : Array[1..3] of Bool;
+      Gate_Station { S7_SetPoint := 'False'} : Array[1..12] of "Gate_Station_UDT";
+   END_VAR
+
+
+BEGIN
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+
+END_DATA_BLOCK
+
+DATA_BLOCK "Screen_DB_1"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      Charge_VTD_Commands : Array[1..5] of Bool;
+      Shuttle { S7_SetPoint := 'False'} : "Shuttle_MQTT_Status_Msg";
+      Reset_All : Array[1..5] of Bool;
+      Shuttle_Level_Selected : Array[1..5] of UInt;
+      Charge_Shuttle_Commands : Array[1..5] of Bool;
+      Shuttle_Select : Array[1..5] of USInt;
+      Charge_OT { S7_SetPoint := 'True'} : Array[1..5] of Bool;
+      OrderTable_Selected : Array[1..5] of UInt;
+      Automatic_Button : Array[1..5] of Bool;
+      All_In_Automatic : Array[1..5] of Bool;
+      System_Error : Array[1..5] of Bool;
+      Reset_Comissioning : Array[1..5] of Bool;
+      Alarms_ActiveTable : Array[1..5] of USInt;
+      Charger_1 : Array[1..5] of Bool;
+      Charger_2 : Array[1..5] of Bool;
+      Charger_3 : Array[1..5] of Bool;
+      Shuttle_Charge_Buttons : Array[1..5] of Bool;
+      Alarm_Current_Buttons : Array[1..5] of Bool;
+      Alarm_History_Buttons : Array[1..5] of Bool;
+      MainTemplate_Background : Array[1..5] of USInt;
+      Settings_ActivePopUp : Array[1..5] of USInt;
+      MainTemplate_ErrorActive : Array[1..5] of Bool;
+      MainTemplate_ErrorCount : Array[1..5] of USInt;
+      EmptyTemplate_Background : Array[1..5] of USInt;
+      Charge_VTD : Array[1..5] of Bool;
+      Charge_Cnv : Array[1..5] of Bool;
+      Charge_Cnv_Commands : Array[1..5] of Bool;
+   END_VAR
+
+
+BEGIN
+   Charger_1[1] := false;
+   Charger_1[2] := false;
+   Charger_1[3] := false;
+   Charger_1[4] := false;
+   Charger_1[5] := false;
+
+END_DATA_BLOCK
+
+TYPE "Level_Keys_UDT"
+VERSION : 0.1
+   STRUCT
+      Level : Array[1..8] of Bool;
+   END_STRUCT;
+
+END_TYPE
+
+FUNCTION "CNV_Order_FC" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      i_Sys : UInt;
+      Level : UInt;
+      Tower : UInt;
+      Transfer_From_To : Byte;
+      Pallet_Type : Char;
+      Pallet_Allignment : Char;
+      Device : String;
+      Task_Type : Int;
+   END_VAR
+
+   VAR_IN_OUT 
+      StepTable_0 : "OrderTable_UDT";
+   END_VAR
+
+   VAR_TEMP 
+      StrSys : String;
+      StrLev : String;
+      Concat1 : String;
+      Concat2 : String;
+      Source_Location : DInt;
+      Destination_Location : DInt;
+      Concat3 : String;
+      Concat4 : String;
+      StrSource : String;
+      StrDestination : String;
+   END_VAR
+
+
+BEGIN
+	#StrSys := UINT_TO_STRING(#i_Sys);
+	
+	// Remove "+"
+	IF #StrSys[1] = '+' THEN
+	    #StrSys := RIGHT(IN := #StrSys, L := LEN(#StrSys) - 1);
+	END_IF;
+	
+	#StrLev := UINT_TO_STRING(#Level);
+	
+	// Remove "+"
+	IF #StrLev[1] = '+' THEN
+	    #StrLev := RIGHT(IN := #StrLev, L := LEN(#StrLev) - 1);
+	END_IF;
+	
+	IF #Tower = 1 AND #Transfer_From_To = 2 THEN//EXTRACTOR TO CONVEYOR 1
+	    #StrSource := '120';
+	    #StrDestination := '100';
+	ELSIF #Tower = 2 AND #Transfer_From_To = 2 THEN //EXTRACTOR TO CONVEYOR 2
+	    #StrSource := '120';
+	    #StrDestination := '110';
+	ELSIF #Tower = 1 AND #Transfer_From_To = 1 THEN //CONVEYOR 1 TO EXTRACTOR
+	    #StrSource := '100';
+	    #StrDestination := '120';
+	ELSIF #Tower = 2 AND #Transfer_From_To = 1 THEN //CONVEYOR 2 TO EXTRACTOR
+	    #StrSource := '110';
+	    #StrDestination := '120';
+	ELSIF #Tower = 1 AND #Transfer_From_To = 3 THEN //LOGISTEX TO CONVEYOR 1
+	    #StrSource := '0';
+	    #StrDestination := '100';
+	ELSIF #Tower = 2 AND #Transfer_From_To = 4 THEN // CONVEYOR 2 TO LOGISTEX
+	    #StrSource := '110';
+	    #StrDestination := '0';
+	END_IF;
+	
+	// Build Source Location
+	#Concat1 := CONCAT(IN1 := #StrSource, IN2 := #StrLev);
+	#Concat2 := CONCAT(IN1 := #Concat1, IN2 := '0');
+	#Source_Location := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat2, IN2 := #StrSys));
+	
+	// Build Destinarion Location
+	#Concat3 := CONCAT(IN1 := #StrDestination, IN2 := #StrLev);
+	#Concat4 := CONCAT(IN1 := #Concat3, IN2 := '0');
+	#Destination_Location := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat4, IN2 := #StrSys));
+	
+	"Feed_Steptable_FC"(CurrentTime := "Time".CurrentLocalTime,
+	                    Task_Type := #Task_Type,
+	                    Source_Location := #Source_Location,
+	                    Destination_Location := #Destination_Location,
+	                    Pallet_Type := #Pallet_Type,
+	                    Pallet_Alignment := #Pallet_Allignment,
+	                    Shuttle_ID:=0,
+	                    StepTable := #StepTable_0);
+	
+END_FUNCTION
+
+FUNCTION "VTD_Order_FC" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      i_Sys : UInt;
+      Level : UInt;
+   END_VAR
+
+   VAR_IN_OUT 
+      StepTable_0 : "OrderTable_UDT";
+   END_VAR
+
+   VAR_TEMP 
+      StrSys : String;
+      Concat1 : String;
+      StrLev : String;
+      Concat2 : String;
+      ID : DInt;
+   END_VAR
+
+
+BEGIN
+	#StrSys := UINT_TO_STRING(#i_Sys);
+	// Remove "+"
+	IF #StrSys[1] = '+' THEN
+	    #StrSys := RIGHT(IN := #StrSys, L := LEN(#StrSys) - 1);
+	END_IF;
+	
+	#StrLev := UINT_TO_STRING(#Level);
+	
+	// Remove "+"
+	IF #StrLev[1] = '+' THEN
+	    #StrLev := RIGHT(IN := #StrLev, L := LEN(#StrLev) - 1);
+	END_IF;
+	               
+	// Build ID
+	#Concat1 := CONCAT(IN1 := '300', IN2 := #StrLev);
+	#Concat2 := CONCAT(IN1 := #Concat1, IN2 := '0');
+	#ID := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat2, IN2 := #StrSys));
+	
+	"Feed_Steptable_FC"(CurrentTime := "Time".CurrentLocalTime,
+	                    Task_Type := 1,
+	                    Source_Location := 0,
+	                    Destination_Location := #ID,
+	                    Pallet_Type := 'C',
+	                    Pallet_Alignment := 'N',
+	                    Shuttle_ID:=0,
+	                    StepTable := #"StepTable_0");
+	
+	
+END_FUNCTION
+
+DATA_BLOCK "Auto_Test_DB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+"Auto_Test_DB_UDT"
+
+BEGIN
+
+END_DATA_BLOCK
+
+TYPE "System_UDT"
+VERSION : 0.1
+   STRUCT
+      Id : UInt;
+      CancelOrders : Bool;   // Cancel Step Orders
+      PauseOrders : Bool;   // Pause Step Orders
+      ResumeOrders : Bool;   // Resume Step Orders
+      OrderSent : Bool;   // Flag - Order Sent by PC
+      CurrentOrder : UInt := 0;   // Current Step Order
+      NextOrder : UInt := 1;
+      OrderTable { S7_SetPoint := 'False'} : Array[0..99] of "OrderTable_UDT" := [((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), '', (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ())), ((), (), (), (), (), (), (), (), ((), (), (), (), (), (), (), (), (), (), (), (), (), (), (), ()))];   // Order Table
+      StepTable { S7_SetPoint := 'False'} : Array[0..20] of "OrderTable_UDT";   // Step Table sent by PC
+      CarParked_Confirm : Bool;   // Client Confirmation their Car is Parked in Loading Bay
+      Running { ExternalWritable := 'False'} : Bool;   // System is Running
+      IDLE { ExternalWritable := 'False'} : Bool;   // System is in IDLE Mode
+      Error { ExternalWritable := 'False'} : Bool;   // System is in Error
+      State { ExternalWritable := 'False'} : USInt;   // System State, 0 = Idle, 1 = Run, 2 = Error
+      ResetError { ExternalWritable := 'False'} : Bool;   // Reset Error
+      Ready { ExternalWritable := 'False'} : Bool;   // System Ready
+      Selected { ExternalWritable := 'False'} : Bool;   // System Selected for work
+      Auto_Man { ExternalWritable := 'False'} : Bool := TRUE;   // Auto/Manual Switch (0 = Manual, 1 = Auto)
+      Paused { ExternalWritable := 'False'} : Bool;   // System was Paused
+      Watchdog_TimeOut { ExternalWritable := 'False'} : Struct
+         Cnv_Entry { ExternalWritable := 'False'} : Bool;
+         Cnv_PopUp { ExternalWritable := 'False'} : Array[1..4] of Bool;
+         Cnv_Exit { ExternalWritable := 'False'} : Bool;
+         EConveyor { ExternalWritable := 'False'} : Bool;
+         VTD { ExternalWritable := 'False'} : Bool;
+         Cnv_Buffer { ExternalWritable := 'False'} : Array[1..3] of Bool;
+         Roller_TO_Roller { ExternalWritable := 'False'} : Bool;
+         Chain_TO_Chain { ExternalWritable := 'False'} : Bool;
+         Pop4_TO_Pick { ExternalWritable := 'False'} : Bool;
+         Pick_TO_Pop1 { ExternalWritable := 'False'} : Bool;
+         Weigh_Station { ExternalWritable := 'False'} : Bool;
+         Profile_Station { ExternalWritable := 'False'} : Bool;
+         Pallet_InOut { ExternalWritable := 'False'} : Bool;
+         Shuttle_InOut { ExternalWritable := 'False'} : Bool;
+      END_STRUCT;
+   END_STRUCT;
+
+END_TYPE
+
+DATA_BLOCK "R_Send_VTD_Order"
+{InstructionName := 'R_TRIG';
+ LibVersion := '1.0';
+ S7_Optimized_Access := 'TRUE' }
+AUTHOR : SIMATIC
+FAMILY : BIT
+NAME : R_TRIG
+VERSION : 1.0
+NON_RETAIN
+R_TRIG
+
+BEGIN
+
+END_DATA_BLOCK
+
+FUNCTION_BLOCK "Auto_Test"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      Sys_No : UInt;
+      Automatic : Bool;
+      Manual : Bool;
+      Level : UInt;
+      Error : Bool;
+      Start : Bool;
+      Pause : Bool;
+      Stop : Bool;
+      "Pallet Type" : Char;
+      "Tower 1 Pallet Alignment" : Char;
+      "Tower 2 Pallet Alignment" : Char;
+      "Extractor Pallet Alignment" : Char;
+      Pallet_Allignment : Char;
+      Tower : UInt;
+      Transfer_From_To : Byte;
+      "From level" : Byte;
+      "To level" : Byte;
+      "Testing Time" : UInt;
+      "Numer of cycles" : Byte;
+   END_VAR
+
+   VAR_OUTPUT 
+      Running : Bool;
+      Time_Runnng : Time;
+      Start_Time { ExternalAccessible := 'False'; ExternalVisible := 'False'; ExternalWritable := 'False'} : String;
+      Stop_Time { ExternalAccessible := 'False'; ExternalVisible := 'False'; ExternalWritable := 'False'} : String;
+      Duration : Time;
+   END_VAR
+
+   VAR_IN_OUT 
+      "Order Table_1" : "OrderTable_UDT";
+      Step_Table_0 : "OrderTable_UDT";
+      System_OrderSent : Bool;
+      Total_Duration : Time;
+   END_VAR
+
+   VAR 
+      State : Int;
+      R_Start {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      T_Delay {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      Time_Delay : Time := T#0ms;
+      Send_VTD_Order : Bool;
+      Send_CNV_Order : Bool;
+      R_TRIG_Instance {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      T_Running {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      F_TRIG {InstructionName := 'F_TRIG'; LibVersion := '1.0'} : F_TRIG;
+      R_TRIG {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      Error_Code : Int;
+      test : Bool;
+      N_Cycles : UInt;
+      Testing_Time : Time;
+      R_Manual_Mode {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+   END_VAR
+
+   VAR_TEMP 
+      Busy : Bool;
+   END_VAR
+
+   VAR CONSTANT 
+      VTD_DEVICE : String := 'VTD';
+      PALLET_INOUT_DEVICE : String := 'Pallet In Out';
+      SHUTTLE_INOUT_DEVICE : String := 'Shuttle In Out';
+      RUNNING_STATUS : String := 'Running';
+      COMPLETED_STATUS : String := 'Completed';
+   END_VAR
+
+
+BEGIN
+	#R_Start(CLK:=#Start);
+	
+	IF #Stop THEN
+	    #State := 0;
+	END_IF;
+	
+	IF #Error THEN
+	    #State := 400;
+	END_IF;
+	
+	#R_Manual_Mode(CLK:=#Automatic AND NOT #Error AND #Manual AND NOT #Running);
+	
+	IF #R_Manual_Mode.Q THEN
+	    #State := 500;
+	ELSIF #Automatic AND NOT #Error AND NOT #Manual AND #State = 500 THEN
+	    #State := 0;
+	END_IF;
+	
+	IF #State > 10 AND #State < 400 THEN
+	    #Running := TRUE;
+	END_IF;
+	
+	//Time running
+	#R_TRIG(CLK:=#Running);
+	IF #R_TRIG.Q THEN
+	    #Start_Time := "Time".CurrentLocalTime;
+	    #Stop_Time := '';
+	END_IF;
+	#F_TRIG(CLK:=#Running);
+	IF #F_TRIG.Q THEN
+	    #Duration := #T_Running.ET;
+	    #Total_Duration := #Duration + #Total_Duration;
+	    #Stop_Time := "Time".CurrentLocalTime;
+	END_IF;
+	#T_Running(IN:=#Running AND NOT #Pause,
+	                      PT:=t#24h);
+	
+	#Time_Runnng := #T_Running.ET;
+	
+	#Testing_Time := UINT_TO_TIME(#"Testing Time") * 60000;
+	
+	#Error_Code := WRIT_DBL(REQ := #test, SRCBLK := "Auto_Test_DB",BUSY=>#Busy, DSTBLK => "Auto_Test_DB");
+	
+	CASE #State OF
+	    0://Initialization
+	        #Running := false;
+	        #State := #State + 10;
+	        
+	    10://Idle
+	        IF #R_Start.Q AND #Automatic AND NOT #Error AND #"Pallet Type" <> '' AND #"From level" > 0 AND #"To level" > 0  THEN
+	            #N_Cycles := 0;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    20: //VTD TO START LEVEL
+	        IF "Control_DB".VTD_Sys[#Sys_No].Current_Level <> #"From level" THEN
+	            "VTD_Order_FC"(i_Sys := #Sys_No,
+	                           Level := #"From level",
+	                           StepTable_0 := #Step_Table_0);
+	            #R_TRIG_Instance(CLK := TRUE,
+	                             Q => #System_OrderSent);
+	            #T_Delay(IN := TRUE,
+	                     PT := #Time_Delay);
+	            IF #"Order Table_1".Status = #RUNNING_STATUS AND #T_Delay.Q THEN
+	                #R_TRIG_Instance(CLK := FALSE,
+	                                 Q => #System_OrderSent);
+	                #T_Delay(IN := FALSE,
+	                         PT := T#0ms);
+	                #State := #State + 10;
+	            END_IF;
+	        ELSE
+	            #State := #State + 20;
+	        END_IF;
+	        
+	    30: //ACK VTD
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    40: //CNV1
+	        "CNV_Order_FC"(i_Sys := #Sys_No,
+	                       Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level,
+	                       Tower := 1,
+	                       Transfer_From_To := 2,
+	                       Pallet_Type := #"Pallet Type",
+	                       Pallet_Allignment := #"Tower 1 Pallet Alignment",
+	                       Device:=#PALLET_INOUT_DEVICE,
+	                       Task_Type:=4,
+	                       StepTable_0 := #Step_Table_0);
+	        #System_OrderSent := TRUE;
+	        #State := #State + 10;
+	        
+	    50: //RESET ACK
+	        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+	            #R_TRIG_Instance(CLK := FALSE,
+	                             Q => #System_OrderSent);
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    60: //ACK CNV1
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    70: //ECVN TO TOWER 1
+	        "CNV_Order_FC"(i_Sys := #Sys_No,
+	                       Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level,
+	                       Tower := 1,
+	                       Transfer_From_To := 1,
+	                       Pallet_Type := #"Pallet Type",
+	                       Pallet_Allignment := #"Extractor Pallet Alignment",
+	                       Device:=#PALLET_INOUT_DEVICE,
+	                       Task_Type:=4,
+	                       StepTable_0 := #Step_Table_0);
+	        #System_OrderSent := TRUE;
+	        #State := #State + 10;
+	        
+	    80: //RESET ACK
+	        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    90: //ACK ECVN
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    100: //VTD FROM START LEVEL TO FINAL LEVEL
+	        IF "Control_DB".VTD_Sys[#Sys_No].Current_Level < #"To level" THEN
+	            "VTD_Order_FC"(i_Sys := #Sys_No,
+	                           Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level + 1,
+	                           StepTable_0 := #Step_Table_0);
+	            #System_OrderSent := TRUE;
+	            #State := #State + 10;
+	        ELSE
+	            #State := 130;
+	        END_IF;
+	        
+	    110: //RESET ACK
+	        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+	            #State := #State + 10;
+	        END_IF;
+	       
+	        
+	    120: //ACK VTD
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #State := 40;
+	        END_IF;
+	        
+	    130: //VTD TO START LEVEL---------------------------------------------------------------------------------------------------
+	        "VTD_Order_FC"(i_Sys := #Sys_No,
+	                       Level := #"From level",
+	                       StepTable_0 := #Step_Table_0);
+	        #System_OrderSent := TRUE;
+	        #State := #State + 10;
+	        
+	    140: //RESET ACK
+	        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    150: //ACK VTD START LEVEL
+	        //Wait to complete and send ack
+	        IF #Sys_No <= 3 THEN
+	            IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	                "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	                #State := #State + 10;
+	            END_IF;
+	        ELSE
+	            IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	                "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	                #State := 40; //TEST JUST CONV 1 FOR SYSTEM 4 AND 5
+	            END_IF;
+	        END_IF;
+	        
+	    160: //CNV2
+	        "CNV_Order_FC"(i_Sys := #Sys_No,
+	                       Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level,
+	                       Tower := 2,
+	                       Transfer_From_To := 2,
+	                       Pallet_Type := #"Pallet Type",
+	                       Pallet_Allignment := #"Tower 2 Pallet Alignment",
+	                       Device:=#PALLET_INOUT_DEVICE,
+	                       Task_Type:=4,
+	                       StepTable_0 := #Step_Table_0);
+	        #System_OrderSent := TRUE;
+	        #State := #State + 10;
+	        
+	    170: //RESET ACK
+	        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    180: //ACK CNV2
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    190: //ECVN TO TOWER 2
+	        "CNV_Order_FC"(i_Sys := #Sys_No,
+	                       Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level,
+	                       Tower := 2,
+	                       Transfer_From_To := 1,
+	                       Pallet_Type := #"Pallet Type",
+	                       Pallet_Allignment := #"Extractor Pallet Alignment",
+	                       Device:=#PALLET_INOUT_DEVICE,
+	                       Task_Type:=4,
+	                       StepTable_0 := #Step_Table_0);
+	        #System_OrderSent := TRUE;
+	        #State := #State + 10;
+	        
+	    200: //RESET ACK
+	        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    210: //ACK ECVN TO TOWER 2
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    220: //VTD 
+	        IF "Control_DB".VTD_Sys[#Sys_No].Current_Level < #"To level" THEN
+	            "VTD_Order_FC"(i_Sys := #Sys_No,
+	                           Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level + 1,
+	                           StepTable_0 := #Step_Table_0);
+	            #System_OrderSent := TRUE;
+	            #State := #State + 10;
+	        ELSIF (
+	            (#"Numer of cycles" = 0 OR #N_Cycles < #"Numer of cycles")
+	            AND
+	            (#Testing_Time = T#0M OR #Time_Runnng < #Testing_Time)
+	            ) THEN
+	            #State := 250;//CONTINUE
+	        ELSE
+	            #State := 260;//FINISH
+	        END_IF;
+	        
+	    230: //RESET ACK
+	        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+	            #State := #State + 10;
+	        END_IF;
+	      
+	    240: //ACK VTD
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #State := 160;
+	        END_IF;
+	        
+	    250: //ACK VTD AND START ANOTHER CYCLE
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #N_Cycles := #N_Cycles + 1;
+	            #State := 20;
+	        END_IF;
+	        
+	    260: //ACK VTD AND FINISH
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #State := 0;
+	        END_IF;
+	        
+	    400: //ERROR
+	        #Running := false;
+	        IF "Reset_All" OR
+	            ("Screen_DB_1".Reset_All[1] AND
+	             ("HMI_Box_Connected_1" = 1) OR ("HMI_Box_Connected_1" = 2) OR ("HMI_Box_Connected_1" = 3) OR ("HMI_Box_Connected_1" = 4) OR ("HMI_Box_Connected_1" = 5) OR
+	             ("HMI_Box_Connected_1" = 11 AND "KEY REMOTE/LOCAL L1 - CH1(1)") OR
+	             ("HMI_Box_Connected_1" = 12 AND "KEY REMOTE/LOCAL L2 - CH1(1)") OR
+	             ("HMI_Box_Connected_1" = 13 AND "KEY REMOTE/LOCAL L3 - CH1(1)") OR
+	             ("HMI_Box_Connected_1" = 14 AND "KEY REMOTE/LOCAL L4 - CH1(1)") OR
+	             ("HMI_Box_Connected_1" = 15 AND "KEY REMOTE/LOCAL L5 - CH1(1)") OR
+	             ("HMI_Box_Connected_1" = 16 AND "KEY REMOTE/LOCAL L6 - CH1(1)") OR
+	             ("HMI_Box_Connected_1" = 17 AND "KEY REMOTE/LOCAL L7 - CH1(1)") OR
+	             ("HMI_Box_Connected_1" = 18 AND "KEY REMOTE/LOCAL L8 - CH1(1)") OR
+	             ("HMI_Box_Connected_1" = 21 AND "KEY REMOTE/LOCAL L1 - CH1(2)") OR
+	             ("HMI_Box_Connected_1" = 22 AND "KEY REMOTE/LOCAL L2 - CH1(2)") OR
+	             ("HMI_Box_Connected_1" = 23 AND "KEY REMOTE/LOCAL L3 - CH1(2)") OR
+	             ("HMI_Box_Connected_1" = 24 AND "KEY REMOTE/LOCAL L4 - CH1(2)") OR
+	             ("HMI_Box_Connected_1" = 25 AND "KEY REMOTE/LOCAL L5 - CH1(2)") OR
+	             ("HMI_Box_Connected_1" = 26 AND "KEY REMOTE/LOCAL L6 - CH1(2)") OR
+	             ("HMI_Box_Connected_1" = 27 AND "KEY REMOTE/LOCAL L7 - CH1(2)") OR
+	             ("HMI_Box_Connected_1" = 28 AND "KEY REMOTE/LOCAL L8 - CH1(2)") OR
+	             ("HMI_Box_Connected_1" = 31 AND "KEY REMOTE/LOCAL L1 - CH1(3)") OR
+	             ("HMI_Box_Connected_1" = 32 AND "KEY REMOTE/LOCAL L2 - CH1(3)") OR
+	             ("HMI_Box_Connected_1" = 33 AND "KEY REMOTE/LOCAL L3 - CH1(3)") OR
+	             ("HMI_Box_Connected_1" = 34 AND "KEY REMOTE/LOCAL L4 - CH1(3)") OR
+	             ("HMI_Box_Connected_1" = 35 AND "KEY REMOTE/LOCAL L5 - CH1(3)") OR
+	             ("HMI_Box_Connected_1" = 36 AND "KEY REMOTE/LOCAL L6 - CH1(3)") OR
+	             ("HMI_Box_Connected_1" = 37 AND "KEY REMOTE/LOCAL L7 - CH1(3)") OR
+	             ("HMI_Box_Connected_1" = 38 AND "KEY REMOTE/LOCAL L8 - CH1(3)") OR
+	             ("HMI_Box_Connected_1" = 41 AND "KEY REMOTE/LOCAL L1 - CH1(4)") OR
+	             ("HMI_Box_Connected_1" = 42 AND "KEY REMOTE/LOCAL L2 - CH1(4)") OR
+	             ("HMI_Box_Connected_1" = 43 AND "KEY REMOTE/LOCAL L3 - CH1(4)") OR
+	             ("HMI_Box_Connected_1" = 44 AND "KEY REMOTE/LOCAL L4 - CH1(4)") OR
+	             ("HMI_Box_Connected_1" = 45 AND "KEY REMOTE/LOCAL L5 - CH1(4)") OR
+	             ("HMI_Box_Connected_1" = 46 AND "KEY REMOTE/LOCAL L6 - CH1(4)") OR
+	             ("HMI_Box_Connected_1" = 47 AND "KEY REMOTE/LOCAL L7 - CH1(4)") OR
+	             ("HMI_Box_Connected_1" = 48 AND "KEY REMOTE/LOCAL L8 - CH1(4)") OR
+	             ("HMI_Box_Connected_1" = 51 AND "KEY REMOTE/LOCAL L1 - CH1(5)") OR
+	             ("HMI_Box_Connected_1" = 52 AND "KEY REMOTE/LOCAL L2 - CH1(5)") OR
+	             ("HMI_Box_Connected_1" = 53 AND "KEY REMOTE/LOCAL L3 - CH1(5)") OR
+	             ("HMI_Box_Connected_1" = 54 AND "KEY REMOTE/LOCAL L4 - CH1(5)") OR
+	             ("HMI_Box_Connected_1" = 55 AND "KEY REMOTE/LOCAL L5 - CH1(5)") OR
+	             ("HMI_Box_Connected_1" = 56 AND "KEY REMOTE/LOCAL L6 - CH1(5)") OR
+	             ("HMI_Box_Connected_1" = 57 AND "KEY REMOTE/LOCAL L7 - CH1(5)") OR
+	             ("HMI_Box_Connected_1" = 58 AND "KEY REMOTE/LOCAL L8 - CH1(5)"))
+	        THEN
+	            #State := 0;
+	        END_IF;
+	        
+	    500://MANUAL ORDER
+	        #Running := false;
+	        IF #Send_VTD_Order THEN
+	            "VTD_Order_FC"(i_Sys := #Sys_No,
+	                           Level := #Level,
+	                           StepTable_0 := #Step_Table_0);
+	            #System_OrderSent := TRUE;
+	            #Running := TRUE;
+	            #Send_VTD_Order := FALSE;
+	        END_IF;
+	        
+	        IF #Send_CNV_Order THEN
+	            "CNV_Order_FC"(i_Sys := #Sys_No,
+	                           Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level,
+	                           Tower := #Tower,
+	                           Transfer_From_To := #Transfer_From_To,
+	                           Pallet_Type := #"Pallet Type",
+	                           Pallet_Allignment := #Pallet_Allignment,
+	                           Device:=#PALLET_INOUT_DEVICE,
+	                           Task_Type:=4,
+	                           StepTable_0 := #Step_Table_0);
+	            #System_OrderSent := TRUE;
+	            #Running := TRUE;
+	            #Send_CNV_Order := FALSE;
+	        END_IF;
+	        
+	        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+	            #State := #State + 10;
+	        END_IF;
+	                
+	    510: //RESET ACK
+	        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+	            #State := #State + 10;
+	        END_IF;
+	        
+	    520: //ACK VTD
+	        //Wait to complete and send ack
+	        IF #"Order Table_1".Status = #COMPLETED_STATUS THEN
+	            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+	            #State := 500;
+	        END_IF;
+	END_CASE;
+	
+	
+END_FUNCTION_BLOCK
+
+DATA_BLOCK "HMI_OrderTable"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      OrderTable { S7_SetPoint := 'False'} : Array[0..9] of "OrderTable_UDT";
+      State { S7_SetPoint := 'True'} : Array[0..9] of USInt;
+      Index : Array[0..9] of Int;
+      ScrollUp_PB : Bool;
+      ScrollDown_PB : Bool;
+      PlaceOrder_PB : Bool;
+      PauseOrders_PB : Bool;
+      ResumeOrder_PB : Bool;
+      CancelOrder_PB : Bool;
+      CancelThisOrder_PB : Bool;
+      StartRow : Int;
+      Device : USInt;
+      PlacingNewOrder : Bool;
+      PopUp_ErrorWindow_Active : Bool;
+      PopUp_ErrorID : UInt;
+      PopUp_Index : Int;
+   END_VAR
+
+
+BEGIN
+
+END_DATA_BLOCK
+
+DATA_BLOCK "OrderTable_HMI"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      Start : Bool;
+      Pause : Bool;
+      Resume : Bool;
+      Stop : Bool;
+      "Manual order" : Bool;
+      Transfer_From_To : Byte;
+      "Send VTD Order" : Bool;
+      "Send CNV Order" : Bool;
+      "Pallet Type" : Byte;
+      "Tower 1 Pallet Alignment" : Byte;
+      "Tower 2 Pallet Alignment" : Byte;
+      "Extractor Pallet Alignment" : Byte;
+      "From level" : Byte;
+      "To level" : Byte;
+      "Testing Time" : UInt;
+      "Numer of cycles" : Byte;
+      Tower : Byte;
+      Level : Byte;
+      "Time Running" : UInt;
+      Actual_Cycle : Byte;
+      "Start Test Visibility" : Bool;
+      "Stop Test Visibility" : Bool;
+      "Pause Test Visibility" : Bool;
+      "Resume Visibility" : Bool;
+      "Clear Table Visibility" : Bool;
+      "Pallet Type Visibility" : Bool;
+      "Tower 1 Visibility" : Bool;
+      "Tower 2 Visibility" : Bool;
+      "Extractor Visibility" : Bool;
+      Auto_Settings_Visibility : Bool;
+      "ToExtractor Visibility" : Bool;
+      "Manual order Visibility" : Bool;
+      "Tower Visibility" : Bool;
+      "Level Visibility" : Bool;
+      "Send VTD Order Visibility" : Bool;
+      "Send CNV Order Visibility" : Bool;
+   END_VAR
+
+
+BEGIN
+
+END_DATA_BLOCK
+
+DATA_BLOCK "R_Send_CNV_Order"
+{InstructionName := 'R_TRIG';
+ LibVersion := '1.0';
+ S7_Optimized_Access := 'TRUE' }
+AUTHOR : SIMATIC
+FAMILY : BIT
+NAME : R_TRIG
+VERSION : 1.0
+NON_RETAIN
+R_TRIG
+
+BEGIN
+
+END_DATA_BLOCK
+
+DATA_BLOCK "HMI_DB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      Username : String;
+      Password : String;
+      ScreenNo : Array[1..5] of UInt;
+      ScreenNo_Main : UInt;
+      System_Selected : Array[1..5] of UInt;
+      Rem_Loc_Keys { ExternalAccessible := 'False'; ExternalVisible := 'False'; ExternalWritable := 'False'; S7_SetPoint := 'False'} : Array[1..5] of "Level_Keys_UDT";
+   END_VAR
+
+
+BEGIN
+   Username := 'admin';
+   Password := '12345';
+
+END_DATA_BLOCK
+
+FUNCTION "FC_Orders" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      Sys : UInt;
+   END_VAR
+
+   VAR_IN_OUT 
+      System : "System_UDT";
+      Auto_Test : "Auto_Test";
+      VTD_CurrentOrder : UDInt;
+      Pallet_InOut_CurrentOrder : UDInt;
+      Shuttle_InOut_CurrentOrder : UDInt;
+      System_Busy : Bool;
+   END_VAR
+
+   VAR_TEMP 
+      i : Int;
+      j : Int;
+      EmptyOrder : "OrderTable_UDT";
+   END_VAR
+
+
+BEGIN
+	IF "HMI_OrderTable".StartRow < 0 THEN
+	    "HMI_OrderTable".StartRow := 0;
+	END_IF;
+	IF "HMI_OrderTable".StartRow > 90 THEN
+	    "HMI_OrderTable".StartRow := 90;
+	END_IF;
+	
+	//System - Order Table
+	//Place Order manually
+	IF "HMI_OrderTable".PlaceOrder_PB AND "HMI_OrderTable".PlacingNewOrder THEN
+	    "HMI_OrderTable".PlaceOrder_PB := FALSE;
+	    CASE "HMI_OrderTable".Device OF
+	            
+	        1:
+	            "HMI_OrderTable".OrderTable[0].Device := 'VTD';
+	        2:
+	            "HMI_OrderTable".OrderTable[0].Device := 'Pallet In Out';
+	        3:
+	            "HMI_OrderTable".OrderTable[0].Device := 'Shuttle In Out';
+	    END_CASE;
+	    IF "HMI_OrderTable".Device > 9 THEN
+	        "HMI_OrderTable".OrderTable[0].OPC_Control.Destination_Location := 0;
+	    END_IF;
+	    // "System_DB_VTD".OrderSent := "HMI_OrderTable".Device > 0;
+	    #System.StepTable[1] := "HMI_OrderTable".OrderTable[0];
+	    #System.StepTable[1].OrderNo := -1;
+	    #System.StepTable[1].StepNo := -1;
+	    #System.StepTable[1].PlaceTime := "Time".CurrentLocalTime;
+	    #System.StepTable[1].Status := 'Queued';
+	END_IF;
+	
+	//Pause Order Push Button
+	IF "HMI_OrderTable".PauseOrders_PB THEN
+	    "HMI_OrderTable".PauseOrders_PB := FALSE;
+	    #System.PauseOrders := TRUE;
+	END_IF;
+	//Resume Order Push Button
+	IF "HMI_OrderTable".ResumeOrder_PB THEN
+	    "HMI_OrderTable".ResumeOrder_PB := FALSE;
+	    #System.ResumeOrders := TRUE;
+	END_IF;
+	//Cancel Order Push Button
+	IF "HMI_OrderTable".CancelOrder_PB THEN
+	    "HMI_OrderTable".CancelOrder_PB := FALSE;
+	    #System.CancelOrders := TRUE;
+	END_IF;
+	
+	//Cancel This Order Push Button
+	IF "HMI_OrderTable".CancelThisOrder_PB THEN
+	    "HMI_OrderTable".CancelThisOrder_PB := FALSE;
+	    IF "HMI_OrderTable".OrderTable["HMI_OrderTable".PopUp_Index].Status = 'Error' THEN
+	        #System.OrderTable["HMI_OrderTable".PopUp_Index].Status := 'Error\Cancel';
+	        IF #System.CurrentOrder = "HMI_OrderTable".PopUp_Index THEN
+	            #System.CurrentOrder -= 1;
+	        END_IF;
+	        
+	        
+	        IF #System.OrderTable["HMI_OrderTable".PopUp_Index + "HMI_OrderTable".StartRow].Device = 'VTD' THEN
+	            #VTD_CurrentOrder := 0;
+	        ELSIF #System.OrderTable["HMI_OrderTable".PopUp_Index + "HMI_OrderTable".StartRow].Device = 'Pallet In Out' THEN
+	            #Pallet_InOut_CurrentOrder := 0;
+	        ELSIF #System.OrderTable["HMI_OrderTable".PopUp_Index + "HMI_OrderTable".StartRow].Device = 'Shuttle In Out' THEN
+	            #Shuttle_InOut_CurrentOrder := 0;
+	        END_IF;
+	        
+	    END_IF;
+	    
+	END_IF;
+	
+	//Copy data
+	FOR #i := 1 TO 9 DO
+	    #j := "HMI_OrderTable".StartRow + #i;
+	    "HMI_OrderTable".Index[#i] := #j;
+	    "HMI_OrderTable".OrderTable[#i] := #System.OrderTable[#j];
+	    //Color State
+	    IF "HMI_OrderTable".OrderTable[#i].Status = 'Queued' THEN
+	        "HMI_OrderTable".State[#i] := 1;
+	    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Running' THEN
+	        "HMI_OrderTable".State[#i] := 2;
+	    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Completed' THEN
+	        "HMI_OrderTable".State[#i] := 3;
+	    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Error' THEN
+	        "HMI_OrderTable".State[#i] := 4;
+	    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Paused' THEN
+	        "HMI_OrderTable".State[#i] := 5;
+	    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Canceled' THEN
+	        "HMI_OrderTable".State[#i] := 6;
+	    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Error\Cancel' THEN
+	        "HMI_OrderTable".State[#i] := 7;
+	    ELSE
+	        "HMI_OrderTable".State[#i] := 0;
+	    END_IF;
+	END_FOR;
+	
+	IF NOT "HMI_OrderTable".PlacingNewOrder THEN
+	    "HMI_OrderTable".Device := 0;
+	END_IF;
+	
+	//Error PopUp Window
+	IF "HMI_OrderTable".PopUp_ErrorWindow_Active AND NOT "HMI_OrderTable".PlacingNewOrder THEN
+	    "HMI_OrderTable".OrderTable[0] := "HMI_OrderTable".OrderTable["HMI_OrderTable".PopUp_Index];
+	    IF "HMI_OrderTable".OrderTable[0].Status = 'Error' THEN
+	        "HMI_OrderTable".State[0] := 4;
+	    ELSIF "HMI_OrderTable".OrderTable[0].Status = 'Error\Cancel' THEN
+	        "HMI_OrderTable".State[0] := 7;
+	    ELSE
+	        "HMI_OrderTable".State[0] := 0;
+	    END_IF;
+	ELSIF NOT "HMI_OrderTable".PopUp_ErrorWindow_Active AND NOT "HMI_OrderTable".PlacingNewOrder THEN
+	    "HMI_OrderTable".OrderTable[0] := #EmptyOrder;
+	END_IF;
+	
+	REGION Testing area
+	    IF ("HMI_Box_Connected_1" = #System.Id OR ("HMI_Box_Connected_1" >= (#System.Id * 10) + 1 AND "HMI_Box_Connected_1" <= (#System.Id * 10) + 8)) OR
+	        ("HMI_Box_Connected_2" = #System.Id OR ("HMI_Box_Connected_1" >= (#System.Id * 10) + 1 AND "HMI_Box_Connected_1" <= (#System.Id * 10) + 8))
+	    THEN
+	        #System_Busy := TRUE;
+	    ELSE
+	        #System_Busy := FALSE;
+	        IF "Comissioning_Var" THEN
+	            //Visibilities
+	            //Running in auto mode
+	            IF #Auto_Test.Running AND NOT #Auto_Test.Manual AND NOT #Auto_Test.Pause THEN
+	                "OrderTable_HMI"."Start Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Stop Test Visibility" := TRUE;
+	                "OrderTable_HMI"."Pause Test Visibility" := TRUE;
+	                "OrderTable_HMI"."Resume Visibility" := FALSE;
+	                "OrderTable_HMI"."Clear Table Visibility" := FALSE;
+	                "OrderTable_HMI"."Manual order Visibility" := FALSE;
+	                //Running and paused
+	            ELSIF #Auto_Test.Running AND #Auto_Test.Pause AND NOT #Auto_Test.Manual THEN
+	                "OrderTable_HMI"."Start Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Stop Test Visibility" := TRUE;
+	                "OrderTable_HMI"."Pause Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Resume Visibility" := TRUE;
+	                "OrderTable_HMI"."Clear Table Visibility" := FALSE;
+	                "OrderTable_HMI"."Manual order Visibility" := FALSE;
+	                //Running and Manual
+	            ELSIF #Auto_Test.Manual AND #Auto_Test.Running THEN
+	                "OrderTable_HMI"."Start Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Stop Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Pause Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Resume Visibility" := FALSE;
+	                "OrderTable_HMI"."Clear Table Visibility" := FALSE;
+	                "OrderTable_HMI"."Manual order Visibility" := FALSE;
+	                //Manual and not running
+	            ELSIF #Auto_Test.Manual AND NOT #Auto_Test.Running THEN
+	                "OrderTable_HMI"."Start Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Stop Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Pause Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Resume Visibility" := FALSE;
+	                "OrderTable_HMI"."Clear Table Visibility" := FALSE;
+	                "OrderTable_HMI"."Manual order Visibility" := TRUE;
+	                // not running, in automatic and no error
+	            ELSIF #Auto_Test.Automatic AND NOT #Auto_Test.Error AND #Auto_Test.State = 10 THEN
+	                "OrderTable_HMI"."Start Test Visibility" := TRUE;
+	                "OrderTable_HMI"."Stop Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Pause Test Visibility" := FALSE;
+	                "OrderTable_HMI"."Resume Visibility" := FALSE;
+	                "OrderTable_HMI"."Clear Table Visibility" := TRUE;
+	                "OrderTable_HMI"."Manual order Visibility" := TRUE;
+	            ELSIF NOT #Auto_Test.Running THEN
+	                "OrderTable_HMI"."Clear Table Visibility" := TRUE;
+	                "OrderTable_HMI"."Manual order Visibility" := TRUE;
+	            END_IF;
+	            
+	            //PALLET TYPE VISIBILITY
+	            IF "OrderTable_HMI"."Pallet Type" = 1 THEN //CHEP
+	                "OrderTable_HMI"."Tower 1 Visibility" := FALSE;
+	                "OrderTable_HMI"."Tower 2 Visibility" := FALSE;
+	                "OrderTable_HMI"."Extractor Visibility" := FALSE;
+	            ELSIF "OrderTable_HMI"."Pallet Type" = 2 THEN //EURO
+	                "OrderTable_HMI"."Tower 1 Visibility" := TRUE;
+	                "OrderTable_HMI"."Tower 2 Visibility" := TRUE;
+	                "OrderTable_HMI"."Extractor Visibility" := TRUE;
+	            END_IF;
+	            
+	            IF #Auto_Test.Manual THEN
+	                "OrderTable_HMI"."Tower Visibility" := TRUE;
+	                "OrderTable_HMI"."Level Visibility" := TRUE;
+	                "OrderTable_HMI"."ToExtractor Visibility" := TRUE;
+	                "OrderTable_HMI".Auto_Settings_Visibility := FALSE;
+	                IF #Auto_Test.Level <> 0 AND NOT #Auto_Test.Running THEN
+	                    "OrderTable_HMI"."Send VTD Order Visibility" := TRUE;
+	                END_IF;
+	                IF (("OrderTable_HMI"."Pallet Type" = 1) OR
+	                    ("OrderTable_HMI"."Pallet Type" = 2 AND "OrderTable_HMI".Tower = 1 AND "OrderTable_HMI"."Tower 1 Pallet Alignment" <> 0 AND "OrderTable_HMI".Transfer_From_To = 2) OR
+	                    ("OrderTable_HMI"."Pallet Type" = 2 AND "OrderTable_HMI".Tower = 2 AND "OrderTable_HMI"."Tower 1 Pallet Alignment" <> 0 AND "OrderTable_HMI".Transfer_From_To = 2) OR
+	                    ("OrderTable_HMI"."Pallet Type" = 2 AND "OrderTable_HMI"."Extractor Pallet Alignment" <> 0 AND "OrderTable_HMI".Transfer_From_To = 1))
+	                    AND
+	                    "OrderTable_HMI".Tower <> 0 AND "OrderTable_HMI".Transfer_From_To <> 0 AND NOT #Auto_Test.Running THEN
+	                    "OrderTable_HMI"."Send CNV Order Visibility" := TRUE;
+	                ELSE
+	                    "OrderTable_HMI"."Send CNV Order Visibility" := FALSE;
+	                END_IF;
+	            ELSE
+	                "OrderTable_HMI"."Tower Visibility" := FALSE;
+	                "OrderTable_HMI"."Level Visibility" := FALSE;
+	                "OrderTable_HMI"."ToExtractor Visibility" := FALSE;
+	                "OrderTable_HMI".Auto_Settings_Visibility := TRUE;
+	                "OrderTable_HMI"."Send VTD Order Visibility" := FALSE;
+	                "OrderTable_HMI"."Send CNV Order Visibility" := FALSE;
+	            END_IF;
+	            
+	            "OrderTable_HMI"."Pallet Type Visibility" := TRUE;
+	        ELSE
+	            "OrderTable_HMI"."Tower Visibility" := FALSE;
+	            "OrderTable_HMI"."Level Visibility" := FALSE;
+	            "OrderTable_HMI"."ToExtractor Visibility" := FALSE;
+	            "OrderTable_HMI".Auto_Settings_Visibility := FALSE;
+	            "OrderTable_HMI"."Send VTD Order Visibility" := FALSE;
+	            "OrderTable_HMI"."Send CNV Order Visibility" := FALSE;
+	            "OrderTable_HMI"."Pallet Type Visibility" := FALSE;
+	            "OrderTable_HMI"."Clear Table Visibility" := TRUE;
+	            "OrderTable_HMI"."Manual order Visibility" := FALSE;
+	        END_IF;
+	        
+	        //Buttons actions
+	        //START
+	        IF "OrderTable_HMI".Start THEN
+	            #Auto_Test.Start := TRUE;
+	        END_IF;
+	        
+	        //PAUSE
+	        IF "OrderTable_HMI".Pause THEN
+	            #Auto_Test.Pause := TRUE;
+	        END_IF;
+	        
+	        //STOP
+	        IF "OrderTable_HMI".Stop THEN
+	            #Auto_Test.Stop := TRUE;
+	        ELSE
+	            #Auto_Test.Stop := FALSE;
+	        END_IF;
+	        
+	        //RESUME
+	        IF "OrderTable_HMI".Resume THEN
+	            #Auto_Test.Pause := FALSE;
+	        END_IF;
+	        
+	        //MANUAL
+	        #Auto_Test.Manual := "OrderTable_HMI"."Manual order";
+	        
+	        //SEND VTD ORDER
+	        "R_Send_VTD_Order"(CLK := "OrderTable_HMI"."Send VTD Order");
+	        IF "R_Send_VTD_Order".Q THEN
+	            #Auto_Test.Send_VTD_Order := TRUE;
+	        END_IF;
+	        
+	        //SEND CNV ORDER
+	        "R_Send_CNV_Order"(CLK := "OrderTable_HMI"."Send CNV Order");
+	        IF "R_Send_CNV_Order".Q THEN
+	            #Auto_Test.Send_CNV_Order := TRUE;
+	        END_IF;
+	        
+	        //TEST SETTINGS
+	        //PALLET TYPE
+	        IF "OrderTable_HMI"."Pallet Type" = 1 THEN
+	            #Auto_Test."Pallet Type" := 'C';
+	        ELSIF "OrderTable_HMI"."Pallet Type" = 2 THEN
+	            #Auto_Test."Pallet Type" := 'E';
+	        ELSE
+	            #Auto_Test."Pallet Type" := ' ';
+	        END_IF;
+	        
+	        //PALLET ALIGNMENT TOWER 1
+	        IF "OrderTable_HMI"."Tower 1 Pallet Alignment" = 1 AND
+	            (("OrderTable_HMI".Transfer_From_To = 2 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+	            #Auto_Test."Tower 1 Pallet Alignment" := 'R';
+	            #Auto_Test.Pallet_Allignment := 'R';
+	        ELSIF "OrderTable_HMI"."Tower 1 Pallet Alignment" = 2 AND
+	            (("OrderTable_HMI".Transfer_From_To = 2 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+	            #Auto_Test."Tower 1 Pallet Alignment" := 'L';
+	            #Auto_Test.Pallet_Allignment := 'L';
+	        END_IF;
+	        
+	        //PALLET ALIGNMENT TOWER 2
+	        IF "OrderTable_HMI"."Tower 2 Pallet Alignment" = 1 AND
+	            (("OrderTable_HMI".Transfer_From_To = 2 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+	            #Auto_Test."Tower 2 Pallet Alignment" := 'R';
+	            #Auto_Test.Pallet_Allignment := 'R';
+	        ELSIF "OrderTable_HMI"."Tower 2 Pallet Alignment" = 2 AND
+	            (("OrderTable_HMI".Transfer_From_To = 2 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+	            #Auto_Test."Tower 2 Pallet Alignment" := 'L';
+	            #Auto_Test.Pallet_Allignment := 'L';
+	        END_IF;
+	        
+	        //PALLET ALIGNMENT ECONVEYOR
+	        IF "OrderTable_HMI"."Extractor Pallet Alignment" = 1 AND
+	            (("OrderTable_HMI".Transfer_From_To = 1 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+	            #Auto_Test."Extractor Pallet Alignment" := 'R';
+	            #Auto_Test.Pallet_Allignment := 'R';
+	        ELSIF "OrderTable_HMI"."Extractor Pallet Alignment" = 2 AND
+	            (("OrderTable_HMI".Transfer_From_To = 1 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+	            #Auto_Test."Extractor Pallet Alignment" := 'L';
+	            #Auto_Test.Pallet_Allignment := 'L';
+	        ELSIF "OrderTable_HMI"."Extractor Pallet Alignment" = 3 AND
+	            (("OrderTable_HMI".Transfer_From_To = 1 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+	            #Auto_Test."Extractor Pallet Alignment" := 'C';
+	            #Auto_Test.Pallet_Allignment := 'C';
+	        END_IF;
+	        
+	        //AUTOMATIC SETTING FOR BUTTON TRANSFER FROM_TO
+	        IF NOT "Control_DB".VTD_Sys[#Sys].Running AND "Control_DB".VTD_Sys[#Sys].Current_Level <> 0 THEN
+	            IF #Auto_Test.Tower = 1 AND "HMI_DB".ScreenNo_Main = 9 THEN
+	                //CNV 1
+	                IF "Control_DB".ECnv_Sys[#Sys].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv1.Cnv_Occupied AND
+	                    NOT "Control_DB".ECnv_Sys[#Sys].Running AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv1.Running THEN
+	                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To := 2;//to buffer
+	                ELSIF NOT "Control_DB".ECnv_Sys[#Sys].Cnv_Occupied AND "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv1.Cnv_Occupied AND
+	                    NOT "Control_DB".ECnv_Sys[#Sys].Running AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv1.Running THEN
+	                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To := 1;//to extractor
+	                ELSE
+	                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To;
+	                END_IF;
+	                //CNV 2
+	            ELSIF #Auto_Test.Tower = 2 AND "HMI_DB".ScreenNo_Main = 9 THEN   //CNV 2
+	                IF "Control_DB".ECnv_Sys[#Sys].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv2.Cnv_Occupied AND
+	                    NOT "Control_DB".ECnv_Sys[#Sys].Running AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv2.Running THEN
+	                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To := 2;
+	                ELSIF NOT "Control_DB".ECnv_Sys[#Sys].Cnv_Occupied AND "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv2.Cnv_Occupied AND
+	                    NOT "Control_DB".ECnv_Sys[#Sys].Running AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv2.Running THEN
+	                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To := 1;
+	                ELSE
+	                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To;
+	                END_IF;
+	            END_IF;
+	        END_IF;
+	        
+	        //LEVELS AND CYCLES
+	        #Auto_Test."From level" := "OrderTable_HMI"."From level";
+	        #Auto_Test."To level" := "OrderTable_HMI"."To level";
+	        #Auto_Test."Testing Time" := "OrderTable_HMI"."Testing Time";
+	        #Auto_Test."Numer of cycles" := "OrderTable_HMI"."Numer of cycles";
+	        #Auto_Test.Level := "OrderTable_HMI".Level;
+	        #Auto_Test.Tower := "OrderTable_HMI".Tower;
+	        "OrderTable_HMI"."Time Running" := DINT_TO_UINT(TIME_TO_DINT(#Auto_Test.Time_Runnng) / 60000);
+	        "OrderTable_HMI".Actual_Cycle := UINT_TO_BYTE(#Auto_Test.N_Cycles);
+	    END_IF;
+	END_REGION ;   
+	
+	
+	
+END_FUNCTION
+

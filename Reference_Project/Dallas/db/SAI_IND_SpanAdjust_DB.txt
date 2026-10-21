@@ -1,0 +1,52 @@
+DATA_BLOCK "SAI_IND_SpanAdjust_DB"   // InstanceDB 113  instance of "SAI_IND_SpanAdjust"
+
+VAR_INPUT
+   ID : HW_IO;
+   Hi_Weight : Real;
+   Mid_Weight : Real;
+   Low_Weight : Real;
+   xLow_Weight : Real;
+END_VAR
+
+VAR_OUTPUT
+   CurrentPoint : Int;
+   CurrentWeight : Real;
+   LoadWeight : Bool;
+   Process : Bool;
+   Done : Bool;
+   Error : Bool;
+   Cancelled : Bool;
+END_VAR
+
+VAR_IN_OUT
+   LinearityRange : Int;
+   Start : Bool;
+   ConfirmWeight : Bool;
+   Cancel : Bool;
+END_VAR
+
+VAR
+   Activate : Bool;
+   WRREC_SpanAdjust : WRREC;
+   RDREC_Status : RDREC;
+   IEC_Timer_1_Instance : IEC_TIMER;
+   AdjustStep : SInt;
+   Static01 : Bool;
+   Static02 : Bool;
+   Static03 : Bool;
+   Static04 : Bool;
+   Static05 : Bool;
+   Static06 : Bool;
+   Static07 : Bool;
+   Static08 : Bool;
+   Validate_REC : SInt;
+   Abort_REC : SInt;
+   Check01 : Bool;
+   Check02 : Bool;
+   AdjustmentStatus : Int;
+   CurrentPoint_0 : Int;
+   CurrentWeight_0 : Real;
+END_VAR
+
+
+// ---- start values (path : type := value)

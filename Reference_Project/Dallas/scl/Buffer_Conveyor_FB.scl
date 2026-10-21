@@ -1,0 +1,410 @@
+FUNCTION_BLOCK "Buffer_Conveyor_FB"   // FB 5, author Mertin Coetzee
+
+VAR_INPUT
+   Cnv_Settings : "Buffer_Cnv_Settings";
+   VTD_Level : UInt;
+   ECnv_TIP : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Control : "Buffer_Cnv_Control";
+   SinaSpeed : SinaSpeed;
+END_VAR
+
+VAR
+   State : UInt;
+   Timer_TC : TON_TIME;
+   Timer_Transfer : TON_TIME;
+   Watchdog : TON_TIME;
+   Transfer_Direction : String;
+   MainSetpoint : Int;
+   IEC_Timer_0_Instance_1 : TON_TIME;
+   R_TRIG_Instance : R_TRIG;
+END_VAR
+
+VAR_TEMP
+   Execute_Old : Bool;
+   Stop_Old : Bool;
+END_VAR
+
+BEGIN
+"R_TRIG_DB_17"(CLK := #Cnv_Control.Instruction.Execute AND NOT #Execute_Old);
+"R_TRIG_DB_18"(CLK := #Cnv_Control.Instruction.Stop AND NOT #Stop_Old);
+
+#Execute_Old := #Cnv_Control.Instruction.Execute;
+#Stop_Old := #Cnv_Control.Instruction.Stop;
+
+#Cnv_Control.Enabled := #Cnv_Control.Instruction.Enable;
+
+//MODES
+#Cnv_Control.Mode := #Cnv_Control.Instruction.Mode_Change;
+IF (#Cnv_Control.Mode = 1 OR #Cnv_Control.Mode = 5) AND NOT #Cnv_Control.Error THEN
+    #State := 500;
+END_IF;
+
+#R_TRIG_Instance(CLK:=#Cnv_Control.Mode = 3);
+IF #R_TRIG_Instance.Q THEN
+    #State := 0;
+END_IF;
+
+(*
+TODO:
+01. Need to add statemachine watchdog - Done
+02. Extractor needs to be on same floor for pallet to be moved in manual passed Rbwd - Done
+03. Complete reset state - Done
+04. Add stop inputs - Done
+05. Need to add variable motor speed, manual needs to be slower. - Done
+06. Need to add cyclic error checking. For odd sensor combinations as well - Partially done
+07. Need to add Shuttle monitor - Done
+08. Need to add Task ID check and start bit check to outbound pallet move. Check direction of pallet movement based on connected Cnv.
+09. Need to add checks for wrong direction of travel - Done
+10. Add checks for unsafe conditions with Cnv_Inputs - Partially Done
+11. Define Error codes - DOne
+12. Add watchdof time to Cnv Settings - Done
+13. Add self-timeout on manual 
+14. For shuttle in place sensor checks take into account extractor floor and safety stopper state
+15. Confirm modes and states are correct (Semi-auto and maintenance as well)
+16. Add the correct transfer process for the logistex-spacemaker pallet handovers.
+
+Mode select is done via the HMI. Might add external mode select switches.
+        
+        Mode select mask:
+        0: Disabled
+        1: Manual
+        2: Semi-Auto
+        3: Auto
+        4: Teach - N/A for Cnv
+        5: Maintenance
+        
+Device ID Format: XXYYZZ    
+XX = Device type   
+    40  VTD
+    10  Cnv_Front_of_VTD
+    11  Cnv_Rear_of_VTD
+    12  Cnv_On_Extractor
+    20  Safety_Stop_Front_of_VTD
+    21  Safety_Stop_Rear_of_VTD
+  
+YY = Floor   
+ZZ = VTD Connected to    
+Example: 110203 Conveyor at the rear of VTD 3 on level 2
+
+Pallet Alignment
+0 = no alignment
+1 = center alignment
+2 = Left
+3 = Right
+
+ Sensor order for the conveyor:
+ Lfwd Lpd1 Lpd2
+  []   []   []
+ ##############################
+ #        Pallet Flow         #
+ #         ------->>          #
+ #                            #
+ #                            #
+ ##############################
+                  []   []   []
+                 Rpd2 Rpd1 Rbwd      
+*)
+
+REGION Cyclic Checks    
+    #Cnv_Control.Cnv_Occupied := NOT #Cnv_Control.Inputs."Pallet Detect 1" AND (*#Cnv_Control."Inputs"."Pallet Detect 2" AND*) NOT #Cnv_Control.Inputs."Pallet Detect 3";
+    
+    //Check if a shuttle is in the Cnv
+    IF NOT #Cnv_Control.Inputs.Sdetect1 AND NOT #Cnv_Control.Inputs.Sdetect2 THEN
+        #Cnv_Control.Shuttle_In_Place := TRUE;
+    ELSE
+        #Cnv_Control.Shuttle_In_Place := FALSE;
+    END_IF;
+    
+    // Update the Cnv_Control opbject
+    #Cnv_Control.SM_State := #State;
+    #Cnv_Control.Stopped := NOT #Cnv_Control.Running;
+    IF #Cnv_Control.Instruction.Inbound_Ready OR #Cnv_Control.Instruction.Outbound_Ready THEN
+        #Cnv_Control.Ready_For_Task := TRUE;
+    ELSE
+        #Cnv_Control.Ready_For_Task := FALSE;
+    END_IF;
+    
+END_REGION
+
+REGION Auto/Semi auto mode
+    CASE #State OF
+        0: //Initialization
+            #Cnv_Control.Instruction.Transfer_Complete := 0;
+            #Cnv_Control.Instruction.Transfer_in_Progress := FALSE;
+            #Cnv_Control.Running := FALSE;
+            #Cnv_Control.Motor.Forward := FALSE;
+            #Cnv_Control.Motor.Reverse := FALSE;
+            #Cnv_Control.Motor.Speed := 0;
+            #Timer_Transfer(IN := FALSE,
+                            PT := T#0S);
+            IF #Cnv_Control.Enabled AND (#Cnv_Control.Mode = 3 OR #Cnv_Control.Mode = 2) AND #Cnv_Control.Error = 0 THEN
+                #State := 10;
+            END_IF;
+                
+            10: //Standby - Conveyor ready to receive instruction
+                IF ("R_TRIG_DB_17".Q OR #Cnv_Control.Instruction.Start_Transfer) AND "Control_DB".VTD_Control.Current_Level = #Cnv_Settings.Cnv_Level THEN
+                    //Inbound Transfer
+                    IF #Cnv_Control.Instruction.Inbound_Ready AND NOT #Cnv_Control.Running AND #Cnv_Control.Error = 0 THEN
+                        //Check transfer ID
+                        #Cnv_Control.Done := FALSE;
+                            #Cnv_Control.Running := TRUE;
+                            #Cnv_Control.Instruction.Transfer_in_Progress := TRUE;
+                            #Cnv_Control.Current_Task_ID := #Cnv_Control.Instruction.Task_ID;
+                            #State := 20;
+                        
+                        //Outbound Transfer    
+                    ELSIF #Cnv_Control.Instruction.Outbound_Ready AND NOT #Cnv_Control.Running AND #Cnv_Control.Error = 0 THEN
+                        //Check transfer ID
+                        #Cnv_Control.Done := FALSE;
+                            #Cnv_Control.Running := TRUE;
+                            #Cnv_Control.Instruction.Transfer_in_Progress := TRUE;
+                            #Cnv_Control.Current_Task_ID := #Cnv_Control.Instruction.Task_ID;
+                            #State := 30;
+                    ELSE
+                        #Cnv_Control.Warning := 0;// No task that can be started, yet start bit has been made true.
+                    END_IF;
+                ELSIF #Cnv_Control.Instruction.Start_Transfer AND "Control_DB".VTD_Control.Current_Level <> #Cnv_Settings.Cnv_Level THEN
+                    //Extractor not at the correct level
+                    Set_Bit_F(Bit := 2,
+                                Bit_Value := 1,
+                                Var := #Cnv_Control.Cnv_Errors.Error_Word_3);
+                END_IF;
+                
+                //----------------------- Pallet Movement Inbound -----------------------
+            20: // Running Roller FOWARD
+                #Cnv_Control.Running := TRUE;
+                #Cnv_Control.Motor.Forward := TRUE;
+                #Cnv_Control.Motor.Speed := #Cnv_Settings.Full_Speed;
+                #Transfer_Direction := 'Foward';
+                
+                IF "R_TRIG_DB_18".Q OR NOT #Cnv_Control.Inputs."Pallet Detect 3" THEN
+                    #Cnv_Control.Done := TRUE;
+                    #Cnv_Control.Motor.Speed := 0;
+                    #Cnv_Control.Motor.Forward := FALSE;
+                    #Cnv_Control.Running := FALSE;
+                    #State := 0;
+                END_IF;
+                
+                //Monitor the transfer progress
+                #Timer_Transfer(IN := TRUE,
+                                PT := UINT_TO_TIME(#Cnv_Settings.Transfer_Time) * 1000);
+                //If the watchdog bites, kill the process
+                IF #Timer_Transfer.Q THEN //14:1 Transfer timed out
+                    Set_Bit_F(Bit := 3,
+                                Bit_Value := 1,
+                                Var := #Cnv_Control.Cnv_Errors.Error_Word_2);
+                END_IF;
+                        
+                //----------------------- Pallet Movement Outbound -----------------------
+            30: // Running Roller REVERSE
+                #Cnv_Control.Running := TRUE;
+                #Cnv_Control.Motor.Reverse := TRUE;
+                #Cnv_Control.Motor.Speed := #Cnv_Settings.Full_Speed;
+                #Transfer_Direction := 'Foward';
+                
+                IF "R_TRIG_DB_18".Q OR "Control_DB".ECnv_Control.Cnv_Occupied THEN
+                    #Cnv_Control.Done := TRUE;
+                    #Cnv_Control.Motor.Speed := 0;
+                    #Cnv_Control.Motor.Forward := FALSE;
+                    #Cnv_Control.Running := FALSE;
+                    #State := 0;
+                END_IF;
+                
+                //Monitor the transfer progress
+                #Timer_Transfer(IN := TRUE,
+                                PT := UINT_TO_TIME(#Cnv_Settings.Transfer_Time) * 1000);
+                //If the watchdog bites, kill the process
+                IF #Timer_Transfer.Q THEN //14:1 Transfer timed out
+                    Set_Bit_F(Bit := 3,
+                                Bit_Value := 1,
+                                Var := #Cnv_Control.Cnv_Errors.Error_Word_2);
+                END_IF;
+                
+            400: //Error state
+                #Cnv_Control.Running := FALSE;
+                #Cnv_Control.Motor.Speed := 0;
+                #Cnv_Control.Motor.Forward := FALSE;
+                #Cnv_Control.Motor.Reverse := FALSE;
+                #Cnv_Control.Instruction.Stop := FALSE;
+                #Cnv_Control.Instruction.Transfer_in_Progress := FALSE;
+                #Watchdog(IN := FALSE,
+                                PT := T#0S);
+                #Timer_TC(IN := FALSE,
+                                PT := T#0S);
+                #Timer_Transfer(IN := FALSE,
+                                PT := T#0S);
+                #IEC_Timer_0_Instance_1(IN := FALSE,
+                                        PT := T#0S);
+                IF #Cnv_Control.Instruction.Reset THEN
+                    #Cnv_Control.Warning := 0;
+                    #Cnv_Control.Current_Task_ID := 0;
+                    #Cnv_Control.Error := FALSE; //Reset the conveyor
+                    
+                    #Cnv_Control.Cnv_Errors.Error_Word_1 := 0;
+                    #Cnv_Control.Cnv_Errors.Error_Word_2 := 0;
+                    #Cnv_Control.Cnv_Errors.Error_Word_3 := 0;
+                    #Cnv_Control.Cnv_Errors.Error_Word_4 := 0;
+                    #State := 0;
+                END_IF;
+                
+            500:
+                IF #Cnv_Control.Enabled THEN
+                    IF #Cnv_Control.Instruction.Foward OR #Cnv_Control.Instruction.Start_Transfer THEN
+                            #Cnv_Control.Motor.Speed := #Cnv_Settings.Manual_Speed;
+                            #Cnv_Control.Motor.Forward := TRUE;
+                            #Cnv_Control.Running := TRUE;
+                        ELSIF #Cnv_Control.Instruction.Backward OR #Cnv_Control.Instruction.Start_Transfer_Backward THEN
+                            #Cnv_Control.Motor.Speed := #Cnv_Settings.Manual_Speed;
+                            #Cnv_Control.Motor.Reverse := TRUE;
+                            #Cnv_Control.Running := TRUE;
+                        ELSE
+                            #Cnv_Control.Motor.Speed := 0;
+                            #Cnv_Control.Motor.Forward := FALSE;
+                            #Cnv_Control.Motor.Reverse := FALSE;
+                            #Cnv_Control.Running := FALSE;
+                        END_IF;
+                    END_IF;
+                IF #Cnv_Control.Mode <> 1 AND #Cnv_Control.Mode <> 5 THEN
+                    #State := 0;
+                END_IF;
+        END_CASE;
+    END_REGION
+    
+
+
+REGION Cyclic Error Checks
+    IF NOT "Main_Safety_RTG1_DB".SAFETY_OK_VTD THEN //11:1
+        Set_Bit_F(Bit := 0,
+                    Bit_Value := 1,
+                    Var := #Cnv_Control.Cnv_Errors.Error_Word_1);
+    END_IF;
+    
+    // IF #Cnv_Control.Instruction.Stop THEN //11:2
+    //     "Set_Bit_F"(Bit := 1,
+    //                 Bit_Value := 1,
+    //                 Var := #Cnv_Control.Cnv_Errors.Error_Word_1);
+    // END_IF;
+    
+    IF #Cnv_Control.Motor.Error THEN
+        Set_Bit_F(Bit := 0,
+                    Bit_Value := 1,
+                    Var := #Cnv_Control.Cnv_Errors.Error_Word_4);
+    END_IF;
+    
+    // Pallet Sensor Checks
+    // IF #Cnv_Control.Inputs.Lfwd AND #Cnv_Control.Inputs.Rbwd THEN
+    //     #Cnv_Control.Error := TRUE; //15:2 Combination of Cnv_Inputs indicates issue in conveyor
+    //     "Set_Bit_F"(Bit := 1,
+    //                 Bit_Value := 1,
+    //                 Var := #Cnv_Control.Cnv_Errors.Error_Word_4);
+    //     #State := 400;
+    // IF #Cnv_Control.Inputs.Lfwd AND #Cnv_Control.Inputs.Lpd1 AND #Cnv_Control.Inputs.Rpd1 THEN
+    //     #Cnv_Control.Error := TRUE; //15:3 Combination of Cnv_Inputs indicates issue in conveyor
+    //     "Set_Bit_F"(Bit := 2,
+    //                 Bit_Value := 1,
+    //                 Var := #Cnv_Control.Cnv_Errors.Error_Word_4);
+    //     #State := 400;
+    // ELSIF #Cnv_Control.Inputs.Rbwd AND #Cnv_Control.Inputs.Lpd1 AND #Cnv_Control.Inputs.Rpd1 THEN
+    //     #Cnv_Control.Error := TRUE; //15:4 Combination of Cnv_Inputs indicates issue in conveyor
+    //     "Set_Bit_F"(Bit := 3,
+    //                 Bit_Value := 1,
+    //                 Var := #Cnv_Control.Cnv_Errors.Error_Word_4);
+    //     #State := 400;
+    // END_IF;
+    
+    // Shuttle in Place Cnv_Inputs - Need to confirm the order of these Cnv_Inputs.
+    // IF (#Cnv_Settings.ID > 110000 AND #Cnv_Settings.ID < 120000 AND NOT #Cnv_Control.Inputs.Sdetect1 AND #Cnv_Control.Inputs.Sdetect2)
+    //     OR (#Cnv_Settings.ID > 120000 AND #Cnv_Settings.ID < 130000 AND NOT #Cnv_Control.Inputs.Sdetect1 AND #Cnv_Control.Inputs.Sdetect2) THEN
+    //     #Cnv_Control.Error := TRUE; //14:5 Shuttle is about to yeet itself down the VTD shaft
+    //     "Set_Bit_F"(Bit := 7,
+    //                 Bit_Value := 1,
+    //                 Var := #Cnv_Control.Cnv_Errors.Error_Word_2);
+    //     #State := 400;
+    // END_IF;
+    
+    // IF (#Cnv_Settings.ID > 110000 AND #Cnv_Settings.ID < 120000 AND #Cnv_Control.Inputs.Sdetect1 AND NOT #Cnv_Control.Inputs.Sdetect2)
+    //     OR (#Cnv_Settings.ID > 120000 AND #Cnv_Settings.ID < 130000 AND #Cnv_Control.Inputs.Sdetect1 AND NOT #Cnv_Control.Inputs.Sdetect2) THEN
+    //     #Cnv_Control.Warning := 0; //Shuttle detected in conveyor not yet on barcode
+    // END_IF;
+    
+    // // #Watchdog auto starts the moment Any form OF transfer occurs.
+    // IF #State > 10 AND #State < 400 THEN
+    //     #Watchdog(IN := TRUE,
+    //               PT := T#200s);
+    // ELSE
+    //     #Watchdog.IN := FALSE;
+    // END_IF;
+    
+    // IF #Watchdog.Q THEN
+    //     #Watchdog.IN := FALSE;
+    //     #Cnv_Control.Error := TRUE; //14:2  Watchdog bit
+    //     "Set_Bit_F"(Bit := 4,
+    //                 Bit_Value := 1,
+    //                 Var := #Cnv_Control.Cnv_Errors.Error_Word_2);
+    //     #State := 400;
+    // END_IF;
+    
+    // go to error state
+    IF #Cnv_Control.Cnv_Errors.Error_Word_1 <> 0 OR
+        #Cnv_Control.Cnv_Errors.Error_Word_2 <> 0 OR
+        #Cnv_Control.Cnv_Errors.Error_Word_3 <> 0 OR
+        #Cnv_Control.Cnv_Errors.Error_Word_4 <> 0
+        THEN
+            #Cnv_Control.Error := TRUE;
+            #State := 400;
+    END_IF;
+END_REGION
+
+REGION VFD
+    //Status
+    #Cnv_Control.Motor.Ready := NOT #Cnv_Control.Motor.Error;
+    
+    #SinaSpeed(EnableAxis := #Cnv_Control.Motor.Forward OR #Cnv_Control.Motor.Reverse,
+               AckError := #Cnv_Control.Instruction.Reset,
+               SpeedSp := #MainSetpoint,
+               RefSpeed := 1745.0,
+               HWIDSTW := #Cnv_Settings.G120_Hardware_ID,
+               HWIDZSW := #Cnv_Settings.G120_Hardware_ID,
+               AxisEnabled => #Cnv_Control.Motor.Status.%X0,
+               Lockout => #Cnv_Control.Motor.Error,
+               Error => #Cnv_Control.Motor.Error);
+    
+    //MAIN SETPOINT
+    IF #Cnv_Control.Motor.Forward THEN
+        #MainSetpoint := (SCALE_X(MIN := 0,
+                                 VALUE := NORM_X(MIN := 0,
+                                                 VALUE := #Cnv_Control.Motor.Speed * 1.681,
+                                                 MAX := 100),
+                                 MAX := 1745.0) * -1);
+    ELSIF #Cnv_Control.Motor.Reverse THEN
+        #MainSetpoint := SCALE_X(MIN := 0,
+                                  VALUE := NORM_X(MIN := 0,
+                                                  VALUE := #Cnv_Control.Motor.Speed * 1.681,
+                                                  MAX := 100),
+                                  MAX := 1745.0);
+    ELSE
+        #MainSetpoint := 0;
+    END_IF;
+    
+    REGION Actual Speed
+        IF #MainSetpoint > 0 THEN
+            #Cnv_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
+                                                       VALUE := NORM_X(MIN := 0,
+                                                                       VALUE := #SinaSpeed.ActVelocity,
+                                                                       MAX := 1745.0),
+                                                       MAX := 100);
+        ELSIF #MainSetpoint < 0 THEN
+            #Cnv_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
+                                                       VALUE := NORM_X(MIN := 0,
+                                                                       VALUE := #SinaSpeed.ActVelocity * -1,
+                                                                       MAX := 1745.0),
+                                                       MAX := 100);
+        ELSE
+            #Cnv_Control.Motor.Speed_Actual := 0;
+        END_IF;
+    END_REGION
+END_REGION
+END_FUNCTION_BLOCK

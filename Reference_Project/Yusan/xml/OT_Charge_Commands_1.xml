@@ -1,0 +1,801 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-20T12:44:48.0111089Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FC ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input" />
+  <Section Name="Output" />
+  <Section Name="InOut">
+    <Member Name="Auto_Test" Datatype="&quot;Auto_Test_1&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="Input">
+          <Member Name="Sys_No" Datatype="UInt" />
+          <Member Name="Automatic" Datatype="Bool" />
+          <Member Name="Manual" Datatype="Bool" />
+          <Member Name="Level" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Start" Datatype="Bool" />
+          <Member Name="Pause" Datatype="Bool" />
+          <Member Name="Stop" Datatype="Bool" />
+          <Member Name="Pallet Type" Datatype="Char" />
+          <Member Name="Tower 1 Pallet Alignment" Datatype="Char" />
+          <Member Name="Tower 2 Pallet Alignment" Datatype="Char" />
+          <Member Name="Extractor Pallet Alignment" Datatype="Char" />
+          <Member Name="Pallet_Allignment" Datatype="Char" />
+          <Member Name="Tower" Datatype="UInt" />
+          <Member Name="Transfer_From_To" Datatype="Byte" />
+          <Member Name="From level" Datatype="Byte" />
+          <Member Name="To level" Datatype="Byte" />
+          <Member Name="Testing Time" Datatype="UInt" />
+          <Member Name="Numer of cycles" Datatype="Byte" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Time_Runnng" Datatype="Time" />
+          <Member Name="Start_Time" Datatype="String" />
+          <Member Name="Stop_Time" Datatype="String" />
+          <Member Name="Duration" Datatype="Time" />
+        </Section>
+        <Section Name="InOut">
+          <Member Name="Order Table_1" Datatype="&quot;OrderTable_UDT&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="OrderNo" Datatype="Int" />
+                <Member Name="StepNo" Datatype="Int" />
+                <Member Name="PlaceTime" Datatype="String[20]" />
+                <Member Name="Device" Datatype="String" />
+                <Member Name="Sequence" Datatype="UInt" />
+                <Member Name="Status" Datatype="String[12]" />
+                <Member Name="CompleteTime" Datatype="String[20]" />
+                <Member Name="ErrorID" Datatype="UInt" />
+                <Member Name="OPC_Control" Datatype="&quot;WMS_OPC_UA&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Task_ID" Datatype="Int" />
+                      <Member Name="Task_Metadata" Datatype="String[250]" />
+                      <Member Name="Task_Type" Datatype="Int" />
+                      <Member Name="Source_Location" Datatype="DInt" />
+                      <Member Name="Destination_Location" Datatype="DInt" />
+                      <Member Name="Task_Data_Available" Datatype="Bool" />
+                      <Member Name="SM_State" Datatype="UInt" />
+                      <Member Name="Movement_Ready" Datatype="Bool" />
+                      <Member Name="Movement_Request_Complete" Datatype="Bool" />
+                      <Member Name="Movement_Request_Complete_Ack" Datatype="Bool" />
+                      <Member Name="Shuttle_ID" Datatype="Int" />
+                      <Member Name="Shuttle_Loaded" Datatype="Bool" />
+                      <Member Name="Pallet_Type" Datatype="Char" />
+                      <Member Name="Pallet_Alignment" Datatype="Char" />
+                      <Member Name="SM_State_Maestro" Datatype="UInt" />
+                      <Member Name="Pallet_Weight" Datatype="Int" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Step_Table_0" Datatype="&quot;OrderTable_UDT&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="OrderNo" Datatype="Int" />
+                <Member Name="StepNo" Datatype="Int" />
+                <Member Name="PlaceTime" Datatype="String[20]" />
+                <Member Name="Device" Datatype="String" />
+                <Member Name="Sequence" Datatype="UInt" />
+                <Member Name="Status" Datatype="String[12]" />
+                <Member Name="CompleteTime" Datatype="String[20]" />
+                <Member Name="ErrorID" Datatype="UInt" />
+                <Member Name="OPC_Control" Datatype="&quot;WMS_OPC_UA&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Task_ID" Datatype="Int" />
+                      <Member Name="Task_Metadata" Datatype="String[250]" />
+                      <Member Name="Task_Type" Datatype="Int" />
+                      <Member Name="Source_Location" Datatype="DInt" />
+                      <Member Name="Destination_Location" Datatype="DInt" />
+                      <Member Name="Task_Data_Available" Datatype="Bool" />
+                      <Member Name="SM_State" Datatype="UInt" />
+                      <Member Name="Movement_Ready" Datatype="Bool" />
+                      <Member Name="Movement_Request_Complete" Datatype="Bool" />
+                      <Member Name="Movement_Request_Complete_Ack" Datatype="Bool" />
+                      <Member Name="Shuttle_ID" Datatype="Int" />
+                      <Member Name="Shuttle_Loaded" Datatype="Bool" />
+                      <Member Name="Pallet_Type" Datatype="Char" />
+                      <Member Name="Pallet_Alignment" Datatype="Char" />
+                      <Member Name="SM_State_Maestro" Datatype="UInt" />
+                      <Member Name="Pallet_Weight" Datatype="Int" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="System_OrderSent" Datatype="Bool" />
+          <Member Name="Total_Duration" Datatype="Time" />
+        </Section>
+        <Section Name="Static">
+          <Member Name="State" Datatype="Int" />
+          <Member Name="R_Start" Datatype="R_TRIG" Version="1.0">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="CLK" Datatype="Bool" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="Stat_Bit" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="T_Delay" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Time_Delay" Datatype="Time" />
+          <Member Name="Send_VTD_Order" Datatype="Bool" />
+          <Member Name="Send_CNV_Order" Datatype="Bool" />
+          <Member Name="R_TRIG_Instance" Datatype="R_TRIG" Version="1.0">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="CLK" Datatype="Bool" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="Stat_Bit" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="T_Running" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="F_TRIG" Datatype="F_TRIG" Version="1.0">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="CLK" Datatype="Bool" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="Stat_Bit" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="R_TRIG" Datatype="R_TRIG" Version="1.0">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="CLK" Datatype="Bool" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="Stat_Bit" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Error_Code" Datatype="Int" />
+          <Member Name="test" Datatype="Bool" />
+          <Member Name="N_Cycles" Datatype="UInt" />
+          <Member Name="Testing_Time" Datatype="Time" />
+          <Member Name="R_Manual_Mode" Datatype="R_TRIG" Version="1.0">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="CLK" Datatype="Bool" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static">
+                <Member Name="Stat_Bit" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+  <Section Name="Temp" />
+  <Section Name="Constant" />
+  <Section Name="Return">
+    <Member Name="Ret_Val" Datatype="Void" Accessibility="Public" />
+  </Section>
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>OT_Charge_Commands_1</Name>
+      <Namespace />
+      <Number>64</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <Access Scope="GlobalVariable" UId="21">
+    <Symbol UId="22">
+      <Component Name="OrderTable_HMI" UId="23">
+        <BooleanAttribute Name="HasQuotes" UId="24">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="25" />
+      <Component Name="Manual order" UId="26" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="27" />
+  <Token Text=":=" UId="28" />
+  <Blank Num="1" UId="29" />
+  <Access Scope="LocalVariable" UId="30">
+    <Symbol UId="31">
+      <Component Name="Auto_Test" UId="32" />
+      <Token Text="." UId="33" />
+      <Component Name="Manual" UId="34" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="35" />
+  <NewLine Num="1" UId="36" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="37">
+    <Text UId="38">PALLET TYPE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="39" />
+  <Token Text="IF" UId="40" />
+  <Blank Num="1" UId="41" />
+  <Access Scope="LocalVariable" UId="42">
+    <Symbol UId="43">
+      <Component Name="Auto_Test" UId="44" />
+      <Token Text="." UId="45" />
+      <Component Name="Pallet Type" UId="46" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="47" />
+  <Token Text="=" UId="48" />
+  <Blank Num="1" UId="49" />
+  <Access Scope="LiteralConstant" UId="50">
+    <Constant UId="51">
+      <ConstantValue UId="53">'C'</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="54" />
+  <Token Text="THEN" UId="55" />
+  <NewLine Num="1" UId="56" />
+  <Blank Num="4" UId="57" />
+  <Access Scope="GlobalVariable" UId="58">
+    <Symbol UId="59">
+      <Component Name="OrderTable_HMI" UId="60">
+        <BooleanAttribute Name="HasQuotes" UId="61">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="62" />
+      <Component Name="Pallet Type" UId="63" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="64" />
+  <Token Text=":=" UId="65" />
+  <Blank Num="1" UId="66" />
+  <Access Scope="LiteralConstant" UId="67">
+    <Constant UId="68">
+      <ConstantValue UId="70">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="71" />
+  <NewLine Num="1" UId="72" />
+  <Token Text="ELSIF" UId="73" />
+  <Blank Num="1" UId="74" />
+  <Access Scope="LocalVariable" UId="75">
+    <Symbol UId="76">
+      <Component Name="Auto_Test" UId="77" />
+      <Token Text="." UId="78" />
+      <Component Name="Pallet Type" UId="79" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="80" />
+  <Token Text="=" UId="81" />
+  <Blank Num="1" UId="82" />
+  <Access Scope="LiteralConstant" UId="83">
+    <Constant UId="84">
+      <ConstantValue UId="86">'E'</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="87" />
+  <Token Text="THEN" UId="88" />
+  <NewLine Num="1" UId="89" />
+  <Blank Num="4" UId="90" />
+  <Access Scope="GlobalVariable" UId="91">
+    <Symbol UId="92">
+      <Component Name="OrderTable_HMI" UId="93">
+        <BooleanAttribute Name="HasQuotes" UId="94">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="95" />
+      <Component Name="Pallet Type" UId="96" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="97" />
+  <Token Text=":=" UId="98" />
+  <Blank Num="1" UId="99" />
+  <Access Scope="LiteralConstant" UId="100">
+    <Constant UId="101">
+      <ConstantValue UId="103">2</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="104" />
+  <NewLine Num="1" UId="105" />
+  <Token Text="END_IF" UId="106" />
+  <Token Text=";" UId="107" />
+  <NewLine Num="1" UId="108" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="109">
+    <Text UId="110">TOWER 1 PALLET ALIGNMENT</Text>
+  </LineComment>
+  <NewLine Num="1" UId="111" />
+  <Token Text="IF" UId="112" />
+  <Blank Num="1" UId="113" />
+  <Access Scope="LocalVariable" UId="114">
+    <Symbol UId="115">
+      <Component Name="Auto_Test" UId="116" />
+      <Token Text="." UId="117" />
+      <Component Name="Tower 1 Pallet Alignment" UId="118" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="119" />
+  <Token Text="=" UId="120" />
+  <Blank Num="1" UId="121" />
+  <Access Scope="LiteralConstant" UId="122">
+    <Constant UId="123">
+      <ConstantValue UId="125">'R'</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="126" />
+  <Token Text="THEN" UId="127" />
+  <NewLine Num="1" UId="128" />
+  <Blank Num="4" UId="129" />
+  <Access Scope="GlobalVariable" UId="130">
+    <Symbol UId="131">
+      <Component Name="OrderTable_HMI" UId="132">
+        <BooleanAttribute Name="HasQuotes" UId="133">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="134" />
+      <Component Name="Tower 1 Pallet Alignment" UId="135" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="136" />
+  <Token Text=":=" UId="137" />
+  <Blank Num="1" UId="138" />
+  <Access Scope="LiteralConstant" UId="139">
+    <Constant UId="140">
+      <ConstantValue UId="142">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="143" />
+  <NewLine Num="1" UId="144" />
+  <Token Text="ELSIF" UId="145" />
+  <Blank Num="1" UId="146" />
+  <Access Scope="LocalVariable" UId="147">
+    <Symbol UId="148">
+      <Component Name="Auto_Test" UId="149" />
+      <Token Text="." UId="150" />
+      <Component Name="Tower 1 Pallet Alignment" UId="151" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="152" />
+  <Token Text="=" UId="153" />
+  <Blank Num="1" UId="154" />
+  <Access Scope="LiteralConstant" UId="155">
+    <Constant UId="156">
+      <ConstantValue UId="158">'L'</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="159" />
+  <Token Text="THEN" UId="160" />
+  <NewLine Num="1" UId="161" />
+  <Blank Num="4" UId="162" />
+  <Access Scope="GlobalVariable" UId="163">
+    <Symbol UId="164">
+      <Component Name="OrderTable_HMI" UId="165">
+        <BooleanAttribute Name="HasQuotes" UId="166">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="167" />
+      <Component Name="Tower 1 Pallet Alignment" UId="168" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="169" />
+  <Token Text=":=" UId="170" />
+  <Blank Num="1" UId="171" />
+  <Access Scope="LiteralConstant" UId="172">
+    <Constant UId="173">
+      <ConstantValue UId="175">2</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="176" />
+  <NewLine Num="1" UId="177" />
+  <Token Text="END_IF" UId="178" />
+  <Token Text=";" UId="179" />
+  <NewLine Num="1" UId="180" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="181">
+    <Text UId="182">ECONVEYOR PALLET ALIGNMENT</Text>
+  </LineComment>
+  <NewLine Num="1" UId="183" />
+  <Token Text="IF" UId="184" />
+  <Blank Num="1" UId="185" />
+  <Access Scope="LocalVariable" UId="186">
+    <Symbol UId="187">
+      <Component Name="Auto_Test" UId="188" />
+      <Token Text="." UId="189" />
+      <Component Name="Extractor Pallet Alignment" UId="190" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="191" />
+  <Token Text="=" UId="192" />
+  <Blank Num="1" UId="193" />
+  <Access Scope="LiteralConstant" UId="194">
+    <Constant UId="195">
+      <ConstantValue UId="197">'R'</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="198" />
+  <Token Text="THEN" UId="199" />
+  <NewLine Num="1" UId="200" />
+  <Blank Num="4" UId="201" />
+  <Access Scope="GlobalVariable" UId="202">
+    <Symbol UId="203">
+      <Component Name="OrderTable_HMI" UId="204">
+        <BooleanAttribute Name="HasQuotes" UId="205">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="206" />
+      <Component Name="Extractor Pallet Alignment" UId="207" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="208" />
+  <Token Text=":=" UId="209" />
+  <Blank Num="1" UId="210" />
+  <Access Scope="LiteralConstant" UId="211">
+    <Constant UId="212">
+      <ConstantValue UId="214">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="215" />
+  <NewLine Num="1" UId="216" />
+  <Token Text="ELSIF" UId="217" />
+  <Blank Num="1" UId="218" />
+  <Access Scope="LocalVariable" UId="219">
+    <Symbol UId="220">
+      <Component Name="Auto_Test" UId="221" />
+      <Token Text="." UId="222" />
+      <Component Name="Extractor Pallet Alignment" UId="223" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="224" />
+  <Token Text="=" UId="225" />
+  <Blank Num="1" UId="226" />
+  <Access Scope="LiteralConstant" UId="227">
+    <Constant UId="228">
+      <ConstantValue UId="230">'L'</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="231" />
+  <Token Text="THEN" UId="232" />
+  <NewLine Num="1" UId="233" />
+  <Blank Num="4" UId="234" />
+  <Access Scope="GlobalVariable" UId="235">
+    <Symbol UId="236">
+      <Component Name="OrderTable_HMI" UId="237">
+        <BooleanAttribute Name="HasQuotes" UId="238">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="239" />
+      <Component Name="Extractor Pallet Alignment" UId="240" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="241" />
+  <Token Text=":=" UId="242" />
+  <Blank Num="1" UId="243" />
+  <Access Scope="LiteralConstant" UId="244">
+    <Constant UId="245">
+      <ConstantValue UId="247">2</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="248" />
+  <NewLine Num="1" UId="249" />
+  <Token Text="ELSIF" UId="250" />
+  <Blank Num="1" UId="251" />
+  <Access Scope="LocalVariable" UId="252">
+    <Symbol UId="253">
+      <Component Name="Auto_Test" UId="254" />
+      <Token Text="." UId="255" />
+      <Component Name="Extractor Pallet Alignment" UId="256" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="257" />
+  <Token Text="=" UId="258" />
+  <Blank Num="1" UId="259" />
+  <Access Scope="LiteralConstant" UId="260">
+    <Constant UId="261">
+      <ConstantValue UId="263">'C'</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="264" />
+  <Token Text="THEN" UId="265" />
+  <NewLine Num="1" UId="266" />
+  <Blank Num="4" UId="267" />
+  <Access Scope="GlobalVariable" UId="268">
+    <Symbol UId="269">
+      <Component Name="OrderTable_HMI" UId="270">
+        <BooleanAttribute Name="HasQuotes" UId="271">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="272" />
+      <Component Name="Extractor Pallet Alignment" UId="273" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="274" />
+  <Token Text=":=" UId="275" />
+  <Blank Num="1" UId="276" />
+  <Access Scope="LiteralConstant" UId="277">
+    <Constant UId="278">
+      <ConstantValue UId="280">3</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="281" />
+  <NewLine Num="1" UId="282" />
+  <Token Text="END_IF" UId="283" />
+  <Token Text=";" UId="284" />
+  <NewLine Num="1" UId="285" />
+  <Access Scope="GlobalVariable" UId="286">
+    <Symbol UId="287">
+      <Component Name="OrderTable_HMI" UId="288">
+        <BooleanAttribute Name="HasQuotes" UId="289">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="290" />
+      <Component Name="From level" UId="291" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="292" />
+  <Token Text=":=" UId="293" />
+  <Blank Num="1" UId="294" />
+  <Access Scope="LocalVariable" UId="295">
+    <Symbol UId="296">
+      <Component Name="Auto_Test" UId="297" />
+      <Token Text="." UId="298" />
+      <Component Name="From level" UId="299" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="300" />
+  <NewLine Num="1" UId="301" />
+  <Access Scope="GlobalVariable" UId="302">
+    <Symbol UId="303">
+      <Component Name="OrderTable_HMI" UId="304">
+        <BooleanAttribute Name="HasQuotes" UId="305">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="306" />
+      <Component Name="To level" UId="307" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="308" />
+  <Token Text=":=" UId="309" />
+  <Blank Num="1" UId="310" />
+  <Access Scope="LocalVariable" UId="311">
+    <Symbol UId="312">
+      <Component Name="Auto_Test" UId="313" />
+      <Token Text="." UId="314" />
+      <Component Name="To level" UId="315" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="316" />
+  <NewLine Num="1" UId="317" />
+  <Access Scope="GlobalVariable" UId="318">
+    <Symbol UId="319">
+      <Component Name="OrderTable_HMI" UId="320">
+        <BooleanAttribute Name="HasQuotes" UId="321">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="322" />
+      <Component Name="Testing Time" UId="323" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="324" />
+  <Token Text=":=" UId="325" />
+  <Blank Num="1" UId="326" />
+  <Access Scope="LocalVariable" UId="327">
+    <Symbol UId="328">
+      <Component Name="Auto_Test" UId="329" />
+      <Token Text="." UId="330" />
+      <Component Name="Testing Time" UId="331" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="332" />
+  <NewLine Num="1" UId="333" />
+  <Access Scope="GlobalVariable" UId="334">
+    <Symbol UId="335">
+      <Component Name="OrderTable_HMI" UId="336">
+        <BooleanAttribute Name="HasQuotes" UId="337">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="338" />
+      <Component Name="Numer of cycles" UId="339" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="340" />
+  <Token Text=":=" UId="341" />
+  <Blank Num="1" UId="342" />
+  <Access Scope="LocalVariable" UId="343">
+    <Symbol UId="344">
+      <Component Name="Auto_Test" UId="345" />
+      <Token Text="." UId="346" />
+      <Component Name="Numer of cycles" UId="347" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="348" />
+  <NewLine Num="1" UId="349" />
+  <Access Scope="GlobalVariable" UId="350">
+    <Symbol UId="351">
+      <Component Name="OrderTable_HMI" UId="352">
+        <BooleanAttribute Name="HasQuotes" UId="353">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="354" />
+      <Component Name="Level" UId="355" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="356" />
+  <Token Text=":=" UId="357" />
+  <Blank Num="1" UId="358" />
+  <Access Scope="Call" UId="359">
+    <Instruction Name="UINT_TO_BYTE" UId="360">
+      <Token Text="(" UId="361" />
+      <NamelessParameter UId="362">
+        <Access Scope="LocalVariable" UId="363">
+          <Symbol UId="364">
+            <Component Name="Auto_Test" UId="365" />
+            <Token Text="." UId="366" />
+            <Component Name="Level" UId="367" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="369" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="370" />
+  <NewLine Num="1" UId="371" />
+  <Access Scope="GlobalVariable" UId="372">
+    <Symbol UId="373">
+      <Component Name="OrderTable_HMI" UId="374">
+        <BooleanAttribute Name="HasQuotes" UId="375">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="376" />
+      <Component Name="Tower" UId="377" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="378" />
+  <Token Text=":=" UId="379" />
+  <Blank Num="1" UId="380" />
+  <Access Scope="Call" UId="381">
+    <Instruction Name="UINT_TO_BYTE" UId="382">
+      <Token Text="(" UId="383" />
+      <NamelessParameter UId="384">
+        <Access Scope="LocalVariable" UId="385">
+          <Symbol UId="386">
+            <Component Name="Auto_Test" UId="387" />
+            <Token Text="." UId="388" />
+            <Component Name="Tower" UId="389" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="391" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="392" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FC>
+</Document>

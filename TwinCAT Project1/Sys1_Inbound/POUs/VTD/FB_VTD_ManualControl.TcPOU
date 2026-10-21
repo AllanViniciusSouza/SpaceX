@@ -1,0 +1,398 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_VTD_ManualControl" Id="{c186251e-eaa9-4f70-b7c8-bdd5c799ce34}" SpecialFunc="None">
+    <Declaration><![CDATA[// TEST ONLY - manual control of the VTD MOVIPRO from the screen VTD_ManualTest.
+// Temporary owner of the axis for commissioning; VTD_FB replaces it in production.
+// Uses FB_SEW_Drive (MOVIKIT Positioning Drive, Standard 8 PD, SEW manual 33959862).
+//
+// Behavior:
+//  - ENABLE is a request from the HMI. It is dropped, and the HMI toggle reset, on
+//    software stop, communication loss, drive error, STO active or while the raw
+//    process data write is active. No automatic restart.
+//    ENABLE off while turning: stop with the PO 4 ramp first, then remove the enable.
+//  - JOG -/+ (modes 100/101) is hold-to-run. A button must be released before it is
+//    accepted, and it is ignored after tJogMaxTime until it is released.
+//  - RUN -/+ (mode 200) and START (modes 300/400/401) are latched; STOP clears them
+//    (deceleration with PO 4). Reversing in mode 200 requires STOP first.
+//  - The target position is taken from the HMI only with START.
+//  - The operating mode changes only at standstill without motion command,
+//    because the drive stops when PO 6 changes (manual chapter 8.1).
+//  - Speed = iSpeedPercent (0..100 %) of stManualSettings.iMaxSpeed (user units).
+//  - SOFTWARE STOP is NOT an emergency stop and not a safety function. It removes the
+//    enable, so the drive stops with FCB 14 (emergency stop ramp) and applies the brake.
+//    The safety-rated stop is the hardwired / TwinSAFE emergency stop (STO).
+//  - RESET clears the software stop and sends a drive fault reset pulse (PO 1.8).
+//  - Never used: release brake without enable, output stage inhibit, deactivation of
+//    the software limit switches (not set by FB_SEW_Drive).
+//
+// Drive status is evaluated from the previous call of FB_SEW_Drive (one PLC cycle).
+FUNCTION_BLOCK FB_VTD_ManualControl
+VAR_INPUT
+    i_stProcessInput : ST_SEW_ProcessInput8;  // Raw PI 1..8 + EtherCAT diagnostics (Control.VTD_Sys[1].Motor)
+    i_bInhibit : BOOL;                        // TRUE = another source writes the PO (raw PD test); enable is dropped
+    i_stSettings : ST_VTD_ManualSettings;     // Max speed, ramps (user units) and jog max time
+END_VAR
+VAR_IN_OUT
+    io_stCommand : ST_VTD_ManualHmiCommand;   // HMI commands; bEnable, eModeRequest and iSpeedPercent are written back
+END_VAR
+VAR_OUTPUT
+    q_aProcessOutput : ARRAY[1..8] OF UINT;   // Raw PO 1..8 (to Control.VTD_Sys[1].Motor.aProcessOutput)
+    q_stStatus : ST_VTD_ManualHmiStatus;      // To GVL_HMI_VTD.stManualStatus
+END_VAR
+VAR
+    fbDrive : FB_SEW_Drive;
+    eModeActive : E_SEW_MovikitMode := E_SEW_MovikitMode.JogSpeedControlled;
+
+    // Operating mode
+    bModeSupported : BOOL;
+    bModeChangeAllowed : BOOL;
+    bModeRejected : BOOL;
+    bJogMode : BOOL;
+    bSpeedMode : BOOL;
+    bReferencingMode : BOOL;
+    bPositioningMode : BOOL;
+
+    // Enable
+    bSoftwareStopLatched : BOOL;
+    bSettingsValid : BOOL;
+    bEnableBlocked : BOOL;
+    bEnableRequest : BOOL;
+    bEnableActive : BOOL;
+
+    // Motion commands
+    bMotionCommand : BOOL;
+    bJogButtonsReleased : BOOL;
+    bJogArmed : BOOL;
+    bJogTimeout : BOOL;
+    bJogPositive : BOOL;
+    bJogNegative : BOOL;
+    bRunAvailable : BOOL;
+    bRunPositive : BOOL;
+    bRunNegative : BOOL;
+    bStartAvailable : BOOL;
+    bStartLatched : BOOL;
+    bRelativeMoveOpen : BOOL;                 // Mode 401: distance applied, target not reached yet
+    bApplyRelativeRequest : BOOL;             // Mode 401: PO 1.6 pulse starts in the next cycle
+    diTargetPosition : DINT;                  // PO 7/8, user units
+    diSpeedTemp : DINT;
+    iSpeedMagnitude : INT;
+    iSpeedSetpoint : INT;
+
+    rtrigSoftwareStop : R_TRIG;
+    rtrigReset : R_TRIG;
+    rtrigRunPositive : R_TRIG;
+    rtrigRunNegative : R_TRIG;
+    rtrigStart : R_TRIG;
+    rtrigStop : R_TRIG;
+    tpFaultReset : TP;
+    tpApplyRelative : TP;
+    tpModeRejected : TP;
+    tonJogMaxTime : TON;
+    tonDisableStop : TON;
+    tonRelativeDone : TON;
+    tonReferencingDone : TON;
+END_VAR
+VAR CONSTANT
+    FAULT_RESET_PULSE : TIME := T#500MS;      // PO 1.8 high time (the drive resets on the rising edge)
+    APPLY_RELATIVE_PULSE : TIME := T#200MS;   // PO 1.6 high time (mode 401)
+    MODE_REJECTED_MESSAGE : TIME := T#3S;     // Display time of the "mode change refused" message
+    DISABLE_STOP_TIMEOUT : TIME := T#5S;      // Max time to stop with PO 4 before the enable is removed
+    RELATIVE_DONE_DELAY : TIME := T#500MS;    // In position + standstill for this time = relative move done
+    REFERENCING_DONE_DELAY : TIME := T#1S;    // Referenced + standstill for this time = START released
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{region "Edge detection of the HMI buttons"}
+rtrigSoftwareStop(CLK := io_stCommand.bSoftwareStop);
+rtrigReset(CLK := io_stCommand.bReset);
+rtrigRunPositive(CLK := io_stCommand.bRunPositive);
+rtrigRunNegative(CLK := io_stCommand.bRunNegative);
+rtrigStart(CLK := io_stCommand.bStart);
+rtrigStop(CLK := io_stCommand.bStop);
+{endregion}
+
+{region "Software stop and reset"}
+// SOFTWARE STOP is not a safety function. It removes the enable, so the drive
+// stops with FCB 14 (emergency stop ramp) and applies the brake.
+IF rtrigSoftwareStop.Q THEN
+    bSoftwareStopLatched := TRUE;
+END_IF
+
+// RESET clears the software stop and resets drive faults with a PO 1.8 pulse.
+// The enable stays off until ENABLE is pressed again.
+IF rtrigReset.Q AND NOT io_stCommand.bSoftwareStop THEN
+    bSoftwareStopLatched := FALSE;
+END_IF
+tpFaultReset(IN := rtrigReset.Q, PT := FAULT_RESET_PULSE);
+{endregion}
+
+{region "Settings"}
+bSettingsValid := (i_stSettings.iMaxSpeed > 0)
+                  AND (i_stSettings.uiAcceleration > 0)
+                  AND (i_stSettings.uiDeceleration > 0)
+                  AND (i_stSettings.tJogMaxTime > T#0S);
+{endregion}
+
+{region "Operating mode (PO 6)"}
+// The drive stops when PO 6 changes (manual chapter 8.1), so the mode is changed
+// only at standstill and without an active motion command.
+bMotionCommand := bRunPositive OR bRunNegative OR bStartLatched
+                  OR io_stCommand.bJogPositive OR io_stCommand.bJogNegative;
+bModeChangeAllowed := NOT bMotionCommand AND NOT fbDrive.q_stStatus.bMotorTurning;
+bModeRejected := FALSE;
+
+IF io_stCommand.eModeRequest <> eModeActive THEN
+    CASE io_stCommand.eModeRequest OF
+        E_SEW_MovikitMode.JogPositionControlled,
+        E_SEW_MovikitMode.JogSpeedControlled,
+        E_SEW_MovikitMode.Speed,
+        E_SEW_MovikitMode.ReferencingOffsetConfigured,
+        E_SEW_MovikitMode.PositioningAbsolute,
+        E_SEW_MovikitMode.PositioningRelative:
+            bModeSupported := TRUE;
+    ELSE
+        bModeSupported := FALSE;
+    END_CASE
+
+    IF bModeSupported AND bModeChangeAllowed THEN
+        eModeActive := io_stCommand.eModeRequest;
+        bRelativeMoveOpen := FALSE;
+        diTargetPosition := 0;
+    ELSE
+        bModeRejected := TRUE;
+    END_IF
+END_IF
+
+// The HMI always shows the mode really sent to the drive.
+io_stCommand.eModeRequest := eModeActive;
+
+bJogMode := (eModeActive = E_SEW_MovikitMode.JogPositionControlled)
+            OR (eModeActive = E_SEW_MovikitMode.JogSpeedControlled);
+bSpeedMode := (eModeActive = E_SEW_MovikitMode.Speed);
+bReferencingMode := (eModeActive = E_SEW_MovikitMode.ReferencingOffsetConfigured);
+bPositioningMode := (eModeActive = E_SEW_MovikitMode.PositioningAbsolute)
+                    OR (eModeActive = E_SEW_MovikitMode.PositioningRelative);
+{endregion}
+
+{region "Enable (PO 1.0 + PO 1.1)"}
+// The enable request is dropped - and the HMI toggle reset - when the drive cannot
+// or must not run. No automatic restart: ENABLE must be pressed again.
+bEnableBlocked := bSoftwareStopLatched
+                  OR i_bInhibit
+                  OR NOT fbDrive.q_stStatus.bCommunicationOk
+                  OR fbDrive.q_stStatus.bError
+                  OR NOT fbDrive.q_stStatus.bStoInactive;
+
+IF bEnableBlocked THEN
+    io_stCommand.bEnable := FALSE;
+END_IF
+bEnableRequest := io_stCommand.bEnable AND NOT bEnableBlocked;
+
+// ENABLE switched off while turning: the motion commands are cleared below, the
+// drive stops with the PO 4 ramp and the enable is removed at standstill
+// (at the latest after DISABLE_STOP_TIMEOUT, then FCB 14).
+tonDisableStop(IN := bEnableActive AND NOT bEnableRequest AND NOT bEnableBlocked,
+               PT := DISABLE_STOP_TIMEOUT);
+bEnableActive := bEnableRequest
+                 OR (bEnableActive
+                     AND NOT bEnableBlocked
+                     AND fbDrive.q_stStatus.bMotorTurning
+                     AND NOT tonDisableStop.Q);
+
+// Manual chapter 8.1.8: after the enable was removed, a relative move must be
+// started again with "Apply relative position".
+IF NOT bEnableActive THEN
+    bRelativeMoveOpen := FALSE;
+END_IF
+{endregion}
+
+{region "JOG -/+ (modes 100/101) - hold-to-run"}
+bJogButtonsReleased := NOT io_stCommand.bJogPositive AND NOT io_stCommand.bJogNegative;
+
+// A jog button is accepted only after both buttons were released while jog was
+// possible, so a button held during ENABLE or a mode change does not move the axis.
+IF NOT (bEnableRequest AND bJogMode AND bSettingsValid) THEN
+    bJogArmed := FALSE;
+ELSIF bJogButtonsReleased THEN
+    bJogArmed := TRUE;
+END_IF
+
+// Max continuous jog time. Also limits a jog left active by a lost HMI connection.
+tonJogMaxTime(IN := NOT bJogButtonsReleased, PT := i_stSettings.tJogMaxTime);
+IF tonJogMaxTime.Q THEN
+    bJogTimeout := TRUE;
+ELSIF bJogButtonsReleased THEN
+    bJogTimeout := FALSE;
+END_IF
+
+bJogPositive := bJogArmed AND NOT bJogTimeout
+                AND io_stCommand.bJogPositive AND NOT io_stCommand.bJogNegative;
+bJogNegative := bJogArmed AND NOT bJogTimeout
+                AND io_stCommand.bJogNegative AND NOT io_stCommand.bJogPositive;
+{endregion}
+
+{region "RUN -/+ (mode 200) - latched"}
+bRunAvailable := bEnableRequest AND bSpeedMode AND bSettingsValid;
+
+IF NOT bRunAvailable OR rtrigStop.Q THEN
+    bRunPositive := FALSE;
+    bRunNegative := FALSE;
+ELSIF rtrigRunPositive.Q AND NOT bRunNegative THEN
+    bRunPositive := TRUE;
+ELSIF rtrigRunNegative.Q AND NOT bRunPositive THEN
+    bRunNegative := TRUE;
+END_IF
+{endregion}
+
+{region "START (modes 300/400/401) - latched"}
+// PO 1.6 pulse for mode 401, requested in the previous cycle (PO 7/8 already sent).
+tpApplyRelative(IN := bApplyRelativeRequest, PT := APPLY_RELATIVE_PULSE);
+bApplyRelativeRequest := FALSE;
+
+bStartAvailable := bEnableRequest AND bSettingsValid
+                   AND (bReferencingMode
+                        OR (bPositioningMode AND fbDrive.q_stStatus.bReferenced));
+
+IF NOT bStartAvailable OR rtrigStop.Q THEN
+    bStartLatched := FALSE;
+ELSIF rtrigStart.Q THEN
+    IF eModeActive = E_SEW_MovikitMode.PositioningRelative THEN
+        IF bRelativeMoveOpen THEN
+            // Move interrupted with STOP: continue to the original target (manual 8.1.8).
+            bStartLatched := TRUE;
+        ELSIF NOT fbDrive.q_stStatus.bMotorTurning THEN
+            // New relative move: distance in PO 7/8 now, PO 1.6 edge from the next cycle.
+            diTargetPosition := io_stCommand.diTargetPosition;
+            bApplyRelativeRequest := TRUE;
+            bRelativeMoveOpen := TRUE;
+            bStartLatched := TRUE;
+        END_IF
+    ELSIF eModeActive = E_SEW_MovikitMode.PositioningAbsolute THEN
+        // Absolute target, taken from the HMI only now (PO 7/8 is applied live by the drive).
+        diTargetPosition := io_stCommand.diTargetPosition;
+        bStartLatched := TRUE;
+    ELSE
+        // Referencing (300): offset from the MOVISUITE configuration, PO 7/8 not used.
+        bStartLatched := TRUE;
+    END_IF
+END_IF
+
+// Relative move finished: in position and standstill for RELATIVE_DONE_DELAY.
+tonRelativeDone(IN := bRelativeMoveOpen AND bStartLatched AND NOT tpApplyRelative.Q
+                      AND fbDrive.q_stStatus.bInPosition
+                      AND NOT fbDrive.q_stStatus.bMotorTurning,
+                PT := RELATIVE_DONE_DELAY);
+IF tonRelativeDone.Q THEN
+    bRelativeMoveOpen := FALSE;
+END_IF
+
+// Referencing finished: referenced and standstill -> START is released.
+tonReferencingDone(IN := bStartLatched AND bReferencingMode
+                         AND fbDrive.q_stStatus.bReferenced
+                         AND NOT fbDrive.q_stStatus.bMotorTurning,
+                   PT := REFERENCING_DONE_DELAY);
+IF tonReferencingDone.Q THEN
+    bStartLatched := FALSE;
+END_IF
+{endregion}
+
+{region "Speed setpoint (PO 2)"}
+io_stCommand.iSpeedPercent := LIMIT(0, io_stCommand.iSpeedPercent, 100);
+
+diSpeedTemp := INT_TO_DINT(i_stSettings.iMaxSpeed) * INT_TO_DINT(io_stCommand.iSpeedPercent) / 100;
+iSpeedMagnitude := DINT_TO_INT(LIMIT(0, diSpeedTemp, 32767));
+
+// Signed only in mode 200 (RUN -); jog and positioning use the magnitude.
+IF bRunNegative THEN
+    iSpeedSetpoint := -iSpeedMagnitude;
+ELSE
+    iSpeedSetpoint := iSpeedMagnitude;
+END_IF
+{endregion}
+
+{region "SEW communication layer"}
+fbDrive(
+    i_stProcessInput := i_stProcessInput,
+    i_bEnable := bEnableActive,
+    i_bStart := bRunPositive OR bRunNegative OR bStartLatched,
+    i_bJogPositive := bJogPositive,
+    i_bJogNegative := bJogNegative,
+    i_bApplyRelativePosition := tpApplyRelative.Q,
+    i_bFaultReset := tpFaultReset.Q,
+    i_eMode := eModeActive,
+    i_iSpeedSetpoint := iSpeedSetpoint,
+    i_uiAcceleration := i_stSettings.uiAcceleration,
+    i_uiDeceleration := i_stSettings.uiDeceleration,
+    i_diTargetPosition := diTargetPosition);
+
+q_aProcessOutput := fbDrive.q_aProcessOutput;
+{endregion}
+
+{region "HMI status"}
+tpModeRejected(IN := bModeRejected, PT := MODE_REJECTED_MESSAGE);
+
+q_stStatus.stDrive := fbDrive.q_stStatus;
+q_stStatus.udiErrorId := fbDrive.q_udiErrorId;
+q_stStatus.sActualModeName := FC_SEW_MovikitModeName(i_uiMode := fbDrive.q_stStatus.uiActualMode);
+
+q_stStatus.eModeActive := eModeActive;
+q_stStatus.sModeActiveName := FC_SEW_MovikitModeName(i_uiMode := TO_UINT(eModeActive));
+q_stStatus.bModeJogPosition := (eModeActive = E_SEW_MovikitMode.JogPositionControlled);
+q_stStatus.bModeJogSpeed := (eModeActive = E_SEW_MovikitMode.JogSpeedControlled);
+q_stStatus.bModeSpeed := bSpeedMode;
+q_stStatus.bModeReferencing := bReferencingMode;
+q_stStatus.bModePositionAbsolute := (eModeActive = E_SEW_MovikitMode.PositioningAbsolute);
+q_stStatus.bModePositionRelative := (eModeActive = E_SEW_MovikitMode.PositioningRelative);
+q_stStatus.bModeChangeAllowed := bModeChangeAllowed;
+
+q_stStatus.bEnableActive := bEnableActive;
+q_stStatus.bSoftwareStopActive := bSoftwareStopLatched;
+q_stStatus.bRawWriteActive := i_bInhibit;
+q_stStatus.bSettingsValid := bSettingsValid;
+q_stStatus.bJogAvailable := bEnableRequest AND bJogMode AND bSettingsValid;
+q_stStatus.bRunAvailable := bRunAvailable;
+q_stStatus.bStartAvailable := bStartAvailable;
+q_stStatus.bJogPositiveActive := bJogPositive;
+q_stStatus.bJogNegativeActive := bJogNegative;
+q_stStatus.bJogTimeout := bJogTimeout;
+q_stStatus.bRunPositiveActive := bRunPositive;
+q_stStatus.bRunNegativeActive := bRunNegative;
+q_stStatus.bStartActive := bStartLatched;
+q_stStatus.bFaultResetActive := tpFaultReset.Q;
+
+q_stStatus.iSpeedSetpoint := UINT_TO_INT(q_aProcessOutput[2]);
+q_stStatus.diTargetPositionSent := diTargetPosition;
+
+// Operator message: stop/fault conditions first (red), then hints.
+q_stStatus.bMessageAlarm := TRUE;
+IF i_bInhibit THEN
+    q_stStatus.sMessage := 'Raw PD write active on the process data screen - switch it off';
+ELSIF NOT fbDrive.q_stStatus.bCommunicationOk THEN
+    q_stStatus.sMessage := 'No communication with the drive (EtherCAT or MOVIKIT handshake)';
+ELSIF bSoftwareStopLatched THEN
+    q_stStatus.sMessage := 'SOFTWARE STOP active - press RESET';
+ELSIF NOT fbDrive.q_stStatus.bStoInactive THEN
+    q_stStatus.sMessage := 'STO active - check emergency stop / safety circuit';
+ELSIF fbDrive.q_stStatus.bError THEN
+    q_stStatus.sMessage := 'Drive fault - see fault code, press RESET';
+ELSIF NOT bSettingsValid THEN
+    q_stStatus.sMessage := 'Enter max speed, acceleration and deceleration (test settings)';
+ELSE
+    q_stStatus.bMessageAlarm := FALSE;
+    IF tpModeRejected.Q THEN
+        q_stStatus.sMessage := 'Mode change refused - press STOP and wait for standstill';
+    ELSIF bJogTimeout THEN
+        q_stStatus.sMessage := 'Jog time limit reached - release the jog button';
+    ELSIF bPositioningMode AND NOT fbDrive.q_stStatus.bReferenced THEN
+        q_stStatus.sMessage := 'Axis not referenced - use mode 300 first';
+    ELSIF NOT bEnableActive THEN
+        q_stStatus.sMessage := 'Press ENABLE';
+    ELSE
+        q_stStatus.sMessage := 'Ready';
+    END_IF
+END_IF
+{endregion}
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

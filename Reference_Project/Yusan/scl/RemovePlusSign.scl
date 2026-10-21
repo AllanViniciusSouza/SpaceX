@@ -1,0 +1,21 @@
+FUNCTION "RemovePlusSign"   // FC 14, author 
+
+VAR_INPUT
+   inString : String;
+END_VAR
+
+VAR_TEMP
+   tempString : String;
+END_VAR
+
+   // RETURN : String
+BEGIN
+
+IF LEFT(IN := #inString, L := 1) = '+' THEN
+    #tempString := RIGHT(IN := #inString, L := LEN(#inString) - 1);
+ELSE
+    #tempString := #inString;
+END_IF;
+
+#RemovePlusSign := #tempString;
+END_FUNCTION

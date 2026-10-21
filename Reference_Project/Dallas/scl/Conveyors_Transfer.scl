@@ -1,0 +1,133 @@
+FUNCTION "Conveyors_Transfer"   // FC 24, author 
+
+VAR_TEMP
+   i : Int;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+//ID OF THE VTD CONVEYOR
+IF "Control_DB".VTD_Control.Current_Level = 0 THEN
+    "Settings_DB".ECnv_Settings.ID := 120001;
+    "Settings_DB".ECnv_Settings.Cnv_Level := 0;
+ELSIF "Control_DB".VTD_Control.Current_Level = 1 THEN
+    "Settings_DB".ECnv_Settings.ID := 120101;
+    "Settings_DB".ECnv_Settings.Cnv_Level := 1;
+ELSIF "Control_DB".VTD_Control.Current_Level = 2 THEN
+    "Settings_DB".ECnv_Settings.ID := 120201;
+    "Settings_DB".ECnv_Settings.Cnv_Level := 2;
+ELSIF "Control_DB".VTD_Control.Current_Level = 3 THEN
+    "Settings_DB".ECnv_Settings.ID := 120301;
+    "Settings_DB".ECnv_Settings.Cnv_Level := 3;
+ELSE
+    "Settings_DB".ECnv_Settings.ID := 129901;
+    "Settings_DB".ECnv_Settings.Cnv_Level := 99;
+END_IF;
+
+REGION READY TO RECEIVE
+    //EXTRACTOR CONVEYOR
+    "Control_DB".ECnv_Control.Instruction.Inbound_Ready :=
+    ("Settings_DB".ECnv_Settings.ID = 120001 OR
+    "Settings_DB".ECnv_Settings.ID = 120101 OR
+    "Settings_DB".ECnv_Settings.ID = 120201 OR
+    "Settings_DB".ECnv_Settings.ID = 120301)
+    AND NOT "Control_DB".ECnv_Control.Cnv_Occupied AND NOT "Control_DB".ECnv_Control.Instruction.Outbound_Ready AND
+    ("Control_DB".ECnv_Control.Mode = 2 OR "Control_DB".ECnv_Control.Mode = 3);
+    
+    //BUFFER CONVEYORS
+    FOR #i := 1 TO 3 DO
+        "Control_DB".LCnv_Control[#i].Instruction.Inbound_Ready :=
+        NOT "Control_DB".LCnv_Control[#i].Running AND
+        NOT "Control_DB".LCnv_Control[#i].Cnv_Occupied AND NOT "Control_DB".LCnv_Control[#i].Instruction.Outbound_Ready AND
+        ("Control_DB".LCnv_Control[#i].Mode = 2 OR "Control_DB".LCnv_Control[#i].Mode = 3);
+    END_FOR;
+    
+    //POPUP CONVEYORS
+    FOR #i := 1 TO 4 DO
+        "Control_DB".PopUp_Cnv[#i].Instruction.Inbound_Ready :=
+        NOT "Control_DB".PopUp_Cnv[#i].Running AND
+        NOT "Control_DB".PopUp_Cnv[#i].Cnv_Occupied AND NOT "Control_DB".PopUp_Cnv[#i].Instruction.Outbound_Ready AND
+        ("Control_DB".PopUp_Cnv[#i].Mode = 2 OR "Control_DB".PopUp_Cnv[#i].Mode = 3);
+    END_FOR;
+    
+    //INBOUND CONVEYOR
+    "Control_DB".Inbound_Cnv.Instruction.Inbound_Ready := NOT "Control_DB".Inbound_Cnv.Cnv_Occupied;
+    
+    //OUTBOUND CONVEYOR
+    "Control_DB".Outbound_Cnv.Instruction.Inbound_Ready :=
+    NOT "Control_DB".Outbound_Cnv.Running AND
+    NOT "Control_DB".Outbound_Cnv.Cnv_Occupied AND NOT "Control_DB".Outbound_Cnv.Instruction.Outbound_Ready AND
+    ("Control_DB".Outbound_Cnv.Mode = 2 OR "Control_DB".Outbound_Cnv.Mode = 3);
+    
+    //PICK CONVEYOR
+    "Control_DB".Pick_Station.Instruction.Inbound_Ready :=
+    NOT "Control_DB".Pick_Station.Running AND
+    NOT "Control_DB".Pick_Station.Cnv_Occupied AND NOT "Control_DB".Pick_Station.Instruction.Outbound_Ready AND
+    ("Control_DB".Pick_Station.Mode = 2 OR "Control_DB".Pick_Station.Mode = 3);
+END_REGION
+
+REGION READY TO SEND
+    //EXTRACTOR CONVEYOR
+    "Control_DB".ECnv_Control.Instruction.Outbound_Ready :=
+    (("Settings_DB".ECnv_Settings.ID = 120001 AND "Control_DB".ECnv_Control.Cnv_Occupied AND
+    NOT "Control_DB".PopUp_Cnv[2].Cnv_Occupied AND ("Control_DB".PopUp_Cnv[2].Mode = 2 OR "Control_DB".PopUp_Cnv[2].Mode = 3)
+    AND NOT "Control_DB".PopUp_Cnv[2].Error)
+    OR
+    ("Settings_DB".ECnv_Settings.ID = 120101 AND "Control_DB".ECnv_Control.Cnv_Occupied AND
+    NOT "Control_DB".LCnv_Control[1].Cnv_Occupied AND ("Control_DB".LCnv_Control[1].Mode = 2 OR "Control_DB".LCnv_Control[1].Mode = 3)
+    AND NOT "Control_DB".LCnv_Control[1].Error)
+    OR
+    ("Settings_DB".ECnv_Settings.ID = 120201 AND "Control_DB".ECnv_Control.Cnv_Occupied AND
+    NOT "Control_DB".LCnv_Control[2].Cnv_Occupied AND ("Control_DB".LCnv_Control[2].Mode = 2 OR "Control_DB".LCnv_Control[2].Mode = 3)
+    AND NOT "Control_DB".LCnv_Control[2].Error)
+    OR
+    ("Settings_DB".ECnv_Settings.ID = 120301 AND "Control_DB".ECnv_Control.Cnv_Occupied AND
+    NOT "Control_DB".LCnv_Control[3].Cnv_Occupied AND ("Control_DB".LCnv_Control[3].Mode = 2 OR "Control_DB".LCnv_Control[3].Mode = 3)
+    AND NOT "Control_DB".LCnv_Control[3].Error));
+    
+    //BUFFER CONVEYORS
+    FOR #i := 1 TO 3 DO
+        "Control_DB".LCnv_Control[#i].Instruction.Outbound_Ready :=
+        "Control_DB".ECnv_Control.Instruction.Inbound_Ready AND
+        "Control_DB".VTD_Control.Current_Level = #i AND
+        NOT "Control_DB".LCnv_Control[#i].Instruction.Transfer_in_Progress AND
+        "Control_DB".LCnv_Control[#i].Cnv_Occupied AND
+        ("Control_DB".LCnv_Control[#i].Mode = 2 OR "Control_DB".LCnv_Control[#i].Mode = 3);
+    END_FOR;
+    
+    //INBOUND CONVEYOR
+    "Control_DB".Inbound_Cnv.Instruction.Outbound_Ready := "Control_DB".Inbound_Cnv.Cnv_Occupied;
+    
+    //POPUP CONVEYORS
+    FOR #i := 1 TO 4 DO
+        "Control_DB".PopUp_Cnv[#i].Instruction.Outbound_Ready :=
+        ((#i = 1 AND "Control_DB".PopUp_Cnv[2].Instruction.Inbound_Ready AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Up") OR
+        (#i = 2 AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" AND ("Control_DB".PopUp_Cnv[3].Instruction.Inbound_Ready OR "Control_DB".ECnv_Control.Instruction.Inbound_Ready)) OR
+        (#i = 3 AND "Control_DB".PopUp_Cnv[4].Instruction.Inbound_Ready AND "Control_DB".PopUp_Cnv[3].Inputs."Lift Up") OR
+        (#i = 4 AND ("Control_DB".Outbound_Cnv.Instruction.Inbound_Ready OR "Control_DB".PopUp_Cnv[1].Instruction.Inbound_Ready) AND ("Control_DB".PopUp_Cnv[4].Inputs."Lift Up" OR "Control_DB".PopUp_Cnv[4].Inputs."Lift Down"))) AND
+        (*("Control_DB".VTD_Control.Current_Level = 0 AND #i = 2) AND*)
+        NOT "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_in_Progress AND
+        "Control_DB".PopUp_Cnv[#i].Cnv_Occupied = TRUE AND
+        ("Control_DB".PopUp_Cnv[#i].Mode = 2 OR "Control_DB".PopUp_Cnv[#i].Mode = 3);
+    END_FOR;
+    
+    //PICK CONVEYOR
+    "Control_DB".Pick_Station.Instruction.Outbound_Ready := "Control_DB".Pick_Station.Cnv_Occupied;
+END_REGION
+
+REGION TRANSFER IN PROGRESS FOR VTD
+    "Cnv_TIP_For_VTD" :=
+    ("Settings_DB".ECnv_Settings.ID = 120001 AND
+    "Control_DB".PopUp_Cnv[2].Instruction.Transfer_in_Progress)
+    OR
+    ("Settings_DB".ECnv_Settings.ID = 120101 AND
+    "Control_DB".LCnv_Control[1].Instruction.Transfer_in_Progress)
+    OR
+    ("Settings_DB".ECnv_Settings.ID = 120201 AND
+    "Control_DB".LCnv_Control[2].Instruction.Transfer_in_Progress)
+    OR
+    ("Settings_DB".ECnv_Settings.ID = 120301 AND
+    "Control_DB".LCnv_Control[3].Instruction.Transfer_in_Progress);
+END_REGION
+
+END_FUNCTION

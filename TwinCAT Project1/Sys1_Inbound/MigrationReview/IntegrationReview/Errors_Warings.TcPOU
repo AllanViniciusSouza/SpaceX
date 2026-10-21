@@ -1,0 +1,2768 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Errors_Warings" Id="{d7669ad1-be00-5ba1-9310-bf776fe79181}" SpecialFunc="None">
+    <Declaration><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/Errors_Warings.scl, object Errors_Warings.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+FUNCTION Errors_Warings : BOOL
+// 
+//    VAR_TEMP
+//       ReturnValue : Word;
+//       Devices : Array[0..1023] of Bool;
+//       i : UInt;
+//    END_VAR
+// 
+//    VAR CONSTANT
+//       AUTO_RUNNING : UInt := 0;
+//    END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// MIGRATION DRAFT: NOT included in PLC compilation.
+// Reference: Reference_Project/Errors_Warings.scl, object Errors_Warings.
+// Types, globals, calls, units and behavior require manual reconciliation.
+// See docs/TIA_Missing_Blocks.md before importing as PLC code.
+// ReturnValue := DeviceStates(LADDR := Local1_PROFINET_IO_System,
+// 	                                 MODE := 5,
+// 	                                 STATE := Devices);
+// 	    IF ReturnValue = 0 THEN
+// 
+// 
+// 
+// 
+// 	        IF Devices[1] THEN
+// 	            Errors_Profinet_1.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[2] THEN
+// 	            Errors_Profinet_1.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[3] THEN
+// 	            Errors_Profinet_1.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[4] THEN
+// 	            Errors_Profinet_1.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[5] THEN
+// 	            Errors_Profinet_1.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[6] THEN
+// 	            Errors_Profinet_1.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[7] THEN
+// 	            Errors_Profinet_1.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[8] THEN
+// 	            Errors_Profinet_1.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[9] THEN
+// 	            Errors_Profinet_1.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[10] THEN
+// 	            Errors_Profinet_1.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[11] THEN
+// 	            Errors_Profinet_1.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[12] THEN
+// 	            Errors_Profinet_1.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[13] THEN
+// 	            Errors_Profinet_1.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[14] THEN
+// 	            Errors_Profinet_1.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[15] AND NOT Control.LCnv_Sys[1].Cnv_Level[1].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_1.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[16] AND NOT Control.LCnv_Sys[1].Cnv_Level[2].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_2.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[17] AND NOT Control.LCnv_Sys[1].Cnv_Level[3].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_2.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[18] AND NOT Control.LCnv_Sys[1].Cnv_Level[4].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_2.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[19] AND NOT Control.LCnv_Sys[1].Cnv_Level[5].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_2.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[20] AND NOT Control.LCnv_Sys[1].Cnv_Level[6].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_2.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[21] AND NOT Control.LCnv_Sys[1].Cnv_Level[8].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_2.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[22] AND NOT Control.LCnv_Sys[1].Cnv_Level[1].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_2.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[23] AND NOT Control.LCnv_Sys[1].Cnv_Level[2].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_2.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[24] AND NOT Control.LCnv_Sys[1].Cnv_Level[3].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_2.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[25] AND NOT Control.LCnv_Sys[1].Cnv_Level[4].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_2.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[26] AND NOT Control.LCnv_Sys[1].Cnv_Level[5].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_2.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[27] AND NOT Control.LCnv_Sys[1].Cnv_Level[6].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_2.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[28] AND NOT Control.LCnv_Sys[1].Cnv_Level[7].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_2.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[29] AND NOT Control.LCnv_Sys[1].Cnv_Level[8].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_2.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[30] AND NOT Control.LCnv_Sys[1].Cnv_Level[7].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_2.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[31] THEN
+// 	            Errors_Profinet_2.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[32] THEN
+// 	            Errors_Profinet_3.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[33] THEN
+// 	            Errors_Profinet_3.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[34] THEN
+// 	            Errors_Profinet_3.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[35] THEN
+// 	            Errors_Profinet_3.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[36] THEN
+// 	            Errors_Profinet_3.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[37] THEN
+// 	            Errors_Profinet_3.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[38] THEN
+// 	            Errors_Profinet_3.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[39] THEN
+// 	            Errors_Profinet_3.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[40] THEN
+// 	            Errors_Profinet_3.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[41] THEN
+// 	            Errors_Profinet_3.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[42] THEN
+// 	            Errors_Profinet_3.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[43] THEN
+// 	            Errors_Profinet_3.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[44] THEN
+// 	            Errors_Profinet_3.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[45] THEN
+// 	            Errors_Profinet_3.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[46] THEN
+// 	            Errors_Profinet_3.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[47] AND NOT Control.LCnv_Sys[2].Cnv_Level[1].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_3.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[48] AND NOT Control.LCnv_Sys[2].Cnv_Level[2].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_4.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[49] AND NOT Control.LCnv_Sys[2].Cnv_Level[3].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_4.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[50] AND NOT Control.LCnv_Sys[2].Cnv_Level[4].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_4.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[51] AND NOT Control.LCnv_Sys[2].Cnv_Level[6].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_4.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[52] AND NOT Control.LCnv_Sys[2].Cnv_Level[7].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_4.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[53] AND NOT Control.LCnv_Sys[2].Cnv_Level[5].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_4.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[54] AND NOT Control.LCnv_Sys[2].Cnv_Level[8].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_4.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[55] AND NOT Control.LCnv_Sys[2].Cnv_Level[1].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_4.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[56] AND NOT Control.LCnv_Sys[2].Cnv_Level[2].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_4.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[57] AND NOT Control.LCnv_Sys[2].Cnv_Level[3].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_4.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[58] AND NOT Control.LCnv_Sys[2].Cnv_Level[4].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_4.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[59] AND NOT Control.LCnv_Sys[2].Cnv_Level[5].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_4.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[60] AND NOT Control.LCnv_Sys[2].Cnv_Level[6].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_4.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[61] AND NOT Control.LCnv_Sys[2].Cnv_Level[7].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_4.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[62] AND NOT Control.LCnv_Sys[2].Cnv_Level[8].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_4.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[63] THEN
+// 	            Errors_Profinet_4.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[64] THEN
+// 	            Errors_Profinet_5.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[65] THEN
+// 	            Errors_Profinet_5.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[66] THEN
+// 	            Errors_Profinet_5.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[67] THEN
+// 	            Errors_Profinet_5.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[68] THEN
+// 	            Errors_Profinet_5.%X4 := Devices[68];
+// 	        END_IF;
+// 
+// 	        IF Devices[69] THEN
+// 	            Errors_Profinet_5.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[70] THEN
+// 	            Errors_Profinet_5.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[71] THEN
+// 	            Errors_Profinet_5.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[72] THEN
+// 	            Errors_Profinet_5.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[73] THEN
+// 	            Errors_Profinet_5.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[74] THEN
+// 	            Errors_Profinet_5.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[75] THEN
+// 	            Errors_Profinet_5.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[76] AND NOT Control.LCnv_Sys[3].Cnv_Level[1].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_5.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[77] AND NOT Control.LCnv_Sys[3].Cnv_Level[2].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_5.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[78] AND NOT Control.LCnv_Sys[3].Cnv_Level[3].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_5.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[79] AND NOT Control.LCnv_Sys[3].Cnv_Level[4].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_5.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[80] AND NOT Control.LCnv_Sys[3].Cnv_Level[5].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_6.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[81] AND NOT Control.LCnv_Sys[3].Cnv_Level[6].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_6.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[82] AND NOT Control.LCnv_Sys[3].Cnv_Level[7].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_6.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[83] AND NOT Control.LCnv_Sys[3].Cnv_Level[8].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_6.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[84] AND NOT Control.LCnv_Sys[3].Cnv_Level[1].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_6.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[85] AND NOT Control.LCnv_Sys[3].Cnv_Level[2].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_6.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[86] AND NOT Control.LCnv_Sys[3].Cnv_Level[3].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_6.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[87] AND NOT Control.LCnv_Sys[3].Cnv_Level[4].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_6.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[88] AND NOT Control.LCnv_Sys[3].Cnv_Level[5].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_6.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[89] AND NOT Control.LCnv_Sys[3].Cnv_Level[6].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_6.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[90] AND NOT Control.LCnv_Sys[3].Cnv_Level[7].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_6.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[91] AND NOT Control.LCnv_Sys[3].Cnv_Level[8].Cnv2.Motor.Error THEN
+// 	            Errors_Profinet_6.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[92] THEN
+// 	            Errors_Profinet_6.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[93] THEN
+// 	            Errors_Profinet_6.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[94] THEN
+// 	            Errors_Profinet_6.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[95] THEN
+// 	            Errors_Profinet_6.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[96] THEN
+// 	            Errors_Profinet_7.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[97] THEN
+// 	            Errors_Profinet_7.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[98] THEN
+// 	            Errors_Profinet_7.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[99] THEN
+// 	            Errors_Profinet_7.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[100] THEN
+// 	            Errors_Profinet_7.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[101] THEN
+// 	            Errors_Profinet_7.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[102] THEN
+// 	            Errors_Profinet_7.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[103] THEN
+// 	            Errors_Profinet_7.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[104] THEN
+// 	            Errors_Profinet_7.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[105] AND NOT Control.LCnv_Sys[4].Cnv_Level[1].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_7.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[106] AND NOT Control.LCnv_Sys[4].Cnv_Level[2].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_7.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[107] AND NOT Control.LCnv_Sys[4].Cnv_Level[3].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_7.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[108] AND NOT Control.LCnv_Sys[4].Cnv_Level[4].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_7.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[109] AND NOT Control.LCnv_Sys[4].Cnv_Level[5].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_7.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[110] AND NOT Control.LCnv_Sys[4].Cnv_Level[6].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_7.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[111] AND NOT Control.LCnv_Sys[4].Cnv_Level[7].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_7.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[112] AND NOT Control.LCnv_Sys[4].Cnv_Level[8].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_8.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[113] THEN
+// 	            Errors_Profinet_8.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[114] THEN
+// 	            Errors_Profinet_8.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[115] THEN
+// 	            Errors_Profinet_8.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[116] THEN
+// 	            Errors_Profinet_8.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[117] THEN
+// 	            Errors_Profinet_8.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[118] THEN
+// 	            Errors_Profinet_8.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[119] THEN
+// 	            Errors_Profinet_8.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[120] THEN
+// 	            Errors_Profinet_8.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[121] THEN
+// 	            Errors_Profinet_8.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[122] THEN
+// 	            Errors_Profinet_8.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[123] THEN
+// 	            Errors_Profinet_8.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[124] THEN
+// 	            Errors_Profinet_8.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[125] THEN
+// 	            Errors_Profinet_8.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[126] AND NOT Control.LCnv_Sys[5].Cnv_Level[1].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_8.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[127] AND NOT Control.LCnv_Sys[5].Cnv_Level[2].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_8.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[128] AND NOT Control.LCnv_Sys[5].Cnv_Level[3].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_9.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[129] AND NOT Control.LCnv_Sys[5].Cnv_Level[4].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_9.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[130] AND NOT Control.LCnv_Sys[5].Cnv_Level[5].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_9.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[131] AND NOT Control.LCnv_Sys[5].Cnv_Level[6].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_9.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[132] AND NOT Control.LCnv_Sys[5].Cnv_Level[7].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_9.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[133] AND NOT Control.LCnv_Sys[5].Cnv_Level[8].Cnv1.Motor.Error THEN
+// 	            Errors_Profinet_9.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[134] THEN
+// 	            Errors_Profinet_9.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[135] THEN
+// 	            Errors_Profinet_9.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[136] THEN
+// 	            Errors_Profinet_9.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[137] THEN
+// 	            Errors_Profinet_9.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[138] THEN
+// 	            Errors_Profinet_9.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[139] THEN
+// 	            Errors_Profinet_9.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[140] THEN
+// 	            Errors_Profinet_9.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[141] THEN
+// 	            Errors_Profinet_9.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[142] THEN
+// 	            Errors_Profinet_9.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[143] THEN
+// 	            Errors_Profinet_9.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[144] THEN
+// 	            Errors_Profinet_10.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[145] THEN
+// 	            Errors_Profinet_10.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[146] THEN
+// 	            Errors_Profinet_10.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[147] THEN
+// 	            Errors_Profinet_10.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[148] THEN
+// 	            Errors_Profinet_10.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[149] THEN
+// 	            Errors_Profinet_10.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[150] THEN
+// 	            Errors_Profinet_10.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[151] THEN
+// 	            Errors_Profinet_10.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[152] THEN
+// 	            Errors_Profinet_10.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[153] THEN
+// 	            Errors_Profinet_10.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[154] THEN
+// 	            Errors_Profinet_10.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[155] THEN
+// 	            Errors_Profinet_10.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[156] THEN
+// 	            Errors_Profinet_10.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[157] THEN
+// 	            Errors_Profinet_10.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[158] THEN
+// 	            Errors_Profinet_11.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[159] THEN
+// 	            Errors_Profinet_11.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[160] THEN
+// 	            Errors_Profinet_11.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[161] THEN
+// 	            Errors_Profinet_11.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[162] THEN
+// 	            Errors_Profinet_11.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[163] THEN
+// 	            Errors_Profinet_11.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[164] THEN
+// 	            Errors_Profinet_11.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[165] THEN
+// 	            Errors_Profinet_11.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[166] THEN
+// 	            Errors_Profinet_11.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[167] THEN
+// 	            Errors_Profinet_11.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[168] THEN
+// 	            Errors_Profinet_11.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF Devices[169] THEN
+// 	            Errors_Profinet_11.%X9 := TRUE;
+// 	        END_IF;
+// 	    END_IF;
+// 
+// 	        Errors_Profinet_10.%X14 := PLC_HMI___Profinet_Error_HMI_1;
+// 
+// 	        R_HMI_1_Connection(CLK := PLC_HMI___Profinet_Error_HMI_1);
+// 
+// 	        IF R_HMI_1_Connection.Q AND HMI_Box_Connected_1 <> 0 THEN
+// 	            HMI_Box_Connected_1 := 0;
+// 	        END_IF;
+// 	    END_REGION;
+// 
+// 	        Errors_Profinet_10.%X15 := PLC_HMI___Profinet_Error_HMI_2;
+// 
+// 	        R_HMI_2_Connection(CLK := PLC_HMI___Profinet_Error_HMI_2);
+// 
+// 	        IF R_HMI_2_Connection.Q AND HMI_Box_Connected_2 <> 0 THEN
+// 	            HMI_Box_Connected_2 := 0;
+// 	        END_IF;
+// 	    END_REGION ;
+// 
+// 
+// 
+// 	        IF NOT SCA_1002_REMOTE_PANEL_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT SCA_2002_REMOTE_PANEL_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT SCA_3002_REMOTE_PANEL_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT SCA_4001_REMOTE_PANEL_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT SCA_5001_REMOTE_PANEL_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF SW1_SWITCH_PANEL_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF SW2_SWITCH_PANEL_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF SW3_SWITCH_PANEL_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT TIA_60TA1_PSU_24V_OK_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT TIA_60TA2_PSU_24V_OK_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT TIA_441FC1_CHARGER_PANEL_1_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT TIA_441FC2_CHARGER_PANEL_2_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT TIA_441FC3_CHARGER_PANEL_3_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT TIA_41FC1_COOLING_FAN_MCB_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT TIA_62TA1_PSU_48V_OK_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CHARGER_PANELS_4_5_6_7_8_SUPPLY_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_1.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 	        IF NOT C1101_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1102_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1103_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1104_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1105_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1106_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1107_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1108_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1201_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1202_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1203_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1204_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1205_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1206_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1207_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C1208_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_2.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CVTD1_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT VTD1_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_24V_PSU_CIRCUIT_BREAKER_FEEDBACK_1_ THEN
+// 	            Erros_Supply_Feedback_3.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_COOLING_FAN_CIRCUIT_BREAKER_FEEDBACK_1_ THEN
+// 	            Erros_Supply_Feedback_3.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 	        IF NOT C2101_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2102_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2103_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2104_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2105_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2106_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2107_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2108_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2201_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2202_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2203_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2204_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_3.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2205_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2206_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2207_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C2208_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CVTD2_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT VTD2_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_24V_PSU_CIRCUIT_BREAKER_FEEDBACK_2_ THEN
+// 	            Erros_Supply_Feedback_4.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_COOLING_FAN_CIRCUIT_BREAKER_FEEDBACK_2_ THEN
+// 	            Erros_Supply_Feedback_4.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 	        IF NOT C3101_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3102_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3103_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3104_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3105_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3106_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3107_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3108_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_4.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3201_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3202_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3203_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3204_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3205_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3206_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3207_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C3208_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CVTD3_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT VTD3_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_24V_PSU_CIRCUIT_BREAKER_FEEDBACK_3_ THEN
+// 	            Erros_Supply_Feedback_5.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_COOLING_FAN_CIRCUIT_BREAKER_FEEDBACK_3_ THEN
+// 	            Erros_Supply_Feedback_5.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 	        IF NOT C4101_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C4102_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C4103_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C4104_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_5.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C4105_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C4106_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C4107_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C4108_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CVTD4_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT VTD4_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_24V_PSU_CIRCUIT_BREAKER_FEEDBACK_4_ THEN
+// 	            Erros_Supply_Feedback_6.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_COOLING_FAN_CIRCUIT_BREAKER_FEEDBACK_4_ THEN
+// 	            Erros_Supply_Feedback_6.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 	        IF NOT C5101_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C5102_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C5103_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C5104_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X11 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C5105_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X12 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C5106_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X13 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C5107_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X14 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT C5108_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_6.%X15 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CVTD5_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_7.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT VTD5_CIRCUIT_BREAKER_FEEDBACK THEN
+// 	            Erros_Supply_Feedback_7.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_24V_PSU_CIRCUIT_BREAKER_FEEDBACK_5_ THEN
+// 	            Erros_Supply_Feedback_7.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT CABINET_COOLING_FAN_CIRCUIT_BREAKER_FEEDBACK_5_ THEN
+// 	            Erros_Supply_Feedback_7.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 
+// 	    IF NOT EMERGENCY_STOP__CABINET____CH1 THEN
+// 	        Estop_Error_Word_1.%X0 := TRUE;
+// 	    END_IF;
+// 
+// 	        IF NOT E_STOP__CABINET____CH1_1_ THEN
+// 	            Estop_Error_Word_1.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Level_1 THEN
+// 	            Estop_Error_Word_1.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Level_2 THEN
+// 	            Estop_Error_Word_1.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Level_3 THEN
+// 	            Estop_Error_Word_1.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Level_4 THEN
+// 	            Estop_Error_Word_1.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Level_5 THEN
+// 	            Estop_Error_Word_1.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Level_6 THEN
+// 	            Estop_Error_Word_1.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Level_7 THEN
+// 	            Estop_Error_Word_1.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Level_8 THEN
+// 	            Estop_Error_Word_1.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Lock_1 THEN
+// 	            Estop_Error_Word_1.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_1.EStop_Lock_2 THEN
+// 	            Estop_Error_Word_1.%X11 := TRUE;
+// 	        END_IF;
+// 	    END_REGION ;
+// 
+// 	        IF NOT E_STOP__CABINET____CH1_2_ THEN
+// 	            Estop_Error_Word_2.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Level_1 THEN
+// 	            Estop_Error_Word_2.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Level_2 THEN
+// 	            Estop_Error_Word_2.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Level_3 THEN
+// 	            Estop_Error_Word_2.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Level_4 THEN
+// 	            Estop_Error_Word_2.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Level_5 THEN
+// 	            Estop_Error_Word_2.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Level_6 THEN
+// 	            Estop_Error_Word_2.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Level_7 THEN
+// 	            Estop_Error_Word_2.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Level_8 THEN
+// 	            Estop_Error_Word_2.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Lock_1 THEN
+// 	            Estop_Error_Word_2.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_2.EStop_Lock_2 THEN
+// 	            Estop_Error_Word_2.%X11 := TRUE;
+// 	        END_IF;
+// 	    END_REGION ;
+// 
+// 	        IF NOT E_STOP__CABINET____CH1_3_ THEN
+// 	            Estop_Error_Word_3.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Level_1 THEN
+// 	            Estop_Error_Word_3.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Level_2 THEN
+// 	            Estop_Error_Word_3.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Level_3 THEN
+// 	            Estop_Error_Word_3.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Level_4 THEN
+// 	            Estop_Error_Word_3.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Level_5 THEN
+// 	            Estop_Error_Word_3.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Level_6 THEN
+// 	            Estop_Error_Word_3.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Level_7 THEN
+// 	            Estop_Error_Word_3.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Level_8 THEN
+// 	            Estop_Error_Word_3.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Lock_1 THEN
+// 	            Estop_Error_Word_3.%X10 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_3.EStop_Lock_2 THEN
+// 	            Estop_Error_Word_3.%X11 := TRUE;
+// 	        END_IF;
+// 	    END_REGION ;
+// 
+// 	        IF NOT E_STOP__CABINET____CH1_4_ THEN
+// 	            Estop_Error_Word_4.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_4.EStop_Level_1 THEN
+// 	            Estop_Error_Word_4.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_4.EStop_Level_2 THEN
+// 	            Estop_Error_Word_4.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_4.EStop_Level_3 THEN
+// 	            Estop_Error_Word_4.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_4.EStop_Level_4 THEN
+// 	            Estop_Error_Word_4.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_4.EStop_Level_5 THEN
+// 	            Estop_Error_Word_4.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_4.EStop_Level_6 THEN
+// 	            Estop_Error_Word_4.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_4.EStop_Level_7 THEN
+// 	            Estop_Error_Word_4.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_4.EStop_Level_8 THEN
+// 	            Estop_Error_Word_4.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_4.EStop_Lock_1 THEN
+// 	            Estop_Error_Word_4.%X10 := TRUE;
+// 	        END_IF;
+// 	    END_REGION ;
+// 
+// 	        IF NOT E_STOP__CABINET____CH1_5_ THEN
+// 	            Estop_Error_Word_5.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_5.EStop_Level_1 THEN
+// 	            Estop_Error_Word_5.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_5.EStop_Level_2 THEN
+// 	            Estop_Error_Word_5.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_5.EStop_Level_3 THEN
+// 	            Estop_Error_Word_5.%X4 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_5.EStop_Level_4 THEN
+// 	            Estop_Error_Word_5.%X5 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_5.EStop_Level_5 THEN
+// 	            Estop_Error_Word_5.%X6 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_5.EStop_Level_6 THEN
+// 	            Estop_Error_Word_5.%X7 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_5.EStop_Level_7 THEN
+// 	            Estop_Error_Word_5.%X8 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_5.EStop_Level_8 THEN
+// 	            Estop_Error_Word_5.%X9 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT Remote_Panel_DB_5.EStop_Lock_1 THEN
+// 	            Estop_Error_Word_5.%X10 := TRUE;
+// 	        END_IF;
+// 	    END_REGION ;
+// 
+// 	        IF NOT F_Lock_FB_DB_7.EStop_CH1 THEN
+// 	            Estop_Error_Word_6.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT F_Lock_FB_DB_8.EStop_CH1 THEN
+// 	            Estop_Error_Word_6.%X1 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT F_Lock_FB_DB_11.EStop_CH1 THEN
+// 	            Estop_Error_Word_6.%X2 := TRUE;
+// 	        END_IF;
+// 
+// 	        IF NOT F_Lock_FB_DB_12.EStop_CH1 THEN
+// 	            Estop_Error_Word_6.%X3 := TRUE;
+// 	        END_IF;
+// 
+// 	END_REGION;
+// 
+// 
+// 	        IF SICK_Lector_DB_1.Errorcode = 16#0000_0001 THEN
+// 	            Sick_Lector_Error_code_1.%X0 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0002 THEN
+// 	            Sick_Lector_Error_code_1.%X1 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0003 THEN
+// 	            Sick_Lector_Error_code_1.%X2 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0004 THEN
+// 	            Sick_Lector_Error_code_1.%X3 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0005 THEN
+// 	            Sick_Lector_Error_code_1.%X4 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode > 16#0000_0006 AND SICK_Lector_DB_1.Errorcode < 16#0000_0009 THEN
+// 	            Sick_Lector_Error_code_1.%X5 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0010 THEN
+// 	            Sick_Lector_Error_code_1.%X6 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0011 THEN
+// 	            Sick_Lector_Error_code_1.%X7 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0012 THEN
+// 	            Sick_Lector_Error_code_1.%X8 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0013 THEN
+// 	            Sick_Lector_Error_code_1.%X9 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0014 THEN
+// 	            Sick_Lector_Error_code_1.%X10 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0015 THEN
+// 	            Sick_Lector_Error_code_1.%X11 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0016 THEN
+// 	            Sick_Lector_Error_code_1.%X12 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0017 THEN
+// 	            Sick_Lector_Error_code_1.%X13 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0020 THEN
+// 	            Sick_Lector_Error_code_1.%X14 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0021 THEN
+// 	            Sick_Lector_Error_code_1.%X15 := TRUE;
+// 	        ELSIF SICK_Lector_DB_1.Errorcode = 16#0000_0022 THEN
+// 	            Sick_Lector_Error_code_1_2.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 	        IF SICK_Lector_DB_2.Errorcode = 16#0000_0001 THEN
+// 	            Sick_Lector_Error_code_2.%X0 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0002 THEN
+// 	            Sick_Lector_Error_code_2.%X1 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0003 THEN
+// 	            Sick_Lector_Error_code_2.%X2 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0004 THEN
+// 	            Sick_Lector_Error_code_2.%X3 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0005 THEN
+// 	            Sick_Lector_Error_code_2.%X4 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode > 16#0000_0006 AND SICK_Lector_DB_2.Errorcode < 16#0000_0009 THEN
+// 	            Sick_Lector_Error_code_2.%X5 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0010 THEN
+// 	            Sick_Lector_Error_code_2.%X6 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0011 THEN
+// 	            Sick_Lector_Error_code_2.%X7 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0012 THEN
+// 	            Sick_Lector_Error_code_2.%X8 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0013 THEN
+// 	            Sick_Lector_Error_code_2.%X9 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0014 THEN
+// 	            Sick_Lector_Error_code_2.%X10 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0015 THEN
+// 	            Sick_Lector_Error_code_2.%X11 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0016 THEN
+// 	            Sick_Lector_Error_code_2.%X12 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0017 THEN
+// 	            Sick_Lector_Error_code_2.%X13 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0020 THEN
+// 	            Sick_Lector_Error_code_2.%X14 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0021 THEN
+// 	            Sick_Lector_Error_code_2.%X15 := TRUE;
+// 	        ELSIF SICK_Lector_DB_2.Errorcode = 16#0000_0022 THEN
+// 	            Sick_Lector_Error_code_2_2.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 	        IF SICK_Lector_DB_3.Errorcode = 16#0000_0001 THEN
+// 	            Sick_Lector_Error_code_3.%X0 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0002 THEN
+// 	            Sick_Lector_Error_code_3.%X1 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0003 THEN
+// 	            Sick_Lector_Error_code_3.%X2 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0004 THEN
+// 	            Sick_Lector_Error_code_3.%X3 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0005 THEN
+// 	            Sick_Lector_Error_code_3.%X4 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode > 16#0000_0006 AND SICK_Lector_DB_3.Errorcode < 16#0000_0009 THEN
+// 	            Sick_Lector_Error_code_3.%X5 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0010 THEN
+// 	            Sick_Lector_Error_code_3.%X6 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0011 THEN
+// 	            Sick_Lector_Error_code_3.%X7 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0012 THEN
+// 	            Sick_Lector_Error_code_3.%X8 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0013 THEN
+// 	            Sick_Lector_Error_code_3.%X9 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0014 THEN
+// 	            Sick_Lector_Error_code_3.%X10 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0015 THEN
+// 	            Sick_Lector_Error_code_3.%X11 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0016 THEN
+// 	            Sick_Lector_Error_code_3.%X12 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0017 THEN
+// 	            Sick_Lector_Error_code_3.%X13 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0020 THEN
+// 	            Sick_Lector_Error_code_3.%X14 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0021 THEN
+// 	            Sick_Lector_Error_code_3.%X15 := TRUE;
+// 	        ELSIF SICK_Lector_DB_3.Errorcode = 16#0000_0022 THEN
+// 	            Sick_Lector_Error_code_3_2.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 	        IF SICK_Lector_DB_4.Errorcode = 16#0000_0001 THEN
+// 	            Sick_Lector_Error_code_3.%X0 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0002 THEN
+// 	            Sick_Lector_Error_code_3.%X1 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0003 THEN
+// 	            Sick_Lector_Error_code_4.%X2 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0004 THEN
+// 	            Sick_Lector_Error_code_4.%X3 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0005 THEN
+// 	            Sick_Lector_Error_code_4.%X4 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode > 16#0000_0006 AND SICK_Lector_DB_4.Errorcode < 16#0000_0009 THEN
+// 	            Sick_Lector_Error_code_4.%X5 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0010 THEN
+// 	            Sick_Lector_Error_code_4.%X6 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0011 THEN
+// 	            Sick_Lector_Error_code_4.%X7 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0012 THEN
+// 	            Sick_Lector_Error_code_4.%X8 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0013 THEN
+// 	            Sick_Lector_Error_code_4.%X9 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0014 THEN
+// 	            Sick_Lector_Error_code_4.%X10 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0015 THEN
+// 	            Sick_Lector_Error_code_4.%X11 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0016 THEN
+// 	            Sick_Lector_Error_code_4.%X12 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0017 THEN
+// 	            Sick_Lector_Error_code_4.%X13 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0020 THEN
+// 	            Sick_Lector_Error_code_4.%X14 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0021 THEN
+// 	            Sick_Lector_Error_code_4.%X15 := TRUE;
+// 	        ELSIF SICK_Lector_DB_4.Errorcode = 16#0000_0022 THEN
+// 	            Sick_Lector_Error_code_4_2.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 	        IF SICK_Lector_DB_5.Errorcode = 16#0000_0001 THEN
+// 	            Sick_Lector_Error_code_5.%X0 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0002 THEN
+// 	            Sick_Lector_Error_code_5.%X1 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0003 THEN
+// 	            Sick_Lector_Error_code_5.%X2 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0004 THEN
+// 	            Sick_Lector_Error_code_5.%X3 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0005 THEN
+// 	            Sick_Lector_Error_code_5.%X4 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode > 16#0000_0006 AND SICK_Lector_DB_5.Errorcode < 16#0000_0009 THEN
+// 	            Sick_Lector_Error_code_5.%X5 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0010 THEN
+// 	            Sick_Lector_Error_code_5.%X6 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0011 THEN
+// 	            Sick_Lector_Error_code_5.%X7 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0012 THEN
+// 	            Sick_Lector_Error_code_5.%X8 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0013 THEN
+// 	            Sick_Lector_Error_code_5.%X9 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0014 THEN
+// 	            Sick_Lector_Error_code_5.%X10 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0015 THEN
+// 	            Sick_Lector_Error_code_5.%X11 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0016 THEN
+// 	            Sick_Lector_Error_code_5.%X12 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0017 THEN
+// 	            Sick_Lector_Error_code_5.%X13 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0020 THEN
+// 	            Sick_Lector_Error_code_5.%X14 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0021 THEN
+// 	            Sick_Lector_Error_code_5.%X15 := TRUE;
+// 	        ELSIF SICK_Lector_DB_5.Errorcode = 16#0000_0022 THEN
+// 	            Sick_Lector_Error_code_5_2.%X0 := TRUE;
+// 	        END_IF;
+// 
+// 
+// 
+// 	    FOR i := 1 TO 5 DO
+// 	        IF Control.VTD_Sys[i].Inputs.LE_Status.%X0 THEN
+// 	            IF Control.VTD_Sys[i].Inputs.LE_Position = 1 THEN
+// 	                IF i = 1 THEN
+// 	                    Linear_Encoder_Device_Errors_1.%X0 := TRUE;
+// 	                ELSIF i = 2 THEN
+// 	                    Linear_Encoder_Device_Errors_2.%X0 := TRUE;
+// 	                ELSIF i = 3 THEN
+// 	                    Linear_Encoder_Device_Errors_3.%X0 := TRUE;
+// 	                ELSIF i = 4 THEN
+// 	                    Linear_Encoder_Device_Errors_4.%X0 := TRUE;
+// 	                ELSIF i = 5 THEN
+// 	                    Linear_Encoder_Device_Errors_5.%X0 := TRUE;
+// 	                END_IF;
+// 	            ELSIF Control.VTD_Sys[i].Inputs.LE_Position = 2 THEN
+// 	                IF i = 1 THEN
+// 	                    Linear_Encoder_Device_Errors_1.%X1 := TRUE;
+// 	                ELSIF i = 2 THEN
+// 	                    Linear_Encoder_Device_Errors_2.%X1 := TRUE;
+// 	                ELSIF i = 3 THEN
+// 	                    Linear_Encoder_Device_Errors_3.%X1 := TRUE;
+// 	                ELSIF i = 4 THEN
+// 	                    Linear_Encoder_Device_Errors_4.%X1 := TRUE;
+// 	                ELSIF i = 5 THEN
+// 	                    Linear_Encoder_Device_Errors_5.%X1 := TRUE;
+// 	                END_IF;
+// 	            ELSIF Control.VTD_Sys[i].Inputs.LE_Position = 1000 THEN
+// 	                IF i = 1 THEN
+// 	                    Linear_Encoder_Device_Errors_1.%X2 := TRUE;
+// 	                ELSIF i = 2 THEN
+// 	                    Linear_Encoder_Device_Errors_2.%X2 := TRUE;
+// 	                ELSIF i = 3 THEN
+// 	                    Linear_Encoder_Device_Errors_3.%X2 := TRUE;
+// 	                ELSIF i = 4 THEN
+// 	                    Linear_Encoder_Device_Errors_4.%X2 := TRUE;
+// 	                ELSIF i = 5 THEN
+// 	                    Linear_Encoder_Device_Errors_5.%X2 := TRUE;
+// 	                END_IF;
+// 	            ELSIF Control.VTD_Sys[i].Inputs.LE_Status.%X1 THEN
+// 	                IF i = 1 THEN
+// 	                    Linear_Encoder_Device_Errors_1.%X3 := TRUE;
+// 	                ELSIF i = 2 THEN
+// 	                    Linear_Encoder_Device_Errors_2.%X3 := TRUE;
+// 	                ELSIF i = 3 THEN
+// 	                    Linear_Encoder_Device_Errors_3.%X3 := TRUE;
+// 	                ELSIF i = 4 THEN
+// 	                    Linear_Encoder_Device_Errors_4.%X3 := TRUE;
+// 	                ELSIF i = 5 THEN
+// 	                    Linear_Encoder_Device_Errors_5.%X3 := TRUE;
+// 	                END_IF;
+// 	            ELSIF Control.VTD_Sys[i].Inputs.LE_Status.%X0 THEN
+// 	                IF i = 1 THEN
+// 	                    Linear_Encoder_Device_Errors_1.%X4 := TRUE;
+// 	                ELSIF i = 2 THEN
+// 	                    Linear_Encoder_Device_Errors_2.%X4 := TRUE;
+// 	                ELSIF i = 3 THEN
+// 	                    Linear_Encoder_Device_Errors_3.%X4 := TRUE;
+// 	                ELSIF i = 4 THEN
+// 	                    Linear_Encoder_Device_Errors_4.%X4 := TRUE;
+// 	                ELSIF i = 5 THEN
+// 	                    Linear_Encoder_Device_Errors_5.%X4 := TRUE;
+// 	                END_IF;
+// 	            ELSE
+// 	                IF i = 1 THEN
+// 	                    Linear_Encoder_Device_Errors_1 := 0;
+// 	                ELSIF i = 2 THEN
+// 	                    Linear_Encoder_Device_Errors_2 := 0;
+// 	                ELSIF i = 3 THEN
+// 	                    Linear_Encoder_Device_Errors_3 := 0;
+// 	                ELSIF i = 4 THEN
+// 	                    Linear_Encoder_Device_Errors_4 := 0;
+// 	                ELSIF i = 5 THEN
+// 	                    Linear_Encoder_Device_Errors_5 := 0;
+// 	                END_IF;
+// 	            END_IF;
+// 
+// 
+// 	            IF Control.VTD_Sys[i].Inputs.LE_Status.%X2 THEN
+// 	                IF i = 1 THEN
+// 	                    Linear_Encoder_Warnings_1.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_1.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_1.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_1.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_1.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_1.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_1.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_1.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_1.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                ELSIF i = 2 THEN
+// 	                    Linear_Encoder_Warnings_2.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_2.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_2.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_2.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_2.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_2.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_2.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_2.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_2.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                ELSIF i = 3 THEN
+// 	                    Linear_Encoder_Warnings_3.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_3.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_3.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_3.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_3.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_3.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_3.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_3.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_3.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                ELSIF i = 4 THEN
+// 	                    Linear_Encoder_Warnings_4.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_4.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_4.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_4.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_4.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_4.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_4.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_4.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_4.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                ELSIF i = 5 THEN
+// 	                    Linear_Encoder_Warnings_5.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_5.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_5.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_5.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_5.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_5.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_5.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_5.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_5.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                END_IF;
+// 	            END_IF;
+// 	        END_IF;
+// 	    END_FOR;
+// 
+// 
+// 	    IF NOT Remote_Panel_DB_1.Mute_LG_1_DB.Q_Safety_release_1 THEN
+// 	        Errors_Word_LightGuard_1.%X0 := TRUE;
+// 	    END_IF;
+// 
+// 	    IF NOT Remote_Panel_DB_1.Mute_LG_2_DB.Q_Safety_release_1 THEN
+// 	        Errors_Word_LightGuard_1.%X1 := TRUE;
+// 	    END_IF;
+// 
+// 	    IF NOT Remote_Panel_DB_2.Mute_LG_1_DB.Q_Safety_release_1 THEN
+// 	        Errors_Word_LightGuard_1.%X2 := TRUE;
+// 	    END_IF;
+// 
+// 	    IF NOT Remote_Panel_DB_2.Mute_LG_2_DB.Q_Safety_release_1 THEN
+// 	        Errors_Word_LightGuard_1.%X3 := TRUE;
+// 	    END_IF;
+// 
+// 	    IF NOT Remote_Panel_DB_3.Mute_LG_1_DB.Q_Safety_release_1 THEN
+// 	        Errors_Word_LightGuard_1.%X4 := TRUE;
+// 	    END_IF;
+// 
+// 	    IF NOT Remote_Panel_DB_3.Mute_LG_2_DB.Q_Safety_release_1 THEN
+// 	        Errors_Word_LightGuard_1.%X5 := TRUE;
+// 	    END_IF;
+// 
+// 
+// 	    Errors_Word_Shuttles_1.%X0 := TCP_IP_Shuttle_DB_1.error;
+// 	    Errors_Word_Shuttles_1.%X1 := TCP_IP_Shuttle_DB_2.error;
+// 	    Errors_Word_Shuttles_1.%X2 := TCP_IP_Shuttle_DB_3.error;
+// 	    Errors_Word_Shuttles_1.%X3 := TCP_IP_Shuttle_DB_4.error;
+// 	    Errors_Word_Shuttles_1.%X4 := TCP_IP_Shuttle_DB_5.error;
+// 	    Errors_Word_Shuttles_1.%X5 := TCP_IP_Shuttle_DB_6.error;
+// 	    Errors_Word_Shuttles_1.%X6 := TCP_IP_Shuttle_DB_7.error;
+// 	    Errors_Word_Shuttles_1.%X7 := TCP_IP_Shuttle_DB_8.error;
+// 	    Errors_Word_Shuttles_1.%X8 := TCP_IP_Shuttle_DB_9.error;
+// 	    Errors_Word_Shuttles_1.%X9 := TCP_IP_Shuttle_DB_10.error;
+// 	    Errors_Word_Shuttles_1.%X10 := TCP_IP_Shuttle_DB_11.error;
+// 	    Errors_Word_Shuttles_1.%X11 := TCP_IP_Shuttle_DB_12.error;
+// 	    Errors_Word_Shuttles_1.%X12 := TCP_IP_Shuttle_DB_13.error;
+// 	    Errors_Word_Shuttles_1.%X13 := TCP_IP_Shuttle_DB_14.error;
+// 	    Errors_Word_Shuttles_1.%X14 := TCP_IP_Shuttle_DB_15.error;
+// 	    Errors_Word_Shuttles_1.%X15 := TCP_IP_Shuttle_DB_16.error;
+// 	    Errors_Word_Shuttles_2.%X0 := TCP_IP_Shuttle_DB_17.error;
+// 	    Errors_Word_Shuttles_2.%X1 := TCP_IP_Shuttle_DB_18.error;
+// 	    Errors_Word_Shuttles_2.%X2 := TCP_IP_Shuttle_DB_19.error;
+// 	    Errors_Word_Shuttles_2.%X3 := TCP_IP_Shuttle_DB_20.error;
+// 	    Errors_Word_Shuttles_2.%X4 := TCP_IP_Shuttle_DB_21.error;
+// 	    Errors_Word_Shuttles_2.%X5 := TCP_IP_Shuttle_DB_22.error;
+// 	    Errors_Word_Shuttles_2.%X6 := TCP_IP_Shuttle_DB_23.error;
+// 
+// 	    Warning_Word_Shuttles_1.%X0 := NOT TCP_IP_Shuttle_DB_1.connected;
+// 	    Warning_Word_Shuttles_1.%X1 := NOT TCP_IP_Shuttle_DB_2.connected;
+// 	    Warning_Word_Shuttles_1.%X2 := NOT TCP_IP_Shuttle_DB_3.connected;
+// 	    Warning_Word_Shuttles_1.%X3 := NOT TCP_IP_Shuttle_DB_4.connected;
+// 	    Warning_Word_Shuttles_1.%X4 := NOT TCP_IP_Shuttle_DB_5.connected;
+// 	    Warning_Word_Shuttles_1.%X5 := NOT TCP_IP_Shuttle_DB_6.connected;
+// 	    Warning_Word_Shuttles_1.%X6 := NOT TCP_IP_Shuttle_DB_7.connected;
+// 	    Warning_Word_Shuttles_1.%X7 := NOT TCP_IP_Shuttle_DB_8.connected;
+// 	    Warning_Word_Shuttles_1.%X8 := NOT TCP_IP_Shuttle_DB_9.connected;
+// 	    Warning_Word_Shuttles_1.%X9 := NOT TCP_IP_Shuttle_DB_10.connected;
+// 	    Warning_Word_Shuttles_1.%X10 := NOT TCP_IP_Shuttle_DB_11.connected;
+// 	    Warning_Word_Shuttles_1.%X11 := NOT TCP_IP_Shuttle_DB_12.connected;
+// 	    Warning_Word_Shuttles_1.%X12 := NOT TCP_IP_Shuttle_DB_13.connected;
+// 	    Warning_Word_Shuttles_1.%X13 := NOT TCP_IP_Shuttle_DB_14.connected;
+// 	    Warning_Word_Shuttles_1.%X14 := NOT TCP_IP_Shuttle_DB_15.connected;
+// 	    Warning_Word_Shuttles_1.%X15 := NOT TCP_IP_Shuttle_DB_16.connected;
+// 	    Warning_Word_Shuttles_2.%X0 := NOT TCP_IP_Shuttle_DB_17.connected;
+// 	    Warning_Word_Shuttles_2.%X1 := NOT TCP_IP_Shuttle_DB_18.connected;
+// 	    Warning_Word_Shuttles_2.%X2 := NOT TCP_IP_Shuttle_DB_19.connected;
+// 	    Warning_Word_Shuttles_2.%X3 := NOT TCP_IP_Shuttle_DB_20.connected;
+// 	    Warning_Word_Shuttles_2.%X4 := NOT TCP_IP_Shuttle_DB_21.connected;
+// 	    Warning_Word_Shuttles_2.%X5 := NOT TCP_IP_Shuttle_DB_22.connected;
+// 	    Warning_Word_Shuttles_2.%X6 := NOT TCP_IP_Shuttle_DB_23.connected;
+// 	END_REGION;
+// 
+// 	    Errors_Word_Gates_1.%X0 := NOT GATE_SENSOR_1_CH1_1_ AND NOT Bypass.Remote_Panel_1.Gate_1;
+// 	    Errors_Word_Gates_1.%X1 := NOT GATE_SENSOR_2_CH1_1_ AND NOT Bypass.Remote_Panel_1.Gate_2;
+// 	    Errors_Word_Gates_1.%X2 := NOT GATE_SENSOR_1_CH1_2_ AND NOT Bypass.Remote_Panel_2.Gate_1;
+// 	    Errors_Word_Gates_1.%X3 := NOT GATE_SENSOR_2_CH1_2_ AND NOT Bypass.Remote_Panel_2.Gate_2;
+// 	    Errors_Word_Gates_1.%X4 := NOT GATE_SENSOR_1_CH1_3_ AND NOT Bypass.Remote_Panel_3.Gate_1;
+// 	    Errors_Word_Gates_1.%X5 := NOT GATE_SENSOR_2_CH1_3_ AND NOT Bypass.Remote_Panel_3.Gate_2;
+// 	    Errors_Word_Gates_1.%X6 := NOT GATE_SENSOR_CH1_4_ AND NOT Bypass.Remote_Panel_4.Gate_1;
+// 	    Errors_Word_Gates_1.%X7 := NOT GATE_SENSOR_CH1_5_ AND NOT Bypass.Remote_Panel_5.Gate_1;
+// 
+// 	    Errors_Word_Gates_1.%X8 := GateAccess_Station_FB_DB_1.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_1.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_1.%X9 := GateAccess_Station_FB_DB_2.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_2.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_1.%X10 := GateAccess_Station_FB_DB_3.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_3.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_1.%X11 := GateAccess_Station_FB_DB_4.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_4.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_1.%X12 := GateAccess_Station_FB_DB_5.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_5.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_1.%X13 := GateAccess_Station_FB_DB_6.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_6.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_1.%X14 := GateAccess_Station_FB_DB_7.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_7.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_1.%X15 := GateAccess_Station_FB_DB_8.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_8.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_2.%X0 := GateAccess_Station_FB_DB_9.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_9.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_2.%X1 := GateAccess_Station_FB_DB_10.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_10.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_2.%X2 := GateAccess_Station_FB_DB_11.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_11.Lock_Closed_CH1;
+// 	    Errors_Word_Gates_2.%X3 := GateAccess_Station_FB_DB_12.CurrentState <> AUTO_RUNNING OR NOT F_Lock_FB_DB_12.Lock_Closed_CH1;
+// 
+// 
+// 	    Errors_Word_Logistex.%X0 := DB_Receive_Data_From_Logistex.CNV_STATUS[1].%X7;
+// 	    Errors_Word_Logistex.%X1 := DB_Receive_Data_From_Logistex.CNV_STATUS[2].%X7;
+// 	    Errors_Word_Logistex.%X2 := DB_Receive_Data_From_Logistex.CNV_STATUS[3].%X7;
+// 	    Errors_Word_Logistex.%X3 := DB_Receive_Data_From_Logistex.CNV_STATUS[4].%X7;
+// 	    Errors_Word_Logistex.%X4 := DB_Receive_Data_From_Logistex.CNV_STATUS[5].%X7;
+// 	    Errors_Word_Logistex.%X5 := DB_Receive_Data_From_Logistex.CNV_STATUS[6].%X7;
+// 
+// 
+// 	    Erros_Word_OPC_1.%X0 := OPC_Control_FB_DB_1.Error_ID.%X0;
+// 	    Erros_Word_OPC_2.%X0 := OPC_Control_FB_DB_2.Error_ID.%X0;
+// 	    Erros_Word_OPC_3.%X0 := OPC_Control_FB_DB_3.Error_ID.%X0;
+// 	    Erros_Word_OPC_4.%X0 := OPC_Control_FB_DB_4.Error_ID.%X0;
+// 	    Erros_Word_OPC_5.%X0 := OPC_Control_FB_DB_5.Error_ID.%X0;
+// 
+// 
+// 	    Erros_Word_OPC_1.%X6 := OPC_Control_FB_DB_1.Error_ID.%X6;
+// 	    Erros_Word_OPC_2.%X6 := OPC_Control_FB_DB_2.Error_ID.%X6;
+// 	    Erros_Word_OPC_3.%X6 := OPC_Control_FB_DB_3.Error_ID.%X6;
+// 	    Erros_Word_OPC_4.%X6 := OPC_Control_FB_DB_4.Error_ID.%X6;
+// 	    Erros_Word_OPC_5.%X6 := OPC_Control_FB_DB_5.Error_ID.%X6;
+// 
+// 
+// 	    Erros_Word_OPC_1.%X7 := OPC_Control_FB_DB_1.Error_ID.%X7;
+// 	    Erros_Word_OPC_2.%X7 := OPC_Control_FB_DB_2.Error_ID.%X7;
+// 	    Erros_Word_OPC_3.%X7 := OPC_Control_FB_DB_3.Error_ID.%X7;
+// 	    Erros_Word_OPC_4.%X7 := OPC_Control_FB_DB_4.Error_ID.%X7;
+// 	    Erros_Word_OPC_5.%X7 := OPC_Control_FB_DB_5.Error_ID.%X7;
+// 
+// 
+// 	    Erros_Word_OPC_1.%X8 := OPC_Control_FB_DB_1.Error_ID.%X8;
+// 	    Erros_Word_OPC_2.%X8 := OPC_Control_FB_DB_2.Error_ID.%X8;
+// 	    Erros_Word_OPC_3.%X8 := OPC_Control_FB_DB_3.Error_ID.%X8;
+// 	    Erros_Word_OPC_4.%X8 := OPC_Control_FB_DB_4.Error_ID.%X8;
+// 	    Erros_Word_OPC_5.%X8 := OPC_Control_FB_DB_5.Error_ID.%X8;
+// 
+// 
+// 	    IF LMQTT_DB.error THEN
+// 
+// 
+// 	        Error_MQTT.%X0 := LMQTT_DB.status = 16#8001;
+// 
+// 
+// 	        Error_MQTT.%X1 := LMQTT_DB.status = 16#8200;
+// 
+// 
+// 	        Error_MQTT.%X2 := LMQTT_DB.status = 16#8201;
+// 
+// 
+// 
+// 	            Error_MQTT.%X3 := LMQTT_DB.status = 16#8210;
+// 
+// 
+// 
+// 	            Error_MQTT.%X4 := LMQTT_DB.status = 16#8220;
+// 
+// 
+// 	            Error_MQTT.%X5 := LMQTT_DB.status = 16#8230;
+// 
+// 
+// 	            Error_MQTT.%X6 := LMQTT_DB.status = 16#8300;
+// 
+// 
+// 
+// 	            Error_MQTT.%X7 := LMQTT_DB.status = 16#8310;
+// 
+// 
+// 	            Error_MQTT.%X8 := LMQTT_DB.status = 16#8320;
+// 
+// 
+// 	            Error_MQTT.%X9 := LMQTT_DB.status = 16#8600;
+// 
+// 
+// 	            Error_MQTT.%X10 := LMQTT_DB.status = 16#8601;
+// 
+// 
+// 	            Error_MQTT.%X11 := LMQTT_DB.status = 16#8620;
+// 
+// 
+// 	            Error_MQTT.%X12 := LMQTT_DB.status = 16#8650;
+// 
+// 
+// 	            Error_MQTT.%X13 := LMQTT_DB.status = 16#8670;
+// 
+// 
+// 	            Error_MQTT.%X14 := LMQTT_DB.status = 16#8700;
+// 
+// 
+// 	            Error_MQTT.%X15 := LMQTT_DB.status = 16#8710;
+// 
+// 
+// 	            Error_MQTT_2.%X0 := LMQTT_DB.status = 16#8720;
+// 
+// 
+// 	            Error_MQTT_2.%X1 := LMQTT_DB.status = 16#8730;
+// 
+// 
+// 	            Error_MQTT_2.%X2 := LMQTT_DB.status = 16#8740;
+// 
+// 
+// 	            Error_MQTT_2.%X3 := LMQTT_DB.status = 16#8750;
+// 
+// 
+// 	            Error_MQTT_2.%X4 := LMQTT_DB.status = 16#8760;
+// 
+// 
+// 
+// 	            Error_MQTT_2.%X5 := LMQTT_DB.status = 16#9000;
+// 	    END_IF;
+// 
+// 
+// 	    IF Reset_All THEN
+// 	        Errors_Profinet_1 := 0;
+// 	        Errors_Profinet_2 := 0;
+// 	        Errors_Profinet_3 := 0;
+// 	        Errors_Profinet_4 := 0;
+// 	        Errors_Profinet_5 := 0;
+// 	        Errors_Profinet_6 := 0;
+// 	        Errors_Profinet_7 := 0;
+// 	        Errors_Profinet_8 := 0;
+// 	        Errors_Profinet_9 := 0;
+// 	        Errors_Profinet_10 := 0;
+// 	        Errors_Profinet_11 := 0;
+// 	        Erros_Supply_Feedback_1 := Erros_Supply_Feedback_2 := 0;
+// 	        Erros_Supply_Feedback_3 := Erros_Supply_Feedback_4 := 0;
+// 	        Erros_Supply_Feedback_5 := Erros_Supply_Feedback_6 := 0;
+// 	        Erros_Supply_Feedback_7  := 0;
+// 	        Sick_Lector_Error_code_1 := 0;
+// 	        Sick_Lector_Error_code_2 := 0;
+// 	        Sick_Lector_Error_code_3 := 0;
+// 	        Sick_Lector_Error_code_4 := 0;
+// 	        Sick_Lector_Error_code_5 := 0;
+// 	        Linear_Encoder_Device_Errors_1 := 0;
+// 	        Linear_Encoder_Device_Errors_2 := 0;
+// 	        Linear_Encoder_Device_Errors_3 := 0;
+// 	        Linear_Encoder_Device_Errors_4 := 0;
+// 	        Linear_Encoder_Device_Errors_5 := 0;
+// 	        Estop_Error_Word_1 := 0;
+// 	        Estop_Error_Word_2 := 0;
+// 	        Estop_Error_Word_3 := 0;
+// 	        Estop_Error_Word_4 := 0;
+// 	        Estop_Error_Word_5 := 0;
+// 	        Estop_Error_Word_6 := 0;
+// 	        Errors_Word_LightGuard_1 := 0;
+// 	        Error_MQTT := 0;
+// 	        Error_MQTT_2 := 0;
+// 	    END_IF;
+// 
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[1] AND
+// 	            (HMI_Box_Connected_1 = 11 AND KEY_REMOTE_LOCAL_L1___CH1_1_) OR
+// 	            (HMI_Box_Connected_1 = 12 AND KEY_REMOTE_LOCAL_L2___CH1_1_) OR
+// 	            (HMI_Box_Connected_1 = 13 AND KEY_REMOTE_LOCAL_L3___CH1_1_) OR
+// 	            (HMI_Box_Connected_1 = 14 AND KEY_REMOTE_LOCAL_L4___CH1_1_) OR
+// 	            (HMI_Box_Connected_1 = 15 AND KEY_REMOTE_LOCAL_L5___CH1_1_) OR
+// 	            (HMI_Box_Connected_1 = 16 AND KEY_REMOTE_LOCAL_L6___CH1_1_) OR
+// 	            (HMI_Box_Connected_1 = 17 AND KEY_REMOTE_LOCAL_L7___CH1_1_) OR
+// 	            (HMI_Box_Connected_1 = 18 AND KEY_REMOTE_LOCAL_L8___CH1_1_)
+// 	        THEN
+// 	            Errors_Profinet_1.%X4 :=
+// 	            Errors_Profinet_1.%X5 :=
+// 	            Errors_Profinet_1.%X6 :=
+// 	            Errors_Profinet_1.%X7 :=
+// 	            Errors_Profinet_1.%X8 :=
+// 	            Errors_Profinet_1.%X9 :=
+// 	            Errors_Profinet_1.%X11 :=
+// 	            Errors_Profinet_1.%X12 :=
+// 	            Errors_Profinet_1.%X14 :=
+// 	            Errors_Profinet_1.%X15 :=
+// 	            Errors_Profinet_2.%X0 :=
+// 	            Errors_Profinet_2.%X1 :=
+// 	            Errors_Profinet_2.%X2 :=
+// 	            Errors_Profinet_2.%X3 :=
+// 	            Errors_Profinet_2.%X4 :=
+// 	            Errors_Profinet_2.%X5 :=
+// 	            Errors_Profinet_2.%X6 :=
+// 	            Errors_Profinet_2.%X7 :=
+// 	            Errors_Profinet_2.%X8 :=
+// 	            Errors_Profinet_2.%X9 :=
+// 	            Errors_Profinet_2.%X10 :=
+// 	            Errors_Profinet_2.%X11 :=
+// 	            Errors_Profinet_2.%X12 :=
+// 	            Errors_Profinet_2.%X13 :=
+// 	            Errors_Profinet_2.%X14 :=
+// 	            Errors_Profinet_2.%X15 :=
+// 	            Errors_Profinet_3.%X0 :=
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_9.%X11 :=
+// 	            Errors_Profinet_9.%X12 :=
+// 	            Errors_Profinet_9.%X13 :=
+// 
+// 	            Erros_Supply_Feedback_1.%X0 :=
+// 	            Erros_Supply_Feedback_1.%X10 :=
+// 	            Erros_Supply_Feedback_1.%X11 :=
+// 	            Erros_Supply_Feedback_1.%X12 :=
+// 	            Erros_Supply_Feedback_1.%X15 :=
+// 
+// 	            Erros_Supply_Feedback_3.%X0 :=
+// 	            Erros_Supply_Feedback_3.%X1 :=
+// 	            Erros_Supply_Feedback_3.%X2 :=
+// 	            Erros_Supply_Feedback_3.%X3 :=
+// 
+// 	            Estop_Error_Word_1.%X1 :=
+// 	            Estop_Error_Word_1.%X2 :=
+// 	            Estop_Error_Word_1.%X3 :=
+// 	            Estop_Error_Word_1.%X4 :=
+// 	            Estop_Error_Word_1.%X5 :=
+// 	            Estop_Error_Word_1.%X6 :=
+// 	            Estop_Error_Word_1.%X7 :=
+// 	            Estop_Error_Word_1.%X8 :=
+// 	            Estop_Error_Word_1.%X9 :=
+// 	            Estop_Error_Word_1.%X10 :=
+// 	            Estop_Error_Word_1.%X11 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_1_2 :=
+// 	            Erros_Supply_Feedback_2 :=
+// 	            Linear_Encoder_Device_Errors_1 :=
+// 	            Sick_Lector_Error_code_1 := 0;
+// 
+// 	            Errors_Word_LightGuard_1.%X0 := FALSE;
+// 	            Errors_Word_LightGuard_1.%X1 := FALSE;
+// 	        END_IF;
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[1] AND
+// 	            (HMI_Box_Connected_1 = 21 AND KEY_REMOTE_LOCAL_L1___CH1_2_) OR
+// 	            (HMI_Box_Connected_1 = 22 AND KEY_REMOTE_LOCAL_L2___CH1_2_) OR
+// 	            (HMI_Box_Connected_1 = 23 AND KEY_REMOTE_LOCAL_L3___CH1_2_) OR
+// 	            (HMI_Box_Connected_1 = 24 AND KEY_REMOTE_LOCAL_L4___CH1_2_) OR
+// 	            (HMI_Box_Connected_1 = 25 AND KEY_REMOTE_LOCAL_L5___CH1_2_) OR
+// 	            (HMI_Box_Connected_1 = 26 AND KEY_REMOTE_LOCAL_L6___CH1_2_) OR
+// 	            (HMI_Box_Connected_1 = 27 AND KEY_REMOTE_LOCAL_L7___CH1_2_) OR
+// 	            (HMI_Box_Connected_1 = 28 AND KEY_REMOTE_LOCAL_L8___CH1_2_)
+// 	        THEN
+// 	            Errors_Profinet_3.%X3 :=
+// 	            Errors_Profinet_3.%X6 :=
+// 	            Errors_Profinet_3.%X7 :=
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_3.%X9 :=
+// 	            Errors_Profinet_3.%X10 :=
+// 	            Errors_Profinet_3.%X11 :=
+// 	            Errors_Profinet_3.%X12 :=
+// 	            Errors_Profinet_3.%X13 :=
+// 	            Errors_Profinet_3.%X14 :=
+// 	            Errors_Profinet_4.%X0 :=
+// 	            Errors_Profinet_4.%X1 :=
+// 	            Errors_Profinet_4.%X2 :=
+// 	            Errors_Profinet_4.%X3 :=
+// 	            Errors_Profinet_4.%X4 :=
+// 	            Errors_Profinet_4.%X5 :=
+// 	            Errors_Profinet_4.%X6 :=
+// 	            Errors_Profinet_4.%X7 :=
+// 	            Errors_Profinet_4.%X8 :=
+// 	            Errors_Profinet_4.%X9 :=
+// 	            Errors_Profinet_4.%X10 :=
+// 	            Errors_Profinet_4.%X11 :=
+// 	            Errors_Profinet_4.%X12 :=
+// 	            Errors_Profinet_4.%X13 :=
+// 	            Errors_Profinet_4.%X14 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_9.%X14 :=
+// 	            Errors_Profinet_9.%X15 :=
+// 	            Errors_Profinet_10.%X0 :=
+// 	            Errors_Profinet_10.%X1 :=
+// 
+// 
+// 
+// 	            Erros_Supply_Feedback_1.%X1 :=
+// 	            Erros_Supply_Feedback_1.%X10 :=
+// 	            Erros_Supply_Feedback_1.%X11 :=
+// 	            Erros_Supply_Feedback_1.%X12 :=
+// 	            Erros_Supply_Feedback_1.%X15 :=
+// 
+// 	            Erros_Supply_Feedback_3.%X4 :=
+// 	            Erros_Supply_Feedback_3.%X5 :=
+// 	            Erros_Supply_Feedback_3.%X6 :=
+// 	            Erros_Supply_Feedback_3.%X7 :=
+// 	            Erros_Supply_Feedback_3.%X8 :=
+// 	            Erros_Supply_Feedback_3.%X9 :=
+// 	            Erros_Supply_Feedback_3.%X10 :=
+// 	            Erros_Supply_Feedback_3.%X11 :=
+// 	            Erros_Supply_Feedback_3.%X12 :=
+// 	            Erros_Supply_Feedback_3.%X13 :=
+// 	            Erros_Supply_Feedback_3.%X14 :=
+// 	            Erros_Supply_Feedback_3.%X15 :=
+// 	            Erros_Supply_Feedback_4.%X0 :=
+// 	            Erros_Supply_Feedback_4.%X1 :=
+// 	            Erros_Supply_Feedback_4.%X2 :=
+// 	            Erros_Supply_Feedback_4.%X3 :=
+// 	            Erros_Supply_Feedback_4.%X4 :=
+// 	            Erros_Supply_Feedback_4.%X5 :=
+// 	            Erros_Supply_Feedback_4.%X6 :=
+// 	            Erros_Supply_Feedback_4.%X7 :=
+// 
+// 	            Estop_Error_Word_2.%X1 :=
+// 	            Estop_Error_Word_2.%X2 :=
+// 	            Estop_Error_Word_2.%X3 :=
+// 	            Estop_Error_Word_2.%X4 :=
+// 	            Estop_Error_Word_2.%X5 :=
+// 	            Estop_Error_Word_2.%X6 :=
+// 	            Estop_Error_Word_2.%X7 :=
+// 	            Estop_Error_Word_2.%X8 :=
+// 	            Estop_Error_Word_2.%X9 :=
+// 	            Estop_Error_Word_2.%X10 :=
+// 	            Estop_Error_Word_2.%X11 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_2_2 :=
+// 	            Linear_Encoder_Device_Errors_2 :=
+// 	            Sick_Lector_Error_code_2 := 0;
+// 
+// 	            Errors_Word_LightGuard_1.%X2 := FALSE;
+// 	            Errors_Word_LightGuard_1.%X3 := FALSE;
+// 	        END_IF;
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[1] AND
+// 	            (HMI_Box_Connected_1 = 31 AND KEY_REMOTE_LOCAL_L1___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 32 AND KEY_REMOTE_LOCAL_L2___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 33 AND KEY_REMOTE_LOCAL_L3___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 34 AND KEY_REMOTE_LOCAL_L4___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 35 AND KEY_REMOTE_LOCAL_L5___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 36 AND KEY_REMOTE_LOCAL_L6___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 37 AND KEY_REMOTE_LOCAL_L7___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 38 AND KEY_REMOTE_LOCAL_L8___CH1_3_)
+// 	        THEN
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_5.%X0 :=
+// 	            Errors_Profinet_5.%X2 :=
+// 	            Errors_Profinet_5.%X3 :=
+// 	            Errors_Profinet_5.%X4 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_5.%X6 :=
+// 	            Errors_Profinet_5.%X7 :=
+// 	            Errors_Profinet_5.%X8 :=
+// 	            Errors_Profinet_5.%X9 :=
+// 	            Errors_Profinet_5.%X10 :=
+// 	            Errors_Profinet_5.%X12 :=
+// 	            Errors_Profinet_5.%X13 :=
+// 	            Errors_Profinet_5.%X14 :=
+// 	            Errors_Profinet_5.%X15 :=
+// 	            Errors_Profinet_6.%X0 :=
+// 	            Errors_Profinet_6.%X1 :=
+// 	            Errors_Profinet_6.%X2 :=
+// 	            Errors_Profinet_6.%X3 :=
+// 	            Errors_Profinet_6.%X4 :=
+// 	            Errors_Profinet_6.%X5 :=
+// 	            Errors_Profinet_6.%X6 :=
+// 	            Errors_Profinet_6.%X7 :=
+// 	            Errors_Profinet_6.%X8 :=
+// 	            Errors_Profinet_6.%X9 :=
+// 	            Errors_Profinet_6.%X10 :=
+// 	            Errors_Profinet_6.%X11 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_10.%X2 :=
+// 	            Errors_Profinet_10.%X3 :=
+// 	            Errors_Profinet_10.%X4 :=
+// 	            Errors_Profinet_10.%X5 :=
+// 
+// 	            Erros_Supply_Feedback_4.%X8 :=
+// 	            Erros_Supply_Feedback_4.%X9 :=
+// 	            Erros_Supply_Feedback_4.%X10 :=
+// 	            Erros_Supply_Feedback_4.%X11 :=
+// 	            Erros_Supply_Feedback_4.%X12 :=
+// 	            Erros_Supply_Feedback_4.%X13 :=
+// 	            Erros_Supply_Feedback_4.%X14 :=
+// 	            Erros_Supply_Feedback_4.%X15 :=
+// 	            Erros_Supply_Feedback_5.%X0 :=
+// 	            Erros_Supply_Feedback_5.%X1 :=
+// 	            Erros_Supply_Feedback_5.%X2 :=
+// 	            Erros_Supply_Feedback_5.%X3 :=
+// 	            Erros_Supply_Feedback_5.%X4 :=
+// 	            Erros_Supply_Feedback_5.%X5 :=
+// 	            Erros_Supply_Feedback_5.%X6 :=
+// 	            Erros_Supply_Feedback_5.%X7 :=
+// 	            Erros_Supply_Feedback_5.%X8 :=
+// 	            Erros_Supply_Feedback_5.%X9 :=
+// 	            Erros_Supply_Feedback_5.%X10 :=
+// 	            Erros_Supply_Feedback_5.%X11 :=
+// 
+// 	            Estop_Error_Word_3.%X1 :=
+// 	            Estop_Error_Word_3.%X2 :=
+// 	            Estop_Error_Word_3.%X3 :=
+// 	            Estop_Error_Word_3.%X4 :=
+// 	            Estop_Error_Word_3.%X5 :=
+// 	            Estop_Error_Word_3.%X6 :=
+// 	            Estop_Error_Word_3.%X7 :=
+// 	            Estop_Error_Word_3.%X8 :=
+// 	            Estop_Error_Word_3.%X9 :=
+// 	            Estop_Error_Word_3.%X10 :=
+// 	            Estop_Error_Word_3.%X11 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_3_2 :=
+// 	            Linear_Encoder_Device_Errors_3 :=
+// 	            Sick_Lector_Error_code_3 := 0;
+// 
+// 	            Errors_Word_LightGuard_1.%X4 := FALSE;
+// 	            Errors_Word_LightGuard_1.%X5 := FALSE;
+// 	        END_IF;
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[1] AND
+// 	            (HMI_Box_Connected_1 = 31 AND KEY_REMOTE_LOCAL_L1___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 32 AND KEY_REMOTE_LOCAL_L2___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 33 AND KEY_REMOTE_LOCAL_L3___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 34 AND KEY_REMOTE_LOCAL_L4___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 35 AND KEY_REMOTE_LOCAL_L5___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 36 AND KEY_REMOTE_LOCAL_L6___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 37 AND KEY_REMOTE_LOCAL_L7___CH1_3_) OR
+// 	            (HMI_Box_Connected_1 = 38 AND KEY_REMOTE_LOCAL_L8___CH1_3_)
+// 	        THEN
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_6.%X13 :=
+// 	            Errors_Profinet_6.%X15 :=
+// 	            Errors_Profinet_7.%X0 :=
+// 	            Errors_Profinet_7.%X1 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_7.%X3 :=
+// 	            Errors_Profinet_7.%X4 :=
+// 	            Errors_Profinet_7.%X5 :=
+// 	            Errors_Profinet_7.%X6 :=
+// 	            Errors_Profinet_7.%X7 :=
+// 	            Errors_Profinet_7.%X8 :=
+// 	            Errors_Profinet_7.%X9 :=
+// 	            Errors_Profinet_7.%X10 :=
+// 	            Errors_Profinet_7.%X11 :=
+// 	            Errors_Profinet_7.%X12 :=
+// 	            Errors_Profinet_7.%X13 :=
+// 	            Errors_Profinet_7.%X14 :=
+// 	            Errors_Profinet_7.%X15 :=
+// 	            Errors_Profinet_8.%X0 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_10.%X6 :=
+// 	            Errors_Profinet_10.%X7 :=
+// 	            Errors_Profinet_10.%X8 :=
+// 	            Errors_Profinet_10.%X9 :=
+// 
+// 	            Erros_Supply_Feedback_5.%X12 :=
+// 	            Erros_Supply_Feedback_5.%X13 :=
+// 	            Erros_Supply_Feedback_5.%X14 :=
+// 	            Erros_Supply_Feedback_5.%X15 :=
+// 	            Erros_Supply_Feedback_6.%X0 :=
+// 	            Erros_Supply_Feedback_6.%X1 :=
+// 	            Erros_Supply_Feedback_6.%X2 :=
+// 	            Erros_Supply_Feedback_6.%X3 :=
+// 	            Erros_Supply_Feedback_6.%X4 :=
+// 	            Erros_Supply_Feedback_6.%X5 :=
+// 	            Erros_Supply_Feedback_6.%X6 :=
+// 	            Erros_Supply_Feedback_6.%X7 :=
+// 
+// 	            Estop_Error_Word_4.%X1 :=
+// 	            Estop_Error_Word_4.%X2 :=
+// 	            Estop_Error_Word_4.%X3 :=
+// 	            Estop_Error_Word_4.%X4 :=
+// 	            Estop_Error_Word_4.%X5 :=
+// 	            Estop_Error_Word_4.%X6 :=
+// 	            Estop_Error_Word_4.%X7 :=
+// 	            Estop_Error_Word_4.%X8 :=
+// 	            Estop_Error_Word_4.%X9 :=
+// 	            Estop_Error_Word_4.%X10 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_4_2 :=
+// 	            Linear_Encoder_Device_Errors_4 :=
+// 	            Sick_Lector_Error_code_4 := 0;
+// 	        END_IF;
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[1] AND
+// 	            (HMI_Box_Connected_1 = 51 AND KEY_REMOTE_LOCAL_L1___CH1_5_) OR
+// 	            (HMI_Box_Connected_1 = 52 AND KEY_REMOTE_LOCAL_L2___CH1_5_) OR
+// 	            (HMI_Box_Connected_1 = 53 AND KEY_REMOTE_LOCAL_L3___CH1_5_) OR
+// 	            (HMI_Box_Connected_1 = 54 AND KEY_REMOTE_LOCAL_L4___CH1_5_) OR
+// 	            (HMI_Box_Connected_1 = 55 AND KEY_REMOTE_LOCAL_L5___CH1_5_) OR
+// 	            (HMI_Box_Connected_1 = 56 AND KEY_REMOTE_LOCAL_L6___CH1_5_) OR
+// 	            (HMI_Box_Connected_1 = 57 AND KEY_REMOTE_LOCAL_L7___CH1_5_) OR
+// 	            (HMI_Box_Connected_1 = 58 AND KEY_REMOTE_LOCAL_L8___CH1_5_)
+// 	        THEN
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_8.%X2 :=
+// 	            Errors_Profinet_8.%X4 :=
+// 	            Errors_Profinet_8.%X5 :=
+// 	            Errors_Profinet_8.%X6 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_8.%X8 :=
+// 	            Errors_Profinet_8.%X9 :=
+// 	            Errors_Profinet_8.%X10 :=
+// 	            Errors_Profinet_8.%X11 :=
+// 	            Errors_Profinet_8.%X12 :=
+// 	            Errors_Profinet_8.%X13 :=
+// 	            Errors_Profinet_8.%X14 :=
+// 	            Errors_Profinet_8.%X15 :=
+// 	            Errors_Profinet_9.%X0 :=
+// 	            Errors_Profinet_9.%X1 :=
+// 	            Errors_Profinet_9.%X2 :=
+// 	            Errors_Profinet_9.%X3 :=
+// 	            Errors_Profinet_9.%X4 :=
+// 	            Errors_Profinet_9.%X5 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_10.%X10 :=
+// 	            Errors_Profinet_10.%X11 :=
+// 	            Errors_Profinet_10.%X12 :=
+// 	            Errors_Profinet_10.%X13 :=
+// 
+// 	            Erros_Supply_Feedback_6.%X8 :=
+// 	            Erros_Supply_Feedback_6.%X9 :=
+// 	            Erros_Supply_Feedback_6.%X10 :=
+// 	            Erros_Supply_Feedback_6.%X11 :=
+// 	            Erros_Supply_Feedback_6.%X12 :=
+// 	            Erros_Supply_Feedback_6.%X13 :=
+// 	            Erros_Supply_Feedback_6.%X14 :=
+// 	            Erros_Supply_Feedback_6.%X15 :=
+// 	            Erros_Supply_Feedback_7.%X0 :=
+// 	            Erros_Supply_Feedback_7.%X1 :=
+// 	            Erros_Supply_Feedback_7.%X2 :=
+// 	            Erros_Supply_Feedback_7.%X3 :=
+// 
+// 	            Estop_Error_Word_5.%X1 :=
+// 	            Estop_Error_Word_5.%X2 :=
+// 	            Estop_Error_Word_5.%X3 :=
+// 	            Estop_Error_Word_5.%X4 :=
+// 	            Estop_Error_Word_5.%X5 :=
+// 	            Estop_Error_Word_5.%X6 :=
+// 	            Estop_Error_Word_5.%X7 :=
+// 	            Estop_Error_Word_5.%X8 :=
+// 	            Estop_Error_Word_5.%X9 :=
+// 	            Estop_Error_Word_5.%X10 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_5_2 :=
+// 	            Linear_Encoder_Device_Errors_5 :=
+// 	            Sick_Lector_Error_code_5 := 0;
+// 	        END_IF;
+// 
+// 
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[2] AND
+// 	            (HMI_Box_Connected_2 = 11 AND KEY_REMOTE_LOCAL_L1___CH1_1_) OR
+// 	            (HMI_Box_Connected_2 = 12 AND KEY_REMOTE_LOCAL_L2___CH1_1_) OR
+// 	            (HMI_Box_Connected_2 = 13 AND KEY_REMOTE_LOCAL_L3___CH1_1_) OR
+// 	            (HMI_Box_Connected_2 = 14 AND KEY_REMOTE_LOCAL_L4___CH1_1_) OR
+// 	            (HMI_Box_Connected_2 = 15 AND KEY_REMOTE_LOCAL_L5___CH1_1_) OR
+// 	            (HMI_Box_Connected_2 = 16 AND KEY_REMOTE_LOCAL_L6___CH1_1_) OR
+// 	            (HMI_Box_Connected_2 = 17 AND KEY_REMOTE_LOCAL_L7___CH1_1_) OR
+// 	            (HMI_Box_Connected_2 = 18 AND KEY_REMOTE_LOCAL_L8___CH1_1_)
+// 	        THEN
+// 	            Errors_Profinet_1.%X4 :=
+// 	            Errors_Profinet_1.%X5 :=
+// 	            Errors_Profinet_1.%X6 :=
+// 	            Errors_Profinet_1.%X7 :=
+// 	            Errors_Profinet_1.%X8 :=
+// 	            Errors_Profinet_1.%X9 :=
+// 	            Errors_Profinet_1.%X11 :=
+// 	            Errors_Profinet_1.%X12 :=
+// 	            Errors_Profinet_1.%X14 :=
+// 	            Errors_Profinet_1.%X15 :=
+// 	            Errors_Profinet_2.%X0 :=
+// 	            Errors_Profinet_2.%X1 :=
+// 	            Errors_Profinet_2.%X2 :=
+// 	            Errors_Profinet_2.%X3 :=
+// 	            Errors_Profinet_2.%X4 :=
+// 	            Errors_Profinet_2.%X5 :=
+// 	            Errors_Profinet_2.%X6 :=
+// 	            Errors_Profinet_2.%X7 :=
+// 	            Errors_Profinet_2.%X8 :=
+// 	            Errors_Profinet_2.%X9 :=
+// 	            Errors_Profinet_2.%X10 :=
+// 	            Errors_Profinet_2.%X11 :=
+// 	            Errors_Profinet_2.%X12 :=
+// 	            Errors_Profinet_2.%X13 :=
+// 	            Errors_Profinet_2.%X14 :=
+// 	            Errors_Profinet_2.%X15 :=
+// 	            Errors_Profinet_3.%X0 :=
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_9.%X11 :=
+// 	            Errors_Profinet_9.%X12 :=
+// 	            Errors_Profinet_9.%X13 :=
+// 
+// 	            Erros_Supply_Feedback_1.%X0 :=
+// 	            Erros_Supply_Feedback_1.%X10 :=
+// 	            Erros_Supply_Feedback_1.%X11 :=
+// 	            Erros_Supply_Feedback_1.%X12 :=
+// 	            Erros_Supply_Feedback_1.%X15 :=
+// 
+// 	            Erros_Supply_Feedback_3.%X0 :=
+// 	            Erros_Supply_Feedback_3.%X1 :=
+// 	            Erros_Supply_Feedback_3.%X2 :=
+// 	            Erros_Supply_Feedback_3.%X3 :=
+// 
+// 	            Estop_Error_Word_1.%X1 :=
+// 	            Estop_Error_Word_1.%X2 :=
+// 	            Estop_Error_Word_1.%X3 :=
+// 	            Estop_Error_Word_1.%X4 :=
+// 	            Estop_Error_Word_1.%X5 :=
+// 	            Estop_Error_Word_1.%X6 :=
+// 	            Estop_Error_Word_1.%X7 :=
+// 	            Estop_Error_Word_1.%X8 :=
+// 	            Estop_Error_Word_1.%X9 :=
+// 	            Estop_Error_Word_1.%X10 :=
+// 	            Estop_Error_Word_1.%X11 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_1_2 :=
+// 	            Erros_Supply_Feedback_2 :=
+// 	            Linear_Encoder_Device_Errors_1 :=
+// 	            Sick_Lector_Error_code_1 := 0;
+// 
+// 	            Errors_Word_LightGuard_1.%X0 := FALSE;
+// 	            Errors_Word_LightGuard_1.%X1 := FALSE;
+// 	        END_IF;
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[2] AND
+// 	            (HMI_Box_Connected_2 = 21 AND KEY_REMOTE_LOCAL_L1___CH1_2_) OR
+// 	            (HMI_Box_Connected_2 = 22 AND KEY_REMOTE_LOCAL_L2___CH1_2_) OR
+// 	            (HMI_Box_Connected_2 = 23 AND KEY_REMOTE_LOCAL_L3___CH1_2_) OR
+// 	            (HMI_Box_Connected_2 = 24 AND KEY_REMOTE_LOCAL_L4___CH1_2_) OR
+// 	            (HMI_Box_Connected_2 = 25 AND KEY_REMOTE_LOCAL_L5___CH1_2_) OR
+// 	            (HMI_Box_Connected_2 = 26 AND KEY_REMOTE_LOCAL_L6___CH1_2_) OR
+// 	            (HMI_Box_Connected_2 = 27 AND KEY_REMOTE_LOCAL_L7___CH1_2_) OR
+// 	            (HMI_Box_Connected_2 = 28 AND KEY_REMOTE_LOCAL_L8___CH1_2_)
+// 	        THEN
+// 	            Errors_Profinet_3.%X3 :=
+// 	            Errors_Profinet_3.%X6 :=
+// 	            Errors_Profinet_3.%X7 :=
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_3.%X9 :=
+// 	            Errors_Profinet_3.%X10 :=
+// 	            Errors_Profinet_3.%X11 :=
+// 	            Errors_Profinet_3.%X12 :=
+// 	            Errors_Profinet_3.%X13 :=
+// 	            Errors_Profinet_3.%X14 :=
+// 	            Errors_Profinet_4.%X0 :=
+// 	            Errors_Profinet_4.%X1 :=
+// 	            Errors_Profinet_4.%X2 :=
+// 	            Errors_Profinet_4.%X3 :=
+// 	            Errors_Profinet_4.%X4 :=
+// 	            Errors_Profinet_4.%X5 :=
+// 	            Errors_Profinet_4.%X6 :=
+// 	            Errors_Profinet_4.%X7 :=
+// 	            Errors_Profinet_4.%X8 :=
+// 	            Errors_Profinet_4.%X9 :=
+// 	            Errors_Profinet_4.%X10 :=
+// 	            Errors_Profinet_4.%X11 :=
+// 	            Errors_Profinet_4.%X12 :=
+// 	            Errors_Profinet_4.%X13 :=
+// 	            Errors_Profinet_4.%X14 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_9.%X14 :=
+// 	            Errors_Profinet_9.%X15 :=
+// 	            Errors_Profinet_10.%X0 :=
+// 	            Errors_Profinet_10.%X1 :=
+// 
+// 
+// 
+// 	            Erros_Supply_Feedback_1.%X1 :=
+// 	            Erros_Supply_Feedback_1.%X10 :=
+// 	            Erros_Supply_Feedback_1.%X11 :=
+// 	            Erros_Supply_Feedback_1.%X12 :=
+// 	            Erros_Supply_Feedback_1.%X15 :=
+// 
+// 	            Erros_Supply_Feedback_3.%X4 :=
+// 	            Erros_Supply_Feedback_3.%X5 :=
+// 	            Erros_Supply_Feedback_3.%X6 :=
+// 	            Erros_Supply_Feedback_3.%X7 :=
+// 	            Erros_Supply_Feedback_3.%X8 :=
+// 	            Erros_Supply_Feedback_3.%X9 :=
+// 	            Erros_Supply_Feedback_3.%X10 :=
+// 	            Erros_Supply_Feedback_3.%X11 :=
+// 	            Erros_Supply_Feedback_3.%X12 :=
+// 	            Erros_Supply_Feedback_3.%X13 :=
+// 	            Erros_Supply_Feedback_3.%X14 :=
+// 	            Erros_Supply_Feedback_3.%X15 :=
+// 	            Erros_Supply_Feedback_4.%X0 :=
+// 	            Erros_Supply_Feedback_4.%X1 :=
+// 	            Erros_Supply_Feedback_4.%X2 :=
+// 	            Erros_Supply_Feedback_4.%X3 :=
+// 	            Erros_Supply_Feedback_4.%X4 :=
+// 	            Erros_Supply_Feedback_4.%X5 :=
+// 	            Erros_Supply_Feedback_4.%X6 :=
+// 	            Erros_Supply_Feedback_4.%X7 :=
+// 
+// 	            Estop_Error_Word_2.%X1 :=
+// 	            Estop_Error_Word_2.%X2 :=
+// 	            Estop_Error_Word_2.%X3 :=
+// 	            Estop_Error_Word_2.%X4 :=
+// 	            Estop_Error_Word_2.%X5 :=
+// 	            Estop_Error_Word_2.%X6 :=
+// 	            Estop_Error_Word_2.%X7 :=
+// 	            Estop_Error_Word_2.%X8 :=
+// 	            Estop_Error_Word_2.%X9 :=
+// 	            Estop_Error_Word_2.%X10 :=
+// 	            Estop_Error_Word_2.%X11 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_2_2 :=
+// 	            Linear_Encoder_Device_Errors_2 :=
+// 	            Sick_Lector_Error_code_2 := 0;
+// 
+// 	            Errors_Word_LightGuard_1.%X2 := FALSE;
+// 	            Errors_Word_LightGuard_1.%X3 := FALSE;
+// 	        END_IF;
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[2] AND
+// 	            (HMI_Box_Connected_2 = 31 AND KEY_REMOTE_LOCAL_L1___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 32 AND KEY_REMOTE_LOCAL_L2___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 33 AND KEY_REMOTE_LOCAL_L3___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 34 AND KEY_REMOTE_LOCAL_L4___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 35 AND KEY_REMOTE_LOCAL_L5___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 36 AND KEY_REMOTE_LOCAL_L6___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 37 AND KEY_REMOTE_LOCAL_L7___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 38 AND KEY_REMOTE_LOCAL_L8___CH1_3_)
+// 	        THEN
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_5.%X0 :=
+// 	            Errors_Profinet_5.%X2 :=
+// 	            Errors_Profinet_5.%X3 :=
+// 	            Errors_Profinet_5.%X4 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_5.%X6 :=
+// 	            Errors_Profinet_5.%X7 :=
+// 	            Errors_Profinet_5.%X8 :=
+// 	            Errors_Profinet_5.%X9 :=
+// 	            Errors_Profinet_5.%X10 :=
+// 	            Errors_Profinet_5.%X12 :=
+// 	            Errors_Profinet_5.%X13 :=
+// 	            Errors_Profinet_5.%X14 :=
+// 	            Errors_Profinet_5.%X15 :=
+// 	            Errors_Profinet_6.%X0 :=
+// 	            Errors_Profinet_6.%X1 :=
+// 	            Errors_Profinet_6.%X2 :=
+// 	            Errors_Profinet_6.%X3 :=
+// 	            Errors_Profinet_6.%X4 :=
+// 	            Errors_Profinet_6.%X5 :=
+// 	            Errors_Profinet_6.%X6 :=
+// 	            Errors_Profinet_6.%X7 :=
+// 	            Errors_Profinet_6.%X8 :=
+// 	            Errors_Profinet_6.%X9 :=
+// 	            Errors_Profinet_6.%X10 :=
+// 	            Errors_Profinet_6.%X11 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_10.%X2 :=
+// 	            Errors_Profinet_10.%X3 :=
+// 	            Errors_Profinet_10.%X4 :=
+// 	            Errors_Profinet_10.%X5 :=
+// 
+// 	            Erros_Supply_Feedback_4.%X8 :=
+// 	            Erros_Supply_Feedback_4.%X9 :=
+// 	            Erros_Supply_Feedback_4.%X10 :=
+// 	            Erros_Supply_Feedback_4.%X11 :=
+// 	            Erros_Supply_Feedback_4.%X12 :=
+// 	            Erros_Supply_Feedback_4.%X13 :=
+// 	            Erros_Supply_Feedback_4.%X14 :=
+// 	            Erros_Supply_Feedback_4.%X15 :=
+// 	            Erros_Supply_Feedback_5.%X0 :=
+// 	            Erros_Supply_Feedback_5.%X1 :=
+// 	            Erros_Supply_Feedback_5.%X2 :=
+// 	            Erros_Supply_Feedback_5.%X3 :=
+// 	            Erros_Supply_Feedback_5.%X4 :=
+// 	            Erros_Supply_Feedback_5.%X5 :=
+// 	            Erros_Supply_Feedback_5.%X6 :=
+// 	            Erros_Supply_Feedback_5.%X7 :=
+// 	            Erros_Supply_Feedback_5.%X8 :=
+// 	            Erros_Supply_Feedback_5.%X9 :=
+// 	            Erros_Supply_Feedback_5.%X10 :=
+// 	            Erros_Supply_Feedback_5.%X11 :=
+// 
+// 	            Estop_Error_Word_3.%X1 :=
+// 	            Estop_Error_Word_3.%X2 :=
+// 	            Estop_Error_Word_3.%X3 :=
+// 	            Estop_Error_Word_3.%X4 :=
+// 	            Estop_Error_Word_3.%X5 :=
+// 	            Estop_Error_Word_3.%X6 :=
+// 	            Estop_Error_Word_3.%X7 :=
+// 	            Estop_Error_Word_3.%X8 :=
+// 	            Estop_Error_Word_3.%X9 :=
+// 	            Estop_Error_Word_3.%X10 :=
+// 	            Estop_Error_Word_3.%X11 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_3_2 :=
+// 	            Linear_Encoder_Device_Errors_3 :=
+// 	            Sick_Lector_Error_code_3 := 0;
+// 
+// 	            Errors_Word_LightGuard_1.%X4 := FALSE;
+// 	            Errors_Word_LightGuard_1.%X5 := FALSE;
+// 	        END_IF;
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[2] AND
+// 	            (HMI_Box_Connected_2 = 31 AND KEY_REMOTE_LOCAL_L1___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 32 AND KEY_REMOTE_LOCAL_L2___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 33 AND KEY_REMOTE_LOCAL_L3___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 34 AND KEY_REMOTE_LOCAL_L4___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 35 AND KEY_REMOTE_LOCAL_L5___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 36 AND KEY_REMOTE_LOCAL_L6___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 37 AND KEY_REMOTE_LOCAL_L7___CH1_3_) OR
+// 	            (HMI_Box_Connected_2 = 38 AND KEY_REMOTE_LOCAL_L8___CH1_3_)
+// 	        THEN
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_6.%X13 :=
+// 	            Errors_Profinet_6.%X15 :=
+// 	            Errors_Profinet_7.%X0 :=
+// 	            Errors_Profinet_7.%X1 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_7.%X3 :=
+// 	            Errors_Profinet_7.%X4 :=
+// 	            Errors_Profinet_7.%X5 :=
+// 	            Errors_Profinet_7.%X6 :=
+// 	            Errors_Profinet_7.%X7 :=
+// 	            Errors_Profinet_7.%X8 :=
+// 	            Errors_Profinet_7.%X9 :=
+// 	            Errors_Profinet_7.%X10 :=
+// 	            Errors_Profinet_7.%X11 :=
+// 	            Errors_Profinet_7.%X12 :=
+// 	            Errors_Profinet_7.%X13 :=
+// 	            Errors_Profinet_7.%X14 :=
+// 	            Errors_Profinet_7.%X15 :=
+// 	            Errors_Profinet_8.%X0 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_10.%X6 :=
+// 	            Errors_Profinet_10.%X7 :=
+// 	            Errors_Profinet_10.%X8 :=
+// 	            Errors_Profinet_10.%X9 :=
+// 
+// 	            Erros_Supply_Feedback_5.%X12 :=
+// 	            Erros_Supply_Feedback_5.%X13 :=
+// 	            Erros_Supply_Feedback_5.%X14 :=
+// 	            Erros_Supply_Feedback_5.%X15 :=
+// 	            Erros_Supply_Feedback_6.%X0 :=
+// 	            Erros_Supply_Feedback_6.%X1 :=
+// 	            Erros_Supply_Feedback_6.%X2 :=
+// 	            Erros_Supply_Feedback_6.%X3 :=
+// 	            Erros_Supply_Feedback_6.%X4 :=
+// 	            Erros_Supply_Feedback_6.%X5 :=
+// 	            Erros_Supply_Feedback_6.%X6 :=
+// 	            Erros_Supply_Feedback_6.%X7 :=
+// 
+// 	            Estop_Error_Word_4.%X1 :=
+// 	            Estop_Error_Word_4.%X2 :=
+// 	            Estop_Error_Word_4.%X3 :=
+// 	            Estop_Error_Word_4.%X4 :=
+// 	            Estop_Error_Word_4.%X5 :=
+// 	            Estop_Error_Word_4.%X6 :=
+// 	            Estop_Error_Word_4.%X7 :=
+// 	            Estop_Error_Word_4.%X8 :=
+// 	            Estop_Error_Word_4.%X9 :=
+// 	            Estop_Error_Word_4.%X10 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_4_2 :=
+// 	            Linear_Encoder_Device_Errors_4 :=
+// 	            Sick_Lector_Error_code_4 := 0;
+// 	        END_IF;
+// 
+// 
+// 	        IF Screen_DB_1.Reset_All[2] AND
+// 	            (HMI_Box_Connected_2 = 51 AND KEY_REMOTE_LOCAL_L1___CH1_5_) OR
+// 	            (HMI_Box_Connected_2 = 52 AND KEY_REMOTE_LOCAL_L2___CH1_5_) OR
+// 	            (HMI_Box_Connected_2 = 53 AND KEY_REMOTE_LOCAL_L3___CH1_5_) OR
+// 	            (HMI_Box_Connected_2 = 54 AND KEY_REMOTE_LOCAL_L4___CH1_5_) OR
+// 	            (HMI_Box_Connected_2 = 55 AND KEY_REMOTE_LOCAL_L5___CH1_5_) OR
+// 	            (HMI_Box_Connected_2 = 56 AND KEY_REMOTE_LOCAL_L6___CH1_5_) OR
+// 	            (HMI_Box_Connected_2 = 57 AND KEY_REMOTE_LOCAL_L7___CH1_5_) OR
+// 	            (HMI_Box_Connected_2 = 58 AND KEY_REMOTE_LOCAL_L8___CH1_5_)
+// 	        THEN
+// 	            Errors_Profinet_3.%X8 :=
+// 	            Errors_Profinet_5.%X5 :=
+// 	            Errors_Profinet_7.%X2 :=
+// 	            Errors_Profinet_8.%X2 :=
+// 	            Errors_Profinet_8.%X4 :=
+// 	            Errors_Profinet_8.%X5 :=
+// 	            Errors_Profinet_8.%X6 :=
+// 	            Errors_Profinet_8.%X7 :=
+// 	            Errors_Profinet_8.%X8 :=
+// 	            Errors_Profinet_8.%X9 :=
+// 	            Errors_Profinet_8.%X10 :=
+// 	            Errors_Profinet_8.%X11 :=
+// 	            Errors_Profinet_8.%X12 :=
+// 	            Errors_Profinet_8.%X13 :=
+// 	            Errors_Profinet_8.%X14 :=
+// 	            Errors_Profinet_8.%X15 :=
+// 	            Errors_Profinet_9.%X0 :=
+// 	            Errors_Profinet_9.%X1 :=
+// 	            Errors_Profinet_9.%X2 :=
+// 	            Errors_Profinet_9.%X3 :=
+// 	            Errors_Profinet_9.%X4 :=
+// 	            Errors_Profinet_9.%X5 :=
+// 	            Errors_Profinet_9.%X7 :=
+// 	            Errors_Profinet_9.%X8 :=
+// 	            Errors_Profinet_9.%X9 :=
+// 	            Errors_Profinet_9.%X10 :=
+// 	            Errors_Profinet_10.%X10 :=
+// 	            Errors_Profinet_10.%X11 :=
+// 	            Errors_Profinet_10.%X12 :=
+// 	            Errors_Profinet_10.%X13 :=
+// 
+// 	            Erros_Supply_Feedback_6.%X8 :=
+// 	            Erros_Supply_Feedback_6.%X9 :=
+// 	            Erros_Supply_Feedback_6.%X10 :=
+// 	            Erros_Supply_Feedback_6.%X11 :=
+// 	            Erros_Supply_Feedback_6.%X12 :=
+// 	            Erros_Supply_Feedback_6.%X13 :=
+// 	            Erros_Supply_Feedback_6.%X14 :=
+// 	            Erros_Supply_Feedback_6.%X15 :=
+// 	            Erros_Supply_Feedback_7.%X0 :=
+// 	            Erros_Supply_Feedback_7.%X1 :=
+// 	            Erros_Supply_Feedback_7.%X2 :=
+// 	            Erros_Supply_Feedback_7.%X3 :=
+// 
+// 	            Estop_Error_Word_5.%X1 :=
+// 	            Estop_Error_Word_5.%X2 :=
+// 	            Estop_Error_Word_5.%X3 :=
+// 	            Estop_Error_Word_5.%X4 :=
+// 	            Estop_Error_Word_5.%X5 :=
+// 	            Estop_Error_Word_5.%X6 :=
+// 	            Estop_Error_Word_5.%X7 :=
+// 	            Estop_Error_Word_5.%X8 :=
+// 	            Estop_Error_Word_5.%X9 :=
+// 	            Estop_Error_Word_5.%X10 := FALSE;
+// 
+// 	            Sick_Lector_Error_code_5_2 :=
+// 	            Linear_Encoder_Device_Errors_5 :=
+// 	            Sick_Lector_Error_code_5 := 0;
+// 	        END_IF;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

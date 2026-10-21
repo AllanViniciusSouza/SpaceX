@@ -1,0 +1,107 @@
+DATA_BLOCK "TCP_IP_Shuttle_DB_12"   // GlobalDB 386
+
+VAR
+   enable : Bool := TRUE;
+   send : Bool;
+   sendDataLength : UDInt := 0;
+   receiveDataLength : UDInt := 16#FFFF_FFFF;
+   tcpConfig : "LCom_typeConfig";
+   tcpDiagnostics : "LCom_typeDiagnostics";
+   sendBuffer : Array[0..59] of Byte;
+   SendBufferSize : UInt := 60;
+   receiveBuffer : Array[0..27] of Byte;
+   receiveBufferSize : UInt := 28;
+   connected : Bool;
+   sending : Bool;
+   dataReceived : Bool;
+   receivedDataLength : UDInt;
+   busy : Bool;
+   error : Bool;
+   status : Word;
+END_VAR
+
+
+// ---- start values (path : type := value)
+enable : Bool := TRUE
+sendDataLength : UDInt := 0
+receiveDataLength : UDInt := 16#FFFF_FFFF
+tcpConfig.connection.interfaceID : HW_ANY := 65164
+tcpConfig.connection.connectionID : CONN_ANY := 112
+tcpConfig.connection.comService : USInt := 1
+tcpConfig.connection.isClient : Bool := False
+tcpConfig.connection.connectType : USInt := 1
+tcpConfig.connection.localPort : UInt := 4012
+tcpConfig.connection.partnerPort : UInt := 4012
+tcpConfig.connection.partnerIP.ADDR[1] : Array[1..4] of Byte := 10
+tcpConfig.connection.partnerIP.ADDR[2] : Array[1..4] of Byte := 0
+tcpConfig.connection.partnerIP.ADDR[3] : Array[1..4] of Byte := 34
+tcpConfig.connection.partnerIP.ADDR[4] : Array[1..4] of Byte := 222
+tcpConfig.connection.acceptUnknownPartner : Bool := TRUE
+tcpConfig.connection.lifeSignCycleTime : Time := T#1s
+sendBuffer[0] : Array[0..59] of Byte := 
+sendBuffer[1] : Array[0..59] of Byte := 
+sendBuffer[2] : Array[0..59] of Byte := 
+sendBuffer[3] : Array[0..59] of Byte := 
+sendBuffer[4] : Array[0..59] of Byte := 
+sendBuffer[5] : Array[0..59] of Byte := 
+sendBuffer[6] : Array[0..59] of Byte := 
+sendBuffer[7] : Array[0..59] of Byte := 
+sendBuffer[8] : Array[0..59] of Byte := 
+sendBuffer[9] : Array[0..59] of Byte := 
+sendBuffer[10] : Array[0..59] of Byte := 
+sendBuffer[11] : Array[0..59] of Byte := 
+sendBuffer[12] : Array[0..59] of Byte := 
+sendBuffer[13] : Array[0..59] of Byte := 
+sendBuffer[14] : Array[0..59] of Byte := 
+sendBuffer[15] : Array[0..59] of Byte := 
+sendBuffer[16] : Array[0..59] of Byte := 
+sendBuffer[17] : Array[0..59] of Byte := 
+sendBuffer[18] : Array[0..59] of Byte := 
+sendBuffer[19] : Array[0..59] of Byte := 
+sendBuffer[20] : Array[0..59] of Byte := 
+sendBuffer[21] : Array[0..59] of Byte := 
+sendBuffer[22] : Array[0..59] of Byte := 
+sendBuffer[23] : Array[0..59] of Byte := 
+sendBuffer[24] : Array[0..59] of Byte := 
+sendBuffer[25] : Array[0..59] of Byte := 
+sendBuffer[26] : Array[0..59] of Byte := 
+sendBuffer[27] : Array[0..59] of Byte := 
+sendBuffer[28] : Array[0..59] of Byte := 
+sendBuffer[29] : Array[0..59] of Byte := 
+sendBuffer[30] : Array[0..59] of Byte := 
+sendBuffer[31] : Array[0..59] of Byte := 
+sendBuffer[32] : Array[0..59] of Byte := 
+sendBuffer[33] : Array[0..59] of Byte := 
+sendBuffer[34] : Array[0..59] of Byte := 
+sendBuffer[35] : Array[0..59] of Byte := 
+sendBuffer[36] : Array[0..59] of Byte := 
+sendBuffer[37] : Array[0..59] of Byte := 
+sendBuffer[38] : Array[0..59] of Byte := 
+sendBuffer[39] : Array[0..59] of Byte := 
+sendBuffer[40] : Array[0..59] of Byte := 
+sendBuffer[41] : Array[0..59] of Byte := 
+sendBuffer[42] : Array[0..59] of Byte := 
+sendBuffer[43] : Array[0..59] of Byte := 
+sendBuffer[44] : Array[0..59] of Byte := 
+sendBuffer[45] : Array[0..59] of Byte := 
+sendBuffer[46] : Array[0..59] of Byte := 
+sendBuffer[47] : Array[0..59] of Byte := 
+sendBuffer[48] : Array[0..59] of Byte := 
+sendBuffer[49] : Array[0..59] of Byte := 
+sendBuffer[50] : Array[0..59] of Byte := 
+sendBuffer[51] : Array[0..59] of Byte := 
+sendBuffer[52] : Array[0..59] of Byte := 
+sendBuffer[53] : Array[0..59] of Byte := 
+sendBuffer[54] : Array[0..59] of Byte := 
+sendBuffer[55] : Array[0..59] of Byte := 
+sendBuffer[56] : Array[0..59] of Byte := 
+sendBuffer[57] : Array[0..59] of Byte := 
+sendBuffer[58] : Array[0..59] of Byte := 
+sendBuffer[59] : Array[0..59] of Byte := 
+SendBufferSize : UInt := 60
+receiveBuffer[0] : Array[0..27] of Byte := 
+receiveBuffer[1] : Array[0..27] of Byte := 
+receiveBuffer[2] : Array[0..27] of Byte := 
+receiveBuffer[3] : Array[0..27] of Byte := 
+receiveBuffer[4] : Array[0..27] of Byte := 
+receiveBufferSize : UInt := 28

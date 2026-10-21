@@ -1,0 +1,136 @@
+FUNCTION "FC_Orders_1"   // FC 97, author 
+
+VAR_INPUT
+   Sys : UInt;
+END_VAR
+
+VAR_IN_OUT
+   System : "System_UDT";
+   VTD_CurrentOrder : UDInt;
+   Pallet_InOut_CurrentOrder : UDInt;
+   Shuttle_InOut_CurrentOrder : UDInt;
+END_VAR
+
+VAR_TEMP
+   i : Int;
+   j : Int;
+   EmptyOrder : "OrderTable_UDT";
+END_VAR
+
+   // RETURN : Void
+BEGIN
+IF "HMI_OrderTable_1".StartRow < 0 THEN
+    "HMI_OrderTable_1".StartRow := 0;
+END_IF;
+IF "HMI_OrderTable_1".StartRow > 90 THEN
+    "HMI_OrderTable_1".StartRow := 90;
+END_IF;
+
+//System - Order Table
+//Place Order manually
+IF "HMI_OrderTable_1".PlaceOrder_PB AND "HMI_OrderTable_1".PlacingNewOrder THEN
+    "HMI_OrderTable_1".PlaceOrder_PB := FALSE;
+    CASE "HMI_OrderTable_1".Device OF
+            
+        1:
+            "HMI_OrderTable_1".OrderTable[0].Device := 'VTD';
+        2:
+            "HMI_OrderTable_1".OrderTable[0].Device := 'Pallet In Out';
+        3:
+            "HMI_OrderTable_1".OrderTable[0].Device := 'Shuttle In Out';
+    END_CASE;
+    IF "HMI_OrderTable_1".Device > 9 THEN
+        "HMI_OrderTable_1".OrderTable[0].OPC_Control.Destination_Location := 0;
+    END_IF;
+    // "System_DB_VTD".OrderSent := "HMI_OrderTable_1".Device > 0;
+    #System.StepTable[1] := "HMI_OrderTable_1".OrderTable[0];
+    #System.StepTable[1].OrderNo := -1;
+    #System.StepTable[1].StepNo := -1;
+    #System.StepTable[1].PlaceTime := "Time".CurrentLocalTime;
+    #System.StepTable[1].Status := 'Queued';
+END_IF;
+
+//Pause Order Push Button
+IF "HMI_OrderTable_1".PauseOrders_PB THEN
+    "HMI_OrderTable_1".PauseOrders_PB := FALSE;
+    #System.PauseOrders := TRUE;
+END_IF;
+//Resume Order Push Button
+IF "HMI_OrderTable_1".ResumeOrder_PB THEN
+    "HMI_OrderTable_1".ResumeOrder_PB := FALSE;
+    #System.ResumeOrders := TRUE;
+END_IF;
+//Cancel Order Push Button
+IF "HMI_OrderTable_1".CancelOrder_PB THEN
+    "HMI_OrderTable_1".CancelOrder_PB := FALSE;
+    #System.CancelOrders := TRUE;
+END_IF;
+
+//Cancel This Order Push Button
+IF "HMI_OrderTable_1".CancelThisOrder_PB THEN
+    "HMI_OrderTable_1".CancelThisOrder_PB := FALSE;
+    IF "HMI_OrderTable_1".OrderTable["HMI_OrderTable_1".PopUp_Index].Status = 'Error' THEN
+        #System.OrderTable["HMI_OrderTable_1".PopUp_Index].Status := 'Error\Cancel';
+        IF #System.CurrentOrder = "HMI_OrderTable_1".PopUp_Index THEN
+            #System.CurrentOrder -= 1;
+        END_IF;
+        
+        
+        IF #System.OrderTable["HMI_OrderTable_1".PopUp_Index + "HMI_OrderTable_1".StartRow].Device = 'VTD' THEN
+            #VTD_CurrentOrder := 0;
+        ELSIF #System.OrderTable["HMI_OrderTable_1".PopUp_Index + "HMI_OrderTable_1".StartRow].Device = 'Pallet In Out' THEN
+            #Pallet_InOut_CurrentOrder := 0;
+        ELSIF #System.OrderTable["HMI_OrderTable_1".PopUp_Index + "HMI_OrderTable_1".StartRow].Device = 'Shuttle In Out' THEN
+            #Shuttle_InOut_CurrentOrder := 0;
+        END_IF;
+        
+    END_IF;
+    
+END_IF;
+
+//Copy data
+FOR #i := 1 TO 9 DO
+    #j := "HMI_OrderTable_1".StartRow + #i;
+    "HMI_OrderTable_1".Index[#i] := #j;
+    "HMI_OrderTable_1".OrderTable[#i] := #System.OrderTable[#j];
+    //Color State
+    IF "HMI_OrderTable_1".OrderTable[#i].Status = 'Queued' THEN
+        "HMI_OrderTable_1".State[#i] := 1;
+    ELSIF "HMI_OrderTable_1".OrderTable[#i].Status = 'Running' THEN
+        "HMI_OrderTable_1".State[#i] := 2;
+    ELSIF "HMI_OrderTable_1".OrderTable[#i].Status = 'Completed' THEN
+        "HMI_OrderTable_1".State[#i] := 3;
+    ELSIF "HMI_OrderTable_1".OrderTable[#i].Status = 'Error' THEN
+        "HMI_OrderTable_1".State[#i] := 4;
+    ELSIF "HMI_OrderTable_1".OrderTable[#i].Status = 'Paused' THEN
+        "HMI_OrderTable_1".State[#i] := 5;
+    ELSIF "HMI_OrderTable_1".OrderTable[#i].Status = 'Canceled' THEN
+        "HMI_OrderTable_1".State[#i] := 6;
+    ELSIF "HMI_OrderTable_1".OrderTable[#i].Status = 'Error\Cancel' THEN
+        "HMI_OrderTable_1".State[#i] := 7;
+    ELSE
+        "HMI_OrderTable_1".State[#i] := 0;
+    END_IF;
+END_FOR;
+
+IF NOT "HMI_OrderTable_1".PlacingNewOrder THEN
+    "HMI_OrderTable_1".Device := 0;
+END_IF;
+
+//Error PopUp Window
+IF "HMI_OrderTable_1".PopUp_ErrorWindow_Active AND NOT "HMI_OrderTable_1".PlacingNewOrder THEN
+    "HMI_OrderTable_1".OrderTable[0] := "HMI_OrderTable_1".OrderTable["HMI_OrderTable_1".PopUp_Index];
+    IF "HMI_OrderTable_1".OrderTable[0].Status = 'Error' THEN
+        "HMI_OrderTable_1".State[0] := 4;
+    ELSIF "HMI_OrderTable_1".OrderTable[0].Status = 'Error\Cancel' THEN
+        "HMI_OrderTable_1".State[0] := 7;
+    ELSE
+        "HMI_OrderTable_1".State[0] := 0;
+    END_IF;
+ELSIF NOT "HMI_OrderTable_1".PopUp_ErrorWindow_Active AND NOT "HMI_OrderTable_1".PlacingNewOrder THEN
+    "HMI_OrderTable_1".OrderTable[0] := #EmptyOrder;
+END_IF;
+
+
+
+END_FUNCTION

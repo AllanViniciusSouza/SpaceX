@@ -1,0 +1,14 @@
+FUNCTION "VTD_Charge_Settings"   // FC 41, author 
+
+   // RETURN : Void
+BEGIN
+//VTD SETTINGS
+CASE "VTD_System_Selected_HMI" OF
+    1:
+        "PopUps_DB".VTD_Settings := "Settings_DB".VTD_Sys[1];
+    2:
+        "PopUps_DB".VTD_Settings := "Settings_DB".VTD_Sys[2];
+END_CASE;
+"PopUps_DB".Shuttle_MQTT_Settings := "Settings_DB".Shuttle_MQTT;
+
+END_FUNCTION

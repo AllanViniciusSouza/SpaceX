@@ -1,0 +1,59 @@
+FUNCTION "OUTPUTS"   // FC 5, author 
+
+   // RETURN : Void
+BEGIN
+REGION REMOTE PANEL 1
+    "C1102 STOPPER MOTOR" := "Sf_C1102_FB_DB".T_Run.Q XOR"Force".Remote_Panel[1]."CX102_SFTY STOPPER ROTATE";
+    "C1103 STOPPER MOTOR" := "Sf_C1103_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX103_SFTY STOPPER ROTATE";
+    "C1104 STOPPER MOTOR" := "Sf_C1104_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX104_SFTY STOPPER ROTATE";
+    "C1105 STOPPER MOTOR" := "Sf_C1105_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX105_SFTY STOPPER ROTATE";
+    "C1106 STOPPER MOTOR" := "Sf_C1106_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX106_SFTY STOPPER ROTATE";
+    "VTD1 DOCKING PINS 1 EXTEND" := "Control_DB".VTD_Sys[1].Outputs.LP1_Extend XOR "Force".Remote_Panel[1]."VTDx DOCKING PINS 1 EXTEND";
+    "VTD1 DOCKING PINS 1 RETRACT" := "Control_DB".VTD_Sys[1].Outputs.LP1_Retract XOR "Force".Remote_Panel[1]."VTDx DOCKING PINS 1 RETRACT";
+    "VTD1 DOCKING PINS 2 EXTEND" := "Control_DB".VTD_Sys[1].Outputs.LP2_Extend XOR "Force".Remote_Panel[1]."VTDx DOCKING PINS 2 EXTEND";
+    "VTD1 DOCKING PINS 2 RETRACT" := "Control_DB".VTD_Sys[1].Outputs.LP2_Retract XOR "Force".Remote_Panel[1]."VTDx DOCKING PINS 2 RETRACT";
+    "STACK LIGHTS ORANGE(1)" := "Stack_Lights_DB_1".Orange XOR "Force".Remote_Panel[1]."SCA X00Y STACK LIGHTS ORANGE";
+    "STACK LIGHTS GREEN(1)" := "Stack_Lights_DB_1".Green XOR "Force".Remote_Panel[1]."SCA X00Y STACK LIGHTS GREEN";
+    "STACK LIGHTS RED(1)" := "Stack_Lights_DB_1".Red XOR "Force".Remote_Panel[1]."SCA X00Y STACK LIGHTS RED";
+    "RESET LAMP(1)" := "Force".Remote_Panel[1]."EMERGENCY STOP RESET STATUS - ON(X)" XOR (NOT "Remote_Panel_DB_1".Safety_OK AND "Clock_2Hz");
+    
+    "VTD1_ControlWord".%X7 := "Control_DB".VTD_Sys[1].Instruction.Reset;
+    "VTD1_AccFactor" := "Control_DB".VTD_Sys[1].Motor.Acc_Factor;
+    
+    //ABSOLUTE ENMCODER
+    "AE_Control_Word_1(1)" := "Control_DB".VTD_Sys[1].Outputs.AE_Control_Word_1;
+    "AE_Control_Word_2(1)" := "Control_DB".VTD_Sys[1].Outputs.AE_Control_Word_2;
+END_REGION
+
+REGION REMOTE PANEL 2
+    "C2102 STOPPER MOTOR" := "Sf_C2102_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX102_SFTY STOPPER ROTATE";
+    "C2103 STOPPER MOTOR" := "Sf_C2103_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX103_SFTY STOPPER ROTATE";
+    "C2104 STOPPER MOTOR" := "Sf_C2104_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX104_SFTY STOPPER ROTATE";
+    "C2105 STOPPER MOTOR" := "Sf_C2105_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX105_SFTY STOPPER ROTATE";
+    "C2106 STOPPER MOTOR" := "Sf_C2106_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX106_SFTY STOPPER ROTATE";
+    "VTD2 DOCKING PINS 1 EXTEND" := "Control_DB".VTD_Sys[2].Outputs.LP1_Extend XOR "Force".Remote_Panel[2]."VTDx DOCKING PINS 1 EXTEND";
+    "VTD2 DOCKING PINS 1 RETRACT" := "Control_DB".VTD_Sys[2].Outputs.LP1_Retract XOR "Force".Remote_Panel[2]."VTDx DOCKING PINS 1 RETRACT";
+    "VTD2 DOCKING PINS 2 EXTEND" := "Control_DB".VTD_Sys[2].Outputs.LP2_Extend XOR "Force".Remote_Panel[2]."VTDx DOCKING PINS 2 EXTEND";
+    "VTD2 DOCKING PINS 2 RETRACT" := "Control_DB".VTD_Sys[2].Outputs.LP2_Retract XOR "Force".Remote_Panel[2]."VTDx DOCKING PINS 2 RETRACT";
+    "STACK LIGHTS ORANGE(2)" := "Stack_Lights_DB_2".Orange XOR "Force".Remote_Panel[2]."SCA X00Y STACK LIGHTS ORANGE";
+    "STACK LIGHTS RED(2)" := "Stack_Lights_DB_2".Red XOR "Force".Remote_Panel[2]."SCA X00Y STACK LIGHTS RED";
+    "STACK LIGHTS GREEN(2)" := "Stack_Lights_DB_2".Green XOR "Force".Remote_Panel[2]."SCA X00Y STACK LIGHTS GREEN";
+    "RESET LAMP(2)" := "Force".Remote_Panel[2]."EMERGENCY STOP RESET STATUS - ON(X)" XOR (NOT "Remote_Panel_DB_2".Safety_OK AND "Clock_2Hz");
+    
+    "VTD2_ControlWord".%X7 := "Control_DB".VTD_Sys[2].Instruction.Reset;
+    "VTD2_AccFactor" := "Control_DB".VTD_Sys[2].Motor.Acc_Factor;
+    
+    //ABSOLUTE ENMCODER
+    "AE_Control_Word_1(2)" := "Control_DB".VTD_Sys[2].Outputs.AE_Control_Word_1;
+    "AE_Control_Word_2(2)" := "Control_DB".VTD_Sys[2].Outputs.AE_Control_Word_2;
+END_REGION
+
+
+REGION CHARGER PANELS   
+    "Control_DB".Charger_Level[2]."Set Voltage Output" := "CHARGER L2 - Set Voltage Output";
+    "Control_DB".Charger_Level[2]."Set Current Output" := "CHARGER L2 - Set Current Output";
+    "Control_DB".Charger_Level[2]."Start Charging" := "CHARGER L2 - Start Charging";
+    "Control_DB".Charger_Level[2]."Stop Charging" := "CHARGER L2 - Stop Charging";
+    "Control_DB".Charger_Level[2]."Confirm Voltage & Current Setting" := "CHARGER L2 - Confirm Voltage & Current Setting";
+END_REGION;
+END_FUNCTION

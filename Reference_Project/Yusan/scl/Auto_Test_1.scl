@@ -1,0 +1,346 @@
+FUNCTION_BLOCK "Auto_Test_1"   // FB 3, author 
+
+VAR_INPUT
+   Sys_No : UInt;
+   Automatic : Bool;
+   Manual : Bool;
+   Level : UInt;
+   Error : Bool;
+   Start : Bool;
+   Pause : Bool;
+   Stop : Bool;
+   Pallet Type : Char;
+   Tower 1 Pallet Alignment : Char;
+   Tower 2 Pallet Alignment : Char;
+   Extractor Pallet Alignment : Char;
+   Pallet_Allignment : Char;
+   Tower : UInt;
+   Transfer_From_To : Byte;
+   From level : Byte;
+   To level : Byte;
+   Testing Time : UInt;
+   Numer of cycles : Byte;
+END_VAR
+
+VAR_OUTPUT
+   Running : Bool;
+   Time_Runnng : Time;
+   Start_Time : String;
+   Stop_Time : String;
+   Duration : Time;
+END_VAR
+
+VAR_IN_OUT
+   Order Table_1 : "OrderTable_UDT";
+   Step_Table_0 : "OrderTable_UDT";
+   System_OrderSent : Bool;
+   Total_Duration : Time;
+END_VAR
+
+VAR
+   State : Int;
+   R_Start : R_TRIG;
+   T_Delay : TON_TIME;
+   Time_Delay : Time := T#0ms;
+   Send_VTD_Order : Bool;
+   Send_CNV_Order : Bool;
+   R_TRIG_Instance : R_TRIG;
+   T_Running : TON_TIME;
+   F_TRIG : F_TRIG;
+   R_TRIG : R_TRIG;
+   Error_Code : Int;
+   test : Bool;
+   N_Cycles : UInt;
+   Testing_Time : Time;
+   R_Manual_Mode : R_TRIG;
+END_VAR
+
+VAR_TEMP
+   Busy : Bool;
+END_VAR
+
+VAR CONSTANT
+   VTD_DEVICE : String := 'VTD';
+   PALLET_INOUT_DEVICE : String := 'Pallet In Out';
+   SHUTTLE_INOUT_DEVICE : String := 'Shuttle In Out';
+   RUNNING_STATUS : String := 'Running';
+   COMPLETED_STATUS : String := 'Completed';
+END_VAR
+
+BEGIN
+#R_Start(CLK:=#Start);
+
+IF #Stop THEN
+    #State := 0;
+END_IF;
+
+IF #Error THEN
+    #State := 400;
+END_IF;
+
+#R_Manual_Mode(CLK:=#Automatic AND NOT #Error AND #Manual AND NOT #Running);
+
+IF #R_Manual_Mode.Q THEN
+    #State := 500;
+ELSIF #Automatic AND NOT #Error AND NOT #Manual AND #State = 500 THEN
+    #State := 0;
+END_IF;
+
+IF #State > 10 AND #State < 400 THEN
+    #Running := TRUE;
+END_IF;
+
+//Time running
+#R_TRIG(CLK:=#Running);
+IF #R_TRIG.Q THEN
+    #Start_Time := "Time".CurrentLocalTime;
+    #Stop_Time := '';
+END_IF;
+#F_TRIG(CLK:=#Running);
+IF #F_TRIG.Q THEN
+    #Duration := #T_Running.ET;
+    #Total_Duration := #Duration + #Total_Duration;
+    #Stop_Time := "Time".CurrentLocalTime;
+END_IF;
+#T_Running(IN:=#Running AND NOT #Pause,
+                      PT:=t#24h);
+
+#Time_Runnng := #T_Running.ET;
+
+#Testing_Time := UINT_TO_TIME(#"Testing Time") * 60000;
+
+#Error_Code := WRIT_DBL(REQ := #test, SRCBLK := "Auto_Test_DB",BUSY=>#Busy, DSTBLK => "Auto_Test_DB");
+
+CASE #State OF
+    0://Initialization
+        #Running := false;
+        #State := #State + 10;
+        
+    10://Idle
+        IF #R_Start.Q AND #Automatic AND NOT #Error AND #"Pallet Type" <> '' AND #"From level" > 0 AND #"To level" > 0  THEN
+            #N_Cycles := 0;
+            #State := #State + 10;
+        END_IF;
+        
+    20: //VTD TO START LEVEL
+        IF "Control_DB".VTD_Sys[#Sys_No].Current_Level <> #"From level" THEN
+            VTD_Order_FC(i_Sys := #Sys_No,
+                           Level := #"From level",
+                           StepTable_0 := #Step_Table_0);
+            #R_TRIG_Instance(CLK := TRUE,
+                             Q => #System_OrderSent);
+            #T_Delay(IN := TRUE,
+                     PT := #Time_Delay);
+            IF #"Order Table_1".Status = #RUNNING_STATUS AND #T_Delay.Q THEN
+                #R_TRIG_Instance(CLK := FALSE,
+                                 Q => #System_OrderSent);
+                #T_Delay(IN := FALSE,
+                         PT := T#0ms);
+                #State := #State + 10;
+            END_IF;
+        ELSE
+            #State := #State + 20;
+        END_IF;
+        
+    30: //ACK VTD
+        //Wait to complete and send ack
+        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+            #State := #State + 10;
+        END_IF;
+        
+    40: //CNV1
+        CNV_Order_FC(i_Sys := #Sys_No,
+                       Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level,
+                       Tower := 1,
+                       Transfer_From_To := 2,
+                       Pallet_Type := #"Pallet Type",
+                       Pallet_Allignment := #"Tower 1 Pallet Alignment",
+                       Device:=#PALLET_INOUT_DEVICE,
+                       Task_Type:=4,
+                       StepTable_0 := #Step_Table_0);
+        #System_OrderSent := TRUE;
+        #State := #State + 10;
+        
+    50: //RESET ACK
+        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+            #R_TRIG_Instance(CLK := FALSE,
+                             Q => #System_OrderSent);
+            #State := #State + 10;
+        END_IF;
+        
+    60: //ACK CNV1
+        //Wait to complete and send ack
+        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+            #State := #State + 10;
+        END_IF;
+        
+    70: //ECVN TO TOWER 1
+        CNV_Order_FC(i_Sys := #Sys_No,
+                       Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level,
+                       Tower := 1,
+                       Transfer_From_To := 1,
+                       Pallet_Type := #"Pallet Type",
+                       Pallet_Allignment := #"Extractor Pallet Alignment",
+                       Device:=#PALLET_INOUT_DEVICE,
+                       Task_Type:=4,
+                       StepTable_0 := #Step_Table_0);
+        #System_OrderSent := TRUE;
+        #State := #State + 10;
+        
+    80: //RESET ACK
+        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+            #State := #State + 10;
+        END_IF;
+        
+    90: //ACK ECVN
+        //Wait to complete and send ack
+        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+            #State := #State + 10;
+        END_IF;
+        
+    100: //VTD FROM START LEVEL TO FINAL LEVEL
+        IF "Control_DB".VTD_Sys[#Sys_No].Current_Level < #"To level" THEN
+            VTD_Order_FC(i_Sys := #Sys_No,
+                           Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level + 1,
+                           StepTable_0 := #Step_Table_0);
+            #System_OrderSent := TRUE;
+            #State := #State + 10;
+        ELSIF (
+            (#"Numer of cycles" = 0 OR #N_Cycles < #"Numer of cycles")
+            AND
+            (#Testing_Time = T#0M OR #Time_Runnng < #Testing_Time)
+            ) THEN
+            #State := 250;//CONTINUE
+        ELSE
+            #State := 260;//FINISH
+        END_IF;
+        
+    110: //RESET ACK
+        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+            #State := #State + 10;
+        END_IF;
+       
+        
+    120: //ACK VTD
+        //Wait to complete and send ack
+        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+            #State := 40;
+        END_IF;
+        
+    250: //ACK VTD AND START ANOTHER CYCLE
+        //Wait to complete and send ack
+        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+            #N_Cycles := #N_Cycles + 1;
+            #State := 20;
+        END_IF;
+        
+    260: //ACK VTD AND FINISH
+        //Wait to complete and send ack
+        IF #"Order Table_1".Status = #COMPLETED_STATUS AND NOT #Pause THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+            #State := 0;
+        END_IF;
+        
+    400: //ERROR
+        #Running := false;
+        IF "Reset_All" OR
+            ("Screen_DB_1".Reset_All[1] AND
+             ("HMI_Box_Connected_1" = 1) OR ("HMI_Box_Connected_1" = 2) OR ("HMI_Box_Connected_1" = 3) OR ("HMI_Box_Connected_1" = 4) OR ("HMI_Box_Connected_1" = 5) OR
+             ("HMI_Box_Connected_1" = 11 AND "KEY REMOTE/LOCAL L1 - CH1(1)") OR
+             ("HMI_Box_Connected_1" = 12 AND "KEY REMOTE/LOCAL L2 - CH1(1)") OR
+             ("HMI_Box_Connected_1" = 13 AND "KEY REMOTE/LOCAL L3 - CH1(1)") OR
+             ("HMI_Box_Connected_1" = 14 AND "KEY REMOTE/LOCAL L4 - CH1(1)") OR
+             ("HMI_Box_Connected_1" = 15 AND "KEY REMOTE/LOCAL L5 - CH1(1)") OR
+             ("HMI_Box_Connected_1" = 16 AND "KEY REMOTE/LOCAL L6 - CH1(1)") OR
+             ("HMI_Box_Connected_1" = 17 AND "KEY REMOTE/LOCAL L7 - CH1(1)") OR
+             ("HMI_Box_Connected_1" = 18 AND "KEY REMOTE/LOCAL L8 - CH1(1)") OR
+             ("HMI_Box_Connected_1" = 21 AND "KEY REMOTE/LOCAL L1 - CH1(2)") OR
+             ("HMI_Box_Connected_1" = 22 AND "KEY REMOTE/LOCAL L2 - CH1(2)") OR
+             ("HMI_Box_Connected_1" = 23 AND "KEY REMOTE/LOCAL L3 - CH1(2)") OR
+             ("HMI_Box_Connected_1" = 24 AND "KEY REMOTE/LOCAL L4 - CH1(2)") OR
+             ("HMI_Box_Connected_1" = 25 AND "KEY REMOTE/LOCAL L5 - CH1(2)") OR
+             ("HMI_Box_Connected_1" = 26 AND "KEY REMOTE/LOCAL L6 - CH1(2)") OR
+             ("HMI_Box_Connected_1" = 27 AND "KEY REMOTE/LOCAL L7 - CH1(2)") OR
+             ("HMI_Box_Connected_1" = 28 AND "KEY REMOTE/LOCAL L8 - CH1(2)") OR
+             ("HMI_Box_Connected_1" = 31 AND "KEY REMOTE/LOCAL L1 - CH1(3)") OR
+             ("HMI_Box_Connected_1" = 32 AND "KEY REMOTE/LOCAL L2 - CH1(3)") OR
+             ("HMI_Box_Connected_1" = 33 AND "KEY REMOTE/LOCAL L3 - CH1(3)") OR
+             ("HMI_Box_Connected_1" = 34 AND "KEY REMOTE/LOCAL L4 - CH1(3)") OR
+             ("HMI_Box_Connected_1" = 35 AND "KEY REMOTE/LOCAL L5 - CH1(3)") OR
+             ("HMI_Box_Connected_1" = 36 AND "KEY REMOTE/LOCAL L6 - CH1(3)") OR
+             ("HMI_Box_Connected_1" = 37 AND "KEY REMOTE/LOCAL L7 - CH1(3)") OR
+             ("HMI_Box_Connected_1" = 38 AND "KEY REMOTE/LOCAL L8 - CH1(3)") OR
+             ("HMI_Box_Connected_1" = 41 AND "KEY REMOTE/LOCAL L1 - CH1(4)") OR
+             ("HMI_Box_Connected_1" = 42 AND "KEY REMOTE/LOCAL L2 - CH1(4)") OR
+             ("HMI_Box_Connected_1" = 43 AND "KEY REMOTE/LOCAL L3 - CH1(4)") OR
+             ("HMI_Box_Connected_1" = 44 AND "KEY REMOTE/LOCAL L4 - CH1(4)") OR
+             ("HMI_Box_Connected_1" = 45 AND "KEY REMOTE/LOCAL L5 - CH1(4)") OR
+             ("HMI_Box_Connected_1" = 46 AND "KEY REMOTE/LOCAL L6 - CH1(4)") OR
+             ("HMI_Box_Connected_1" = 47 AND "KEY REMOTE/LOCAL L7 - CH1(4)") OR
+             ("HMI_Box_Connected_1" = 48 AND "KEY REMOTE/LOCAL L8 - CH1(4)") OR
+             ("HMI_Box_Connected_1" = 51 AND "KEY REMOTE/LOCAL L1 - CH1(5)") OR
+             ("HMI_Box_Connected_1" = 52 AND "KEY REMOTE/LOCAL L2 - CH1(5)") OR
+             ("HMI_Box_Connected_1" = 53 AND "KEY REMOTE/LOCAL L3 - CH1(5)") OR
+             ("HMI_Box_Connected_1" = 54 AND "KEY REMOTE/LOCAL L4 - CH1(5)") OR
+             ("HMI_Box_Connected_1" = 55 AND "KEY REMOTE/LOCAL L5 - CH1(5)") OR
+             ("HMI_Box_Connected_1" = 56 AND "KEY REMOTE/LOCAL L6 - CH1(5)") OR
+             ("HMI_Box_Connected_1" = 57 AND "KEY REMOTE/LOCAL L7 - CH1(5)") OR
+             ("HMI_Box_Connected_1" = 58 AND "KEY REMOTE/LOCAL L8 - CH1(5)"))
+        THEN
+            #State := 0;
+        END_IF;
+        
+    500://MANUAL ORDER
+        #Running := false;
+        IF #Send_VTD_Order THEN
+            VTD_Order_FC(i_Sys := #Sys_No,
+                           Level := #Level,
+                           StepTable_0 := #Step_Table_0);
+            #System_OrderSent := TRUE;
+            #Running := TRUE;
+            #Send_VTD_Order := FALSE;
+        END_IF;
+        
+        IF #Send_CNV_Order THEN
+            CNV_Order_FC(i_Sys := #Sys_No,
+                           Level := "Control_DB".VTD_Sys[#Sys_No].Current_Level,
+                           Tower := #Tower,
+                           Transfer_From_To := #Transfer_From_To,
+                           Pallet_Type := #"Pallet Type",
+                           Pallet_Allignment := #Pallet_Allignment,
+                           Device:=#PALLET_INOUT_DEVICE,
+                           Task_Type:=4,
+                           StepTable_0 := #Step_Table_0);
+            #System_OrderSent := TRUE;
+            #Running := TRUE;
+            #Send_CNV_Order := FALSE;
+        END_IF;
+        
+        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+            #State := #State + 10;
+        END_IF;
+                
+    510: //RESET ACK
+        IF #"Order Table_1".Status = #RUNNING_STATUS THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := FALSE;
+            #State := #State + 10;
+        END_IF;
+        
+    520: //ACK VTD
+        //Wait to complete and send ack
+        IF #"Order Table_1".Status = #COMPLETED_STATUS THEN
+            "Control_DB".WCS_OPC_Control[#Sys_No].Movement_Request_Complete_Ack := TRUE;
+            #State := 500;
+        END_IF;
+END_CASE;
+
+
+END_FUNCTION_BLOCK

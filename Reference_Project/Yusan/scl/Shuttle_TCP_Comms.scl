@@ -1,0 +1,78 @@
+FUNCTION_BLOCK "Shuttle_TCP_Comms"   // FB 22, author 
+
+VAR_INPUT
+   Enable : Bool;
+   E-stop : Bool;
+   TCP_Configuration : "LCom_typeConfig";
+   Shuttle_No : UInt;
+END_VAR
+
+VAR_OUTPUT
+   Connected : Bool;
+   Busy : Bool;
+   Status : Word;
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   TCP_Diag : "LCom_typeDiagnostics";
+   LCom_Communication_DB : "LCom_Communication_FB";
+END_VAR
+
+VAR
+   SendBuffer : Array[0..6] of Byte;
+   ReceiveBuffer : Array[0..1] of Byte;
+   Send : Bool;
+   SendDataLength : USInt := 2;
+   Sending : Bool;
+   T_Send_DB : TON_TIME;
+END_VAR
+
+BEGIN
+IF NOT #"E-stop" THEN
+    #SendBuffer[0] := 83;
+    IF NOT #Send THEN
+        #Send := TRUE;
+    END_IF;
+ELSE
+    #SendBuffer[0] := 0;
+END_IF;
+
+#LCom_Communication_DB(enable:=#Enable,
+                        send:=#Send,
+                        sendDataLength:=#SendDataLength,
+                        readDataLength:=16#FFFF_FFFF,
+                        configuration:=#TCP_Configuration,
+                        connected=>#Connected,
+                        sending=>#Sending,
+                        busy=>#Busy,
+                        error=>#Error,
+                        status=>#Status,
+                        sendBuffer:=#SendBuffer,
+                        receiveBuffer:=#ReceiveBuffer,
+                        diagnostics:=#TCP_Diag);
+
+
+ #SendBuffer[1] := UINT_TO_BYTE("Control_DB".VTD_Sys[1].Current_Level);
+ #SendBuffer[2] := UINT_TO_BYTE("Control_DB".VTD_Sys[2].Current_Level);
+ #SendBuffer[3] := UINT_TO_BYTE("Control_DB".VTD_Sys[3].Current_Level);
+ #SendBuffer[4] := UINT_TO_BYTE("Control_DB".VTD_Sys[4].Current_Level);
+ #SendBuffer[5] := UINT_TO_BYTE("Control_DB".VTD_Sys[5].Current_Level);
+
+"Control_DB".Shuttles_Position[#Shuttle_No].Charging := "Shuttle_MQTT_DB".Shuttle_MQTT[#Shuttle_No].Message.Shuttle_Status.Paused;
+
+IF #Send AND NOT #Sending THEN
+    #Send := FALSE;
+END_IF;
+
+IF NOT #Send THEN
+    #T_Send_DB(IN:=TRUE,
+               PT:=T#500ms);
+END_IF;
+       
+IF #T_Send_DB.Q THEN
+    #Send := TRUE;
+    #T_Send_DB.TON(IN := FALSE,
+                            PT := T#0ms);
+END_IF;
+END_FUNCTION_BLOCK

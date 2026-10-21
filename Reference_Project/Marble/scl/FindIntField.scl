@@ -1,0 +1,54 @@
+FUNCTION "FindIntField"   // FC 18, author 
+
+VAR_INPUT
+   FieldName : String;
+   JsonStr : String;
+END_VAR
+
+VAR_TEMP
+   searchStr : String;
+   foundPos : Int;
+   valueStr : String;
+   delimPos : Int;
+END_VAR
+
+   // RETURN : Int
+BEGIN
+// Set up the search pattern, e.g. '"id":'
+#searchStr := CONCAT(IN1 := '"', IN2 := #FieldName);
+#searchStr := CONCAT(IN1 := #searchStr, IN2 := '" :');
+
+// Search the field
+#foundPos := FIND(IN1 := #JsonStr, IN2 := #searchStr);
+
+IF #foundPos > 0 THEN
+    // Try to find a comma after the value
+    #delimPos := FIND(
+                      IN1 := MID(IN := #JsonStr, P := #foundPos + LEN(#searchStr), L := 10),
+                      IN2 := ','
+    );
+    
+    // If there is no comma, try to find the closing brace '}'
+    IF #delimPos = 0 THEN
+        #delimPos := FIND(
+                          IN1 := MID(IN := #JsonStr, P := #foundPos + LEN(#searchStr), L := 10),
+                          IN2 := '}'
+        );
+    END_IF;
+    
+    // If you find the end of value, extract the value
+    IF #delimPos > 0 THEN
+        #valueStr := MID(
+                         IN := #JsonStr,
+                         P := #foundPos + LEN(#searchStr),
+                         L := #delimPos - 1
+        );
+        #FindIntField := STRING_TO_INT(#valueStr);
+        RETURN;
+    END_IF;
+END_IF;
+
+// Default return if not found or error
+#FindIntField := -9999;
+
+END_FUNCTION

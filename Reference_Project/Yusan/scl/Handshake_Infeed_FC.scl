@@ -1,0 +1,88 @@
+FUNCTION "Handshake_Infeed_FC"   // FC 47, author 
+
+VAR_INPUT
+   Infeed_Stop_Sensor : Bool;
+   Ready_To_Receive : Bool;
+   Auto_Mode : Bool;
+   Transfer_In_Progress : Bool;
+   DB_LGX_To_SM_Infeed_Ready_To_Send : Bool;
+   DB_LGX_To_SM_Infeed_Transfer_In_Progress : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Fault_Handshake : Bool;
+   DB_SM_To_LGX_Infeed_Ready_To_Receive : Bool;
+   DB_SM_To_LGX_Infeed_Pallet_Received : Bool;
+   DB_SM_To_LGX_Infeed_Transfer_In_Progress : Bool;
+END_VAR
+
+VAR_TEMP
+   tReady_To_Receive_Condition : Bool;
+   tPallet_Received_Condition : Bool;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+// ---------------------------------------------------------
+// STEP 1: Is SM ready to receive?
+// Condition: SM in Auto, infeed conveyor healthy,
+//            no transfer in progress, no alarm
+// ---------------------------------------------------------
+#tReady_To_Receive_Condition :=
+#Auto_Mode
+AND #Ready_To_Receive
+AND NOT #DB_SM_To_LGX_Infeed_Ready_To_Receive
+AND NOT #DB_SM_To_LGX_Infeed_Pallet_Received;
+
+IF #DB_LGX_To_SM_Infeed_Ready_To_Send
+    AND #tReady_To_Receive_Condition THEN
+    #DB_SM_To_LGX_Infeed_Ready_To_Receive := TRUE;
+END_IF;
+
+// ---------------------------------------------------------
+// STEP 2: Confirm pallet received
+// Condition: Photocell active while transfer is in progress
+// ---------------------------------------------------------
+// #tPallet_Received_Condition :=
+// #Infeed_Stop_Sensor
+// AND #DB_LGX_To_SM_Infeed_Transfer_In_Progress
+// AND #DB_SM_To_LGX_Infeed_Ready_To_Receive;
+// 
+#tPallet_Received_Condition :=
+#Infeed_Stop_Sensor;
+
+IF #tPallet_Received_Condition THEN
+    #DB_SM_To_LGX_Infeed_Pallet_Received := TRUE;
+    #DB_SM_To_LGX_Infeed_Ready_To_Receive := FALSE;
+ELSE
+    #DB_SM_To_LGX_Infeed_Pallet_Received := FALSE;
+END_IF;
+
+// ---------------------------------------------------------
+// STEP 3: Reset after LGX confirms end of transfer
+// (LGX resets Transfer_In_Progress upon receiving Pallet_Received)
+// ---------------------------------------------------------
+// IF #DB_SM_To_LGX_Infeed_Pallet_Received
+//     AND NOT #DB_LGX_To_SM_Infeed_Transfer_In_Progress THEN
+//     #DB_SM_To_LGX_Infeed_Pallet_Received := FALSE;
+// END_IF;
+
+// ---------------------------------------------------------
+// STEP 4: Reset Ready_To_Receive if LGX withdraws Ready_To_Send
+// (e.g. LGX cancelled the operation before starting transfer)
+// ---------------------------------------------------------
+IF NOT #DB_LGX_To_SM_Infeed_Ready_To_Send
+    AND NOT #DB_LGX_To_SM_Infeed_Transfer_In_Progress THEN
+    #DB_SM_To_LGX_Infeed_Ready_To_Receive := FALSE;
+END_IF;
+
+// ---------------------------------------------------------
+// FAULT SUPERVISION
+// If Transfer_In_Progress remains active without pallet arriving:
+// use external timer / timeout bit (implement in OB1)
+// ---------------------------------------------------------
+#Fault_Handshake := FALSE; // Placeholder - implement watchdog
+
+#DB_SM_To_LGX_Infeed_Transfer_In_Progress := #Transfer_In_Progress;
+
+END_FUNCTION

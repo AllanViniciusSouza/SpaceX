@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Feed_Steptable_FC" Id="{389fbf41-a17a-5f2f-bff6-8a9bfa477505}" SpecialFunc="None">
+    <Declaration><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/Screens.scl, object Feed_Steptable_FC.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+FUNCTION Feed_Steptable_FC : BOOL
+// 
+//    VAR_INPUT
+//       CurrentTime : String;
+//       Task_Type : Int;
+//       Source_Location : DInt;
+//       Destination_Location : DInt;
+//       Pallet_Type : Char;
+//       Pallet_Alignment : Char;
+//       Shuttle_ID : Int;
+//    END_VAR
+// 
+//    VAR_IN_OUT
+//       StepTable : OrderTable_UDT;
+//    END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/Screens.scl, object Feed_Steptable_FC.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+// StepTable.OrderNo := OrderNo + 1;
+// 	StepTable.StepNo := OrderNo + 1;
+// 	StepTable.PlaceTime := CurrentTime;
+// 
+// 	StepTable.OPC_Control.Task_ID := OrderNo + 1;
+// 	StepTable.OPC_Control.Task_Type := Task_Type;
+// 	StepTable.OPC_Control.Source_Location := Source_Location;
+// 	StepTable.OPC_Control.Destination_Location := Destination_Location;
+// 	StepTable.OPC_Control.Pallet_Type := Pallet_Type;
+// 	StepTable.OPC_Control.Pallet_Alignment := Pallet_Alignment;
+// 	StepTable.OPC_Control.Shuttle_ID := Shuttle_ID;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

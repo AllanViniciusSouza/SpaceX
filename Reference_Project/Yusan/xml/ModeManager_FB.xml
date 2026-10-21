@@ -1,0 +1,1642 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-20T12:54:03.2858037Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FB ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="RTE_PB" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Request To Enter pushbutton, rising edge triggers request</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Reset_PB" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Reset pushbutton, rising edge triggers reset attempt</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Restart_PB" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">Restart pushbutton, rising edge triggers return to auto</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="ForceRTE" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">one-scan pulse from FB_GateAccessControl.ForceRTE_Request</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="GateClosed" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = gate physically closed</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="GateLockedFeedback" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = gate lock solenoid confirmed locked</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="GateFault" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">from FB_GateAccessControl - blocks Auto/Restart</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="NoEStop" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = no emergency stop active anywhere in chain</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="AllDrivesHealthy" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = no drive faults on VTD/shuttle drives</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="SafetyResetDone" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = upstream safety reset permissive satisfied</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="NoVTDLocalMode" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = no VTD station currently in Local mode</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="NoCrossoverPaused" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = no conveyor crossover currently paused</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="AllDevicesStopped" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = all VTDs confirmed at standstill</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Safe_Bypassed" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Reset" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="Output">
+    <Member Name="CurrentState" Datatype="UInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">current sequence state, for HMI/diagnostics</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="GateUnlockPermissive" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = safe to unlock gate solenoid (SAFE_TO_UNLOCK onwards)</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="StopNewAutoCycles" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = do not start new automatic cycles</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="AutoModeAllowed" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = auto mode is permitted (all interlocks satisfied)</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="ManualModeActive" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">TRUE = system is in manual/jog/local maintenance mode</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="ReqFlash_RTE_Lamp" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="ReqFlash_ResetLamp" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="ReqFlash_RestartLamp" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="RestartLampSteadyOn" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="RTE_LampSteadyOn" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="InOut" />
+  <Section Name="Static">
+    <Member Name="RTE_PB_Rising" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">edge memory for RTE_PB</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Reset_PB_Rising" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">edge memory for Reset_PB</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Restart_PB_Rising" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Comment>
+        <MultiLanguageText Lang="en-US">edge memory for Restart_PB</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="T_Delay_DB" Datatype="TON_TIME" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="EStop_Pressed" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="PLCInitialization" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="Temp">
+    <Member Name="RTE_PB_Edge_M" Datatype="Bool">
+      <Comment>
+        <MultiLanguageText Lang="en-US">temp for R_TRIG-style edge detection</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="Reset_PB_Edge_M" Datatype="Bool" />
+    <Member Name="Restart_PB_Edge_M" Datatype="Bool" />
+  </Section>
+  <Section Name="Constant">
+    <Member Name="AUTO_RUNNING" Datatype="UInt" Accessibility="Public">
+      <StartValue>0</StartValue>
+    </Member>
+    <Member Name="RTE_REQUESTED" Datatype="UInt" Accessibility="Public">
+      <StartValue>1</StartValue>
+    </Member>
+    <Member Name="SAFE_BYPASS" Datatype="UInt" Accessibility="Public">
+      <StartValue>2</StartValue>
+    </Member>
+    <Member Name="SAFE_TO_UNLOCK" Datatype="UInt" Accessibility="Public">
+      <StartValue>3</StartValue>
+    </Member>
+    <Member Name="ACCESS_MANUAL_MODE" Datatype="UInt" Accessibility="Public">
+      <StartValue>4</StartValue>
+    </Member>
+    <Member Name="READY_TO_RESET" Datatype="UInt" Accessibility="Public">
+      <StartValue>5</StartValue>
+    </Member>
+    <Member Name="RESETTING" Datatype="UInt" Accessibility="Public">
+      <StartValue>6</StartValue>
+    </Member>
+    <Member Name="READY_TO_RESTART" Datatype="UInt" Accessibility="Public">
+      <StartValue>7</StartValue>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <IsRetainMemResEnabled>false</IsRetainMemResEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <MemoryReserve>100</MemoryReserve>
+      <Name>ModeManager_FB</Name>
+      <Namespace />
+      <Number>8</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <Access Scope="LocalVariable" UId="21">
+    <Symbol UId="22">
+      <Component Name="RTE_PB_Rising" UId="23" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="24" />
+  <Token Text=":=" UId="25" />
+  <Blank Num="1" UId="26" />
+  <Access Scope="LocalVariable" UId="27">
+    <Symbol UId="28">
+      <Component Name="RTE_PB" UId="29" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="30" />
+  <Token Text="AND" UId="31" />
+  <Blank Num="1" UId="32" />
+  <Token Text="NOT" UId="33" />
+  <Blank Num="1" UId="34" />
+  <Access Scope="LocalVariable" UId="35">
+    <Symbol UId="36">
+      <Component Name="RTE_PB_Edge_M" UId="37" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="38" />
+  <NewLine Num="1" UId="39" />
+  <Access Scope="LocalVariable" UId="40">
+    <Symbol UId="41">
+      <Component Name="Reset_PB_Rising" UId="42" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="43" />
+  <Token Text=":=" UId="44" />
+  <Blank Num="1" UId="45" />
+  <Access Scope="LocalVariable" UId="46">
+    <Symbol UId="47">
+      <Component Name="Reset_PB" UId="48" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="49" />
+  <Token Text="AND" UId="50" />
+  <Blank Num="1" UId="51" />
+  <Token Text="NOT" UId="52" />
+  <Blank Num="1" UId="53" />
+  <Access Scope="LocalVariable" UId="54">
+    <Symbol UId="55">
+      <Component Name="Reset_PB_Edge_M" UId="56" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="57" />
+  <NewLine Num="1" UId="58" />
+  <Access Scope="LocalVariable" UId="59">
+    <Symbol UId="60">
+      <Component Name="Restart_PB_Rising" UId="61" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="62" />
+  <Token Text=":=" UId="63" />
+  <Blank Num="1" UId="64" />
+  <Access Scope="LocalVariable" UId="65">
+    <Symbol UId="66">
+      <Component Name="Restart_PB" UId="67" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="68" />
+  <Token Text="AND" UId="69" />
+  <Blank Num="1" UId="70" />
+  <Token Text="NOT" UId="71" />
+  <Blank Num="1" UId="72" />
+  <Access Scope="LocalVariable" UId="73">
+    <Symbol UId="74">
+      <Component Name="Restart_PB_Edge_M" UId="75" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="76" />
+  <NewLine Num="2" UId="77" />
+  <Access Scope="LocalVariable" UId="78">
+    <Symbol UId="79">
+      <Component Name="RTE_PB_Edge_M" UId="80" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="81" />
+  <Token Text=":=" UId="82" />
+  <Blank Num="1" UId="83" />
+  <Access Scope="LocalVariable" UId="84">
+    <Symbol UId="85">
+      <Component Name="RTE_PB" UId="86" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="87" />
+  <NewLine Num="1" UId="88" />
+  <Access Scope="LocalVariable" UId="89">
+    <Symbol UId="90">
+      <Component Name="Reset_PB_Edge_M" UId="91" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="92" />
+  <Token Text=":=" UId="93" />
+  <Blank Num="1" UId="94" />
+  <Access Scope="LocalVariable" UId="95">
+    <Symbol UId="96">
+      <Component Name="Reset_PB" UId="97" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="98" />
+  <NewLine Num="1" UId="99" />
+  <Access Scope="LocalVariable" UId="100">
+    <Symbol UId="101">
+      <Component Name="Restart_PB_Edge_M" UId="102" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="103" />
+  <Token Text=":=" UId="104" />
+  <Blank Num="1" UId="105" />
+  <Access Scope="LocalVariable" UId="106">
+    <Symbol UId="107">
+      <Component Name="Restart_PB" UId="108" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="109" />
+  <NewLine Num="2" UId="110" />
+  <Token Text="IF" UId="111" />
+  <Blank Num="1" UId="112" />
+  <Access Scope="LocalVariable" UId="113">
+    <Symbol UId="114">
+      <Component Name="Reset" UId="115" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="116" />
+  <Token Text="THEN" UId="117" />
+  <NewLine Num="1" UId="118" />
+  <Blank Num="4" UId="119" />
+  <Access Scope="LocalVariable" UId="120">
+    <Symbol UId="121">
+      <Component Name="CurrentState" UId="122" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="123" />
+  <Token Text=":=" UId="124" />
+  <Blank Num="1" UId="125" />
+  <Access Scope="LocalConstant" UId="126">
+    <Constant Name="AUTO_RUNNING" UId="127" />
+  </Access>
+  <Token Text=";" UId="130" />
+  <NewLine Num="1" UId="131" />
+  <Token Text="END_IF" UId="132" />
+  <Token Text=";" UId="133" />
+  <NewLine Num="2" UId="134" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="135">
+    <Text UId="136"> Emergency Access</Text>
+  </LineComment>
+  <NewLine Num="1" UId="137" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="138">
+    <Text UId="139"> </Text>
+  </LineComment>
+  <NewLine Num="1" UId="140" />
+  <Token Text="IF" UId="141" />
+  <Blank Num="1" UId="142" />
+  <Access Scope="GlobalVariable" UId="143">
+    <Symbol UId="144">
+      <Component Name="FirstScan" UId="145">
+        <BooleanAttribute Name="HasQuotes" UId="146">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="147" />
+  <Token Text="THEN" UId="148" />
+  <NewLine Num="1" UId="149" />
+  <Blank Num="4" UId="150" />
+  <Access Scope="LocalVariable" UId="151">
+    <Symbol UId="152">
+      <Component Name="PLCInitialization" UId="153" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="154" />
+  <Token Text=":=" UId="155" />
+  <Blank Num="1" UId="156" />
+  <Access Scope="LiteralConstant" UId="157">
+    <Constant UId="158">
+      <ConstantValue UId="160">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="161" />
+  <NewLine Num="1" UId="162" />
+  <Token Text="ELSIF" UId="163" />
+  <Blank Num="1" UId="164" />
+  <Access Scope="GlobalVariable" UId="165">
+    <Symbol UId="166">
+      <Component Name="Reset_All" UId="167">
+        <BooleanAttribute Name="HasQuotes" UId="168">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="169" />
+  <Token Text="AND" UId="170" />
+  <Blank Num="1" UId="171" />
+  <Access Scope="LocalVariable" UId="172">
+    <Symbol UId="173">
+      <Component Name="NoEStop" UId="174" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="175" />
+  <Token Text="THEN" UId="176" />
+  <NewLine Num="1" UId="177" />
+  <Blank Num="4" UId="178" />
+  <Access Scope="LocalVariable" UId="179">
+    <Symbol UId="180">
+      <Component Name="PLCInitialization" UId="181" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="182" />
+  <Token Text=":=" UId="183" />
+  <Blank Num="1" UId="184" />
+  <Access Scope="LiteralConstant" UId="185">
+    <Constant UId="186">
+      <ConstantValue UId="188">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="189" />
+  <NewLine Num="1" UId="190" />
+  <Token Text="END_IF" UId="191" />
+  <Token Text=";" UId="192" />
+  <NewLine Num="1" UId="193" />
+  <Blank Num="4" UId="194" />
+  <NewLine Num="1" UId="195" />
+  <Token Text="IF" UId="196" />
+  <Blank Num="1" UId="197" />
+  <Token Text="NOT" UId="198" />
+  <Blank Num="1" UId="199" />
+  <Access Scope="LocalVariable" UId="200">
+    <Symbol UId="201">
+      <Component Name="PLCInitialization" UId="202" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="203" />
+  <Token Text="THEN" UId="204" />
+  <NewLine Num="1" UId="205" />
+  <Blank Num="4" UId="206" />
+  <Token Text="IF" UId="207" />
+  <Blank Num="1" UId="208" />
+  <Token Text="NOT" UId="209" />
+  <Blank Num="1" UId="210" />
+  <Access Scope="LocalVariable" UId="211">
+    <Symbol UId="212">
+      <Component Name="NoEStop" UId="213" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="214" />
+  <Token Text="AND" UId="215" />
+  <Blank Num="1" UId="216" />
+  <Token Text="NOT" UId="217" />
+  <Blank Num="1" UId="218" />
+  <Access Scope="LocalVariable" UId="219">
+    <Symbol UId="220">
+      <Component Name="EStop_Pressed" UId="221" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="222" />
+  <Token Text="THEN" UId="223" />
+  <NewLine Num="1" UId="224" />
+  <Blank Num="8" UId="225" />
+  <Access Scope="LocalVariable" UId="226">
+    <Symbol UId="227">
+      <Component Name="CurrentState" UId="228" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="229" />
+  <Token Text=":=" UId="230" />
+  <Blank Num="1" UId="231" />
+  <Access Scope="LocalConstant" UId="232">
+    <Constant Name="SAFE_TO_UNLOCK" UId="233" />
+  </Access>
+  <Token Text=";" UId="236" />
+  <NewLine Num="1" UId="237" />
+  <Blank Num="8" UId="238" />
+  <Access Scope="LocalVariable" UId="239">
+    <Symbol UId="240">
+      <Component Name="EStop_Pressed" UId="241" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="242" />
+  <Token Text=":=" UId="243" />
+  <Blank Num="1" UId="244" />
+  <Access Scope="LiteralConstant" UId="245">
+    <Constant UId="246">
+      <ConstantValue UId="248">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="249" />
+  <NewLine Num="1" UId="250" />
+  <Blank Num="4" UId="251" />
+  <Token Text="ELSIF" UId="252" />
+  <Blank Num="1" UId="253" />
+  <Access Scope="LocalVariable" UId="254">
+    <Symbol UId="255">
+      <Component Name="NoEStop" UId="256" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="257" />
+  <Token Text="THEN" UId="258" />
+  <NewLine Num="1" UId="259" />
+  <Blank Num="8" UId="260" />
+  <Access Scope="LocalVariable" UId="261">
+    <Symbol UId="262">
+      <Component Name="EStop_Pressed" UId="263" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="264" />
+  <Token Text=":=" UId="265" />
+  <Blank Num="1" UId="266" />
+  <Access Scope="LiteralConstant" UId="267">
+    <Constant UId="268">
+      <ConstantValue UId="270">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="271" />
+  <NewLine Num="1" UId="272" />
+  <Blank Num="4" UId="273" />
+  <Token Text="END_IF" UId="274" />
+  <Token Text=";" UId="275" />
+  <NewLine Num="1" UId="276" />
+  <Token Text="END_IF" UId="277" />
+  <Token Text=";" UId="278" />
+  <NewLine Num="2" UId="279" />
+  <Token Text="CASE" UId="280" />
+  <Blank Num="1" UId="281" />
+  <Access Scope="LocalVariable" UId="282">
+    <Symbol UId="283">
+      <Component Name="CurrentState" UId="284" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="285" />
+  <Token Text="OF" UId="286" />
+  <NewLine Num="1" UId="287" />
+  <Blank Num="8" UId="288" />
+  <NewLine Num="1" UId="289" />
+  <Blank Num="4" UId="290" />
+  <Access Scope="LocalConstant" UId="291">
+    <Constant Name="AUTO_RUNNING" UId="292" />
+  </Access>
+  <Token Text=":" UId="295" />
+  <NewLine Num="1" UId="296" />
+  <Blank Num="8" UId="297" />
+  <Token Text="IF" UId="298" />
+  <Blank Num="1" UId="299" />
+  <Access Scope="LocalVariable" UId="300">
+    <Symbol UId="301">
+      <Component Name="RTE_PB_Rising" UId="302" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="303" />
+  <Token Text="THEN" UId="304" />
+  <NewLine Num="1" UId="305" />
+  <Blank Num="12" UId="306" />
+  <Access Scope="LocalVariable" UId="307">
+    <Symbol UId="308">
+      <Component Name="CurrentState" UId="309" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="310" />
+  <Token Text=":=" UId="311" />
+  <Blank Num="1" UId="312" />
+  <Access Scope="LocalConstant" UId="313">
+    <Constant Name="RTE_REQUESTED" UId="314" />
+  </Access>
+  <Token Text=";" UId="317" />
+  <NewLine Num="1" UId="318" />
+  <Blank Num="8" UId="319" />
+  <Token Text="END_IF" UId="320" />
+  <Token Text=";" UId="321" />
+  <NewLine Num="1" UId="322" />
+  <Blank Num="8" UId="323" />
+  <NewLine Num="1" UId="324" />
+  <Blank Num="4" UId="325" />
+  <Access Scope="LocalConstant" UId="326">
+    <Constant Name="RTE_REQUESTED" UId="327" />
+  </Access>
+  <Token Text=":" UId="330" />
+  <NewLine Num="1" UId="331" />
+  <Blank Num="8" UId="332" />
+  <Token Text="IF" UId="333" />
+  <Blank Num="1" UId="334" />
+  <Access Scope="LocalVariable" UId="335">
+    <Symbol UId="336">
+      <Component Name="AllDevicesStopped" UId="337" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="338" />
+  <Token Text="THEN" UId="339" />
+  <NewLine Num="1" UId="340" />
+  <Blank Num="12" UId="341" />
+  <Access Scope="LocalVariable" UId="342">
+    <Symbol UId="343">
+      <Component Name="CurrentState" UId="344" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="345" />
+  <Token Text=":=" UId="346" />
+  <Blank Num="1" UId="347" />
+  <Access Scope="LocalConstant" UId="348">
+    <Constant Name="SAFE_BYPASS" UId="349" />
+  </Access>
+  <Token Text=";" UId="352" />
+  <NewLine Num="1" UId="353" />
+  <Blank Num="8" UId="354" />
+  <Token Text="END_IF" UId="355" />
+  <Token Text=";" UId="356" />
+  <NewLine Num="1" UId="357" />
+  <Blank Num="8" UId="358" />
+  <NewLine Num="1" UId="359" />
+  <Blank Num="4" UId="360" />
+  <Access Scope="LocalConstant" UId="361">
+    <Constant Name="SAFE_BYPASS" UId="362" />
+  </Access>
+  <Token Text=":" UId="365" />
+  <NewLine Num="1" UId="366" />
+  <Blank Num="8" UId="367" />
+  <Token Text="IF" UId="368" />
+  <Blank Num="1" UId="369" />
+  <Access Scope="LocalVariable" UId="370">
+    <Symbol UId="371">
+      <Component Name="Safe_Bypassed" UId="372" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="373" />
+  <Token Text="THEN" UId="374" />
+  <NewLine Num="1" UId="375" />
+  <Blank Num="12" UId="376" />
+  <Access Scope="LocalVariable" UId="377">
+    <Symbol UId="378">
+      <Component Name="T_Delay_DB" UId="379" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="380">
+    <Instruction UId="381">
+      <Token Text="(" UId="382" />
+      <Parameter Name="IN" UId="383">
+        <Token Text=":=" UId="384" />
+        <Access Scope="LiteralConstant" UId="385">
+          <Constant UId="386">
+            <ConstantValue UId="388">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="389" />
+      <NewLine Num="1" UId="390" />
+      <Blank Num="24" UId="391" />
+      <Parameter Name="PT" UId="392">
+        <Token Text=":=" UId="393" />
+        <Access Scope="TypedConstant" UId="394">
+          <Constant UId="395">
+            <ConstantValue UId="396">T#500MS</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="397" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="398" />
+  <NewLine Num="1" UId="399" />
+  <Blank Num="12" UId="400" />
+  <Token Text="IF" UId="401" />
+  <Blank Num="1" UId="402" />
+  <Access Scope="LocalVariable" UId="403">
+    <Symbol UId="404">
+      <Component Name="T_Delay_DB" UId="405" />
+      <Token Text="." UId="406" />
+      <Component Name="Q" UId="407" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="408" />
+  <Token Text="THEN" UId="409" />
+  <NewLine Num="1" UId="410" />
+  <Blank Num="16" UId="411" />
+  <Access Scope="LocalVariable" UId="412">
+    <Symbol UId="413">
+      <Component Name="T_Delay_DB" UId="414" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="415">
+    <Instruction UId="416">
+      <Token Text="(" UId="417" />
+      <Parameter Name="IN" UId="418">
+        <Blank Num="1" UId="419" />
+        <Token Text=":=" UId="420" />
+        <Blank Num="1" UId="421" />
+        <Access Scope="LiteralConstant" UId="422">
+          <Constant UId="423">
+            <ConstantValue UId="425">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="426" />
+      <NewLine Num="1" UId="427" />
+      <Blank Num="28" UId="428" />
+      <Parameter Name="PT" UId="429">
+        <Blank Num="1" UId="430" />
+        <Token Text=":=" UId="431" />
+        <Blank Num="1" UId="432" />
+        <Access Scope="TypedConstant" UId="433">
+          <Constant UId="434">
+            <ConstantValue UId="435">T#0MS</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="436" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="437" />
+  <NewLine Num="1" UId="438" />
+  <Blank Num="16" UId="439" />
+  <Access Scope="LocalVariable" UId="440">
+    <Symbol UId="441">
+      <Component Name="CurrentState" UId="442" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="443" />
+  <Token Text=":=" UId="444" />
+  <Blank Num="1" UId="445" />
+  <Access Scope="LocalConstant" UId="446">
+    <Constant Name="SAFE_TO_UNLOCK" UId="447" />
+  </Access>
+  <Token Text=";" UId="450" />
+  <NewLine Num="1" UId="451" />
+  <Blank Num="12" UId="452" />
+  <Token Text="END_IF" UId="453" />
+  <Token Text=";" UId="454" />
+  <NewLine Num="1" UId="455" />
+  <Blank Num="8" UId="456" />
+  <Token Text="END_IF" UId="457" />
+  <Token Text=";" UId="458" />
+  <NewLine Num="1" UId="459" />
+  <Blank Num="8" UId="460" />
+  <NewLine Num="1" UId="461" />
+  <Blank Num="4" UId="462" />
+  <Access Scope="LocalConstant" UId="463">
+    <Constant Name="SAFE_TO_UNLOCK" UId="464" />
+  </Access>
+  <Token Text=":" UId="467" />
+  <NewLine Num="1" UId="468" />
+  <Blank Num="8" UId="469" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="470">
+    <Text UId="471"> Solenoid is now de-energised-&gt;energised per GateUnlockPermissive,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="472" />
+  <Blank Num="8" UId="473" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="474">
+    <Text UId="475"> which physically frees the mechanism so the operator can rotate</Text>
+  </LineComment>
+  <NewLine Num="1" UId="476" />
+  <Blank Num="8" UId="477" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="478">
+    <Text UId="479"> the manual handle. Transition to manual mode once the gate is</Text>
+  </LineComment>
+  <NewLine Num="1" UId="480" />
+  <Blank Num="8" UId="481" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="482">
+    <Text UId="483"> actually opened.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="484" />
+  <Blank Num="8" UId="485" />
+  <Token Text="IF" UId="486" />
+  <Blank Num="1" UId="487" />
+  <Token Text="NOT" UId="488" />
+  <Blank Num="1" UId="489" />
+  <Access Scope="LocalVariable" UId="490">
+    <Symbol UId="491">
+      <Component Name="GateClosed" UId="492" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="493" />
+  <Token Text="THEN" UId="494" />
+  <NewLine Num="1" UId="495" />
+  <Blank Num="12" UId="496" />
+  <Access Scope="LocalVariable" UId="497">
+    <Symbol UId="498">
+      <Component Name="CurrentState" UId="499" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="500" />
+  <Token Text=":=" UId="501" />
+  <Blank Num="1" UId="502" />
+  <Access Scope="LocalConstant" UId="503">
+    <Constant Name="ACCESS_MANUAL_MODE" UId="504" />
+  </Access>
+  <Token Text=";" UId="507" />
+  <NewLine Num="1" UId="508" />
+  <Blank Num="8" UId="509" />
+  <Token Text="END_IF" UId="510" />
+  <Token Text=";" UId="511" />
+  <NewLine Num="1" UId="512" />
+  <Blank Num="8" UId="513" />
+  <NewLine Num="1" UId="514" />
+  <Blank Num="4" UId="515" />
+  <Access Scope="LocalConstant" UId="516">
+    <Constant Name="ACCESS_MANUAL_MODE" UId="517" />
+  </Access>
+  <Token Text=":" UId="520" />
+  <NewLine Num="1" UId="521" />
+  <Blank Num="8" UId="522" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="523">
+    <Text UId="524"> Gate physically closed again (handle rotated back, solenoid</Text>
+  </LineComment>
+  <NewLine Num="1" UId="525" />
+  <Blank Num="8" UId="526" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="527">
+    <Text UId="528"> still energised/unlocked at this point - lock only re-engages</Text>
+  </LineComment>
+  <NewLine Num="1" UId="529" />
+  <Blank Num="8" UId="530" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="531">
+    <Text UId="532"> in RESETTING once Reset is pressed).</Text>
+  </LineComment>
+  <NewLine Num="1" UId="533" />
+  <Blank Num="8" UId="534" />
+  <Token Text="IF" UId="535" />
+  <Blank Num="1" UId="536" />
+  <Access Scope="LocalVariable" UId="537">
+    <Symbol UId="538">
+      <Component Name="GateClosed" UId="539" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="540" />
+  <Token Text="THEN" UId="541" />
+  <NewLine Num="1" UId="542" />
+  <Blank Num="12" UId="543" />
+  <Access Scope="LocalVariable" UId="544">
+    <Symbol UId="545">
+      <Component Name="CurrentState" UId="546" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="547" />
+  <Token Text=":=" UId="548" />
+  <Blank Num="1" UId="549" />
+  <Access Scope="LocalConstant" UId="550">
+    <Constant Name="READY_TO_RESET" UId="551" />
+  </Access>
+  <Token Text=";" UId="554" />
+  <NewLine Num="1" UId="555" />
+  <Blank Num="8" UId="556" />
+  <Token Text="END_IF" UId="557" />
+  <Token Text=";" UId="558" />
+  <NewLine Num="1" UId="559" />
+  <Blank Num="8" UId="560" />
+  <NewLine Num="1" UId="561" />
+  <Blank Num="4" UId="562" />
+  <Access Scope="LocalConstant" UId="563">
+    <Constant Name="READY_TO_RESET" UId="564" />
+  </Access>
+  <Token Text=":" UId="567" />
+  <NewLine Num="1" UId="568" />
+  <Blank Num="8" UId="569" />
+  <Token Text="IF" UId="570" />
+  <Blank Num="1" UId="571" />
+  <Access Scope="LocalVariable" UId="572">
+    <Symbol UId="573">
+      <Component Name="Reset_PB_Rising" UId="574" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="575" />
+  <Token Text="THEN" UId="576" />
+  <NewLine Num="1" UId="577" />
+  <Blank Num="12" UId="578" />
+  <Access Scope="LocalVariable" UId="579">
+    <Symbol UId="580">
+      <Component Name="CurrentState" UId="581" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="582" />
+  <Token Text=":=" UId="583" />
+  <Blank Num="1" UId="584" />
+  <Access Scope="LocalConstant" UId="585">
+    <Constant Name="RESETTING" UId="586" />
+  </Access>
+  <Token Text=";" UId="589" />
+  <NewLine Num="1" UId="590" />
+  <Blank Num="8" UId="591" />
+  <Token Text="END_IF" UId="592" />
+  <Token Text=";" UId="593" />
+  <NewLine Num="1" UId="594" />
+  <Blank Num="8" UId="595" />
+  <NewLine Num="1" UId="596" />
+  <Blank Num="4" UId="597" />
+  <Access Scope="LocalConstant" UId="598">
+    <Constant Name="RESETTING" UId="599" />
+  </Access>
+  <Token Text=":" UId="602" />
+  <NewLine Num="1" UId="603" />
+  <Blank Num="8" UId="604" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="605">
+    <Text UId="606"> Lock is commanded via GateUnlockPermissive=FALSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="607" />
+  <Blank Num="8" UId="608" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="609">
+    <Text UId="610"> (see output mapping below); wait for GS1/GS2 to</Text>
+  </LineComment>
+  <NewLine Num="1" UId="611" />
+  <Blank Num="8" UId="612" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="613">
+    <Text UId="614"> confirm locked before allowing restart readiness.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="615" />
+  <Blank Num="8" UId="616" />
+  <Token Text="IF" UId="617" />
+  <Blank Num="1" UId="618" />
+  <Access Scope="LocalVariable" UId="619">
+    <Symbol UId="620">
+      <Component Name="GateLockedFeedback" UId="621" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="622" />
+  <Token Text="AND" UId="623" />
+  <Blank Num="1" UId="624" />
+  <Access Scope="LocalVariable" UId="625">
+    <Symbol UId="626">
+      <Component Name="SafetyResetDone" UId="627" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="628" />
+  <Token Text="AND" UId="629" />
+  <Blank Num="1" UId="630" />
+  <Access Scope="LocalVariable" UId="631">
+    <Symbol UId="632">
+      <Component Name="NoVTDLocalMode" UId="633" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="634" />
+  <Token Text="AND" UId="635" />
+  <Blank Num="1" UId="636" />
+  <Token Text="NOT" UId="637" />
+  <Blank Num="1" UId="638" />
+  <Access Scope="LocalVariable" UId="639">
+    <Symbol UId="640">
+      <Component Name="GateFault" UId="641" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="642" />
+  <Token Text="AND" UId="643" />
+  <Blank Num="1" UId="644" />
+  <Access Scope="LocalVariable" UId="645">
+    <Symbol UId="646">
+      <Component Name="AllDrivesHealthy" UId="647" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="648" />
+  <Token Text="THEN" UId="649" />
+  <NewLine Num="1" UId="650" />
+  <Blank Num="12" UId="651" />
+  <Access Scope="LocalVariable" UId="652">
+    <Symbol UId="653">
+      <Component Name="CurrentState" UId="654" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="655" />
+  <Token Text=":=" UId="656" />
+  <Blank Num="1" UId="657" />
+  <Access Scope="LocalConstant" UId="658">
+    <Constant Name="READY_TO_RESTART" UId="659" />
+  </Access>
+  <Token Text=";" UId="662" />
+  <NewLine Num="1" UId="663" />
+  <Blank Num="8" UId="664" />
+  <Token Text="END_IF" UId="665" />
+  <Token Text=";" UId="666" />
+  <NewLine Num="1" UId="667" />
+  <Blank Num="8" UId="668" />
+  <NewLine Num="1" UId="669" />
+  <Blank Num="4" UId="670" />
+  <Access Scope="LocalConstant" UId="671">
+    <Constant Name="READY_TO_RESTART" UId="672" />
+  </Access>
+  <Token Text=":" UId="675" />
+  <NewLine Num="1" UId="676" />
+  <Blank Num="8" UId="677" />
+  <Token Text="IF" UId="678" />
+  <Blank Num="1" UId="679" />
+  <Access Scope="LocalVariable" UId="680">
+    <Symbol UId="681">
+      <Component Name="Restart_PB_Rising" UId="682" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="683" />
+  <Blank Num="12" UId="684" />
+  <Token Text="AND" UId="685" />
+  <Blank Num="1" UId="686" />
+  <Access Scope="LocalVariable" UId="687">
+    <Symbol UId="688">
+      <Component Name="NoEStop" UId="689" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="690" />
+  <Blank Num="12" UId="691" />
+  <Token Text="AND" UId="692" />
+  <Blank Num="1" UId="693" />
+  <Token Text="NOT" UId="694" />
+  <Blank Num="1" UId="695" />
+  <Access Scope="LocalVariable" UId="696">
+    <Symbol UId="697">
+      <Component Name="GateFault" UId="698" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="699" />
+  <Blank Num="12" UId="700" />
+  <Token Text="AND" UId="701" />
+  <Blank Num="1" UId="702" />
+  <Access Scope="LocalVariable" UId="703">
+    <Symbol UId="704">
+      <Component Name="AllDrivesHealthy" UId="705" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="706" />
+  <Blank Num="12" UId="707" />
+  <Token Text="AND" UId="708" />
+  <Blank Num="1" UId="709" />
+  <Access Scope="LocalVariable" UId="710">
+    <Symbol UId="711">
+      <Component Name="NoVTDLocalMode" UId="712" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="713" />
+  <Blank Num="12" UId="714" />
+  <Token Text="AND" UId="715" />
+  <Blank Num="1" UId="716" />
+  <Access Scope="LocalVariable" UId="717">
+    <Symbol UId="718">
+      <Component Name="NoCrossoverPaused" UId="719" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="720" />
+  <Token Text="THEN" UId="721" />
+  <NewLine Num="1" UId="722" />
+  <Blank Num="12" UId="723" />
+  <Access Scope="LocalVariable" UId="724">
+    <Symbol UId="725">
+      <Component Name="CurrentState" UId="726" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="727" />
+  <Token Text=":=" UId="728" />
+  <Blank Num="1" UId="729" />
+  <Access Scope="LocalConstant" UId="730">
+    <Constant Name="AUTO_RUNNING" UId="731" />
+  </Access>
+  <Token Text=";" UId="734" />
+  <NewLine Num="1" UId="735" />
+  <Blank Num="8" UId="736" />
+  <Token Text="END_IF" UId="737" />
+  <Token Text=";" UId="738" />
+  <NewLine Num="1" UId="739" />
+  <Blank Num="8" UId="740" />
+  <NewLine Num="1" UId="741" />
+  <Token Text="END_CASE" UId="742" />
+  <Token Text=";" UId="743" />
+  <NewLine Num="2" UId="744" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="745">
+    <Text UId="746"> ------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="747" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="748">
+    <Text UId="749"> OUTPUT MAPPING</Text>
+  </LineComment>
+  <NewLine Num="1" UId="750" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="751">
+    <Text UId="752"> ------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="753" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="754">
+    <Text UId="755"> GateUnlockPermissive drives O_S1_SolenoidEnergise (assumed</Text>
+  </LineComment>
+  <NewLine Num="1" UId="756" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="757">
+    <Text UId="758"> energise=unlock) in FB_GateAccessControl. In RESETTING /</Text>
+  </LineComment>
+  <NewLine Num="1" UId="759" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="760">
+    <Text UId="761"> READY_TO_RESTART / AUTO_RUNNING the gate must be LOCKED,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="762" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="763">
+    <Text UId="764"> so permissive is FALSE (commands lock, per assumption).</Text>
+  </LineComment>
+  <NewLine Num="1" UId="765" />
+  <Access Scope="LocalVariable" UId="766">
+    <Symbol UId="767">
+      <Component Name="GateUnlockPermissive" UId="768" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="769" />
+  <Token Text=":=" UId="770" />
+  <Blank Num="1" UId="771" />
+  <Token Text="(" UId="772" />
+  <Access Scope="LocalVariable" UId="773">
+    <Symbol UId="774">
+      <Component Name="CurrentState" UId="775" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="776" />
+  <Token Text="=" UId="777" />
+  <Blank Num="1" UId="778" />
+  <Access Scope="LocalConstant" UId="779">
+    <Constant Name="SAFE_TO_UNLOCK" UId="780" />
+  </Access>
+  <Token Text=")" UId="783" />
+  <NewLine Num="1" UId="784" />
+  <Token Text="OR" UId="785" />
+  <Blank Num="1" UId="786" />
+  <Token Text="(" UId="787" />
+  <Access Scope="LocalVariable" UId="788">
+    <Symbol UId="789">
+      <Component Name="CurrentState" UId="790" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="791" />
+  <Token Text="=" UId="792" />
+  <Blank Num="1" UId="793" />
+  <Access Scope="LocalConstant" UId="794">
+    <Constant Name="ACCESS_MANUAL_MODE" UId="795" />
+  </Access>
+  <Token Text=")" UId="798" />
+  <NewLine Num="1" UId="799" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="800">
+    <Text UId="801"> OR (#CurrentState = #READY_TO_RESET)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="802" />
+  <Token Text=";" UId="803" />
+  <NewLine Num="2" UId="804" />
+  <Access Scope="LocalVariable" UId="805">
+    <Symbol UId="806">
+      <Component Name="StopNewAutoCycles" UId="807" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="808" />
+  <Token Text=":=" UId="809" />
+  <Blank Num="1" UId="810" />
+  <Token Text="NOT" UId="811" />
+  <Blank Num="1" UId="812" />
+  <Token Text="(" UId="813" />
+  <Access Scope="LocalVariable" UId="814">
+    <Symbol UId="815">
+      <Component Name="CurrentState" UId="816" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="817" />
+  <Token Text="=" UId="818" />
+  <Blank Num="1" UId="819" />
+  <Access Scope="LocalConstant" UId="820">
+    <Constant Name="AUTO_RUNNING" UId="821" />
+  </Access>
+  <Token Text=")" UId="824" />
+  <Token Text=";" UId="825" />
+  <NewLine Num="1" UId="826" />
+  <Access Scope="LocalVariable" UId="827">
+    <Symbol UId="828">
+      <Component Name="ManualModeActive" UId="829" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="830" />
+  <Token Text=":=" UId="831" />
+  <Blank Num="1" UId="832" />
+  <Token Text="(" UId="833" />
+  <Access Scope="LocalVariable" UId="834">
+    <Symbol UId="835">
+      <Component Name="CurrentState" UId="836" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="837" />
+  <Token Text="=" UId="838" />
+  <Blank Num="1" UId="839" />
+  <Access Scope="LocalConstant" UId="840">
+    <Constant Name="ACCESS_MANUAL_MODE" UId="841" />
+  </Access>
+  <Token Text=")" UId="844" />
+  <Token Text=";" UId="845" />
+  <NewLine Num="2" UId="846" />
+  <Access Scope="LocalVariable" UId="847">
+    <Symbol UId="848">
+      <Component Name="AutoModeAllowed" UId="849" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="850" />
+  <Token Text=":=" UId="851" />
+  <Blank Num="1" UId="852" />
+  <Token Text="(" UId="853" />
+  <Access Scope="LocalVariable" UId="854">
+    <Symbol UId="855">
+      <Component Name="CurrentState" UId="856" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="857" />
+  <Token Text="=" UId="858" />
+  <Blank Num="1" UId="859" />
+  <Access Scope="LocalConstant" UId="860">
+    <Constant Name="AUTO_RUNNING" UId="861" />
+  </Access>
+  <Token Text=")" UId="864" />
+  <NewLine Num="1" UId="865" />
+  <Token Text="AND" UId="866" />
+  <Blank Num="1" UId="867" />
+  <Access Scope="LocalVariable" UId="868">
+    <Symbol UId="869">
+      <Component Name="GateClosed" UId="870" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="871" />
+  <Token Text="AND" UId="872" />
+  <Blank Num="1" UId="873" />
+  <Access Scope="LocalVariable" UId="874">
+    <Symbol UId="875">
+      <Component Name="GateLockedFeedback" UId="876" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="877" />
+  <Token Text="AND" UId="878" />
+  <Blank Num="1" UId="879" />
+  <Access Scope="LocalVariable" UId="880">
+    <Symbol UId="881">
+      <Component Name="NoEStop" UId="882" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="883" />
+  <Token Text="AND" UId="884" />
+  <Blank Num="1" UId="885" />
+  <Token Text="NOT" UId="886" />
+  <Blank Num="1" UId="887" />
+  <Access Scope="LocalVariable" UId="888">
+    <Symbol UId="889">
+      <Component Name="GateFault" UId="890" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="891" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="892">
+    <Text UId="893"> AND #NoVTDLocalMode</Text>
+  </LineComment>
+  <NewLine Num="1" UId="894" />
+  <Token Text="AND" UId="895" />
+  <Blank Num="1" UId="896" />
+  <Access Scope="LocalVariable" UId="897">
+    <Symbol UId="898">
+      <Component Name="NoCrossoverPaused" UId="899" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="900" />
+  <Token Text="AND" UId="901" />
+  <Blank Num="1" UId="902" />
+  <Access Scope="LocalVariable" UId="903">
+    <Symbol UId="904">
+      <Component Name="AllDrivesHealthy" UId="905" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="906" />
+  <Token Text="AND" UId="907" />
+  <Blank Num="1" UId="908" />
+  <Access Scope="LocalVariable" UId="909">
+    <Symbol UId="910">
+      <Component Name="SafetyResetDone" UId="911" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="912" />
+  <NewLine Num="2" UId="913" />
+  <Access Scope="LocalVariable" UId="914">
+    <Symbol UId="915">
+      <Component Name="RestartLampSteadyOn" UId="916" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="917" />
+  <Token Text=":=" UId="918" />
+  <Blank Num="1" UId="919" />
+  <Token Text="(" UId="920" />
+  <Access Scope="LocalVariable" UId="921">
+    <Symbol UId="922">
+      <Component Name="CurrentState" UId="923" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="924" />
+  <Token Text="=" UId="925" />
+  <Blank Num="1" UId="926" />
+  <Access Scope="LocalConstant" UId="927">
+    <Constant Name="AUTO_RUNNING" UId="928" />
+  </Access>
+  <Token Text=")" UId="931" />
+  <Token Text=";" UId="932" />
+  <NewLine Num="1" UId="933" />
+  <Access Scope="LocalVariable" UId="934">
+    <Symbol UId="935">
+      <Component Name="RTE_LampSteadyOn" UId="936" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="937" />
+  <Token Text=":=" UId="938" />
+  <Blank Num="1" UId="939" />
+  <Token Text="(" UId="940" />
+  <Access Scope="LocalVariable" UId="941">
+    <Symbol UId="942">
+      <Component Name="CurrentState" UId="943" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="944" />
+  <Token Text="=" UId="945" />
+  <Blank Num="1" UId="946" />
+  <Access Scope="LocalConstant" UId="947">
+    <Constant Name="SAFE_TO_UNLOCK" UId="948" />
+  </Access>
+  <Token Text=")" UId="951" />
+  <Token Text=";" UId="952" />
+  <NewLine Num="1" UId="953" />
+  <Access Scope="LocalVariable" UId="954">
+    <Symbol UId="955">
+      <Component Name="ReqFlash_RTE_Lamp" UId="956" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="957" />
+  <Token Text=":=" UId="958" />
+  <Blank Num="1" UId="959" />
+  <Token Text="(" UId="960" />
+  <Access Scope="LocalVariable" UId="961">
+    <Symbol UId="962">
+      <Component Name="CurrentState" UId="963" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="964" />
+  <Token Text="=" UId="965" />
+  <Blank Num="1" UId="966" />
+  <Access Scope="LocalConstant" UId="967">
+    <Constant Name="RTE_REQUESTED" UId="968" />
+  </Access>
+  <Token Text=")" UId="971" />
+  <Blank Num="1" UId="972" />
+  <Token Text="AND" UId="973" />
+  <Blank Num="1" UId="974" />
+  <Access Scope="GlobalVariable" UId="975">
+    <Symbol UId="976">
+      <Component Name="Clock_1Hz" UId="977">
+        <BooleanAttribute Name="HasQuotes" UId="978">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="979" />
+  <NewLine Num="1" UId="980" />
+  <Access Scope="LocalVariable" UId="981">
+    <Symbol UId="982">
+      <Component Name="ReqFlash_ResetLamp" UId="983" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="984" />
+  <Token Text=":=" UId="985" />
+  <Blank Num="1" UId="986" />
+  <Token Text="(" UId="987" />
+  <Access Scope="LocalVariable" UId="988">
+    <Symbol UId="989">
+      <Component Name="CurrentState" UId="990" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="991" />
+  <Token Text="=" UId="992" />
+  <Blank Num="1" UId="993" />
+  <Access Scope="LocalConstant" UId="994">
+    <Constant Name="READY_TO_RESET" UId="995" />
+  </Access>
+  <Token Text=")" UId="998" />
+  <Token Text=";" UId="999" />
+  <NewLine Num="1" UId="1000" />
+  <Access Scope="LocalVariable" UId="1001">
+    <Symbol UId="1002">
+      <Component Name="ReqFlash_RestartLamp" UId="1003" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1004" />
+  <Token Text=":=" UId="1005" />
+  <Blank Num="1" UId="1006" />
+  <Token Text="(" UId="1007" />
+  <Access Scope="LocalVariable" UId="1008">
+    <Symbol UId="1009">
+      <Component Name="CurrentState" UId="1010" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1011" />
+  <Token Text="=" UId="1012" />
+  <Blank Num="1" UId="1013" />
+  <Access Scope="LocalConstant" UId="1014">
+    <Constant Name="READY_TO_RESTART" UId="1015" />
+  </Access>
+  <Token Text=")" UId="1018" />
+  <Token Text=";" UId="1019" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FB>
+</Document>

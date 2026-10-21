@@ -1,0 +1,1490 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-20T12:46:53.1203727Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FC ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="String_1" Datatype="String" Accessibility="Public" />
+    <Member Name="String_2" Datatype="String" Accessibility="Public" />
+    <Member Name="String_3" Datatype="String" Accessibility="Public" />
+    <Member Name="String_4" Datatype="String" Accessibility="Public" />
+    <Member Name="String_5" Datatype="String" Accessibility="Public" />
+    <Member Name="String_6" Datatype="String" Accessibility="Public" />
+  </Section>
+  <Section Name="Output" />
+  <Section Name="InOut" />
+  <Section Name="Temp" />
+  <Section Name="Constant">
+    <Member Name="Empty" Datatype="String" Accessibility="Public" />
+  </Section>
+  <Section Name="Return">
+    <Member Name="Ret_Val" Datatype="&quot;Shuttle_MQTT_Status_Msg&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Request_ID" Datatype="DInt" />
+          <Member Name="Position_ID" Datatype="DInt" />
+          <Member Name="Destination_ID" Datatype="DInt" />
+          <Member Name="Distance_Remaining" Datatype="DInt" />
+          <Member Name="Position_X" Datatype="DInt" />
+          <Member Name="Position_Y" Datatype="DInt" />
+          <Member Name="Floor" Datatype="Int" />
+          <Member Name="Operation_Mode" Datatype="String" />
+          <Member Name="Operational_State" Datatype="String" />
+          <Member Name="Load_State" Datatype="String" />
+          <Member Name="Error_Vehicle_1" Datatype="UInt" />
+          <Member Name="Error_Vehicle_2" Datatype="UInt" />
+          <Member Name="Error_Vehicle_3" Datatype="UInt" />
+          <Member Name="Error_Vehicle_4" Datatype="UInt" />
+          <Member Name="Error_Vehicle_5" Datatype="UInt" />
+          <Member Name="Error_Vehicle_6" Datatype="UInt" />
+          <Member Name="Sensor_Inputs" Datatype="UInt" />
+          <Member Name="Sensor_Outputs" Datatype="UInt" />
+          <Member Name="Reader_Value" Datatype="DInt" />
+          <Member Name="Pallet_Type" Datatype="String" />
+          <Member Name="Energy_Level" Datatype="UInt" />
+          <Member Name="Battery_Voltage" Datatype="UInt" />
+          <Member Name="Paused" Datatype="Bool" />
+          <Member Name="Last_Received_Order_ID" Datatype="Int" />
+          <Member Name="Current_Order_ID" Datatype="Int" />
+          <Member Name="Last_Finished_Order_ID" Datatype="Int" />
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>ParseShuttle_Status</Name>
+      <Namespace />
+      <Number>16</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <Access Scope="LocalVariable" UId="21">
+    <Symbol UId="22">
+      <Component Name="ParseShuttle_Status" UId="23" />
+      <Token Text="." UId="24" />
+      <Component Name="Request_ID" UId="25" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="26" />
+  <Token Text=":=" UId="27" />
+  <Blank Num="1" UId="28" />
+  <Access Scope="Call" UId="29">
+    <CallInfo UId="30" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="32">
+        <Component Name="FindDINTFieldFragmented" UId="31" />
+      </Instance>
+      <Token Text="(" UId="33" />
+      <Parameter Name="FieldName" UId="34">
+        <Blank Num="1" UId="35" />
+        <Token Text=":=" UId="36" />
+        <Blank Num="1" UId="37" />
+        <Access Scope="LiteralConstant" UId="38">
+          <Constant UId="39">
+            <ConstantValue UId="41">'requestId'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="42" />
+      <NewLine Num="1" UId="43" />
+      <Blank Num="61" UId="44" />
+      <Parameter Name="Str1" UId="45">
+        <Blank Num="1" UId="46" />
+        <Token Text=":=" UId="47" />
+        <Blank Num="1" UId="48" />
+        <Access Scope="LocalVariable" UId="49">
+          <Symbol UId="50">
+            <Component Name="String_1" UId="51" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="52" />
+      <NewLine Num="1" UId="53" />
+      <Blank Num="61" UId="54" />
+      <Parameter Name="Str2" UId="55">
+        <Token Text=":=" UId="56" />
+        <Access Scope="LocalConstant" UId="57">
+          <Constant Name="Empty" UId="58" />
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="62" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="63" />
+  <NewLine Num="1" UId="64" />
+  <Access Scope="LocalVariable" UId="65">
+    <Symbol UId="66">
+      <Component Name="ParseShuttle_Status" UId="67" />
+      <Token Text="." UId="68" />
+      <Component Name="Position_ID" UId="69" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="70" />
+  <Token Text=":=" UId="71" />
+  <Blank Num="1" UId="72" />
+  <Access Scope="Call" UId="73">
+    <CallInfo UId="74" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="76">
+        <Component Name="FindDINTFieldFragmented" UId="75" />
+      </Instance>
+      <Token Text="(" UId="77" />
+      <Parameter Name="FieldName" UId="78">
+        <Blank Num="1" UId="79" />
+        <Token Text=":=" UId="80" />
+        <Blank Num="1" UId="81" />
+        <Access Scope="LiteralConstant" UId="82">
+          <Constant UId="83">
+            <ConstantValue UId="85">'positionId'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="86" />
+      <NewLine Num="1" UId="87" />
+      <Blank Num="62" UId="88" />
+      <Parameter Name="Str1" UId="89">
+        <Blank Num="1" UId="90" />
+        <Token Text=":=" UId="91" />
+        <Blank Num="1" UId="92" />
+        <Access Scope="LocalVariable" UId="93">
+          <Symbol UId="94">
+            <Component Name="String_1" UId="95" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="96" />
+      <NewLine Num="1" UId="97" />
+      <Blank Num="62" UId="98" />
+      <Parameter Name="Str2" UId="99">
+        <Blank Num="1" UId="100" />
+        <Token Text=":=" UId="101" />
+        <Blank Num="1" UId="102" />
+        <Access Scope="LocalConstant" UId="103">
+          <Constant Name="Empty" UId="104" />
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="108" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="109" />
+  <NewLine Num="1" UId="110" />
+  <Access Scope="LocalVariable" UId="111">
+    <Symbol UId="112">
+      <Component Name="ParseShuttle_Status" UId="113" />
+      <Token Text="." UId="114" />
+      <Component Name="Destination_ID" UId="115" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="116" />
+  <Token Text=":=" UId="117" />
+  <Blank Num="1" UId="118" />
+  <Access Scope="Call" UId="119">
+    <CallInfo UId="120" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="122">
+        <Component Name="FindDINTFieldFragmented" UId="121" />
+      </Instance>
+      <Token Text="(" UId="123" />
+      <Parameter Name="FieldName" UId="124">
+        <Blank Num="1" UId="125" />
+        <Token Text=":=" UId="126" />
+        <Blank Num="1" UId="127" />
+        <Access Scope="LiteralConstant" UId="128">
+          <Constant UId="129">
+            <ConstantValue UId="131">'destinationId'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="132" />
+      <NewLine Num="1" UId="133" />
+      <Blank Num="65" UId="134" />
+      <Parameter Name="Str1" UId="135">
+        <Blank Num="1" UId="136" />
+        <Token Text=":=" UId="137" />
+        <Blank Num="1" UId="138" />
+        <Access Scope="LocalVariable" UId="139">
+          <Symbol UId="140">
+            <Component Name="String_1" UId="141" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="142" />
+      <NewLine Num="1" UId="143" />
+      <Blank Num="65" UId="144" />
+      <Parameter Name="Str2" UId="145">
+        <Token Text=":=" UId="146" />
+        <Access Scope="LocalConstant" UId="147">
+          <Constant Name="Empty" UId="148" />
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="152" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="153" />
+  <NewLine Num="1" UId="154" />
+  <Access Scope="LocalVariable" UId="155">
+    <Symbol UId="156">
+      <Component Name="ParseShuttle_Status" UId="157" />
+      <Token Text="." UId="158" />
+      <Component Name="Distance_Remaining" UId="159" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="160" />
+  <Token Text=":=" UId="161" />
+  <Blank Num="1" UId="162" />
+  <Access Scope="Call" UId="163">
+    <CallInfo UId="164" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="166">
+        <Component Name="FindDINTFieldFragmented" UId="165" />
+      </Instance>
+      <Token Text="(" UId="167" />
+      <Parameter Name="FieldName" UId="168">
+        <Blank Num="1" UId="169" />
+        <Token Text=":=" UId="170" />
+        <Blank Num="1" UId="171" />
+        <Access Scope="LiteralConstant" UId="172">
+          <Constant UId="173">
+            <ConstantValue UId="175">'distanceRemaining'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="176" />
+      <NewLine Num="1" UId="177" />
+      <Blank Num="69" UId="178" />
+      <Parameter Name="Str1" UId="179">
+        <Blank Num="1" UId="180" />
+        <Token Text=":=" UId="181" />
+        <Blank Num="1" UId="182" />
+        <Access Scope="LocalVariable" UId="183">
+          <Symbol UId="184">
+            <Component Name="String_1" UId="185" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="186" />
+      <NewLine Num="1" UId="187" />
+      <Blank Num="69" UId="188" />
+      <Parameter Name="Str2" UId="189">
+        <Blank Num="1" UId="190" />
+        <Token Text=":=" UId="191" />
+        <Blank Num="1" UId="192" />
+        <Access Scope="LocalConstant" UId="193">
+          <Constant Name="Empty" UId="194" />
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="198" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="199" />
+  <NewLine Num="1" UId="200" />
+  <Access Scope="LocalVariable" UId="201">
+    <Symbol UId="202">
+      <Component Name="ParseShuttle_Status" UId="203" />
+      <Token Text="." UId="204" />
+      <Component Name="Position_X" UId="205" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="206" />
+  <Token Text=":=" UId="207" />
+  <Blank Num="1" UId="208" />
+  <Access Scope="Call" UId="209">
+    <CallInfo UId="210" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="212">
+        <Component Name="FindDINTFieldFragmented" UId="211" />
+      </Instance>
+      <Token Text="(" UId="213" />
+      <Parameter Name="FieldName" UId="214">
+        <Blank Num="1" UId="215" />
+        <Token Text=":=" UId="216" />
+        <Blank Num="1" UId="217" />
+        <Access Scope="LiteralConstant" UId="218">
+          <Constant UId="219">
+            <ConstantValue UId="221">'positionX'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="222" />
+      <NewLine Num="1" UId="223" />
+      <Blank Num="61" UId="224" />
+      <Parameter Name="Str1" UId="225">
+        <Blank Num="1" UId="226" />
+        <Token Text=":=" UId="227" />
+        <Blank Num="1" UId="228" />
+        <Access Scope="LocalVariable" UId="229">
+          <Symbol UId="230">
+            <Component Name="String_1" UId="231" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="232" />
+      <NewLine Num="1" UId="233" />
+      <Blank Num="61" UId="234" />
+      <Parameter Name="Str2" UId="235">
+        <Blank Num="1" UId="236" />
+        <Token Text=":=" UId="237" />
+        <Blank Num="1" UId="238" />
+        <Access Scope="LocalConstant" UId="239">
+          <Constant Name="Empty" UId="240" />
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="244" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="245" />
+  <NewLine Num="1" UId="246" />
+  <Access Scope="LocalVariable" UId="247">
+    <Symbol UId="248">
+      <Component Name="ParseShuttle_Status" UId="249" />
+      <Token Text="." UId="250" />
+      <Component Name="Position_Y" UId="251" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="252" />
+  <Token Text=":=" UId="253" />
+  <Blank Num="1" UId="254" />
+  <Access Scope="Call" UId="255">
+    <CallInfo UId="256" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="258">
+        <Component Name="FindDINTFieldFragmented" UId="257" />
+      </Instance>
+      <Token Text="(" UId="259" />
+      <Parameter Name="FieldName" UId="260">
+        <Blank Num="1" UId="261" />
+        <Token Text=":=" UId="262" />
+        <Blank Num="1" UId="263" />
+        <Access Scope="LiteralConstant" UId="264">
+          <Constant UId="265">
+            <ConstantValue UId="267">'positionY'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="268" />
+      <NewLine Num="1" UId="269" />
+      <Blank Num="61" UId="270" />
+      <Parameter Name="Str1" UId="271">
+        <Blank Num="1" UId="272" />
+        <Token Text=":=" UId="273" />
+        <Blank Num="1" UId="274" />
+        <Access Scope="LocalVariable" UId="275">
+          <Symbol UId="276">
+            <Component Name="String_1" UId="277" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="278" />
+      <NewLine Num="1" UId="279" />
+      <Blank Num="61" UId="280" />
+      <Parameter Name="Str2" UId="281">
+        <Blank Num="1" UId="282" />
+        <Token Text=":=" UId="283" />
+        <Blank Num="1" UId="284" />
+        <Access Scope="LocalConstant" UId="285">
+          <Constant Name="Empty" UId="286" />
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="290" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="291" />
+  <NewLine Num="1" UId="292" />
+  <Access Scope="LocalVariable" UId="293">
+    <Symbol UId="294">
+      <Component Name="ParseShuttle_Status" UId="295" />
+      <Token Text="." UId="296" />
+      <Component Name="Floor" UId="297" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="298" />
+  <Token Text=":=" UId="299" />
+  <Blank Num="1" UId="300" />
+  <Access Scope="Call" UId="301">
+    <CallInfo UId="302" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="304">
+        <Component Name="FindIntField" UId="303" />
+      </Instance>
+      <Token Text="(" UId="305" />
+      <Parameter Name="FieldName" UId="306">
+        <Blank Num="1" UId="307" />
+        <Token Text=":=" UId="308" />
+        <Blank Num="1" UId="309" />
+        <Access Scope="LiteralConstant" UId="310">
+          <Constant UId="311">
+            <ConstantValue UId="313">'floor'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="314" />
+      <NewLine Num="1" UId="315" />
+      <Blank Num="48" UId="316" />
+      <Parameter Name="JsonStr" UId="317">
+        <Blank Num="1" UId="318" />
+        <Token Text=":=" UId="319" />
+        <Blank Num="1" UId="320" />
+        <Access Scope="LocalVariable" UId="321">
+          <Symbol UId="322">
+            <Component Name="String_1" UId="323" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="325" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="326" />
+  <NewLine Num="1" UId="327" />
+  <Access Scope="LocalVariable" UId="328">
+    <Symbol UId="329">
+      <Component Name="ParseShuttle_Status" UId="330" />
+      <Token Text="." UId="331" />
+      <Component Name="Operation_Mode" UId="332" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="333" />
+  <Token Text=":=" UId="334" />
+  <Blank Num="1" UId="335" />
+  <Access Scope="Call" UId="336">
+    <CallInfo UId="337" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="339">
+        <Component Name="FindStringField" UId="338" />
+      </Instance>
+      <Token Text="(" UId="340" />
+      <Parameter Name="FieldName" UId="341">
+        <Blank Num="1" UId="342" />
+        <Token Text=":=" UId="343" />
+        <Blank Num="1" UId="344" />
+        <Access Scope="LiteralConstant" UId="345">
+          <Constant UId="346">
+            <ConstantValue UId="348">'operationMode'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="349" />
+      <NewLine Num="1" UId="350" />
+      <Blank Num="57" UId="351" />
+      <Parameter Name="JsonStr" UId="352">
+        <Blank Num="1" UId="353" />
+        <Token Text=":=" UId="354" />
+        <Blank Num="1" UId="355" />
+        <Access Scope="LocalVariable" UId="356">
+          <Symbol UId="357">
+            <Component Name="String_1" UId="358" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="360" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="361" />
+  <NewLine Num="1" UId="362" />
+  <Access Scope="LocalVariable" UId="363">
+    <Symbol UId="364">
+      <Component Name="ParseShuttle_Status" UId="365" />
+      <Token Text="." UId="366" />
+      <Component Name="Operational_State" UId="367" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="368" />
+  <Token Text=":=" UId="369" />
+  <Blank Num="1" UId="370" />
+  <Access Scope="Call" UId="371">
+    <CallInfo UId="372" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="374">
+        <Component Name="FindStringField" UId="373" />
+      </Instance>
+      <Token Text="(" UId="375" />
+      <Parameter Name="FieldName" UId="376">
+        <Blank Num="1" UId="377" />
+        <Token Text=":=" UId="378" />
+        <Blank Num="1" UId="379" />
+        <Access Scope="LiteralConstant" UId="380">
+          <Constant UId="381">
+            <ConstantValue UId="383">'operationState'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="384" />
+      <NewLine Num="1" UId="385" />
+      <Blank Num="60" UId="386" />
+      <Parameter Name="JsonStr" UId="387">
+        <Blank Num="1" UId="388" />
+        <Token Text=":=" UId="389" />
+        <Blank Num="1" UId="390" />
+        <Access Scope="LocalVariable" UId="391">
+          <Symbol UId="392">
+            <Component Name="String_2" UId="393" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="395" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="396" />
+  <NewLine Num="1" UId="397" />
+  <Access Scope="LocalVariable" UId="398">
+    <Symbol UId="399">
+      <Component Name="ParseShuttle_Status" UId="400" />
+      <Token Text="." UId="401" />
+      <Component Name="Load_State" UId="402" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="403" />
+  <Token Text=":=" UId="404" />
+  <Blank Num="1" UId="405" />
+  <Access Scope="Call" UId="406">
+    <CallInfo UId="407" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="409">
+        <Component Name="FindStringField" UId="408" />
+      </Instance>
+      <Token Text="(" UId="410" />
+      <Parameter Name="FieldName" UId="411">
+        <Blank Num="1" UId="412" />
+        <Token Text=":=" UId="413" />
+        <Blank Num="1" UId="414" />
+        <Access Scope="LiteralConstant" UId="415">
+          <Constant UId="416">
+            <ConstantValue UId="418">'loadState'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="419" />
+      <NewLine Num="1" UId="420" />
+      <Blank Num="53" UId="421" />
+      <Parameter Name="JsonStr" UId="422">
+        <Blank Num="1" UId="423" />
+        <Token Text=":=" UId="424" />
+        <Blank Num="1" UId="425" />
+        <Access Scope="LocalVariable" UId="426">
+          <Symbol UId="427">
+            <Component Name="String_2" UId="428" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="430" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="431" />
+  <NewLine Num="1" UId="432" />
+  <Access Scope="LocalVariable" UId="433">
+    <Symbol UId="434">
+      <Component Name="ParseShuttle_Status" UId="435" />
+      <Token Text="." UId="436" />
+      <Component Name="Error_Vehicle_1" UId="437" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="438" />
+  <Token Text=":=" UId="439" />
+  <Blank Num="1" UId="440" />
+  <Access Scope="Call" UId="441">
+    <Instruction Name="INT_TO_UINT" UId="442">
+      <Token Text="(" UId="443" />
+      <NamelessParameter UId="444">
+        <Access Scope="Call" UId="445">
+          <CallInfo UId="446" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="448">
+              <Component Name="FindINTFieldFragmented" UId="447" />
+            </Instance>
+            <Token Text="(" UId="449" />
+            <Parameter Name="FieldName" UId="450">
+              <Blank Num="1" UId="451" />
+              <Token Text=":=" UId="452" />
+              <Blank Num="1" UId="453" />
+              <Access Scope="LiteralConstant" UId="454">
+                <Constant UId="455">
+                  <ConstantValue UId="457">'errorVehicle1'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="458" />
+            <NewLine Num="1" UId="459" />
+            <Blank Num="129" UId="460" />
+            <Parameter Name="Str1" UId="461">
+              <Blank Num="1" UId="462" />
+              <Token Text=":=" UId="463" />
+              <Blank Num="1" UId="464" />
+              <Access Scope="LocalVariable" UId="465">
+                <Symbol UId="466">
+                  <Component Name="String_2" UId="467" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="468" />
+            <NewLine Num="1" UId="469" />
+            <Blank Num="129" UId="470" />
+            <Parameter Name="Str2" UId="471">
+              <Token Text=":=" UId="472" />
+              <Access Scope="LocalVariable" UId="473">
+                <Symbol UId="474">
+                  <Component Name="String_2" UId="475" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="477" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="479" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="480" />
+  <NewLine Num="1" UId="481" />
+  <Access Scope="LocalVariable" UId="482">
+    <Symbol UId="483">
+      <Component Name="ParseShuttle_Status" UId="484" />
+      <Token Text="." UId="485" />
+      <Component Name="Error_Vehicle_2" UId="486" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="487" />
+  <Token Text=":=" UId="488" />
+  <Blank Num="1" UId="489" />
+  <Access Scope="Call" UId="490">
+    <Instruction Name="INT_TO_UINT" UId="491">
+      <Token Text="(" UId="492" />
+      <NamelessParameter UId="493">
+        <Access Scope="Call" UId="494">
+          <CallInfo UId="495" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="497">
+              <Component Name="FindIntField" UId="496" />
+            </Instance>
+            <Token Text="(" UId="498" />
+            <Parameter Name="FieldName" UId="499">
+              <Blank Num="1" UId="500" />
+              <Token Text=":=" UId="501" />
+              <Blank Num="1" UId="502" />
+              <Access Scope="LiteralConstant" UId="503">
+                <Constant UId="504">
+                  <ConstantValue UId="506">'errorVehicle2'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="507" />
+            <NewLine Num="1" UId="508" />
+            <Blank Num="119" UId="509" />
+            <Parameter Name="JsonStr" UId="510">
+              <Blank Num="1" UId="511" />
+              <Token Text=":=" UId="512" />
+              <Blank Num="1" UId="513" />
+              <Access Scope="LocalVariable" UId="514">
+                <Symbol UId="515">
+                  <Component Name="String_2" UId="516" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="518" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="520" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="521" />
+  <NewLine Num="1" UId="522" />
+  <Access Scope="LocalVariable" UId="523">
+    <Symbol UId="524">
+      <Component Name="ParseShuttle_Status" UId="525" />
+      <Token Text="." UId="526" />
+      <Component Name="Error_Vehicle_3" UId="527" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="528" />
+  <Token Text=":=" UId="529" />
+  <Blank Num="1" UId="530" />
+  <Access Scope="Call" UId="531">
+    <Instruction Name="INT_TO_UINT" UId="532">
+      <Token Text="(" UId="533" />
+      <NamelessParameter UId="534">
+        <Access Scope="Call" UId="535">
+          <CallInfo UId="536" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="538">
+              <Component Name="FindIntField" UId="537" />
+            </Instance>
+            <Token Text="(" UId="539" />
+            <Parameter Name="FieldName" UId="540">
+              <Blank Num="1" UId="541" />
+              <Token Text=":=" UId="542" />
+              <Blank Num="1" UId="543" />
+              <Access Scope="LiteralConstant" UId="544">
+                <Constant UId="545">
+                  <ConstantValue UId="547">'errorVehicle3'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="548" />
+            <NewLine Num="1" UId="549" />
+            <Blank Num="119" UId="550" />
+            <Parameter Name="JsonStr" UId="551">
+              <Blank Num="1" UId="552" />
+              <Token Text=":=" UId="553" />
+              <Blank Num="1" UId="554" />
+              <Access Scope="LocalVariable" UId="555">
+                <Symbol UId="556">
+                  <Component Name="String_3" UId="557" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="559" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="561" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="562" />
+  <NewLine Num="1" UId="563" />
+  <Access Scope="LocalVariable" UId="564">
+    <Symbol UId="565">
+      <Component Name="ParseShuttle_Status" UId="566" />
+      <Token Text="." UId="567" />
+      <Component Name="Error_Vehicle_4" UId="568" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="569" />
+  <Token Text=":=" UId="570" />
+  <Blank Num="1" UId="571" />
+  <Access Scope="Call" UId="572">
+    <Instruction Name="INT_TO_UINT" UId="573">
+      <Token Text="(" UId="574" />
+      <NamelessParameter UId="575">
+        <Access Scope="Call" UId="576">
+          <CallInfo UId="577" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="579">
+              <Component Name="FindIntField" UId="578" />
+            </Instance>
+            <Token Text="(" UId="580" />
+            <Parameter Name="FieldName" UId="581">
+              <Blank Num="1" UId="582" />
+              <Token Text=":=" UId="583" />
+              <Blank Num="1" UId="584" />
+              <Access Scope="LiteralConstant" UId="585">
+                <Constant UId="586">
+                  <ConstantValue UId="588">'errorVehicle4'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="589" />
+            <NewLine Num="1" UId="590" />
+            <Blank Num="119" UId="591" />
+            <Parameter Name="JsonStr" UId="592">
+              <Blank Num="1" UId="593" />
+              <Token Text=":=" UId="594" />
+              <Blank Num="1" UId="595" />
+              <Access Scope="LocalVariable" UId="596">
+                <Symbol UId="597">
+                  <Component Name="String_3" UId="598" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="600" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="602" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="603" />
+  <NewLine Num="1" UId="604" />
+  <Access Scope="LocalVariable" UId="605">
+    <Symbol UId="606">
+      <Component Name="ParseShuttle_Status" UId="607" />
+      <Token Text="." UId="608" />
+      <Component Name="Error_Vehicle_5" UId="609" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="610" />
+  <Token Text=":=" UId="611" />
+  <Blank Num="1" UId="612" />
+  <Access Scope="Call" UId="613">
+    <Instruction Name="INT_TO_UINT" UId="614">
+      <Token Text="(" UId="615" />
+      <NamelessParameter UId="616">
+        <Access Scope="Call" UId="617">
+          <CallInfo UId="618" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="620">
+              <Component Name="FindIntField" UId="619" />
+            </Instance>
+            <Token Text="(" UId="621" />
+            <Parameter Name="FieldName" UId="622">
+              <Blank Num="1" UId="623" />
+              <Token Text=":=" UId="624" />
+              <Blank Num="1" UId="625" />
+              <Access Scope="LiteralConstant" UId="626">
+                <Constant UId="627">
+                  <ConstantValue UId="629">'errorVehicle5'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="630" />
+            <NewLine Num="1" UId="631" />
+            <Blank Num="119" UId="632" />
+            <Parameter Name="JsonStr" UId="633">
+              <Blank Num="1" UId="634" />
+              <Token Text=":=" UId="635" />
+              <Blank Num="1" UId="636" />
+              <Access Scope="LocalVariable" UId="637">
+                <Symbol UId="638">
+                  <Component Name="String_3" UId="639" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="641" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="643" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="644" />
+  <NewLine Num="1" UId="645" />
+  <Access Scope="LocalVariable" UId="646">
+    <Symbol UId="647">
+      <Component Name="ParseShuttle_Status" UId="648" />
+      <Token Text="." UId="649" />
+      <Component Name="Error_Vehicle_6" UId="650" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="651" />
+  <Token Text=":=" UId="652" />
+  <Blank Num="1" UId="653" />
+  <Access Scope="Call" UId="654">
+    <Instruction Name="INT_TO_UINT" UId="655">
+      <Token Text="(" UId="656" />
+      <NamelessParameter UId="657">
+        <Access Scope="Call" UId="658">
+          <CallInfo UId="659" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="661">
+              <Component Name="FindIntField" UId="660" />
+            </Instance>
+            <Token Text="(" UId="662" />
+            <Parameter Name="FieldName" UId="663">
+              <Blank Num="1" UId="664" />
+              <Token Text=":=" UId="665" />
+              <Blank Num="1" UId="666" />
+              <Access Scope="LiteralConstant" UId="667">
+                <Constant UId="668">
+                  <ConstantValue UId="670">'errorVehicle6'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="671" />
+            <NewLine Num="1" UId="672" />
+            <Blank Num="119" UId="673" />
+            <Parameter Name="JsonStr" UId="674">
+              <Blank Num="1" UId="675" />
+              <Token Text=":=" UId="676" />
+              <Blank Num="1" UId="677" />
+              <Access Scope="LocalVariable" UId="678">
+                <Symbol UId="679">
+                  <Component Name="String_4" UId="680" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="682" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="684" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="685" />
+  <NewLine Num="1" UId="686" />
+  <Access Scope="LocalVariable" UId="687">
+    <Symbol UId="688">
+      <Component Name="ParseShuttle_Status" UId="689" />
+      <Token Text="." UId="690" />
+      <Component Name="Sensor_Inputs" UId="691" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="692" />
+  <Token Text=":=" UId="693" />
+  <Blank Num="1" UId="694" />
+  <Access Scope="Call" UId="695">
+    <Instruction Name="INT_TO_UINT" UId="696">
+      <Token Text="(" UId="697" />
+      <NamelessParameter UId="698">
+        <Access Scope="Call" UId="699">
+          <CallInfo UId="700" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="702">
+              <Component Name="FindIntField" UId="701" />
+            </Instance>
+            <Token Text="(" UId="703" />
+            <Parameter Name="FieldName" UId="704">
+              <Blank Num="1" UId="705" />
+              <Token Text=":=" UId="706" />
+              <Blank Num="1" UId="707" />
+              <Access Scope="LiteralConstant" UId="708">
+                <Constant UId="709">
+                  <ConstantValue UId="711">'sensorInputs'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="712" />
+            <NewLine Num="1" UId="713" />
+            <Blank Num="115" UId="714" />
+            <Parameter Name="JsonStr" UId="715">
+              <Blank Num="1" UId="716" />
+              <Token Text=":=" UId="717" />
+              <Blank Num="1" UId="718" />
+              <Access Scope="LocalVariable" UId="719">
+                <Symbol UId="720">
+                  <Component Name="String_4" UId="721" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="723" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="725" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="726" />
+  <NewLine Num="1" UId="727" />
+  <Access Scope="LocalVariable" UId="728">
+    <Symbol UId="729">
+      <Component Name="ParseShuttle_Status" UId="730" />
+      <Token Text="." UId="731" />
+      <Component Name="Sensor_Outputs" UId="732" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="733" />
+  <Token Text=":=" UId="734" />
+  <Blank Num="1" UId="735" />
+  <Access Scope="Call" UId="736">
+    <Instruction Name="INT_TO_UINT" UId="737">
+      <Token Text="(" UId="738" />
+      <NamelessParameter UId="739">
+        <Access Scope="Call" UId="740">
+          <CallInfo UId="741" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="743">
+              <Component Name="FindIntField" UId="742" />
+            </Instance>
+            <Token Text="(" UId="744" />
+            <Parameter Name="FieldName" UId="745">
+              <Blank Num="1" UId="746" />
+              <Token Text=":=" UId="747" />
+              <Blank Num="1" UId="748" />
+              <Access Scope="LiteralConstant" UId="749">
+                <Constant UId="750">
+                  <ConstantValue UId="752">'sensorOutputs'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="753" />
+            <NewLine Num="1" UId="754" />
+            <Blank Num="117" UId="755" />
+            <Parameter Name="JsonStr" UId="756">
+              <Blank Num="1" UId="757" />
+              <Token Text=":=" UId="758" />
+              <Blank Num="1" UId="759" />
+              <Access Scope="LocalVariable" UId="760">
+                <Symbol UId="761">
+                  <Component Name="String_4" UId="762" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="764" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="766" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="767" />
+  <NewLine Num="1" UId="768" />
+  <Access Scope="LocalVariable" UId="769">
+    <Symbol UId="770">
+      <Component Name="ParseShuttle_Status" UId="771" />
+      <Token Text="." UId="772" />
+      <Component Name="Reader_Value" UId="773" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="774" />
+  <Token Text=":=" UId="775" />
+  <Blank Num="1" UId="776" />
+  <Access Scope="Call" UId="777">
+    <CallInfo UId="778" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="780">
+        <Component Name="FindDINTFieldFragmented" UId="779" />
+      </Instance>
+      <Token Text="(" UId="781" />
+      <Parameter Name="FieldName" UId="782">
+        <Blank Num="1" UId="783" />
+        <Token Text=":=" UId="784" />
+        <Blank Num="1" UId="785" />
+        <Access Scope="LiteralConstant" UId="786">
+          <Constant UId="787">
+            <ConstantValue UId="789">'readerValue'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="790" />
+      <NewLine Num="1" UId="791" />
+      <Blank Num="63" UId="792" />
+      <Parameter Name="Str1" UId="793">
+        <Blank Num="1" UId="794" />
+        <Token Text=":=" UId="795" />
+        <Blank Num="1" UId="796" />
+        <Access Scope="LocalVariable" UId="797">
+          <Symbol UId="798">
+            <Component Name="String_4" UId="799" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="800" />
+      <NewLine Num="1" UId="801" />
+      <Blank Num="61" UId="802" />
+      <Parameter Name="Str2" UId="803">
+        <Blank Num="1" UId="804" />
+        <Token Text=":=" UId="805" />
+        <Blank Num="1" UId="806" />
+        <Access Scope="LocalConstant" UId="807">
+          <Constant Name="Empty" UId="808" />
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="812" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="813" />
+  <NewLine Num="1" UId="814" />
+  <Access Scope="LocalVariable" UId="815">
+    <Symbol UId="816">
+      <Component Name="ParseShuttle_Status" UId="817" />
+      <Token Text="." UId="818" />
+      <Component Name="Pallet_Type" UId="819" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="820" />
+  <Token Text=":=" UId="821" />
+  <Blank Num="1" UId="822" />
+  <Access Scope="Call" UId="823">
+    <CallInfo UId="824" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="826">
+        <Component Name="FindStringField" UId="825" />
+      </Instance>
+      <Token Text="(" UId="827" />
+      <Parameter Name="FieldName" UId="828">
+        <Blank Num="1" UId="829" />
+        <Token Text=":=" UId="830" />
+        <Blank Num="1" UId="831" />
+        <Access Scope="LiteralConstant" UId="832">
+          <Constant UId="833">
+            <ConstantValue UId="835">'palletType'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="836" />
+      <NewLine Num="1" UId="837" />
+      <Blank Num="54" UId="838" />
+      <Parameter Name="JsonStr" UId="839">
+        <Blank Num="1" UId="840" />
+        <Token Text=":=" UId="841" />
+        <Blank Num="1" UId="842" />
+        <Access Scope="LocalVariable" UId="843">
+          <Symbol UId="844">
+            <Component Name="String_4" UId="845" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="847" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="848" />
+  <NewLine Num="1" UId="849" />
+  <Access Scope="LocalVariable" UId="850">
+    <Symbol UId="851">
+      <Component Name="ParseShuttle_Status" UId="852" />
+      <Token Text="." UId="853" />
+      <Component Name="Energy_Level" UId="854" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="855" />
+  <Token Text=":=" UId="856" />
+  <Blank Num="1" UId="857" />
+  <Access Scope="Call" UId="858">
+    <Instruction Name="INT_TO_UINT" UId="859">
+      <Token Text="(" UId="860" />
+      <NamelessParameter UId="861">
+        <Access Scope="Call" UId="862">
+          <CallInfo UId="863" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="865">
+              <Component Name="FindINTFieldFragmented" UId="864" />
+            </Instance>
+            <Token Text="(" UId="866" />
+            <Parameter Name="FieldName" UId="867">
+              <Blank Num="1" UId="868" />
+              <Token Text=":=" UId="869" />
+              <Blank Num="1" UId="870" />
+              <Access Scope="LiteralConstant" UId="871">
+                <Constant UId="872">
+                  <ConstantValue UId="874">'energyLevel'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="875" />
+            <NewLine Num="1" UId="876" />
+            <Blank Num="123" UId="877" />
+            <Parameter Name="Str1" UId="878">
+              <Blank Num="1" UId="879" />
+              <Token Text=":=" UId="880" />
+              <Blank Num="1" UId="881" />
+              <Access Scope="LocalVariable" UId="882">
+                <Symbol UId="883">
+                  <Component Name="String_5" UId="884" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="885" />
+            <NewLine Num="1" UId="886" />
+            <Blank Num="123" UId="887" />
+            <Parameter Name="Str2" UId="888">
+              <Token Text=":=" UId="889" />
+              <Access Scope="LocalVariable" UId="890">
+                <Symbol UId="891">
+                  <Component Name="String_5" UId="892" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="894" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="896" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="897" />
+  <NewLine Num="1" UId="898" />
+  <Access Scope="LocalVariable" UId="899">
+    <Symbol UId="900">
+      <Component Name="ParseShuttle_Status" UId="901" />
+      <Token Text="." UId="902" />
+      <Component Name="Battery_Voltage" UId="903" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="904" />
+  <Token Text=":=" UId="905" />
+  <Blank Num="1" UId="906" />
+  <Access Scope="Call" UId="907">
+    <Instruction Name="INT_TO_UINT" UId="908">
+      <Token Text="(" UId="909" />
+      <NamelessParameter UId="910">
+        <Access Scope="Call" UId="911">
+          <CallInfo UId="912" BlockType="FC">
+            <Instance Scope="GlobalVariable" UId="914">
+              <Component Name="FindIntField" UId="913" />
+            </Instance>
+            <Token Text="(" UId="915" />
+            <Parameter Name="FieldName" UId="916">
+              <Blank Num="1" UId="917" />
+              <Token Text=":=" UId="918" />
+              <Blank Num="1" UId="919" />
+              <Access Scope="LiteralConstant" UId="920">
+                <Constant UId="921">
+                  <ConstantValue UId="923">'batteryVoltage'</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="924" />
+            <NewLine Num="1" UId="925" />
+            <Blank Num="119" UId="926" />
+            <Parameter Name="JsonStr" UId="927">
+              <Blank Num="1" UId="928" />
+              <Token Text=":=" UId="929" />
+              <Blank Num="1" UId="930" />
+              <Access Scope="LocalVariable" UId="931">
+                <Symbol UId="932">
+                  <Component Name="String_5" UId="933" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="935" />
+          </CallInfo>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="937" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="938" />
+  <NewLine Num="1" UId="939" />
+  <Access Scope="LocalVariable" UId="940">
+    <Symbol UId="941">
+      <Component Name="ParseShuttle_Status" UId="942" />
+      <Token Text="." UId="943" />
+      <Component Name="Paused" UId="944" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="945" />
+  <Token Text=":=" UId="946" />
+  <Blank Num="1" UId="947" />
+  <Access Scope="Call" UId="948">
+    <CallInfo UId="949" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="951">
+        <Component Name="FindBoolField" UId="950" />
+      </Instance>
+      <Token Text="(" UId="952" />
+      <Parameter Name="FieldName" UId="953">
+        <Blank Num="1" UId="954" />
+        <Token Text=":=" UId="955" />
+        <Blank Num="1" UId="956" />
+        <Access Scope="LiteralConstant" UId="957">
+          <Constant UId="958">
+            <ConstantValue UId="960">'paused'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="961" />
+      <NewLine Num="1" UId="962" />
+      <Blank Num="47" UId="963" />
+      <Parameter Name="JsonStr" UId="964">
+        <Blank Num="1" UId="965" />
+        <Token Text=":=" UId="966" />
+        <Blank Num="1" UId="967" />
+        <Access Scope="LocalVariable" UId="968">
+          <Symbol UId="969">
+            <Component Name="String_5" UId="970" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="972" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="973" />
+  <NewLine Num="1" UId="974" />
+  <Access Scope="LocalVariable" UId="975">
+    <Symbol UId="976">
+      <Component Name="ParseShuttle_Status" UId="977" />
+      <Token Text="." UId="978" />
+      <Component Name="Last_Received_Order_ID" UId="979" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="980" />
+  <Token Text=":=" UId="981" />
+  <Blank Num="1" UId="982" />
+  <Access Scope="Call" UId="983">
+    <CallInfo UId="984" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="986">
+        <Component Name="FindIntField" UId="985" />
+      </Instance>
+      <Token Text="(" UId="987" />
+      <Parameter Name="FieldName" UId="988">
+        <Blank Num="1" UId="989" />
+        <Token Text=":=" UId="990" />
+        <Blank Num="1" UId="991" />
+        <Access Scope="LiteralConstant" UId="992">
+          <Constant UId="993">
+            <ConstantValue UId="995">'lastReceivedOrderId'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="996" />
+      <NewLine Num="1" UId="997" />
+      <Blank Num="62" UId="998" />
+      <Parameter Name="JsonStr" UId="999">
+        <Blank Num="1" UId="1000" />
+        <Token Text=":=" UId="1001" />
+        <Blank Num="1" UId="1002" />
+        <Access Scope="LocalVariable" UId="1003">
+          <Symbol UId="1004">
+            <Component Name="String_5" UId="1005" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1007" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="1008" />
+  <NewLine Num="1" UId="1009" />
+  <Blank Num="1" UId="1010" />
+  <Access Scope="LocalVariable" UId="1011">
+    <Symbol UId="1012">
+      <Component Name="ParseShuttle_Status" UId="1013" />
+      <Token Text="." UId="1014" />
+      <Component Name="Current_Order_ID" UId="1015" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1016" />
+  <Token Text=":=" UId="1017" />
+  <Blank Num="1" UId="1018" />
+  <Access Scope="Call" UId="1019">
+    <CallInfo UId="1020" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="1022">
+        <Component Name="FindIntField" UId="1021" />
+      </Instance>
+      <Token Text="(" UId="1023" />
+      <Parameter Name="FieldName" UId="1024">
+        <Blank Num="1" UId="1025" />
+        <Token Text=":=" UId="1026" />
+        <Blank Num="1" UId="1027" />
+        <Access Scope="LiteralConstant" UId="1028">
+          <Constant UId="1029">
+            <ConstantValue UId="1031">'currentOrderId'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1032" />
+      <NewLine Num="1" UId="1033" />
+      <Blank Num="57" UId="1034" />
+      <Parameter Name="JsonStr" UId="1035">
+        <Blank Num="1" UId="1036" />
+        <Token Text=":=" UId="1037" />
+        <Blank Num="1" UId="1038" />
+        <Access Scope="LocalVariable" UId="1039">
+          <Symbol UId="1040">
+            <Component Name="String_6" UId="1041" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1043" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="1044" />
+  <NewLine Num="1" UId="1045" />
+  <Blank Num="7" UId="1046" />
+  <Access Scope="LocalVariable" UId="1047">
+    <Symbol UId="1048">
+      <Component Name="ParseShuttle_Status" UId="1049" />
+      <Token Text="." UId="1050" />
+      <Component Name="Last_Finished_Order_ID" UId="1051" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1052" />
+  <Token Text=":=" UId="1053" />
+  <Blank Num="1" UId="1054" />
+  <Access Scope="Call" UId="1055">
+    <CallInfo UId="1056" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="1058">
+        <Component Name="FindIntField" UId="1057" />
+      </Instance>
+      <Token Text="(" UId="1059" />
+      <Parameter Name="FieldName" UId="1060">
+        <Blank Num="1" UId="1061" />
+        <Token Text=":=" UId="1062" />
+        <Blank Num="1" UId="1063" />
+        <Access Scope="LiteralConstant" UId="1064">
+          <Constant UId="1065">
+            <ConstantValue UId="1067">'lastFinishedOrderId'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1068" />
+      <NewLine Num="1" UId="1069" />
+      <Blank Num="69" UId="1070" />
+      <Parameter Name="JsonStr" UId="1071">
+        <Blank Num="1" UId="1072" />
+        <Token Text=":=" UId="1073" />
+        <Blank Num="1" UId="1074" />
+        <Access Scope="LocalVariable" UId="1075">
+          <Symbol UId="1076">
+            <Component Name="String_6" UId="1077" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1079" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="1080" />
+  <NewLine Num="1" UId="1081" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FC>
+</Document>

@@ -1,0 +1,94 @@
+// FC "MT_ACT_Application" 30  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+   // RETURN : Void
+--- Network 1  Comment: All the cyclical read and write commands can be issued from this Function Block.
+The cyclic commands are triggered following a positive trigger. These commands are Tare Immediate, Tare Stable, Zero Immediate, Zero Stable, Pretare and Clear Tare. 
+Upon successful execution of these commands, the DONE output bit will be set ON.
+ERROR output bit will be set on if there is an error with the command execution.
+Note: Only one cyclic command is possible at any one time.
+If Net weight is required after executed a zero or tare command, insert decimal value "3" into the "WeightCmd" variable before triggering the cyclic scale command. Else, with decimal value "1" in the "WeightCmd" variable, the Function Block will return Gross Weight after the cyclic scale command. 
+"DataOK" bit is set ON when the scale is in operation mode, not overloaded and not underload. | Title: Cyclic Weighing Data
+   CALL FB "SAI_Cyclic_WeightProc"  instance "SAI_Cyclic_WeightProc_DB"
+   operands: SAI_Cyclic_WeightProc_DB.WeightCmd, MB Device Status, SAI_Cyclic_WeightProc_DB.TareImmediate, SAI_Cyclic_WeightProc_DB.TareStable, SAI_Cyclic_WeightProc_DB.ZeroImmediate, SAI_Cyclic_WeightProc_DB.ZeroStable, SAI_Cyclic_WeightProc_DB.PreTareValue, SAI_Cyclic_WeightProc_DB.PreTare, SAI_Cyclic_WeightProc_DB.ClearTare, MB Measuring Value, MB Response, MB Command Value, MB Command, SAI_Cyclic_WeightProc_DB.RealTimeWeight, SAI_Cyclic_WeightProc_DB.StableWeight, SAI_Cyclic_WeightProc_DB.DataOK, SAI_Cyclic_WeightProc_DB.Motion, SAI_Cyclic_WeightProc_DB.NetMode, SAI_Cyclic_WeightProc_DB.Alarm, SAI_Cyclic_WeightProc_DB.Done, SAI_Cyclic_WeightProc_DB.Error
+--- Network 2  Comment: This Tunction Block reads and monitors and HeartBeat bit of the connected weighing transmitter.
+Under normal operating mode, the HeartBeat bit is pulsing in an interval of 1 second. | Title: HeartBeat Monitoring
+   CALL FB "SAI_Cyclic_CheckAlive"  instance "SAI_Cyclic_CheckAlive_DB"
+   operands: MB Device Status, SAI_Cyclic_CheckAlive_DB.Alive, SAI_Cyclic_CheckAlive_DB.HeartBeat
+--- Network 3  Comment: Trigger on the Read input parameter to start reading the scale capacity and increment values from the connected weighing transmitter.
+This Read bit will be turned off by the Function Block upon completion of reading process.
+Both Scale Capacity and Increment are Floating Point values (4 bytes).
+Done output bit will be turned ON if the reading process is successfull.
+Error output bit will be tjurned ON if there is any error during the reading process. | Title: Read Scale Adjustment Settings: Scale Capacity; Increment
+   CALL FB "SAI_IND_ReadAdjustSettings"  instance "SAI_IND_ReadAdjustSettings_DB"
+   operands: SAI_IND_ReadAdjustSettings_DB.Read, SAI_IND_ReadAdjustSettings_DB.ScaleCapacity, SAI_IND_ReadAdjustSettings_DB.Increment, SAI_IND_ReadAdjustSettings_DB.Done, SAI_IND_ReadAdjustSettings_DB.Error
+--- Network 4  Comment: Trigger on the Write input parameter to start writing the new scale capacity and increment settings to the connected weighing transmitter.
+Both Scale Capacity and Increment are Floating Point values (4 bytes).
+Make sure both settings are valid and correct before triggering the Write input bit.
+This Write bit will be turned off by the Function Block upon completion of writing process.
+Done output bit will be set ON if the reading process is successfull.
+Error output bit will be set ON if there is any error during the reading process. | Title: Write new Scale Adjustment Settings: Scale Capacity; Increment
+   CALL FB "SAI_IND_WriteAdjustSettings"  instance "SAI_IND_WriteAdjustSettings_DB"
+   operands: SAI_IND_WriteAdjustSettings_DB.ScaleCapacity, SAI_IND_WriteAdjustSettings_DB.Increment, SAI_IND_WriteAdjustSettings_DB.Write, SAI_IND_WriteAdjustSettings_DB.Done, SAI_IND_WriteAdjustSettings_DB.Error
+--- Network 5  Comment: Zero adjustment has to be performed first before Linearity or CalFree adjustments.
+Switch ON the Input bit START to begin the zero adjustment procedure. This START bit will be turned OFF by the Function Block upon completion of adjustment. 
+Done output bit will be set ON if the adjustment process is successfull.
+Error output bit will be set ON if there is an error during the adjustment process. | Title: Zero Adjustment
+   CALL FB "SAI_IND_ZeroAdjust"  instance "SAI_IND_ZeroAdjust_DB"
+   operands: SAI_IND_ZeroAdjust_DB.Start, SAI_IND_ZeroAdjust_DB.Process, SAI_IND_ZeroAdjust_DB.Done, SAI_IND_ZeroAdjust_DB.Error
+--- Network 6  Comment: Zero adjustment has to be performed prior to this linearity adjustment procedure.
+
+1. Specify how many linearity adjustment points to be performed by loading interger 0, 1, 2 or 3 into LinearityRange (0 for 2 points, 1 for 3 points, 2 for 4 points and 3 for 5 points). Please be noted that the earlier performed zero adjustment point is considered as the first adjustment point (Point #1).
+
+2. Configure all the adjustment weight values into xLow, Low, Middle and High (for e.g. 5-point adjustment requires all 4 weights: High, Middle, Low and xLow; 3-point requires High and Middle; 2-point only requies High as the 1st point is the zero reference)
+
+3. Make sure the Linearity Range parameter and all the adjustment weight values are configured correctly before starting the adjustment process. Invalid or incomplete parameters will cause the Function Block to turn on the Error output bit.
+
+4. Trigger ON  Input Start bit to start the span adjustment. This Start bit will be turned off by the Function Block upon completion/ cancellation or error condition. 
+
+5. Once started, CurrentPoint shows the current linearity point to be adjusted; CurrentWeight shows current adjustment weight to be loaded onto the scale. The LoadWeight output bit will be set ON to request for new adjustment weight. 
+
+6. After loading the new adjustment weight, acknowledge this by triggering the ConfirmWeight parameter (boolean) ON. The Function Block will then proceed to the next adjustment point and turn off this ConfirmWeight bit.
+
+7. Output bit - Process signifies that the adjustment of current point is in process.
+
+8. Input Parameter Bit Cancel is used to cancel/ abort the adjustment process | Title: Span Adjustment
+   CALL FB "SAI_IND_SpanAdjust"  instance "SAI_IND_SpanAdjust_DB"
+   operands: SAI_IND_SpanAdjust_DB.Hi_Weight, SAI_IND_SpanAdjust_DB.Mid_Weight, SAI_IND_SpanAdjust_DB.Low_Weight, SAI_IND_SpanAdjust_DB.xLow_Weight, SAI_IND_SpanAdjust_DB.LinearityRange, SAI_IND_SpanAdjust_DB.Start, SAI_IND_SpanAdjust_DB.ConfirmWeight, SAI_IND_SpanAdjust_DB.Cancel, SAI_IND_SpanAdjust_DB.CurrentPoint, SAI_IND_SpanAdjust_DB.CurrentWeight, SAI_IND_SpanAdjust_DB.LoadWeight, SAI_IND_SpanAdjust_DB.Process, SAI_IND_SpanAdjust_DB.Done, SAI_IND_SpanAdjust_DB.Error, SAI_IND_SpanAdjust_DB.Cancelled
+--- Network 7  Comment: CalFree is a method of analog scale adjustment without using test weights. It takes the factory calibrated load cell Rated Output (mV/ Vexc.) and user defined scale capacity to build a linear loading curve.
+This method is usually applied to huge capacity scales in which calibration with test weights or other material is not feasible at all. 
+
+For Powercell scale, please use the CalFree+ Function Block instead.
+
+1. Write in.. 
+(a) CalFree Scale Capacity (Index 0x401A), 
+(b) CalFree Scale unit (Index 0x401C, Decimal 0 - gram; Decimal 1 - KG; Decimal 2 - Pounds) and 
+(c) Load Cells' averaged Rated Output (Index 0x401D, in mV/V)
+**Make sure the transmitter's scale capacity has already been configured to the same value as CalFree Capacity prior to this CalFree adjustment.
+
+2. Trigger Input bit Start for CalFree adjustment (Index 0x401A)
+
+3. Output bit Done will be turned ON after successful completion of the process
+Error output bit will be turned ON if there is an error during the adjustment process | Title: CalFree Adjustment
+   CALL FB "SAI_IND_CalFree"  instance "SAI_IND_CalFree_DB"
+   operands: SAI_IND_CalFree_DB.RatedCapacity, SAI_IND_CalFree_DB.Unit, SAI_IND_CalFree_DB.RatedOutput, SAI_IND_CalFree_DB.Start, SAI_IND_CalFree_DB.Process, SAI_IND_CalFree_DB.Done, SAI_IND_CalFree_DB.Error
+--- Network 8  Comment: Use this Function Block to read one alibi record. 
+1. Set the alibi transaction number to be read.
+2. Toggle the Get_Record bit to perform read. Alibi record will be written into Alibi_Array (an array of 44 Bytes).  
+3. The read alibi record transaction gross, net and tare weights (all LREAL format) as well as weight unit are available at the FB's output.
+4. the Alibi_Array structure data format is as below:
+
+For Base, RateControl, Tank Vessel:
+Struct(44 Bytes)
+{
+Byte[20]: Date & time; //ASCII String  =>Byte0-19
+Long:     Transaction Number;            =>Byte20-23
+Float32:  Gross Weight;                       =>Byte24-27
+Float32:  Net Weight;                           =>Byte28-31
+Float32:  Tare Weight;                         =>Byte32-35
+Byte:     Tare Mode;                              =>Byte36
+Byte:     Unit;                                          =>Byte37
+Byte[6]:  Not Used;                              =>Byte38-43
+} | Title: Alibi Record Read
+   CALL FB "SAI_IND360Base_AlibiRead"  instance "SAI_IND_AlibiRead_DB"
+   operands: SAI_IND_AlibiRead_DB.ePrint, SAI_IND_AlibiRead_DB.RecordNumber, SAI_IND_AlibiRead_DB.Get_TransactionNum, SAI_IND_AlibiRead_DB.Set_TransactionNum, SAI_IND_AlibiRead_DB.Get_Alibi, SAI_IND_AlibiData.Alibi_RawData, SAI_IND_AlibiRead_DB.Done, SAI_IND_AlibiRead_DB.Error

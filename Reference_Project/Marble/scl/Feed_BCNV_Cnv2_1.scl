@@ -1,0 +1,67 @@
+FUNCTION "Feed_BCNV_Cnv2_1"   // FC 30, author 
+
+VAR_INPUT
+   HMI_No : UInt;
+   System_No : UInt;
+   Level : UInt;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+//Sensors
+"CNV_HMI"."Forward"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Inputs.Forward_Sensor;
+"CNV_HMI"."Backward"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Inputs.Backward_Sensor;
+
+//Status
+"CNV_HMI"."Mode"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Mode;
+"CNV_HMI"."Enabled"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Enabled;
+"CNV_HMI"."Error"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Error;
+"CNV_HMI"."Warning"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Warning;
+"CNV_HMI"."Stopped"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Stopped;
+"CNV_HMI"."Running"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Running;
+"CNV_HMI"."Ready_For_Task"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Ready_For_Task;
+"CNV_HMI"."Occupied"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Cnv_Occupied;
+"CNV_HMI"."SM_State"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.SM_State;
+IF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Forward THEN
+    "CNV_HMI"."Motor_Direction"[#HMI_No] := 1;
+ELSIF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Reverse THEN
+    "CNV_HMI"."Motor_Direction"[#HMI_No] := 2;
+ELSE
+    "CNV_HMI"."Motor_Direction"[#HMI_No] := 0;
+END_IF;
+"CNV_HMI"."Motor_Speed_Requested"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Speed;
+"CNV_HMI"."Motor_Speed_Actual"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Speed_Actual;
+"CNV_HMI"."Motor_Ready"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Ready;
+"CNV_HMI"."Motor_Current_Actual"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Actual_Current;
+"CNV_HMI"."Motor_Actual_Torque"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Actual_Torque;
+"CNV_HMI"."Transfer_To_ID"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Transfer_To_ID;
+"CNV_HMI"."Transfer_From_ID"[#HMI_No] := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Transfer_From_ID;
+
+IF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Error THEN
+    "CNV_HMI"."Motor_Status"[#HMI_No] := 2;
+ELSIF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Enabled THEN
+    "CNV_HMI"."Motor_Status"[#HMI_No] := 1;
+ELSIF NOT "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Motor.Enabled THEN
+    "CNV_HMI"."Motor_Status"[#HMI_No] := 0;
+END_IF;
+
+//Instructions
+"Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Stop := "CNV_HMI"."Stop"[#HMI_No];
+"Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Execute := "CNV_HMI"."Manual_Fwd"[#HMI_No] OR "CNV_HMI"."Manual_Bwd"[#HMI_No];
+"Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Mode_Change := "CNV_HMI"."Mode_Change"[#HMI_No];
+"Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Enable := "CNV_HMI"."Enable"[#HMI_No];
+"Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Reset := "CNV_HMI"."Reset"[#HMI_No] OR "Screen_DB_1".Reset_All[#HMI_No];
+IF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Mode <> 3 THEN
+    "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Foward := "CNV_HMI"."Manual_Fwd"[#HMI_No];
+    "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Backward := "CNV_HMI"."Manual_Bwd"[#HMI_No];
+    "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Start_Transfer := "CNV_HMI"."Start_Transfer"[#HMI_No];
+    IF "CNV_HMI".In_Out[#System_No] THEN // 0 = ECNV RECEIVE, 1 = ECONV SEND
+        "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Transfer_To_ID := 0;
+        "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Transfer_From_ID := DINT#100000 + (#Level * 100) + #System_No;
+    ELSE
+        "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Transfer_To_ID := DINT#100000 + (#Level * 100) + #System_No;
+        "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv2.Instruction.Transfer_From_ID := 0;
+    END_IF;
+END_IF;
+
+END_FUNCTION

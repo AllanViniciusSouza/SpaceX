@@ -1,0 +1,26 @@
+DATA_BLOCK "Cnv_L2_FB_DB"   // InstanceDB 27  instance of "Buffer_Conveyor_FB"
+
+VAR_INPUT
+   Cnv_Settings : "Buffer_Cnv_Settings";
+   VTD_Level : UInt;
+   ECnv_TIP : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Control : "Buffer_Cnv_Control";
+   SinaSpeed : SinaSpeed;
+END_VAR
+
+VAR
+   State : UInt;
+   Timer_TC : TON_TIME;
+   Timer_Transfer : TON_TIME;
+   Watchdog : TON_TIME;
+   Transfer_Direction : String;
+   MainSetpoint : Int;
+   IEC_Timer_0_Instance_1 : TON_TIME;
+   R_TRIG_Instance : R_TRIG;
+END_VAR
+
+
+// ---- start values (path : type := value)

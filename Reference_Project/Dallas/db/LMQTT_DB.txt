@@ -1,0 +1,33 @@
+DATA_BLOCK "LMQTT_DB"   // InstanceDB 43  instance of "LMQTT_DB_UDT"
+
+VAR
+   enable : Bool;
+   publish : Bool;
+   subscribe : Bool;
+   unsubscribe : Bool;
+   qos : USInt;
+   retain : Bool;
+   publishMsgLen : UDInt;
+   willMsgLen : UInt;
+   connParam : "LMQTT_typeConnParam";
+   clientIdentifier : WString;
+   username : WString;
+   password : WString;
+   willtopic : WString;
+   willMsgPayload : Array[1..128] of Byte;
+   mqttTopic : WString;
+   publishMsgPayload : Array[0..511] of Byte;
+   receivedTopic : WString;
+   receivedMsgPayload : Array[0..1024] of Byte;
+   valid : Bool;
+   done : Bool;
+   busy : Bool;
+   error : Bool;
+   status : Word;
+   diagnostics : "typeDiagnostics";
+   receivedMsgStatus : USInt;
+   receivedMsgDataLen : UDInt;
+END_VAR
+
+
+// ---- start values (path : type := value)

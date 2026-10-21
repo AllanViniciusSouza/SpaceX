@@ -1,0 +1,32 @@
+// FB "F_Lock_FB" 24  language F_FBD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   Lock_Closed_CH1 : Bool;
+   Lock_Closed_CH2 : Bool;
+   EStop_CH1 : Bool;
+   EStop_CH2 : Bool;
+   ACK : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Lock_Reset_Input1 : Bool;
+   Lock_Reset_Input2 : Bool;
+   Lock_Reset_Input3 : Bool;
+   Lock_Reset_Input4 : Bool;
+END_VAR
+
+VAR
+   GUARD_SWITCH : ESTOP1;
+   ESTOP : ESTOP1;
+END_VAR
+
+--- Network 1  Title: GUARD SWITCH
+   parts: A, ESTOP1
+   operands: #Lock_Closed_CH1, #Lock_Closed_CH2, #ACK
+--- Network 2  Title: E-STIOP
+   parts: A, ESTOP1
+   operands: #EStop_CH1, #EStop_CH2, #ACK
+--- Network 3  Title: SAFE ACKNOLEDGE
+   parts: Coil
+   operands: #ACK, #Lock_Reset_Input1, #Lock_Reset_Input2, #Lock_Reset_Input3, #Lock_Reset_Input4

@@ -1,0 +1,57 @@
+FUNCTION "VTD_Status_Update_FC"   // FC 48, author 
+
+VAR_INPUT
+   Infeed_Auto_Mode : Bool;
+   Infeed_Manual_Mode : Bool;
+   Infeed_Maintenance : Bool;
+   Infeed_Alarm : Bool;
+   Infeed_Ready : Bool;
+   Outfeed_Auto_Mode : Bool;
+   Pallet_ID : Array[1..100] of Byte;
+END_VAR
+
+VAR_OUTPUT
+   SM_To_LGX_VTD_Status : Byte;
+END_VAR
+
+VAR_IN_OUT
+   Pallet_ID_Received : Bool;
+END_VAR
+
+VAR_TEMP
+   tStatusByte : Byte;
+   ArrayHasData : Bool;
+   i : UInt;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+#tStatusByte := 0;
+
+    #tStatusByte.%X0 := #Infeed_Auto_Mode;
+    #tStatusByte.%X1 := #Infeed_Manual_Mode;
+    #tStatusByte.%X2 := #Infeed_Maintenance;
+    #tStatusByte.%X3 := #Infeed_Ready;
+    #tStatusByte.%X4 := #Infeed_Alarm;
+    
+    #ArrayHasData := FALSE;
+    
+    FOR #i := 1 TO 100 DO
+        IF #Pallet_ID[#i] <> 0 THEN
+            #ArrayHasData := TRUE;
+            EXIT;
+        END_IF;
+    END_FOR;
+    
+    #tStatusByte.%X5 := #Pallet_ID_Received AND #ArrayHasData;
+    #tStatusByte.%X6 := #Outfeed_Auto_Mode;
+    
+    IF #Pallet_ID_Received AND NOT #ArrayHasData THEN
+        #Pallet_ID_Received := FALSE;
+    END_IF;
+    
+    // Bit 5, 6: Free
+    // 
+    #SM_To_LGX_VTD_Status := #tStatusByte;
+
+END_FUNCTION

@@ -1,0 +1,33 @@
+FUNCTION "Gate_Status_Update_FC"   // FC 49, author 
+
+VAR_INPUT
+   Gate_Index : Int;
+   Request_Access : Bool;
+   Stop_Mode_Granted : Bool;
+END_VAR
+
+VAR_OUTPUT
+   DB_SM_To_LGX_Gate_Status : Array[0..10] of Byte;
+END_VAR
+
+VAR_TEMP
+   tGateByte : Byte;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+#tGateByte := 0;
+
+IF #Request_Access THEN
+    #tGateByte := #tGateByte OR BYTE#16#01;
+END_IF; // Bit 0
+IF #Stop_Mode_Granted THEN
+    #tGateByte := #tGateByte OR BYTE#16#02;
+END_IF; // Bit 1
+// Bits 2..7: Free
+
+IF #Gate_Index >= 0 AND #Gate_Index <= 10 THEN
+    #DB_SM_To_LGX_Gate_Status[#Gate_Index] := #tGateByte;
+END_IF;
+
+END_FUNCTION

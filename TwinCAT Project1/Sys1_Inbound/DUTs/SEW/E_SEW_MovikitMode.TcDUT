@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_SEW_MovikitMode" Id="{e3b0cd7c-01f4-4501-bff8-af042770720a}">
+    <Declaration><![CDATA[// MOVIKIT Positioning operating modes (PO 6 setpoint / PI 6 actual).
+// Source: SEW manual 33959862, chapter 8.1 "Operating modes".
+{attribute 'qualified_only'}
+TYPE E_SEW_MovikitMode :
+(
+    DefaultMode := 0,                    // Enabling or disabling the axes
+    JogPositionControlled := 100,        // FCB 20, encoder feedback required
+    JogSpeedControlled := 101,           // FCB 05
+    Speed := 200,                        // FCB 05
+    ReferencingOffsetConfigured := 300,  // FCB 12
+    ReferencingOffsetFieldbus := 301,    // FCB 12
+    PositioningAbsolute := 400,          // FCB 09
+    PositioningRelative := 401,          // FCB 09
+    PositioningModuloPositive := 402,    // FCB 09
+    PositioningModuloNegative := 403,    // FCB 09
+    PositioningModuloShort := 404,       // FCB 09
+    TouchprobeAbsoluteDirection := 420,  // FCB 09
+    TouchprobeAbsoluteSign := 421,       // FCB 09
+    TouchprobeEndlessDirection := 422,   // FCB 09
+    TouchprobeEndlessSign := 423,        // FCB 09
+    BrakeTest := 700                     // FCB 21
+) UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

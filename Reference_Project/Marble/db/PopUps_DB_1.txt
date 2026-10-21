@@ -1,0 +1,24 @@
+DATA_BLOCK "PopUps_DB_1"   // GlobalDB 20
+
+VAR
+   Buffer_Cnv_Settings_1 : Array[1..5] of "Buffer_Cnv_Settings";
+   Buffer_Cnv_Settings_2 : Array[1..5] of "Buffer_Cnv_Settings";
+   ECnv_Settings : Array[1..5] of "ECnv_Settings";
+   VTD_Settings : Array[1..5] of "VTD_Settings";
+   Shuttle_MQTT_Settings : "MQTT_Settings";
+   Sick_Lector_Reseult : Array[1..5] of String;
+   Save_Settings : Array[1..5] of Bool;
+   Absolute_Encoder : Array[1..5] of Struct;
+   Lector_Barcode : Array[1..5] of Struct;
+   Linear_Encoder : Array[1..5] of Struct;
+   Trend : Array[1..5] of Struct;
+END_VAR
+
+
+// ---- start values (path : type := value)
+Shuttle_MQTT_Settings.MQTT_Con_Params.hwId : HW_ANY := 64
+Shuttle_MQTT_Settings.MQTT_Con_Params.broker : String := '10.0.34.2'
+Shuttle_MQTT_Settings.Client_ID : WString := WSTRING#'PLC'
+Shuttle_MQTT_Settings.Username : WString := WSTRING#'Devin'
+Shuttle_MQTT_Settings.Password : WString := WSTRING#'1'
+Shuttle_MQTT_Settings.Retain : Bool := TRUE

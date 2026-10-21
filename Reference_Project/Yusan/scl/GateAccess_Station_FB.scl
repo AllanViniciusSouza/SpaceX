@@ -1,0 +1,195 @@
+FUNCTION_BLOCK "GateAccess_Station_FB"   // FB 26, author 
+
+VAR_INPUT
+   Sys_No : UInt;
+   Right_True : Bool;
+   Switches : Byte;
+   GateLockedFeedback : Bool;
+   NoEStop : Bool;
+   I_G1_GuardOpen : Bool;
+   I_L1_Unlocked : Bool;
+   FaultResetCmd : Bool;
+   AllDrivesHealthy : Bool;
+   SafetyResetDone : Bool;
+   NoVTDLocalMode : Bool;
+   NoCrossoverPaused : Bool;
+   Safe_Bypassed : Bool;
+   LGX_Secure_Access : Bool;
+   AllDevicesStopped : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Lamps : Byte;
+   O_S1_SolenoidEnergise : Bool;
+   Lock Reset : Bool;
+   CurrentState : UInt;
+   GateFault : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Gate_Station : "Gate_Station_UDT";
+END_VAR
+
+VAR
+   RTE_PB : Bool;
+   Reset_PB : Bool;
+   Restart_PB : Bool;
+   GateAccessControl : "GateAccessControl_FB";
+   ModeManager : "ModeManager_FB";
+END_VAR
+
+VAR_TEMP
+   i : UInt;
+END_VAR
+
+VAR CONSTANT
+   AUTO_RUNNING : UInt := 0;
+   RTE_REQUESTED : UInt := 1;
+   SAFE_TO_UNLOCK : UInt := 3;
+   ACCESS_MANUAL_MODE : UInt := 4;
+   RESETTING : UInt := 6;
+END_VAR
+
+BEGIN
+// IF #Right_True THEN
+//     // #Switches
+//     #Reset_PB := #Switches.%X1; //Blue button - Restart_PB
+//     #Restart_PB := #Switches.%X2; //White button - Reset_PB
+//     #RTE_PB := #Switches.%X3; //Green button - RTE_PB
+// ELSE
+// //     //Switches
+//     #Restart_PB := #Switches.%X1; //White button - Reset_PB
+//     #Reset_PB := #Switches.%X2; //Blue button - Restart_PB
+//     #RTE_PB := #Switches.%X3; //Green button - RTE_PB
+// END_IF;
+IF #Right_True THEN
+    // #Switches
+    #Reset_PB := #Switches.%X1; //Blue button - Reset_PB
+    #Restart_PB := #Switches.%X3; //Green button - Restart_PB
+    #RTE_PB := #Switches.%X2; //White button - RTE_PB
+ELSE
+    //Switches
+    #Restart_PB := #Switches.%X3; //Green button - Restart_PB
+    #Reset_PB := #Switches.%X2; //Blue button - Reset_PB
+    #RTE_PB := #Switches.%X1; //White button - RTE_PB
+END_IF;
+
+// ------------------------------------------------------
+// Step 1: run the hardware interface FB, feeding it the
+// consolidated safety signals read directly from
+// DB_SafetyLogic for this gate. GateClosed and
+// ForceRTE_Request come out ready for ModeManager below.
+// ------------------------------------------------------
+#GateAccessControl(
+                   UnlockPermissive := #ModeManager.GateUnlockPermissive,
+                   FaultResetCmd := #FaultResetCmd,
+                   I_G1_GuardOpen := #I_G1_GuardOpen,
+                   I_L1_Unlocked := #I_L1_Unlocked,
+                   GateLockedFeedback := #GateLockedFeedback,
+                   NoEStop := #NoEStop
+);
+
+// ------------------------------------------------------
+// Step 2: run the mode state machine, feeding it the
+// fresh feedback from GateAccessControl plus the same
+// consolidated safety signals and cross-subsystem
+// interlocks.
+// ------------------------------------------------------
+#ModeManager(
+             RTE_PB := #RTE_PB,
+             Reset_PB := #Reset_PB,
+             Restart_PB := #Restart_PB,
+             GateClosed := #GateAccessControl.GateClosed,
+             GateLockedFeedback := #GateLockedFeedback,
+             GateFault := #GateAccessControl.GateFault,
+             NoEStop := #NoEStop,
+             AllDrivesHealthy := #AllDrivesHealthy,
+             SafetyResetDone := #SafetyResetDone,
+             NoVTDLocalMode := #NoVTDLocalMode,
+             NoCrossoverPaused := #NoCrossoverPaused,
+             AllDevicesStopped := #Gate_Station.Secure_Access AND #AllDevicesStopped AND #LGX_Secure_Access,
+             Safe_Bypassed := #Safe_Bypassed,
+             ForceRTE := #GateAccessControl.ForceRTE_Request,
+             Reset := #FaultResetCmd
+);
+
+// ------------------------------------------------------
+// Step 3: expose local outputs for the physical wiring.
+// ------------------------------------------------------
+#O_S1_SolenoidEnergise := #GateAccessControl.O_S1_SolenoidEnergise;
+#CurrentState := #ModeManager.CurrentState;
+#GateFault := #GateAccessControl.GateFault;
+
+//Send all devices to automatic mode
+IF #ModeManager.CurrentState = #RESETTING AND #Sys_No <> 0 THEN
+    FOR #i := "Settings_DB".VTD_Sys[#Sys_No].Lowest_Level TO "Settings_DB".VTD_Sys[#Sys_No].Highest_Level DO
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Reset :=
+        "Control_DB".ECnv_Sys[#Sys_No].Instruction.Reset :=
+        "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv1.Instruction.Reset :=
+        "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv2.Instruction.Reset := TRUE;
+    END_FOR;
+    
+    IF #AllDrivesHealthy THEN
+        FOR #i := "Settings_DB".VTD_Sys[#Sys_No].Lowest_Level TO "Settings_DB".VTD_Sys[#Sys_No].Highest_Level DO
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Reset :=
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Reset :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv1.Instruction.Reset :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv2.Instruction.Reset := FALSE;
+        END_FOR;
+        
+        FOR #i := "Settings_DB".VTD_Sys[#Sys_No].Lowest_Level TO "Settings_DB".VTD_Sys[#Sys_No].Highest_Level DO
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Mode_Change :=
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv1.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv2.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv1.Safety_Stop_Cnrl.Mode :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv2.Safety_Stop_Cnrl.Mode := 3;
+            
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Enable :=
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Enable :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv1.Instruction.Enable :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv2.Instruction.Enable := TRUE;
+        END_FOR;
+    END_IF;
+END_IF;
+
+//Send all devices to manual mode
+IF #ModeManager.CurrentState = #ACCESS_MANUAL_MODE AND #Sys_No <> 0 THEN
+    FOR #i := "Settings_DB".VTD_Sys[#Sys_No].Lowest_Level TO "Settings_DB".VTD_Sys[#Sys_No].Highest_Level DO
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Mode_Change :=
+        "Control_DB".ECnv_Sys[#Sys_No].Instruction.Mode_Change :=
+        "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv1.Instruction.Mode_Change :=
+        "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv2.Instruction.Mode_Change :=
+        "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv1.Safety_Stop_Cnrl.Mode :=
+        "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[#i].Cnv2.Safety_Stop_Cnrl.Mode := 1;
+    END_FOR;
+END_IF;
+
+// IF #Right_True THEN
+//     #Lamps.%X0 := (NOT #NoEStop OR #GateAccessControl.GateFault) AND "Clock_1Hz"; //Estop lamp
+//     #Lamps.%X2 := #ModeManager.ReqFlash_RestartLamp AND "Clock_1Hz"; //White lamp - Restart_PB
+//     #Lamps.%X1 := #ModeManager.ReqFlash_ResetLamp AND "Clock_1Hz"; //Blue lamp - Reset_PB
+//     #Lamps.%X3 := #ModeManager.RestartLampSteadyOn OR #ModeManager.ReqFlash_RTE_Lamp; //Green lamp - RTE_PB
+// ELSE
+//     #Lamps.%X0 := (NOT #NoEStop OR #GateAccessControl.GateFault) AND "Clock_1Hz"; //Estop lamp
+//     #Lamps.%X2 := #ModeManager.ReqFlash_ResetLamp  AND "Clock_1Hz"; //Blue lamp - Reset_PB
+//     #Lamps.%X1 := #ModeManager.ReqFlash_RestartLamp AND "Clock_1Hz"; //White lamp - Restart_PB
+//     #Lamps.%X3 := #ModeManager.RestartLampSteadyOn OR #ModeManager.ReqFlash_RTE_Lamp; //Green lamp - RTE_PB
+// END_IF;
+IF #Right_True THEN
+    #Lamps.%X0 := (NOT #NoEStop OR #GateAccessControl.GateFault) AND "Clock_1Hz"; //Estop lamp
+    #Lamps.%X3 := (#ModeManager.ReqFlash_RestartLamp AND "Clock_1Hz") OR #ModeManager.RestartLampSteadyOn; //Green lamp - Restart_PB
+    #Lamps.%X1 := #ModeManager.ReqFlash_ResetLamp AND "Clock_1Hz"; //Blue lamp - Reset_PB
+    #Lamps.%X2 := #ModeManager.ReqFlash_RTE_Lamp OR (#ModeManager.CurrentState = #SAFE_TO_UNLOCK AND NOT #NoEStop) OR #ModeManager.CurrentState = #SAFE_TO_UNLOCK OR #ModeManager.CurrentState = #ACCESS_MANUAL_MODE; //White lamp - RTE_PB
+ELSE
+    #Lamps.%X0 := (NOT #NoEStop OR #GateAccessControl.GateFault) AND "Clock_1Hz"; //Estop lamp
+    #Lamps.%X2 := #ModeManager.ReqFlash_ResetLamp AND "Clock_1Hz"; //Blue lamp - Reset_PB
+    #Lamps.%X3 := (#ModeManager.ReqFlash_RestartLamp AND "Clock_1Hz") OR #ModeManager.RestartLampSteadyOn; //Green lamp - Restart_PB
+    #Lamps.%X1 := #ModeManager.ReqFlash_RTE_Lamp OR (#ModeManager.CurrentState = #SAFE_TO_UNLOCK AND NOT #NoEStop) OR #ModeManager.CurrentState = #SAFE_TO_UNLOCK OR #ModeManager.CurrentState = #ACCESS_MANUAL_MODE; //White lamp - RTE_PB
+END_IF;
+
+//Gate station control
+//
+#Gate_Station.Requested_Access := #ModeManager.CurrentState = #RTE_REQUESTED;
+#Gate_Station.Safe_To_Restart := #ModeManager.RestartLampSteadyOn;
+END_FUNCTION_BLOCK

@@ -1,0 +1,35 @@
+DATA_BLOCK "SAI_IND_AlibiRead_DB"   // InstanceDB 107  instance of "SAI_IND360Base_AlibiRead"
+
+VAR_INPUT
+   ID : HW_IO;
+END_VAR
+
+VAR_OUTPUT
+   Done : Bool;
+   Error : Bool;
+   GrossWeight : Real;
+   TareWeight : Real;
+   NetWeight : Real;
+   TareMode : SInt;
+   Unit : SInt;
+END_VAR
+
+VAR_IN_OUT
+   ePrint : Bool;
+   RecordNumber : DInt;
+   Get_TransactionNum : Bool;
+   Set_TransactionNum : Bool;
+   Get_Alibi : Bool;
+   Alibi_Array : Array[0..44] of Byte;
+END_VAR
+
+VAR
+   RDREC01 : RDREC;
+   RDREC02 : RDREC;
+   WRREC01 : WRREC;
+   WRREC02 : WRREC;
+   UINT : SInt;
+END_VAR
+
+
+// ---- start values (path : type := value)

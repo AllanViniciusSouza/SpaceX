@@ -1,0 +1,26 @@
+DATA_BLOCK "DB_Send_Data_To_Logistex"   // GlobalDB 901
+
+VAR
+   VTD_J1310_INFEED : "VTD_Infeed";
+   VTD_J1320_INFEED : "VTD_Infeed";
+   VTD_J1330_INFEED : "VTD_Infeed";
+   VTD_J1310_OUTFEED : "VTD_Outfeed";
+   VTD_J1320_OUTFEED : "VTD_Outfeed";
+   VTD_J1330_OUTFEED : "VTD_Outfeed";
+   VTD_STATUS : Array[1..10] of Byte;
+   PLC_STATUS : Struct
+      Hardbit : Bool;
+      PLC_E-Stop : Bool;
+   END_STRUCT;
+   CONV_SPEED : Struct
+      VTD_J1310_INF_SP : Int;
+      VTD_J1310_OUF_SP : Int;
+      VTD_J1320_INF_SP : Int;
+      VTD_J1320_OUF_SP : Int;
+      VTD_J1330_INF_SP_1 : Int;
+      VTD_J1330_OUF_SP : Int;
+   END_STRUCT;
+END_VAR
+
+
+// ---- start values (path : type := value)

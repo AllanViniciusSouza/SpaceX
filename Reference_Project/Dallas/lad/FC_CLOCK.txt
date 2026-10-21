@@ -1,0 +1,29 @@
+// FC "FC_CLOCK" 55  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_OUTPUT
+   CurrentTime : String;
+END_VAR
+
+VAR_TEMP
+   CurrentDTL : DTL;
+   RetVal : Int;
+   TempString : String;
+   strYear : String;
+   strMonth : String;
+   strDay : String;
+   strHour : String;
+   strMinute : String;
+   strSeconds : String;
+END_VAR
+
+   // RETURN : DTL
+--- Network 1  Title: Read Current Local Time
+   parts: Move, RD_LOC_T
+   operands: #RetVal, #CurrentDTL, #FC_CLOCK
+--- Network 2  Title: Converstion all data to string
+   parts: Ge, INSERT, Lt, VAL_STRG
+   operands: #CurrentDTL.YEAR, #strYear, #CurrentDTL.MONTH, #strMonth, #CurrentDTL.DAY, #strDay, #CurrentDTL.HOUR, #strHour, #CurrentDTL.MINUTE, #strMinute, #CurrentDTL.SECOND, #strSeconds
+--- Network 3  Title: Current Time String
+   parts: CONCAT
+   operands: #strMonth, #TempString, #strDay, #strYear, #strHour, #strMinute, #strSeconds, #CurrentTime

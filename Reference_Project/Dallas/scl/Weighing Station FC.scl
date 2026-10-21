@@ -1,0 +1,72 @@
+FUNCTION "Weighing Station FC"   // FC 31, author 
+
+VAR_INPUT
+   Start : Bool;
+   MinWeight : Real;
+   MaxWeight : Real;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+"R_TRIG_DB_25"(CLK:=#Start, Q=> "R_Start_WS");
+
+CASE "State_WS" OF
+    0: // IDLE / READY
+        "Control_DB"."Weighing Station".Ready := TRUE;
+        "Control_DB"."Weighing Station".Running := FALSE;
+        IF "R_Start_WS" THEN
+            "Control_DB"."Weighing Station".Done := FALSE;
+            "Control_DB"."Weighing Station".Valid := FALSE;
+            "Control_DB"."Weighing Station".Ready := FALSE;
+            "Control_DB"."Weighing Station".Error_ID := 0;
+            "State_WS" := 10;
+        END_IF;
+        
+    10:
+        "Control_DB"."Weighing Station".Start := FALSE;
+        "Control_DB"."Weighing Station".Running := TRUE;
+        IF "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" THEN
+            
+            IF NOT "SAI_Cyclic_WeightProc_DB".DataOK THEN
+                "Control_DB"."Weighing Station".Error_ID.%X0 := TRUE;
+                "Control_DB"."Weighing Station".Done := TRUE;
+                "State_WS" := 100;
+            ELSE
+                "Control_DB"."Weighing Station".Weight := "SAI_Cyclic_WeightProc_DB".RealTimeWeight;
+                "State_WS" := 20;
+            END_IF;
+        END_IF;
+        "IEC_Timer_0_DB_17".TON(IN:=TRUE,
+                                PT:=t#10S);
+        IF "IEC_Timer_0_DB_17".Q THEN
+            "IEC_Timer_0_DB_17".TON(IN := FALSE,
+                                    PT := t#0S);
+            // "Control_DB"."Weighing Station".Done := TRUE;
+            "State_WS" := 20;
+        END_IF;
+        
+    20:
+        IF "Control_DB"."Weighing Station".Weight < #MinWeight THEN
+            "Control_DB"."Weighing Station".Valid := FALSE;
+            // "Control_DB"."Weighing Station".Error_ID.%X1 := TRUE;
+        ELSIF "Control_DB"."Weighing Station".Weight > #MaxWeight THEN
+            "Control_DB"."Weighing Station".Valid := FALSE;
+            // "Control_DB"."Weighing Station".Error_ID.%X2 := TRUE;
+        ELSE
+            "Control_DB"."Weighing Station".Valid := TRUE;
+            "Control_DB"."Weighing Station".Error_ID := 0;
+        END_IF;
+        "State_WS" := 100;
+        
+    100:
+        "Control_DB"."Weighing Station".Running := FALSE;
+        "Control_DB"."Weighing Station".Done := TRUE;
+        "State_WS" := 0;
+        
+END_CASE;
+
+IF "Reset_All" THEN
+    "Control_DB"."Weighing Station".Error_ID := 0;
+END_IF;
+
+END_FUNCTION

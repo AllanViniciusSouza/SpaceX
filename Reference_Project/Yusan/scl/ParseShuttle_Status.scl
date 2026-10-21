@@ -1,0 +1,80 @@
+FUNCTION "ParseShuttle_Status"   // FC 16, author 
+
+VAR_INPUT
+   String_1 : String;
+   String_2 : String;
+   String_3 : String;
+   String_4 : String;
+   String_5 : String;
+   String_6 : String;
+END_VAR
+
+VAR CONSTANT
+   Empty : String;
+END_VAR
+
+   // RETURN : "Shuttle_MQTT_Status_Msg"
+BEGIN
+#ParseShuttle_Status.Request_ID := FindDINTFieldFragmented(FieldName := 'requestId',
+                                                             Str1 := #String_1,
+                                                             Str2:=#Empty);
+#ParseShuttle_Status.Position_ID := FindDINTFieldFragmented(FieldName := 'positionId',
+                                                              Str1 := #String_1,
+                                                              Str2 := #Empty);
+#ParseShuttle_Status.Destination_ID := FindDINTFieldFragmented(FieldName := 'destinationId',
+                                                                 Str1 := #String_1,
+                                                                 Str2:=#Empty);
+#ParseShuttle_Status.Distance_Remaining := FindDINTFieldFragmented(FieldName := 'distanceRemaining',
+                                                                     Str1 := #String_1,
+                                                                     Str2 := #Empty);
+#ParseShuttle_Status.Position_X := FindDINTFieldFragmented(FieldName := 'positionX',
+                                                             Str1 := #String_1,
+                                                             Str2 := #Empty);
+#ParseShuttle_Status.Position_Y := FindDINTFieldFragmented(FieldName := 'positionY',
+                                                             Str1 := #String_1,
+                                                             Str2 := #Empty);
+#ParseShuttle_Status.Floor := FindIntField(FieldName := 'floor',
+                                                JsonStr := #String_1);
+#ParseShuttle_Status.Operation_Mode := FindStringField(FieldName := 'operationMode',
+                                                         JsonStr := #String_1);
+#ParseShuttle_Status.Operational_State := FindStringField(FieldName := 'operationState',
+                                                            JsonStr := #String_2);
+#ParseShuttle_Status.Load_State := FindStringField(FieldName := 'loadState',
+                                                     JsonStr := #String_2);
+#ParseShuttle_Status.Error_Vehicle_1 := INT_TO_UINT(FindINTFieldFragmented(FieldName := 'errorVehicle1',
+                                                                                                                                 Str1 := #String_2,
+                                                                                                                                 Str2:=#String_2));
+#ParseShuttle_Status.Error_Vehicle_2 := INT_TO_UINT(FindIntField(FieldName := 'errorVehicle2',
+                                                                                                                       JsonStr := #String_2));
+#ParseShuttle_Status.Error_Vehicle_3 := INT_TO_UINT(FindIntField(FieldName := 'errorVehicle3',
+                                                                                                                       JsonStr := #String_3));
+#ParseShuttle_Status.Error_Vehicle_4 := INT_TO_UINT(FindIntField(FieldName := 'errorVehicle4',
+                                                                                                                       JsonStr := #String_3));
+#ParseShuttle_Status.Error_Vehicle_5 := INT_TO_UINT(FindIntField(FieldName := 'errorVehicle5',
+                                                                                                                       JsonStr := #String_3));
+#ParseShuttle_Status.Error_Vehicle_6 := INT_TO_UINT(FindIntField(FieldName := 'errorVehicle6',
+                                                                                                                       JsonStr := #String_4));
+#ParseShuttle_Status.Sensor_Inputs := INT_TO_UINT(FindIntField(FieldName := 'sensorInputs',
+                                                                                                                   JsonStr := #String_4));
+#ParseShuttle_Status.Sensor_Outputs := INT_TO_UINT(FindIntField(FieldName := 'sensorOutputs',
+                                                                                                                     JsonStr := #String_4));
+#ParseShuttle_Status.Reader_Value := FindDINTFieldFragmented(FieldName := 'readerValue',
+                                                               Str1 := #String_4,
+                                                             Str2 := #Empty);
+#ParseShuttle_Status.Pallet_Type := FindStringField(FieldName := 'palletType',
+                                                      JsonStr := #String_4);
+#ParseShuttle_Status.Energy_Level := INT_TO_UINT(FindINTFieldFragmented(FieldName := 'energyLevel',
+                                                                                                                           Str1 := #String_5,
+                                                                                                                           Str2:=#String_5));
+#ParseShuttle_Status.Battery_Voltage := INT_TO_UINT(FindIntField(FieldName := 'batteryVoltage',
+                                                                                                                       JsonStr := #String_5));
+#ParseShuttle_Status.Paused := FindBoolField(FieldName := 'paused',
+                                               JsonStr := #String_5);
+#ParseShuttle_Status.Last_Received_Order_ID := FindIntField(FieldName := 'lastReceivedOrderId',
+                                                              JsonStr := #String_5);
+ #ParseShuttle_Status.Current_Order_ID := FindIntField(FieldName := 'currentOrderId',
+                                                         JsonStr := #String_6);
+       #ParseShuttle_Status.Last_Finished_Order_ID := FindIntField(FieldName := 'lastFinishedOrderId',
+                                                                     JsonStr := #String_6);
+
+END_FUNCTION

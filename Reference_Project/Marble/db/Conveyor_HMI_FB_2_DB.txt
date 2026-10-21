@@ -1,0 +1,30 @@
+DATA_BLOCK "Conveyor_HMI_FB_2_DB"   // InstanceDB 50  instance of "Conveyor_HMI_FB_1"
+
+VAR_INPUT
+   HMI_No : UInt;
+   Sys_No : UInt;
+   Zone : UInt;
+END_VAR
+
+VAR_IN_OUT
+   Enable : Bool;
+   Mode_Change : UInt;
+   Transfer_To_ID : DInt;
+   Transfer_From_ID : DInt;
+   Enable(1) : Bool;
+   Mode_Change(1) : UInt;
+   Transfer_To_ID(1) : DInt;
+   Transfer_From_ID(1) : DInt;
+END_VAR
+
+VAR
+   R_Charge_Cnv_Commands : R_TRIG;
+   T_Reset_Charge : TON_TIME;
+   ID : DInt;
+   ID(1) : DInt;
+   ID_Old : DInt;
+   ID_Old(1) : DInt;
+END_VAR
+
+
+// ---- start values (path : type := value)

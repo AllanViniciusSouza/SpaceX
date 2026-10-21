@@ -1,0 +1,89 @@
+FUNCTION "IsIPAddress"   // FC 4, author 
+
+VAR_INPUT
+   address : String;   // Address to be evaluated
+END_VAR
+
+VAR_OUTPUT
+   ipAddress : IP_V4;   // Parsed IP address if passed address is IP address
+END_VAR
+
+VAR_TEMP
+   tempAddress : String;   // Passed address
+   tempOctet : String;   // Current octet
+   tempIndex : DInt;   // Index for loop
+   tempPos : Int;   // Position of found separator
+   tempNum : Int;   // Converted octet
+   tempIp : IP_V4;   // Parsed IP address
+END_VAR
+
+VAR CONSTANT
+   MAX_VALUE : USInt := 255;   // Max. valid value of octet
+   NUM_OCTETS : DInt := 4;   // Number of octets
+   CHAR_ZERO : Char := '0';   // ASCII character '0'
+END_VAR
+
+   // RETURN : Bool
+BEGIN
+REGION BLOCK INFO HEADER
+  //===============================================================================
+  // SIEMENS / (c)Copyright 2024
+  //-------------------------------------------------------------------------------
+  // Title:        IsIPAddress
+  // Function:     Evaluates whether a given String contains a valid IP address
+  // Library:      --
+  // Author:       Siemens Industry Online Support
+  // Tested with:  CPU 1515-2 PN V3.1
+  // Engineering:  TIA Portal V17
+  // Restrictions: --
+  // Requirements: S7-1200 with firmware V4.4 or higher
+  //               S7-1500 with firmware V2.0 or higher
+  //-------------------------------------------------------------------------------
+  // Change log table:
+  // Version  | Date       | Expert in charge       | Changes applied
+  //-------------------------------------------------------------------------------
+  // 01.00.00 | 2024-02-12 | Online Support         | First released version
+  //===============================================================================
+END_REGION
+
+#tempAddress := #address;
+#IsIPAddress := FALSE; // Will be overwritten if IP address is detected
+#ipAddress := #tempIp; // Zero output parameter
+
+FOR #tempIndex := 1 TO #NUM_OCTETS DO
+  #tempPos := FIND(IN1 := #tempAddress, IN2 := '.'); // Find separator
+  
+  IF (#tempPos > 0 OR #tempIndex = #NUM_OCTETS) // Separator found with exception of last octet
+    AND NOT (#tempPos > 0 AND #tempIndex = #NUM_OCTETS) // No separator found in last octet
+    AND #tempPos <= 4 // 3  characters or less
+  THEN
+    IF #tempIndex < #NUM_OCTETS THEN // First three octets
+      #tempOctet := LEFT(IN := #tempAddress, L := #tempPos - 1);
+    ELSE// Last octet
+      #tempOctet := #tempAddress;
+    END_IF;
+    
+    STRG_VAL(IN := #tempOctet,
+             FORMAT := 0,
+             P := 1,
+             OUT => #tempNum);
+    
+    IF #tempNum >= 0 AND #tempNum <= #MAX_VALUE // Within 0 and 255
+      AND NOT (#tempNum = 0 AND #tempIndex = 1) // Not 0 in first octet
+      AND NOT (#tempNum = 0 AND #tempOctet[1] <> #CHAR_ZERO) // Not 0 because of invalid character
+    THEN
+      #tempIp.ADDR[#tempIndex] := INT_TO_BYTE(#tempNum);
+      #tempAddress := RIGHT(IN := #tempAddress, L := LEN(#tempAddress) - #tempPos); // Remove evaluated octet
+    ELSE // Address is not IP address
+      EXIT;
+    END_IF;
+  ELSE // Address is not IP address
+    EXIT;
+  END_IF;
+  
+  IF #tempIndex = #NUM_OCTETS THEN // End of loop reached, address is IP address
+    #ipAddress := #tempIp;
+    #IsIPAddress := true;
+  END_IF;
+END_FOR;
+END_FUNCTION

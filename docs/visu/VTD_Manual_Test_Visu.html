@@ -1,0 +1,246 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>VTD Manual Test Visu</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #ffffff; font-family: "Segoe UI", Arial, sans-serif; color: #1b1b1b; width: 1680px; }
+  .page { padding: 32px 40px 40px; }
+  h1 { font-size: 30px; margin: 0 0 4px; }
+  .sub { font-size: 16px; color: #555; margin-bottom: 20px; }
+
+  /* Visualization canvas mockup (1600 x 900) */
+  .canvas { position: relative; width: 1600px; height: 900px; background: #d4d0c8; border: 2px solid #333; }
+  .abs { position: absolute; }
+  .title { left: 0; top: 0; width: 1600px; height: 56px; background: #1f3a5f; color: #fff; font-size: 24px; font-weight: 700; display: flex; align-items: center; padding-left: 24px; }
+  .banner { left: 0; top: 56px; width: 1600px; height: 34px; background: #ffd54f; font-size: 16px; font-weight: 700; display: flex; align-items: center; padding-left: 24px; color: #5a3d00; }
+  .msg { left: 20px; top: 100px; width: 1560px; height: 44px; background: #e3f2fd; border: 2px solid #1565c0; font-size: 20px; font-weight: 700; display: flex; align-items: center; padding-left: 16px; color: #0d47a1; }
+  .group { background: #ece9e3; border: 1px solid #888; border-radius: 4px; }
+  .group > .gt { font-size: 15px; font-weight: 700; padding: 6px 12px; background: #c6c2b9; border-bottom: 1px solid #888; }
+  .group.danger { border: 3px solid #c62828; }
+  .group.danger > .gt { background: #c62828; color: #fff; }
+  .row { display: flex; align-items: center; gap: 12px; padding: 6px 14px; font-size: 15px; }
+  .lamp { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #555; flex: none; }
+  .g { background: radial-gradient(circle at 35% 35%, #b9f6ca, #2e7d32); }
+  .r { background: radial-gradient(circle at 35% 35%, #ffcdd2, #8e8e8e); }
+  .y { background: radial-gradient(circle at 35% 35%, #fff9c4, #8e8e8e); }
+  .off { background: radial-gradient(circle at 35% 35%, #eeeeee, #8e8e8e); }
+  .val { background: #fff; border: 1px solid #777; font-family: Consolas, monospace; font-size: 16px; padding: 3px 8px; text-align: right; }
+  .inp { background: #fffde7; border: 2px solid #f9a825; font-family: Consolas, monospace; font-size: 16px; padding: 3px 8px; text-align: right; }
+  .btn { border: 2px solid #555; border-radius: 6px; background: linear-gradient(#fafafa, #cfcfcf); font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-align: center; }
+  .btn.sel { background: linear-gradient(#a5d6a7, #43a047); color: #fff; border-color: #1b5e20; }
+  .btn.dis { color: #8a8a8a; }
+  .btn.jog { font-size: 22px; }
+  .btn.stop { background: linear-gradient(#ffcc80, #fb8c00); border-color: #8d4f00; font-size: 22px; }
+  .btn.estop { background: radial-gradient(circle at 40% 35%, #ef5350, #b71c1c); color: #fff; border: 4px solid #4a0000; border-radius: 10px; font-size: 24px; line-height: 1.15; flex-direction: column; }
+  .btn.enable { font-size: 24px; }
+  .big { font-family: Consolas, monospace; font-size: 40px; font-weight: 700; background: #fff; border: 2px solid #555; padding: 4px 14px; text-align: right; }
+  .cap { font-size: 13px; color: #555; }
+  .slider { position: relative; height: 10px; background: #9e9e9e; border-radius: 5px; }
+  .slider .knob { position: absolute; top: -9px; width: 18px; height: 28px; background: linear-gradient(#fafafa, #bdbdbd); border: 2px solid #555; border-radius: 4px; }
+  .lbl { font-size: 15px; width: 170px; }
+
+  /* Callout badges */
+  .n { position: relative; }
+  .abs.n { position: absolute; }
+  .n::before { content: attr(data-n); position: absolute; top: -13px; left: -13px; width: 26px; height: 26px; border-radius: 50%;
+               background: #d81b60; color: #fff; font: 700 14px "Segoe UI", Arial; display: flex; align-items: center; justify-content: center;
+               box-shadow: 0 0 0 2px #fff; z-index: 5; }
+
+  /* Configuration table */
+  h2 { font-size: 24px; margin: 34px 0 6px; }
+  .hint { font-size: 15px; color: #444; margin-bottom: 12px; width: 1600px; }
+  table.cfg { border-collapse: collapse; width: 1600px; font-size: 15px; }
+  table.cfg th { background: #1f3a5f; color: #fff; text-align: left; padding: 8px 10px; }
+  table.cfg td { border: 1px solid #c8c8c8; padding: 7px 10px; vertical-align: top; }
+  table.cfg tr:nth-child(even) td { background: #f5f7fa; }
+  table.cfg td.num { text-align: center; }
+  .badge { display: inline-flex; width: 26px; height: 26px; border-radius: 50%; background: #d81b60; color: #fff; font-weight: 700; align-items: center; justify-content: center; }
+  code { font-family: Consolas, monospace; font-size: 14px; background: #eef1f5; padding: 1px 4px; border-radius: 3px; }
+  .warn { color: #b71c1c; font-weight: 700; }
+  .notes { margin-top: 22px; font-size: 15px; border-left: 5px solid #f9a825; background: #fffde7; padding: 12px 18px; width: 1600px; }
+  .notes li { margin: 4px 0; }
+  .notes.red { border-left-color: #c62828; background: #ffebee; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>VTD_ManualTest – Visualization layout and object configuration</h1>
+  <div class="sub">Sys1_Inbound · New visualization VTD_ManualTest · HMI interface GVL_HMI_VTD (stManualCommand / stManualStatus / stManualSettings) · Logic FB_VTD_ManualControl · Canvas 1600 × 900 · Pink numbers refer to the configuration table</div>
+
+  <div class="canvas">
+    <div class="abs title n" data-n="1">VTD MOVIPRO – Manual Test (TEST ONLY)</div>
+    <div class="abs btn n" data-n="2" style="left:1390px; top:9px; width:190px; height:38px;">◂ Process data</div>
+    <div class="abs banner n" data-n="3">TEST ONLY – SOFTWARE STOP is not an emergency stop: keep the hardwired E-stop within reach. "+" = positive motor direction (confirm up / down on the first jog).</div>
+    <div class="abs msg n" data-n="4">Press ENABLE</div>
+
+    <!-- LEFT: drive status -->
+    <div class="abs group" style="left:20px; top:156px; width:420px; height:404px;">
+      <div class="gt">Drive status (PI 1)</div>
+      <div class="row"><div class="lamp g n" data-n="5"></div>Communication OK</div>
+      <div class="row"><div class="lamp g"></div>STO inactive (safety circuit OK)</div>
+      <div class="row"><div class="lamp g"></div>Ready</div>
+      <div class="row"><div class="lamp off"></div>Output stage enabled</div>
+      <div class="row"><div class="lamp off"></div>Brake released</div>
+      <div class="row"><div class="lamp off"></div>Motor turning</div>
+      <div class="row"><div class="lamp g"></div>Referenced</div>
+      <div class="row"><div class="lamp off"></div>In position</div>
+      <div class="row"><div class="lamp off"></div>Drive error</div>
+      <div class="row"><div class="lamp off"></div>Warning</div>
+    </div>
+
+    <!-- LEFT: actual values -->
+    <div class="abs group" style="left:20px; top:570px; width:420px; height:315px;">
+      <div class="gt">Actual values (user units)</div>
+      <div class="row" style="padding-top:12px;"><span class="lbl" style="width:80px">Position</span><div class="big n" data-n="6" style="width:290px">100000</div></div>
+      <div class="row"><span class="lbl" style="width:170px">Speed</span><span class="val" style="width:190px">0</span></div>
+      <div class="row"><span class="lbl" style="width:170px">Torque (0.1 %)</span><span class="val" style="width:190px">0</span></div>
+      <div class="row"><span class="lbl" style="width:170px">Actual mode (PI 6)</span><span class="val" style="width:190px; font-size:13px; text-align:left">Jog speed-controlled (101)</span></div>
+      <div class="row"><span class="lbl" style="width:170px">Fault / subfault</span><span class="val n" data-n="7" style="width:90px">0</span><span class="val" style="width:88px">0</span></div>
+    </div>
+
+    <!-- MIDDLE: operating mode -->
+    <div class="abs group" style="left:460px; top:156px; width:680px; height:176px;">
+      <div class="gt">1 · Operating mode (changes only at standstill)</div>
+      <div style="display:grid; grid-template-columns: repeat(3, 205px); gap:10px; padding:12px 14px 6px;">
+        <div class="btn sel n" data-n="8" style="height:46px">JOG speed · 101</div>
+        <div class="btn" style="height:46px">JOG position · 100</div>
+        <div class="btn" style="height:46px">SPEED · 200</div>
+        <div class="btn" style="height:46px">REFERENCE · 300</div>
+        <div class="btn" style="height:46px">POS ABSOLUTE · 400</div>
+        <div class="btn" style="height:46px">POS RELATIVE · 401</div>
+      </div>
+    </div>
+
+    <!-- MIDDLE: speed -->
+    <div class="abs group" style="left:460px; top:342px; width:680px; height:196px;">
+      <div class="gt">2 · Speed (% of the max test speed)</div>
+      <div class="row" style="padding-top:12px; gap:24px;">
+        <div class="inp n" data-n="9" style="width:130px; font-size:30px; font-weight:700">10 %</div>
+        <div class="slider n" data-n="10" style="width:470px;"><div class="knob" style="left:40px"></div></div>
+      </div>
+      <div class="row" style="gap:10px;">
+        <div class="btn n" data-n="11" style="width:90px; height:40px">5 %</div>
+        <div class="btn sel" style="width:90px; height:40px">10 %</div>
+        <div class="btn" style="width:90px; height:40px">25 %</div>
+        <div class="btn" style="width:90px; height:40px">50 %</div>
+        <div class="btn" style="width:90px; height:40px">100 %</div>
+      </div>
+      <div class="row"><span>PO 2 sent:</span><span class="val n" data-n="12" style="width:110px">0</span><span>100 % =</span><span class="val" style="width:110px">0</span><span class="cap">user units (test settings)</span></div>
+    </div>
+
+    <!-- MIDDLE: motion -->
+    <div class="abs group" style="left:460px; top:548px; width:680px; height:337px;">
+      <div class="gt">3 · Motion</div>
+      <div class="row" style="padding-top:12px; gap:14px;">
+        <div class="btn jog n" data-n="13" style="width:250px; height:66px">◀ JOG −</div>
+        <div class="btn jog" style="width:250px; height:66px">JOG + ▶</div>
+        <span class="cap">hold to run<br>modes 100 / 101</span>
+      </div>
+      <div class="row" style="gap:14px;">
+        <div class="btn dis n" data-n="14" style="width:250px; height:52px">◀ RUN −</div>
+        <div class="btn dis" style="width:250px; height:52px">RUN + ▶</div>
+        <span class="cap">tap = keeps running<br>mode 200 · STOP to end</span>
+      </div>
+      <div class="row" style="gap:12px;">
+        <span style="width:96px">Target</span>
+        <div class="inp n" data-n="15" style="width:150px">0</div>
+        <div class="btn dis n" data-n="16" style="width:150px; height:44px">START</div>
+        <span class="cap">400 absolute / 401 relative<br>300 referencing · sent:</span>
+        <span class="val n" data-n="17" style="width:100px">0</span>
+      </div>
+      <div class="row" style="padding-top:8px;">
+        <div class="btn stop n" data-n="18" style="width:650px; height:56px">STOP (normal ramp)</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: drive commands -->
+    <div class="abs group" style="left:1160px; top:156px; width:420px; height:404px;">
+      <div class="gt">Drive commands</div>
+      <div class="row" style="padding-top:14px;">
+        <div class="btn enable n" data-n="19" style="width:300px; height:76px">ENABLE</div>
+        <div class="lamp off" style="width:34px;height:34px"></div>
+      </div>
+      <div class="row" style="padding-top:10px;">
+        <div class="btn estop n" data-n="20" style="width:300px; height:120px">SOFTWARE STOP<br><span style="font-size:14px; font-weight:400">not an emergency stop</span></div>
+        <div class="lamp off n" data-n="21" style="width:34px;height:34px"></div>
+      </div>
+      <div class="row" style="padding-top:10px;">
+        <div class="btn n" data-n="22" style="width:300px; height:64px; font-size:20px">RESET<br></div>
+        <div class="lamp off" style="width:34px;height:34px"></div>
+      </div>
+      <div class="cap" style="padding:2px 16px">RESET = drive fault reset (PO 1.8) + clears the software stop</div>
+    </div>
+
+    <!-- RIGHT: settings -->
+    <div class="abs group" style="left:1160px; top:570px; width:420px; height:315px;">
+      <div class="gt">Test settings (persistent, MOVISUITE user units)</div>
+      <div class="row" style="padding-top:12px;"><span class="lbl">Max speed (100 %)</span><div class="inp n" data-n="23" style="width:150px">0</div></div>
+      <div class="row"><span class="lbl">Acceleration</span><div class="inp" style="width:150px">0</div></div>
+      <div class="row"><span class="lbl">Deceleration</span><div class="inp" style="width:150px">0</div></div>
+      <div class="row"><span class="lbl">Jog max time</span><span class="val n" data-n="24" style="width:150px">30s</span></div>
+      <div class="row" style="padding-top:10px"><div class="lamp off n" data-n="25"></div>Settings OK</div>
+      <div class="row"><div class="lamp off"></div>Raw PD write active (process data screen)</div>
+    </div>
+  </div>
+
+  <h2>Object configuration</h2>
+  <div class="hint">Prefix <code>S.</code> = <code>GVL_HMI_VTD.stManualStatus.</code> (PLC → HMI) · <code>C.</code> = <code>GVL_HMI_VTD.stManualCommand.</code> (HMI → PLC) · <code>P.</code> = <code>GVL_HMI_VTD.stManualSettings.</code> (persistent). In TwinCAT always type the full name. Toolbox names as in TwinCAT 3 XAE. Elements marked ×N: build one, copy it and change only text / variable. <b>Tap</b> = Input configuration → Tap (TRUE while pressed). <b>Toggle</b> = Input configuration → Toggle. <b>ST code</b> = Input configuration → OnMouseClick → Execute ST-Code. <b>Deactivate</b> = State variables → Deactivate inputs. <b>Toggle color</b> = Colors → Color variables → Toggle color (uses the Alarm colors).</div>
+
+  <table class="cfg">
+    <tr><th style="width:44px">#</th><th style="width:190px">Element (Toolbox)</th><th style="width:250px">Text</th><th style="width:420px">Variable / input</th><th>Other settings</th></tr>
+    <tr><td class="num"><span class="badge">1</span></td><td>Rectangle</td><td>VTD MOVIPRO – Manual Test (TEST ONLY)</td><td>–</td><td>Font 24 bold, white · Fill #1F3A5F</td></tr>
+    <tr><td class="num"><span class="badge">2</span></td><td>Button</td><td>◂ Process data</td><td>Input configuration → OnMouseClick → <b>Change shown visualization</b> → <code>Visualization</code></td><td>Add the same button on the screen <code>Visualization</code> with text "Manual test ▸" → <code>VTD_ManualTest</code></td></tr>
+    <tr><td class="num"><span class="badge">3</span></td><td>Rectangle</td><td>TEST ONLY – SOFTWARE STOP is not an emergency stop …</td><td>–</td><td>Fill #FFD54F · Font bold</td></tr>
+    <tr><td class="num"><span class="badge">4</span></td><td>Rectangle (message bar)</td><td><code>%s</code></td><td>Text variable: <code>S.sMessage</code></td><td>Font 20 bold · Normal fill #E3F2FD · Alarm fill #FFCDD2, alarm font red · Toggle color: <code>S.bMessageAlarm</code></td></tr>
+    <tr><td class="num"><span class="badge">5</span></td><td>Lamp ×10 + Label</td><td>see mockup</td><td><code>S.stDrive.bCommunicationOk</code>, <code>.bStoInactive</code>, <code>.bReady</code>, <code>.bOutputStageEnabled</code>, <code>.bBrakeReleased</code>, <code>.bMotorTurning</code>, <code>.bReferenced</code>, <code>.bInPosition</code>, <code>.bError</code>, <code>.bWarning</code></td><td>Image Green, except Brake released / Motor turning / Warning = Yellow, Drive error = Red</td></tr>
+    <tr><td class="num"><span class="badge">6</span></td><td>Text field ×4</td><td>Position <code>%d</code> · Speed <code>%d</code> · Torque <code>%d</code> · Mode <code>%s</code></td><td><code>S.stDrive.diActualPosition</code>, <code>S.stDrive.iActualSpeed</code>, <code>S.stDrive.iActualTorque_0p1pct</code>, <code>S.sActualModeName</code></td><td>Position: Consolas 40 bold, right aligned</td></tr>
+    <tr><td class="num"><span class="badge">7</span></td><td>Text field ×2</td><td><code>%d</code></td><td><code>S.stDrive.byFaultCode</code>, <code>S.stDrive.bySubfaultCode</code></td><td>SEW fault list: MOVIPRO manual. Alternative: one field <code>%08X</code> with <code>S.udiErrorId</code></td></tr>
+    <tr><td class="num"><span class="badge">8</span></td><td>Button ×6</td><td>JOG speed · 101 / JOG position · 100 / SPEED · 200 / REFERENCE · 300 / POS ABSOLUTE · 400 / POS RELATIVE · 401</td><td><b>ST code</b>, e.g. <code>GVL_HMI_VTD.stManualCommand.eModeRequest := E_SEW_MovikitMode.JogSpeedControlled;</code><br>Others: <code>JogPositionControlled</code>, <code>Speed</code>, <code>ReferencingOffsetConfigured</code>, <code>PositioningAbsolute</code>, <code>PositioningRelative</code></td><td>Alarm fill green #43A047 · <b>Toggle color</b>: <code>S.bModeJogSpeed</code> / <code>S.bModeJogPosition</code> / <code>S.bModeSpeed</code> / <code>S.bModeReferencing</code> / <code>S.bModePositionAbsolute</code> / <code>S.bModePositionRelative</code> · <b>Deactivate</b>: <code>NOT S.bModeChangeAllowed</code></td></tr>
+    <tr><td class="num"><span class="badge">9</span></td><td>Text field</td><td><code>%d %%</code></td><td><code>C.iSpeedPercent</code> · OnMouseClick → Write variable · <code>VisuDialogs.Numpad</code> · Min 0 · Max 100</td><td>Font 30 bold · Fill light yellow. The PLC limits the value to 0..100</td></tr>
+    <tr><td class="num"><span class="badge">10</span></td><td>Slider (Common controls)</td><td>–</td><td>Variable <code>C.iSpeedPercent</code> · Scale start 0 · Scale end 100</td><td>Horizontal</td></tr>
+    <tr><td class="num"><span class="badge">11</span></td><td>Button ×5</td><td>5 % / 10 % / 25 % / 50 % / 100 %</td><td><b>ST code</b>: <code>GVL_HMI_VTD.stManualCommand.iSpeedPercent := 5;</code> (10, 25, 50, 100)</td><td>Speed can be changed while running: applied live in jog, speed and positioning modes</td></tr>
+    <tr><td class="num"><span class="badge">12</span></td><td>Text field ×2</td><td><code>%d</code></td><td><code>S.iSpeedSetpoint</code> (PO 2 really sent, signed, 0 while not enabled) · <code>GVL_HMI_VTD.stManualSettings.iMaxSpeed</code></td><td>Read only</td></tr>
+    <tr><td class="num"><span class="badge">13</span></td><td>Button ×2</td><td>◀ JOG − / JOG + ▶</td><td><b>Tap</b>: <code>C.bJogNegative</code> / <code>C.bJogPositive</code> · tick <b>Tap on enter if captured</b> so the variable follows the pointer leaving the button</td><td>Font 22 bold · Alarm fill green · <b>Toggle color</b>: <code>S.bJogNegativeActive</code> / <code>S.bJogPositiveActive</code> · <b>Deactivate</b>: <code>NOT S.bJogAvailable</code></td></tr>
+    <tr><td class="num"><span class="badge">14</span></td><td>Button ×2</td><td>◀ RUN − / RUN + ▶</td><td><b>Tap</b>: <code>C.bRunNegative</code> / <code>C.bRunPositive</code></td><td>Alarm fill green · <b>Toggle color</b>: <code>S.bRunNegativeActive</code> / <code>S.bRunPositiveActive</code> · <b>Deactivate</b>: <code>NOT S.bRunAvailable</code></td></tr>
+    <tr><td class="num"><span class="badge">15</span></td><td>Text field</td><td><code>%d</code></td><td><code>C.diTargetPosition</code> · Write variable · <code>VisuDialogs.Numpad</code> · Min −2147483648 · Max 2147483647</td><td>400 = absolute target, 401 = relative distance. Taken by the PLC only when START is pressed</td></tr>
+    <tr><td class="num"><span class="badge">16</span></td><td>Button</td><td>START</td><td><b>Tap</b>: <code>C.bStart</code></td><td>Alarm fill green · <b>Toggle color</b>: <code>S.bStartActive</code> · <b>Deactivate</b>: <code>NOT S.bStartAvailable</code></td></tr>
+    <tr><td class="num"><span class="badge">17</span></td><td>Text field</td><td><code>%d</code></td><td><code>S.diTargetPositionSent</code></td><td>PO 7/8 really sent</td></tr>
+    <tr><td class="num"><span class="badge">18</span></td><td>Button</td><td>STOP (normal ramp)</td><td><b>Tap</b>: <code>C.bStop</code></td><td>Fill orange #FB8C00 · never deactivated · ends RUN / START with the PO 4 deceleration</td></tr>
+    <tr><td class="num"><span class="badge">19</span></td><td>Button + Lamp</td><td>ENABLE</td><td><b>Toggle</b>: <code>C.bEnable</code> · Lamp: <code>S.bEnableActive</code></td><td>Alarm fill green · <b>Toggle color</b>: <code>S.bEnableActive</code>. The PLC resets <code>C.bEnable</code> after software stop, fault, STO, communication loss → press again (no automatic restart)</td></tr>
+    <tr><td class="num"><span class="badge">20</span></td><td>Button</td><td>SOFTWARE STOP / not an emergency stop</td><td><b>Tap</b>: <code>C.bSoftwareStop</code></td><td>300 × 120 · Fill red #C62828, white bold 24 · Frame 4 px dark red · Removes the enable → drive stops with FCB 14 (emergency stop ramp) and applies the brake</td></tr>
+    <tr><td class="num"><span class="badge">21</span></td><td>Lamp ×3</td><td>–</td><td><code>S.bSoftwareStopActive</code> (Red) · next to RESET: <code>S.bFaultResetActive</code> (Yellow) · next to ENABLE: <code>S.bEnableActive</code> (Green)</td><td></td></tr>
+    <tr><td class="num"><span class="badge">22</span></td><td>Button</td><td>RESET</td><td><b>Tap</b>: <code>C.bReset</code></td><td>Clears the software stop and sends a 500 ms PO 1.8 pulse (drive fault reset)</td></tr>
+    <tr><td class="num"><span class="badge">23</span></td><td>Text field ×3</td><td><code>%d</code></td><td><code>P.iMaxSpeed</code> (Min 0, Max 32767) · <code>P.uiAcceleration</code> (0..65535) · <code>P.uiDeceleration</code> (0..65535) · Write variable · <code>VisuDialogs.Numpad</code></td><td>Light yellow. 0 = not configured → no motion. Enter values only after checking the user units in MOVISUITE</td></tr>
+    <tr><td class="num"><span class="badge">24</span></td><td>Text field</td><td><code>%t[ss's']</code></td><td><code>P.tJogMaxTime</code></td><td>Read only on the screen (default 30 s, change online if needed)</td></tr>
+    <tr><td class="num"><span class="badge">25</span></td><td>Lamp ×2</td><td>Settings OK / Raw PD write active</td><td><code>S.bSettingsValid</code> (Green) · <code>S.bRawWriteActive</code> (Yellow)</td><td></td></tr>
+  </table>
+
+  <div class="notes">
+    <b>How the buttons behave (FB_VTD_ManualControl)</b>
+    <ul>
+      <li><b>Mode</b>: accepted only at standstill with no JOG / RUN / START active (the drive stops on every PO 6 change). Otherwise the message bar shows "Mode change refused".</li>
+      <li><b>JOG</b>: hold-to-run. After ENABLE or a mode change both jog buttons must be released once before a jog is accepted. After <code>tJogMaxTime</code> the jog stops until the button is released.</li>
+      <li><b>RUN − / RUN +</b> (200): one tap starts, the axis keeps running; STOP ends it. Reversing requires STOP first. Speed changes are applied live.</li>
+      <li><b>START</b>: 400 = go to the absolute target · 401 = move the relative distance (START after a STOP continues to the original target) · 300 = referencing, released automatically when referenced. 400/401 need "Referenced".</li>
+      <li><b>ENABLE off</b> while turning: the axis first stops with the PO 4 ramp, then the enable is removed (after 5 s at the latest).</li>
+      <li><b>Raw PD write</b> on the screen <code>Visualization</code> and this screen never write at the same time: the raw write is refused while ENABLE is active here, and this screen is inhibited while the raw write is active.</li>
+    </ul>
+  </div>
+
+  <div class="notes red">
+    <b>Test day checklist</b>
+    <ul>
+      <li class="warn">Link <code>IO_VFDs.VTD_WcState</code> and <code>IO_VFDs.VTD_EcState</code> in XAE first. Without them "Communication OK" stays off and ENABLE is always refused.</li>
+      <li>Check the user units of speed and ramps in MOVISUITE, then enter a <b>low</b> max speed and the ramps (item 23). They are persistent.</li>
+      <li>E-stop / safety circuit reset → "STO inactive" green. Software limit switches stay active (never deactivated by the PLC).</li>
+      <li>Mode JOG speed · 101, speed 5–10 %, ENABLE, short JOG + → confirm whether + is up or down and write it on the button text.</li>
+      <li>Test STOP, SOFTWARE STOP (stops with FCB 14 and brake), RESET, ENABLE again.</li>
+      <li>Then SPEED · 200 with RUN ±, REFERENCE · 300, and POS 400 / 401 with small distances.</li>
+      <li>The hold-to-run JOG depends on the HMI connection. If the browser / HMI is closed with a button pressed, the jog runs until <code>tJogMaxTime</code> → keep that time short and the hardwired E-stop within reach.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

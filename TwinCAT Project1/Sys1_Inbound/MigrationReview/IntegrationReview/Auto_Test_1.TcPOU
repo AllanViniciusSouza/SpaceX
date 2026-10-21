@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Auto_Test_1" Id="{ba9e7aec-64bc-5840-adf5-ad10a03d6695}" SpecialFunc="None">
+    <Declaration><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/Screens.scl, object Auto_Test_1.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+FUNCTION_BLOCK Auto_Test_1
+// 
+//    VAR_INPUT
+//       Sys_No : UInt;
+//       Automatic : Bool;
+//       Manual : Bool;
+//       Level : UInt;
+//       Error : Bool;
+//       Start : Bool;
+//       Pause : Bool;
+//       Stop : Bool;
+//       Pallet_Type : Char;
+//       Tower_1_Pallet_Alignment : Char;
+//       Tower_2_Pallet_Alignment : Char;
+//       Extractor_Pallet_Alignment : Char;
+//       Pallet_Allignment : Char;
+//       Tower : UInt;
+//       Transfer_From_To : Byte;
+//       From_level : Byte;
+//       To_level : Byte;
+//       Testing_Time : UInt;
+//       Numer_of_cycles : Byte;
+//    END_VAR
+// 
+//    VAR_OUTPUT
+//       Running : Bool;
+//       Time_Runnng : Time;
+//       Start_Time   : String;
+//       Stop_Time   : String;
+//       Duration : Time;
+//    END_VAR
+// 
+//    VAR_IN_OUT
+//       Order_Table_1 : OrderTable_UDT;
+//       Step_Table_0 : OrderTable_UDT;
+//       System_OrderSent : Bool;
+//       Total_Duration : Time;
+//    END_VAR
+// 
+//    VAR
+//       State : Int;
+//       R_Start   : R_TRIG;
+//       T_Delay   : TON;
+//       Time_Delay : Time := T#0ms;
+//       Send_VTD_Order : Bool;
+//       Send_CNV_Order : Bool;
+//       R_TRIG_Instance   : R_TRIG;
+//       T_Running   : TON;
+//       F_TRIG   : F_TRIG;
+//       R_TRIG   : R_TRIG;
+//       Error_Code : Int;
+//       test : Bool;
+//       N_Cycles : UInt;
+//       Testing_Time : Time;
+//       R_Manual_Mode   : R_TRIG;
+//    END_VAR
+// 
+//    VAR_TEMP
+//       Busy : Bool;
+//    END_VAR
+// 
+//    VAR CONSTANT
+//       VTD_DEVICE : String := 'VTD';
+//       PALLET_INOUT_DEVICE : String := 'Pallet In Out';
+//       SHUTTLE_INOUT_DEVICE : String := 'Shuttle In Out';
+//       RUNNING_STATUS : String := 'Running';
+//       COMPLETED_STATUS : String := 'Completed';
+//    END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/Screens.scl, object Auto_Test_1.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+// R_Start(CLK:=Start);
+// 
+// 	IF Stop THEN
+// 	    State := 0;
+// 	END_IF;
+// 
+// 	IF Error THEN
+// 	    State := 400;
+// 	END_IF;
+// 
+// 	R_Manual_Mode(CLK:=Automatic AND NOT Error AND Manual AND NOT Running);
+// 
+// 	IF R_Manual_Mode.Q THEN
+// 	    State := 500;
+// 	ELSIF Automatic AND NOT Error AND NOT Manual AND State = 500 THEN
+// 	    State := 0;
+// 	END_IF;
+// 
+// 	IF State > 10 AND State < 400 THEN
+// 	    Running := TRUE;
+// 	END_IF;
+// 
+// 
+// 	R_TRIG(CLK:=Running);
+// 	IF R_TRIG.Q THEN
+// 	    Start_Time := Time.CurrentLocalTime;
+// 	    Stop_Time := '';
+// 	END_IF;
+// 	F_TRIG(CLK:=Running);
+// 	IF F_TRIG.Q THEN
+// 	    Duration := T_Running.ET;
+// 	    Total_Duration := Duration + Total_Duration;
+// 	    Stop_Time := Time.CurrentLocalTime;
+// 	END_IF;
+// 	T_Running(IN:=Running AND NOT Pause,
+// 	                      PT:=t#24h);
+// 
+// 	Time_Runnng := T_Running.ET;
+// 
+// 	Testing_Time := UINT_TO_TIME(#Testing_Time) * 60000;
+// 
+// 	Error_Code := WRIT_DBL(REQ := test, SRCBLK := Auto_Test_DB,BUSY=>Busy, DSTBLK => Auto_Test_DB);
+// 
+// 	CASE State OF
+// 	    0:
+// 	        Running := false;
+// 	        State := State + 10;
+// 
+// 	    10:
+// 	        IF R_Start.Q AND Automatic AND NOT Error AND #Pallet_Type <> '' AND #From_level > 0 AND #To_level > 0  THEN
+// 	            N_Cycles := 0;
+// 	            State := State + 10;
+// 	        END_IF;
+// 
+// 	    20:
+// 	        IF Control.VTD_Sys[Sys_No].Current_Level <> #From_level THEN
+// 	            VTD_Order_FC(i_Sys := Sys_No,
+// 	                           Level := #From_level,
+// 	                           StepTable_0 := Step_Table_0);
+// 	            R_TRIG_Instance(CLK := TRUE,
+// 	                             Q => System_OrderSent);
+// 	            T_Delay(IN := TRUE,
+// 	                     PT := Time_Delay);
+// 	            IF #Order_Table_1.Status = RUNNING_STATUS AND T_Delay.Q THEN
+// 	                R_TRIG_Instance(CLK := FALSE,
+// 	                                 Q => System_OrderSent);
+// 	                T_Delay(IN := FALSE,
+// 	                         PT := T#0ms);
+// 	                State := State + 10;
+// 	            END_IF;
+// 	        ELSE
+// 	            State := State + 20;
+// 	        END_IF;
+// 
+// 	    30:
+// 
+// 	        IF #Order_Table_1.Status = COMPLETED_STATUS AND NOT Pause THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := TRUE;
+// 	            State := State + 10;
+// 	        END_IF;
+// 
+// 	    40:
+// 	        CNV_Order_FC(i_Sys := Sys_No,
+// 	                       Level := Control.VTD_Sys[Sys_No].Current_Level,
+// 	                       Tower := 1,
+// 	                       Transfer_From_To := 2,
+// 	                       Pallet_Type := #Pallet_Type,
+// 	                       Pallet_Allignment := #Tower_1_Pallet_Alignment,
+// 	                       Device:=PALLET_INOUT_DEVICE,
+// 	                       Task_Type:=4,
+// 	                       StepTable_0 := Step_Table_0);
+// 	        System_OrderSent := TRUE;
+// 	        State := State + 10;
+// 
+// 	    50:
+// 	        IF #Order_Table_1.Status = RUNNING_STATUS THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := FALSE;
+// 	            R_TRIG_Instance(CLK := FALSE,
+// 	                             Q => System_OrderSent);
+// 	            State := State + 10;
+// 	        END_IF;
+// 
+// 	    60:
+// 
+// 	        IF #Order_Table_1.Status = COMPLETED_STATUS AND NOT Pause THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := TRUE;
+// 	            State := State + 10;
+// 	        END_IF;
+// 
+// 	    70:
+// 	        CNV_Order_FC(i_Sys := Sys_No,
+// 	                       Level := Control.VTD_Sys[Sys_No].Current_Level,
+// 	                       Tower := 1,
+// 	                       Transfer_From_To := 1,
+// 	                       Pallet_Type := #Pallet_Type,
+// 	                       Pallet_Allignment := #Extractor_Pallet_Alignment,
+// 	                       Device:=PALLET_INOUT_DEVICE,
+// 	                       Task_Type:=4,
+// 	                       StepTable_0 := Step_Table_0);
+// 	        System_OrderSent := TRUE;
+// 	        State := State + 10;
+// 
+// 	    80:
+// 	        IF #Order_Table_1.Status = RUNNING_STATUS THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := FALSE;
+// 	            State := State + 10;
+// 	        END_IF;
+// 
+// 	    90:
+// 
+// 	        IF #Order_Table_1.Status = COMPLETED_STATUS AND NOT Pause THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := TRUE;
+// 	            State := State + 10;
+// 	        END_IF;
+// 
+// 	    100:
+// 	        IF Control.VTD_Sys[Sys_No].Current_Level < #To_level THEN
+// 	            VTD_Order_FC(i_Sys := Sys_No,
+// 	                           Level := Control.VTD_Sys[Sys_No].Current_Level + 1,
+// 	                           StepTable_0 := Step_Table_0);
+// 	            System_OrderSent := TRUE;
+// 	            State := State + 10;
+// 	        ELSIF (
+// 	            (#Numer_of_cycles = 0 OR N_Cycles < #Numer_of_cycles)
+// 	            AND
+// 	            (Testing_Time = T#0M OR Time_Runnng < Testing_Time)
+// 	            ) THEN
+// 	            State := 250;
+// 	        ELSE
+// 	            State := 260;
+// 	        END_IF;
+// 
+// 	    110:
+// 	        IF #Order_Table_1.Status = RUNNING_STATUS THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := FALSE;
+// 	            State := State + 10;
+// 	        END_IF;
+// 
+// 
+// 	    120:
+// 
+// 	        IF #Order_Table_1.Status = COMPLETED_STATUS AND NOT Pause THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := TRUE;
+// 	            State := 40;
+// 	        END_IF;
+// 
+// 	    250:
+// 
+// 	        IF #Order_Table_1.Status = COMPLETED_STATUS AND NOT Pause THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := TRUE;
+// 	            N_Cycles := N_Cycles + 1;
+// 	            State := 20;
+// 	        END_IF;
+// 
+// 	    260:
+// 
+// 	        IF #Order_Table_1.Status = COMPLETED_STATUS AND NOT Pause THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := TRUE;
+// 	            State := 0;
+// 	        END_IF;
+// 
+// 	    400:
+// 	        Running := false;
+// 	        IF Reset_All OR
+// 	            (Screen_DB_1.Reset_All[1] AND
+// 	             (HMI_Box_Connected_1 = 1) OR (HMI_Box_Connected_1 = 2) OR (HMI_Box_Connected_1 = 3) OR (HMI_Box_Connected_1 = 4) OR (HMI_Box_Connected_1 = 5) OR
+// 	             (HMI_Box_Connected_1 = 11 AND KEY_REMOTE_LOCAL_L1___CH1_1_) OR
+// 	             (HMI_Box_Connected_1 = 12 AND KEY_REMOTE_LOCAL_L2___CH1_1_) OR
+// 	             (HMI_Box_Connected_1 = 13 AND KEY_REMOTE_LOCAL_L3___CH1_1_) OR
+// 	             (HMI_Box_Connected_1 = 14 AND KEY_REMOTE_LOCAL_L4___CH1_1_) OR
+// 	             (HMI_Box_Connected_1 = 15 AND KEY_REMOTE_LOCAL_L5___CH1_1_) OR
+// 	             (HMI_Box_Connected_1 = 16 AND KEY_REMOTE_LOCAL_L6___CH1_1_) OR
+// 	             (HMI_Box_Connected_1 = 17 AND KEY_REMOTE_LOCAL_L7___CH1_1_) OR
+// 	             (HMI_Box_Connected_1 = 18 AND KEY_REMOTE_LOCAL_L8___CH1_1_) OR
+// 	             (HMI_Box_Connected_1 = 21 AND KEY_REMOTE_LOCAL_L1___CH1_2_) OR
+// 	             (HMI_Box_Connected_1 = 22 AND KEY_REMOTE_LOCAL_L2___CH1_2_) OR
+// 	             (HMI_Box_Connected_1 = 23 AND KEY_REMOTE_LOCAL_L3___CH1_2_) OR
+// 	             (HMI_Box_Connected_1 = 24 AND KEY_REMOTE_LOCAL_L4___CH1_2_) OR
+// 	             (HMI_Box_Connected_1 = 25 AND KEY_REMOTE_LOCAL_L5___CH1_2_) OR
+// 	             (HMI_Box_Connected_1 = 26 AND KEY_REMOTE_LOCAL_L6___CH1_2_) OR
+// 	             (HMI_Box_Connected_1 = 27 AND KEY_REMOTE_LOCAL_L7___CH1_2_) OR
+// 	             (HMI_Box_Connected_1 = 28 AND KEY_REMOTE_LOCAL_L8___CH1_2_) OR
+// 	             (HMI_Box_Connected_1 = 31 AND KEY_REMOTE_LOCAL_L1___CH1_3_) OR
+// 	             (HMI_Box_Connected_1 = 32 AND KEY_REMOTE_LOCAL_L2___CH1_3_) OR
+// 	             (HMI_Box_Connected_1 = 33 AND KEY_REMOTE_LOCAL_L3___CH1_3_) OR
+// 	             (HMI_Box_Connected_1 = 34 AND KEY_REMOTE_LOCAL_L4___CH1_3_) OR
+// 	             (HMI_Box_Connected_1 = 35 AND KEY_REMOTE_LOCAL_L5___CH1_3_) OR
+// 	             (HMI_Box_Connected_1 = 36 AND KEY_REMOTE_LOCAL_L6___CH1_3_) OR
+// 	             (HMI_Box_Connected_1 = 37 AND KEY_REMOTE_LOCAL_L7___CH1_3_) OR
+// 	             (HMI_Box_Connected_1 = 38 AND KEY_REMOTE_LOCAL_L8___CH1_3_) OR
+// 	             (HMI_Box_Connected_1 = 41 AND KEY_REMOTE_LOCAL_L1___CH1_4_) OR
+// 	             (HMI_Box_Connected_1 = 42 AND KEY_REMOTE_LOCAL_L2___CH1_4_) OR
+// 	             (HMI_Box_Connected_1 = 43 AND KEY_REMOTE_LOCAL_L3___CH1_4_) OR
+// 	             (HMI_Box_Connected_1 = 44 AND KEY_REMOTE_LOCAL_L4___CH1_4_) OR
+// 	             (HMI_Box_Connected_1 = 45 AND KEY_REMOTE_LOCAL_L5___CH1_4_) OR
+// 	             (HMI_Box_Connected_1 = 46 AND KEY_REMOTE_LOCAL_L6___CH1_4_) OR
+// 	             (HMI_Box_Connected_1 = 47 AND KEY_REMOTE_LOCAL_L7___CH1_4_) OR
+// 	             (HMI_Box_Connected_1 = 48 AND KEY_REMOTE_LOCAL_L8___CH1_4_) OR
+// 	             (HMI_Box_Connected_1 = 51 AND KEY_REMOTE_LOCAL_L1___CH1_5_) OR
+// 	             (HMI_Box_Connected_1 = 52 AND KEY_REMOTE_LOCAL_L2___CH1_5_) OR
+// 	             (HMI_Box_Connected_1 = 53 AND KEY_REMOTE_LOCAL_L3___CH1_5_) OR
+// 	             (HMI_Box_Connected_1 = 54 AND KEY_REMOTE_LOCAL_L4___CH1_5_) OR
+// 	             (HMI_Box_Connected_1 = 55 AND KEY_REMOTE_LOCAL_L5___CH1_5_) OR
+// 	             (HMI_Box_Connected_1 = 56 AND KEY_REMOTE_LOCAL_L6___CH1_5_) OR
+// 	             (HMI_Box_Connected_1 = 57 AND KEY_REMOTE_LOCAL_L7___CH1_5_) OR
+// 	             (HMI_Box_Connected_1 = 58 AND KEY_REMOTE_LOCAL_L8___CH1_5_))
+// 	        THEN
+// 	            State := 0;
+// 	        END_IF;
+// 
+// 	    500:
+// 	        Running := false;
+// 	        IF Send_VTD_Order THEN
+// 	            VTD_Order_FC(i_Sys := Sys_No,
+// 	                           Level := Level,
+// 	                           StepTable_0 := Step_Table_0);
+// 	            System_OrderSent := TRUE;
+// 	            Running := TRUE;
+// 	            Send_VTD_Order := FALSE;
+// 	        END_IF;
+// 
+// 	        IF Send_CNV_Order THEN
+// 	            CNV_Order_FC(i_Sys := Sys_No,
+// 	                           Level := Control.VTD_Sys[Sys_No].Current_Level,
+// 	                           Tower := Tower,
+// 	                           Transfer_From_To := Transfer_From_To,
+// 	                           Pallet_Type := #Pallet_Type,
+// 	                           Pallet_Allignment := Pallet_Allignment,
+// 	                           Device:=PALLET_INOUT_DEVICE,
+// 	                           Task_Type:=4,
+// 	                           StepTable_0 := Step_Table_0);
+// 	            System_OrderSent := TRUE;
+// 	            Running := TRUE;
+// 	            Send_CNV_Order := FALSE;
+// 	        END_IF;
+// 
+// 	        IF #Order_Table_1.Status = RUNNING_STATUS THEN
+// 	            State := State + 10;
+// 	        END_IF;
+// 
+// 	    510:
+// 	        IF #Order_Table_1.Status = RUNNING_STATUS THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := FALSE;
+// 	            State := State + 10;
+// 	        END_IF;
+// 
+// 	    520:
+// 
+// 	        IF #Order_Table_1.Status = COMPLETED_STATUS THEN
+// 	            Control.WCS_OPC_Control[Sys_No].Movement_Request_Complete_Ack := TRUE;
+// 	            State := 500;
+// 	        END_IF;
+// 	END_CASE;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

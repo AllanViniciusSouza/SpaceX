@@ -1,0 +1,40 @@
+FUNCTION_BLOCK "Stack_Lights_FB"   // FB 21, author 
+
+VAR_INPUT
+   System_Auto : Bool;
+   Fault : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Red : Bool;
+   Green : Bool;
+   Orange : Bool;
+END_VAR
+
+BEGIN
+//Commands for Stack Light
+
+IF #Fault THEN  // Fault = Red
+    #Red := "Clock_0.5Hz";
+    #Green := FALSE;
+    #Orange := FALSE;
+ELSIF #System_Auto THEN  // (1)Manual = Yellow
+    #Orange := FALSE;
+    #Red := FALSE;
+    #Green := TRUE;
+ELSIF NOT #System_Auto THEN  // (2)Semi-Auto = Blue
+    #Green := FALSE;
+    #Orange := TRUE;
+    #Red := FALSE;
+// ELSIF #System_Auto = 3 THEN  // (3)Auto = Green
+//     #Green := FALSE;
+//     #Red := FALSE;
+//     #Yellow := TRUE;
+
+ELSE
+    #Green := FALSE;
+    #Red := FALSE;
+    #Orange := FALSE;
+END_IF;
+
+END_FUNCTION_BLOCK

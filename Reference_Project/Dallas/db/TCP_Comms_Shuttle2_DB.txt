@@ -1,0 +1,28 @@
+DATA_BLOCK "TCP_Comms_Shuttle2_DB"   // InstanceDB 66  instance of "Shuttle_TCP_Comms_Shuttle2"
+
+VAR_INPUT
+   Enable : Bool;
+   TCP_Configuration : "LCom_typeConfig";
+END_VAR
+
+VAR_OUTPUT
+   Connected : Bool;
+   Busy : Bool;
+   Status : Word;
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   TCP_Diag : "LCom_typeDiagnostics";
+END_VAR
+
+VAR
+   SendBuffer : Array[0..1] of Byte;
+   ReceiveBuffer : Array[0..1] of Byte;
+   Send : Bool;
+   SendDataLength : USInt;
+   Sending : Bool;
+END_VAR
+
+
+// ---- start values (path : type := value)

@@ -1,0 +1,44 @@
+FUNCTION "FindBoolField"   // FC 17, author 
+
+VAR_INPUT
+   FieldName : String;
+   JsonStr : String;
+END_VAR
+
+VAR_TEMP
+   searchStr : String;
+   foundPos : Int;
+   valueStr : String;
+   afterField : String;
+   bResult : Bool;
+END_VAR
+
+   // RETURN : Bool
+BEGIN
+// Build search string
+#searchStr := CONCAT(IN1 := '"', IN2 := #FieldName);
+#searchStr := CONCAT(IN1 := #searchStr, IN2 := '" :');
+
+// Serach for JSON field
+#foundPos := FIND(IN1 := #JsonStr, IN2 := #searchStr);
+
+IF #foundPos > 0 THEN
+    // Take to 20 characters after the field
+    #afterField := MID(IN := #JsonStr, P := #foundPos + LEN(#searchStr), L := 20);
+    
+    // Normalize to remove whitespace if necessary
+    // (or compare directly)
+    IF FIND(IN1 := #afterField, IN2 := 'true') > 0 THEN
+        #bResult := TRUE;
+    ELSIF FIND(IN1 := #afterField, IN2 := 'false') > 0 THEN
+        #bResult := FALSE;
+    ELSE
+        #bResult := FALSE; // default if value not found
+    END_IF;
+ELSE
+    #bResult := FALSE;
+END_IF;
+
+#FindBoolField := #bResult;
+
+END_FUNCTION

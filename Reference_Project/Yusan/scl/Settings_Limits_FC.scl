@@ -1,0 +1,82 @@
+FUNCTION "Settings_Limits_FC"   // FC 65, author 
+
+VAR_IN_OUT
+   VTD_Settings : "VTD_Settings";
+END_VAR
+
+   // RETURN : Void
+BEGIN
+IF #VTD_Settings.Lowest_Level < 1 THEN
+    #VTD_Settings.Lowest_Level := 1;
+END_IF;
+
+IF #VTD_Settings.Highest_Level > 8 THEN
+    #VTD_Settings.Lowest_Level := 8;
+END_IF;
+
+IF #VTD_Settings.Creep_Speed < 3 THEN
+    #VTD_Settings.Creep_Speed := 3;
+END_IF;
+
+IF #VTD_Settings.Slow_Speed < 3 THEN
+    #VTD_Settings.Slow_Speed := 3;
+END_IF;
+
+IF #VTD_Settings.Loaded_Speed < #VTD_Settings.Slow_Calib_Speed * 1.8 THEN
+    #VTD_Settings.Loaded_Speed := #VTD_Settings.Slow_Calib_Speed * 1.8;
+END_IF;
+
+IF #VTD_Settings.Shuttle_Speed < #VTD_Settings.Slow_Calib_Speed * 1.8 THEN
+    #VTD_Settings.Shuttle_Speed := #VTD_Settings.Slow_Calib_Speed * 1.8;
+END_IF;
+
+IF #VTD_Settings.Pallet_Speed < #VTD_Settings.Slow_Calib_Speed * 1.8 THEN
+    #VTD_Settings.Pallet_Speed := #VTD_Settings.Slow_Calib_Speed * 1.8;
+END_IF;
+
+IF #VTD_Settings.Empty_Speed < #VTD_Settings.Slow_Calib_Speed * 1.8 THEN
+    #VTD_Settings.Empty_Speed := #VTD_Settings.Slow_Calib_Speed * 1.8;
+END_IF;
+
+IF #VTD_Settings.Dock_speed > 10 THEN
+    #VTD_Settings.Dock_speed := 10;
+END_IF;
+
+IF #VTD_Settings.Empty_Speed > 120 THEN
+    #VTD_Settings.Empty_Speed := 120;
+END_IF;
+
+IF #VTD_Settings.Pallet_Speed > 120 THEN
+    #VTD_Settings.Pallet_Speed := 120;
+END_IF;
+
+IF #VTD_Settings.Chain_Slack_Timeout > 5000 THEN
+    #VTD_Settings.Chain_Slack_Timeout := 5000;
+END_IF;
+
+IF #VTD_Settings.Acc_Range_1 < 60 THEN
+    #VTD_Settings.Acc_Range_1 := 60;
+END_IF;
+
+IF #VTD_Settings.Acc_Range_2 < 60 THEN
+    #VTD_Settings.Acc_Range_2 := 60;
+END_IF;
+
+IF #VTD_Settings.Acc_Range_3 < 60 THEN
+    #VTD_Settings.Acc_Range_3 := 60;
+END_IF;
+
+IF #VTD_Settings.Acc_Range_1 > 100 THEN
+    #VTD_Settings.Acc_Range_1 := 100;
+END_IF;
+
+IF #VTD_Settings.Acc_Range_2 > 100 THEN
+    #VTD_Settings.Acc_Range_2 := 100;
+END_IF;
+
+IF #VTD_Settings.Acc_Range_3 > 100 THEN
+    #VTD_Settings.Acc_Range_3 := 100;
+END_IF;
+
+
+END_FUNCTION

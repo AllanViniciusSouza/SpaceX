@@ -1,0 +1,35 @@
+// FB "Main_Panel" 16  language F_LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   Estop_Cabinet_Ch1 : Bool;
+   Reset_Cabinet : Bool;
+   Bypass : "F_Bypass_MainPanel";
+END_VAR
+
+VAR_OUTPUT
+   Safety_OK : Bool;
+   Main_Panel_OK : Bool;
+   Bypass_Warning : Bool;
+   ACK : Bool;
+END_VAR
+
+VAR
+   Estop_Cabinet_DB : ESTOP1;
+END_VAR
+
+--- Network 1  Title: RESET CABINET
+   parts: Coil, Contact
+   operands: #Reset_Cabinet, #ACK
+--- Network 2  Title: EMERGENCY STOP (CABINET)
+   parts: Contact, ESTOP1, O
+   operands: #Estop_Cabinet_Ch1, #Bypass.Estop_Cabinet, #ACK
+--- Network 3  Title: E-STOP GENERAL
+   parts: Coil, Contact
+   operands: #Estop_Cabinet_DB.Q, #Main_Panel_OK
+--- Network 4  Title: Safety OK
+   parts: Coil, Contact
+   operands: #Estop_Cabinet_DB.Q, #Safety_OK
+--- Network 5  Title: Bypass Warning
+   parts: Coil, Contact
+   operands: #Bypass.Estop_Cabinet, #Bypass_Warning

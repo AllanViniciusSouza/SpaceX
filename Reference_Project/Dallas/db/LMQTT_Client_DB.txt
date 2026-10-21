@@ -1,0 +1,133 @@
+DATA_BLOCK "LMQTT_Client_DB"   // InstanceDB 18  instance of "LMQTT_Client"
+
+VAR_INPUT
+   enable : Bool;
+   publish : Bool;
+   subscribe : Bool;
+   unsubscribe : Bool;
+   qos : USInt;
+   retain : Bool;
+   publishMsgLen : UDInt;
+   willMsgLen : UInt;
+   timeOut : Time;
+END_VAR
+
+VAR_OUTPUT
+   valid : Bool;
+   done : Bool;
+   busy : Bool;
+   error : Bool;
+   status : Word;
+   diagnostics : "typeDiagnostics";
+   receivedMsgStatus : USInt;
+   receivedMsgDataLen : UDInt;
+END_VAR
+
+VAR_IN_OUT
+   connParam : "LMQTT_typeConnParam";
+   clientIdentifier : WString;
+   username : WString;
+   password : WString;
+   willtopic : WString;
+   willMsgPayload : Array[*] of Byte;
+   mqttTopic : WString;
+   publishMsgPayload : Array[*] of Byte;
+   receivedTopic : WString;
+   receivedMsgPayload : Array[*] of Byte;
+END_VAR
+
+VAR
+   statEnableOld : Bool;
+   statValid : Bool;
+   statBusy : Bool;
+   statError : Bool;
+   statErrorUserCleared : Bool;
+   statErrorAutoCleared : Bool;
+   statStatus : Word;
+   statDone : Bool;
+   statRcvMsgStatus : USInt;
+   statRcvMsgDataLen : UDInt;
+   statSubfunctionStatus : Word;
+   statFBErrorState : DInt;
+   statFBState : DInt;
+   statMqttConnectState : DInt;
+   statMqttCommandState : DInt;
+   statDisablingCompleted : Bool;
+   statEmptyDiagnostics : "typeDiagnostics";
+   statConnParam : Struct
+      isQDN : Bool;
+      paramQDN : TCON_QDN_SEC;
+      paramIP : TCON_IP_V4_SEC;
+   END_STRUCT;
+   instTsendC : TSEND_C;
+   instTrcv : TRCV;
+   statSendBuffer : Array[0..8191] of Byte;
+   statRcvBuffer : Array[0..1459] of Byte;
+   statPublishOld : Bool;
+   statSubscribeOld : Bool;
+   statUnsubscribeOld : Bool;
+   statTsendcReq : Bool;
+   statTsendcEnable : Bool;
+   statTsendcLen : UDInt;
+   statEnableTimerCommandWatchdog : Bool;
+   instTimerCommandWatchdog : IEC_TIMER;
+   statEnableMqttKeepAliveTimer : Bool;
+   statMqttKeepAliveUsed : Bool;
+   statMqttKeepAliveTime : Time;
+   instMqttKeepAliveTimer : IEC_TIMER;
+   statSendBufferPos : UInt;
+   statPaketHeaderEncodeDone : Bool;
+   statSendPaketTotalRemLen : UDInt;
+   statEncodedRemPaketLenAsByte : Byte;
+   statUsernameLenUtf8Encoded : UInt;
+   statPasswordLenUtf8Encoded : UInt;
+   statWillTopicLenUtf8Encoded : UInt;
+   statClientIdLenUtf8Encoded : UInt;
+   statWillQos : USInt;
+   statWillRetain : Bool;
+   statWillMessageCnt : UInt;
+   statClientIdPos : DInt;
+   statClientIdEncodeState : DInt;
+   statWillMessagePos : DInt;
+   statWillMessageEncodeState : DInt;
+   statWillTopicPos : DInt;
+   statWillTopicEncodeState : DInt;
+   statUserNamePos : DInt;
+   statUserNameEncodeState : DInt;
+   statPasswordPos : DInt;
+   statPasswordEncodeState : DInt;
+   statPaketId : UInt;
+   statPublishTopicLenUtf8Encoded : UInt;
+   statPublishQos : USInt;
+   statPublishMessageCnt : UDInt;
+   statPublishTopicEncodeState : DInt;
+   statPublishTopicPos : DInt;
+   statPaketIdEncoded : Bool;
+   statPublishEncodeMessageState : DInt;
+   statPublishMessagePos : DInt;
+   statSubscribeQos : USInt;
+   statSubscribeQosEncoded : Bool;
+   statSubscribeTopicPos : DInt;
+   statSubscribeTopicEncodeState : DInt;
+   statSubscribeTopicLenUtf8Encoded : UInt;
+   statUnsubscribeTopicPos : DInt;
+   statUnsubscribeTopicEncodeState : DInt;
+   statUnsubscribeTopicLenUtf8Encoded : UInt;
+   statRcvMsgQoS : UInt;
+   statRcvMsgTotalLen : UDInt;
+   statRcvMsgTopicLen : UInt;
+   statRcvMsgPayloadLen : UDInt;
+   statRcvMsgPaketId : Word;
+   statRcvMsgTopicPos : DInt;
+   statRcvMsgPayloadPos : DInt;
+   statRcvMsgDecodeState : DInt;
+   statRcvMsgInternalStatus : USInt;
+   statMqttPubRecRcv : USInt;
+   statSendPubAckMsg : Bool;
+   statPubRecReady : Bool;
+   statCommandInputOld : Bool;
+   statCommandInputBackup : Byte;
+END_VAR
+
+
+// ---- start values (path : type := value)

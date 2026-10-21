@@ -1,0 +1,26 @@
+DATA_BLOCK "Control_DB"   // GlobalDB 69
+
+VAR
+   ECnv_Sys : Array[1..2] of "ECnv_Control";
+   LCnv_Sys : Array[1..2] of "Cnv_VTD_Control";
+   VTD_Sys : Array[1..2] of "VTD_Control";
+   VTD_Order Table : Array[1..2] of "WMS_OPC_UA";
+   Buffer_Order Table : Array[1..2] of "WMS_OPC_UA";
+   Shuttles_Position : Array[1..10] of Struct;
+   VTDBarcode_Station : Array[1..2] of "Barcode_Station_UDT";
+   Gate_Station : Array[1..3] of "Gate_Station_UDT";
+   Charger_Level : Array[2..6] of "Charger_UDT";
+   Movement_Completed : Struct
+      Level_2 : Bool;
+      Level_3 : Bool;
+      Level_4 : Bool;
+      Level_5 : Bool;
+      Level_6 : Bool;
+   END_STRUCT;
+END_VAR
+
+
+// ---- start values (path : type := value)
+Gate_Station[1].Secure_Access : Bool := TRUE
+Gate_Station[2].Secure_Access : Bool := TRUE
+Gate_Station[3].Secure_Access : Bool := TRUE

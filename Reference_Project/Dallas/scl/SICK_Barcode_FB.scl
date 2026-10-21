@@ -1,0 +1,89 @@
+FUNCTION_BLOCK "SICK_Barcode_FB"   // FB 19, author 
+
+VAR_INPUT
+   Rd_Done : Bool;
+   Req_Done : Bool;
+   Req_Busy : Bool;
+   Error : Bool;
+   arrResult : Array[1..200] of Byte;
+   iCounter : USInt;
+   iLength : Int;
+   Error_Code : DWord;
+END_VAR
+
+VAR_OUTPUT
+   Test_Comm : Bool;
+   Enable_Trigger : Bool;
+   Disable_Trigger : Bool;
+   Enable_Req : Bool;
+   Result : String;
+   Test_OK : Bool;
+END_VAR
+
+BEGIN
+//Communication Test
+IF "VTD_BCD_Start_Comm_Test_HMI_Tag" THEN
+    #Test_Comm := 1;
+    #Enable_Req := 1;
+    "IEC_Timer_0_DB_1".TON(IN:=True,
+                           PT:=t#1s);
+END_IF;
+
+//TEST OK
+IF #Req_Done AND "IEC_Timer_0_DB_1".Q AND NOT #Error THEN
+    #Test_OK := 1;
+    #Test_Comm := 0;
+    #Enable_Req := 0;
+    "VTD_BCD_Start_Comm_Test_HMI_Tag" := 0;
+    "IEC_Timer_0_DB_1".TON(IN := FALSE,
+                           PT := t#0s);
+END_IF;
+
+//ERROR
+IF "IEC_Timer_0_DB_1".Q AND #Error THEN
+        #Test_OK := 0;
+        #Test_Comm := 0;
+        #Enable_Req := 0;
+        "VTD_BCD_Start_Comm_Test_HMI_Tag" := 0;
+        "IEC_Timer_0_DB_1".TON(IN := FALSE,
+                               PT := t#0s);
+    END_IF;
+    
+//Enable Trigger
+    IF "VTD_BCD_Enable_Trigger_HMI_Tag" OR "Auto_Start_Barcode" THEN
+    #Enable_Trigger := 1;
+    #Enable_Req := 1;
+    "VTD_BCD_Disable_Trigger_HMI_Tag" := 0;
+    #Disable_Trigger := 0;
+//Disable Trigger
+ELSIF "VTD_BCD_Disable_Trigger_HMI_Tag" OR "Auto_Stop_Barcode" THEN
+    #Disable_Trigger := 1;
+    #Enable_Req := 1;
+    "VTD_BCD_Enable_Trigger_HMI_Tag" := 0;
+    #Enable_Trigger := 0;
+ELSE
+    #Enable_Trigger := 0;
+    #Enable_Req := 0;
+    #Disable_Trigger := 0;
+END_IF;
+
+
+"R_TRIG_DB_5"(CLK:=#Rd_Done);
+
+IF "R_TRIG_DB_5".Q OR "IEC_Timer_0_DB_18".Q OR
+    ("VTD_BCD_Enable_Trigger_HMI_Tag" AND "VTD_BCD_Disable_Trigger_HMI_Tag")
+THEN
+    "VTD_BCD_Disable_Trigger_HMI_Tag" := 0;
+    #Enable_Trigger := 0;
+    #Disable_Trigger := 0;
+    #Enable_Req := 0;
+    "IEC_Timer_0_DB_18".TON(IN := FALSE,
+                            PT := T#0S);
+    "Auto_Stop_Barcode" := 0;
+END_IF;
+    
+"IEC_Timer_0_DB_18".TON(IN:=("VTD_BCD_Enable_Trigger_HMI_Tag" OR "VTD_BCD_Disable_Trigger_HMI_Tag" OR "Auto_Start_Barcode" OR "Auto_Stop_Barcode"),
+                            PT:=T#10S);
+    
+#Result := ByteArrayToString_1(Lenght := #iLength, ByteArray := #arrResult);
+END_FUNCTION_BLOCK

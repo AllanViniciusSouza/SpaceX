@@ -1,0 +1,283 @@
+FUNCTION "OUTPUTS"   // FC 5, author 
+
+   // RETURN : Void
+BEGIN
+REGION MAIN PANEL
+    "MAIN PANEL STACK LIGHT RED" := "Stack_Lights_DB_0".Red XOR "Force"."MAIN PANEL STACK LIGHT RED";
+    "MAIN PANEL STACK LIGHT AMBER" := "Stack_Lights_DB_0".Yellow XOR "Force"."MAIN PANEL STACK LIGHT AMBER";
+    "MAIN PANEL STACK LIGHT GREEN" := "Stack_Lights_DB_0".Green XOR "Force"."MAIN PANEL STACK LIGHT GREEN";
+END_REGION
+
+REGION REMOTE PANEL 1
+    "C1101_SFTY STOPPER ROTATE" := "Sf_C1101_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX101_SFTY STOPPER ROTATE";
+    "C1102_SFTY STOPPER ROTATE" := "Sf_C1102_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX102_SFTY STOPPER ROTATE";
+    "C1103_SFTY STOPPER ROTATE" := "Sf_C1103_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX103_SFTY STOPPER ROTATE";
+    "C1104_SFTY STOPPER ROTATE" := "Sf_C1104_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX104_SFTY STOPPER ROTATE";
+    "C1105_SFTY STOPPER ROTATE" := "Sf_C1105_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX105_SFTY STOPPER ROTATE";
+    "C1106_SFTY STOPPER ROTATE" := "Sf_C1106_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX106_SFTY STOPPER ROTATE";
+    "C1107_SFTY STOPPER ROTATE" := "Sf_C1107_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX107_SFTY STOPPER ROTATE";
+    "C1108_SFTY STOPPER ROTATE" := "Sf_C1108_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX108_SFTY STOPPER ROTATE";
+    "C1201_SFTY STOPPER ROTATE" := "Sf_C1201_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX201_SFTY STOPPER ROTATE";
+    "C1202_SFTY STOPPER ROTATE" := "Sf_C1202_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX202_SFTY STOPPER ROTATE";
+    "C1203_SFTY STOPPER ROTATE" := "Sf_C1203_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX203_SFTY STOPPER ROTATE";
+    "C1204_SFTY STOPPER ROTATE" := "Sf_C1204_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX204_SFTY STOPPER ROTATE";
+    "C1205_SFTY STOPPER ROTATE" := "Sf_C1205_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX205_SFTY STOPPER ROTATE";
+    "C1206_SFTY STOPPER ROTATE" := "Sf_C1206_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX206_SFTY STOPPER ROTATE";
+    "C1207_SFTY STOPPER ROTATE" := "Sf_C1207_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX207_SFTY STOPPER ROTATE";
+    "C1208_SFTY STOPPER ROTATE" := "Sf_C1208_FB_DB".T_Run.Q XOR "Force".Remote_Panel[1]."CX208_SFTY STOPPER ROTATE";
+    "VTD1 DOCKING PINS 1 EXTEND" := "Control_DB".VTD_Sys[1].Outputs.LP1_Extend XOR "Force".Remote_Panel[1]."VTDx DOCKING PINS 1 EXTEND";
+    "VTD1 DOCKING PINS 1 RETRACT" := "Control_DB".VTD_Sys[1].Outputs.LP1_Retract XOR "Force".Remote_Panel[1]."VTDx DOCKING PINS 1 RETRACT";
+    "VTD1 DOCKING PINS 2 EXTEND" := "Control_DB".VTD_Sys[1].Outputs.LP2_Extend XOR "Force".Remote_Panel[1]."VTDx DOCKING PINS 2 EXTEND";
+    "VTD1 DOCKING PINS 2 RETRACT" := "Control_DB".VTD_Sys[1].Outputs.LP2_Retract XOR "Force".Remote_Panel[1]."VTDx DOCKING PINS 2 RETRACT";
+    "SCA 1002 STACK LIGHTS AMBER" := "Stack_Lights_DB_1".Yellow XOR "Force".Remote_Panel[1]."SCA X00Y STACK LIGHTS AMBER";
+    "SCA 1002 STACK LIGHTS GREEN" := "Stack_Lights_DB_1".Green XOR "Force".Remote_Panel[1]."SCA X00Y STACK LIGHTS GREEN";
+    "SCA 1002 STACK LIGHTS RED" := "Stack_Lights_DB_1".Red XOR "Force".Remote_Panel[1]."SCA X00Y STACK LIGHTS RED";
+    "EMERGENCY STOP RESET STATUS - ON(1)" := "Force".Remote_Panel[1]."EMERGENCY STOP RESET STATUS - ON(X)" XOR (NOT "Remote_Panel_DB_1".Safety_OK AND "Clock_2Hz");
+    
+    "VTD1_ControlWord".%X7 := "Control_DB".VTD_Sys[1].Instruction.Reset;
+    "VTD1_AccFactor" := "Control_DB".VTD_Sys[1].Motor.Acc_Factor;
+    
+    //ABSOLUTE ENMCODER
+    "AE_Control_Word_1(1)" := "Control_DB".VTD_Sys[1].Outputs.AE_Control_Word_1;
+    "AE_Control_Word_2(1)" := "Control_DB".VTD_Sys[1].Outputs.AE_Control_Word_2;
+END_REGION
+
+REGION REMOTE PANEL 2
+    "C2101_SFTY STOPPER ROTATE" := "Sf_C2101_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX101_SFTY STOPPER ROTATE";
+    "C2102_SFTY STOPPER ROTATE" := "Sf_C2102_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX102_SFTY STOPPER ROTATE";
+    "C2103_SFTY STOPPER ROTATE" := "Sf_C2103_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX103_SFTY STOPPER ROTATE";
+    "C2104_SFTY STOPPER ROTATE" := "Sf_C2104_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX104_SFTY STOPPER ROTATE";
+    "C2105_SFTY STOPPER ROTATE" := "Sf_C2105_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX105_SFTY STOPPER ROTATE";
+    "C2106_SFTY STOPPER ROTATE" := "Sf_C2106_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX106_SFTY STOPPER ROTATE";
+    "C2107_SFTY STOPPER ROTATE" := "Sf_C2107_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX107_SFTY STOPPER ROTATE";
+    "C2108_SFTY STOPPER ROTATE" := "Sf_C2108_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX108_SFTY STOPPER ROTATE";
+    "C2201_SFTY STOPPER ROTATE" := "Sf_C2201_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX201_SFTY STOPPER ROTATE";
+    "C2202_SFTY STOPPER ROTATE" := "Sf_C2202_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX202_SFTY STOPPER ROTATE";
+    "C2203_SFTY STOPPER ROTATE" := "Sf_C2203_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX203_SFTY STOPPER ROTATE";
+    "C2204_SFTY STOPPER ROTATE" := "Sf_C2204_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX204_SFTY STOPPER ROTATE";
+    "C2205_SFTY STOPPER ROTATE" := "Sf_C2205_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX205_SFTY STOPPER ROTATE";
+    "C2206_SFTY STOPPER ROTATE" := "Sf_C2206_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX206_SFTY STOPPER ROTATE";
+    "C2207_SFTY STOPPER ROTATE" := "Sf_C2207_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX207_SFTY STOPPER ROTATE";
+    "C2208_SFTY STOPPER ROTATE" := "Sf_C2208_FB_DB".T_Run.Q XOR "Force".Remote_Panel[2]."CX208_SFTY STOPPER ROTATE";
+    "VTD2 DOCKING PINS 1 EXTEND" := "Control_DB".VTD_Sys[2].Outputs.LP1_Extend XOR "Force".Remote_Panel[2]."VTDx DOCKING PINS 1 EXTEND";
+    "VTD2 DOCKING PINS 1 RETRACT" := "Control_DB".VTD_Sys[2].Outputs.LP1_Retract XOR "Force".Remote_Panel[2]."VTDx DOCKING PINS 1 RETRACT";
+    "VTD2 DOCKING PINS 2 EXTEND" := "Control_DB".VTD_Sys[2].Outputs.LP2_Extend XOR "Force".Remote_Panel[2]."VTDx DOCKING PINS 2 EXTEND";
+    "VTD2 DOCKING PINS 2 RETRACT" := "Control_DB".VTD_Sys[2].Outputs.LP2_Retract XOR "Force".Remote_Panel[2]."VTDx DOCKING PINS 2 RETRACT";
+    "SCA 2002 STACK LIGHTS AMBER" := "Stack_Lights_DB_2".Yellow XOR "Force".Remote_Panel[2]."SCA X00Y STACK LIGHTS AMBER";
+    "SCA 2002 STACK LIGHTS RED" := "Stack_Lights_DB_2".Red XOR "Force".Remote_Panel[2]."SCA X00Y STACK LIGHTS RED";
+    "SCA 2002 STACK LIGHTS GREEN" := "Stack_Lights_DB_2".Green XOR "Force".Remote_Panel[2]."SCA X00Y STACK LIGHTS GREEN";
+    "EMERGENCY STOP RESET STATUS - ON(2)" := "Force".Remote_Panel[2]."EMERGENCY STOP RESET STATUS - ON(X)" XOR (NOT "Remote_Panel_DB_2".Safety_OK AND "Clock_2Hz");
+    
+    "VTD2_ControlWord".%X7 := "Control_DB".VTD_Sys[2].Instruction.Reset;
+    "VTD2_AccFactor" := "Control_DB".VTD_Sys[2].Motor.Acc_Factor;
+    
+    //ABSOLUTE ENMCODER
+    "AE_Control_Word_1(2)" := "Control_DB".VTD_Sys[2].Outputs.AE_Control_Word_1;
+    "AE_Control_Word_2(2)" := "Control_DB".VTD_Sys[2].Outputs.AE_Control_Word_2;
+END_REGION
+
+REGION REMOTE PANEL 3
+    "C3101_SFTY STOPPER ROTATE" := "Sf_C3101_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX101_SFTY STOPPER ROTATE";
+    "C3102_SFTY STOPPER ROTATE" := "Sf_C3102_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX102_SFTY STOPPER ROTATE";
+    "C3103_SFTY STOPPER ROTATE" := "Sf_C3103_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX103_SFTY STOPPER ROTATE";
+    "C3104_SFTY STOPPER ROTATE" := "Sf_C3104_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX104_SFTY STOPPER ROTATE";
+    "C3105_SFTY STOPPER ROTATE" := "Sf_C3105_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX105_SFTY STOPPER ROTATE";
+    "C3106_SFTY STOPPER ROTATE" := "Sf_C3106_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX106_SFTY STOPPER ROTATE";
+    "C3107_SFTY STOPPER ROTATE" := "Sf_C3107_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX107_SFTY STOPPER ROTATE";
+    "C3108_SFTY STOPPER ROTATE" := "Sf_C3108_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX208_SFTY STOPPER ROTATE";
+    "C3201_SFTY STOPPER ROTATE" := "Sf_C3201_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX201_SFTY STOPPER ROTATE";
+    "C3202_SFTY STOPPER ROTATE" := "Sf_C3202_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX202_SFTY STOPPER ROTATE";
+    "C3203_SFTY STOPPER ROTATE" := "Sf_C3203_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX203_SFTY STOPPER ROTATE";
+    "C3204_SFTY STOPPER ROTATE" := "Sf_C3204_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX204_SFTY STOPPER ROTATE";
+    "C3205_SFTY STOPPER ROTATE" := "Sf_C3205_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX205_SFTY STOPPER ROTATE";
+    "C3206_SFTY STOPPER ROTATE" := "Sf_C3206_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX206_SFTY STOPPER ROTATE";
+    "C3207_SFTY STOPPER ROTATE" := "Sf_C3207_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX207_SFTY STOPPER ROTATE";
+    "C3208_SFTY STOPPER ROTATE" := "Sf_C3208_FB_DB".T_Run.Q XOR "Force".Remote_Panel[3]."CX208_SFTY STOPPER ROTATE";
+    "VTD3 DOCKING PINS 1 EXTEND" := "Control_DB".VTD_Sys[3].Outputs.LP1_Extend XOR "Force".Remote_Panel[3]."VTDx DOCKING PINS 1 EXTEND";
+    "VTD3 DOCKING PINS 1 RETRACT" := "Control_DB".VTD_Sys[3].Outputs.LP1_Retract XOR "Force".Remote_Panel[3]."VTDx DOCKING PINS 1 RETRACT";
+    "VTD3 DOCKING PINS 2 EXTEND" := "Control_DB".VTD_Sys[3].Outputs.LP2_Extend XOR "Force".Remote_Panel[3]."VTDx DOCKING PINS 2 EXTEND";
+    "VTD3 DOCKING PINS 2 RETRACT" := "Control_DB".VTD_Sys[3].Outputs.LP2_Retract XOR "Force".Remote_Panel[3]."VTDx DOCKING PINS 2 RETRACT";
+    "SCA 3002 STACK LIGHTS RED" := "Stack_Lights_DB_3".Red XOR "Force".Remote_Panel[3]."SCA X00Y STACK LIGHTS RED";
+    "SCA 3002 STACK LIGHTS ORANGE" := "Stack_Lights_DB_3".Yellow XOR "Force".Remote_Panel[3]."SCA X00Y STACK LIGHTS AMBER";
+    "SCA 3002 STACK LIGHTS GREEN" := "Stack_Lights_DB_3".Green XOR "Force".Remote_Panel[3]."SCA X00Y STACK LIGHTS GREEN";
+    "EMERGENCY STOP RESET STATUS - ON(3)" := "Force".Remote_Panel[3]."EMERGENCY STOP RESET STATUS - ON(X)" XOR (NOT "Remote_Panel_DB_3".Safety_OK AND "Clock_2Hz");
+    
+    "VTD3_ControlWord".%X7 := "Control_DB".VTD_Sys[3].Instruction.Reset;
+    "VTD3_AccFactor" := "Control_DB".VTD_Sys[3].Motor.Acc_Factor;
+    
+    //ABSOLUTE ENMCODER
+    "AE_Control_Word_1(3)" := "Control_DB".VTD_Sys[3].Outputs.AE_Control_Word_1;
+    "AE_Control_Word_2(3)" := "Control_DB".VTD_Sys[3].Outputs.AE_Control_Word_2;
+END_REGION
+
+REGION REMOTE PANEL 4
+    "C4101_SFTY STOPPER ROTATE" := "Sf_C4101_FB_DB".T_Run.Q XOR "Force".Remote_Panel[4]."CX101_SFTY STOPPER ROTATE";
+    "C4102_SFTY STOPPER ROTATE" := "Sf_C4102_FB_DB".T_Run.Q XOR "Force".Remote_Panel[4]."CX102_SFTY STOPPER ROTATE";
+    "C4103_SFTY STOPPER ROTATE" := "Sf_C4103_FB_DB".T_Run.Q XOR "Force".Remote_Panel[4]."CX103_SFTY STOPPER ROTATE";
+    "C4104_SFTY STOPPER ROTATE" := "Sf_C4104_FB_DB".T_Run.Q XOR "Force".Remote_Panel[4]."CX104_SFTY STOPPER ROTATE";
+    "C4105_SFTY STOPPER ROTATE" := "Sf_C4105_FB_DB".T_Run.Q XOR "Force".Remote_Panel[4]."CX105_SFTY STOPPER ROTATE";
+    "C4106_SFTY STOPPER ROTATE" := "Sf_C4106_FB_DB".T_Run.Q XOR "Force".Remote_Panel[4]."CX106_SFTY STOPPER ROTATE";
+    "C4107_SFTY STOPPER ROTATE" := "Sf_C4107_FB_DB".T_Run.Q XOR "Force".Remote_Panel[4]."CX107_SFTY STOPPER ROTATE";
+    "C4108_SFTY STOPPER ROTATE" := "Sf_C4108_FB_DB".T_Run.Q XOR "Force".Remote_Panel[4]."CX108_SFTY STOPPER ROTATE";
+    "VTD4 DOCKING PINS 1 EXTEND" := "Control_DB".VTD_Sys[4].Outputs.LP1_Extend XOR "Force".Remote_Panel[4]."VTDx DOCKING PINS 1 EXTEND";
+    "VTD4 DOCKING PINS 1 RETRACT" := "Control_DB".VTD_Sys[4].Outputs.LP1_Retract XOR "Force".Remote_Panel[4]."VTDx DOCKING PINS 1 RETRACT";
+    "VTD4 DOCKING PINS 2 EXTEND" := "Control_DB".VTD_Sys[4].Outputs.LP2_Extend XOR "Force".Remote_Panel[4]."VTDx DOCKING PINS 2 EXTEND";
+    "VTD4 DOCKING PINS 2 RETRACT" := "Control_DB".VTD_Sys[4].Outputs.LP2_Retract XOR "Force".Remote_Panel[4]."VTDx DOCKING PINS 2 RETRACT";
+    "SCA 4001 STACK LIGHTS RED" := "Stack_Lights_DB_4".Red XOR "Force".Remote_Panel[4]."SCA X00Y STACK LIGHTS RED";
+    "SCA 4001 STACK LIGHTS YELLOW" := "Stack_Lights_DB_4".Yellow XOR "Force".Remote_Panel[4]."SCA X00Y STACK LIGHTS AMBER";
+    "SCA 4001 STACK LIGHTS GREEN" := "Stack_Lights_DB_4".Green XOR "Force".Remote_Panel[4]."SCA X00Y STACK LIGHTS GREEN";
+    "EMERGENCY STOP RESET STATUS - ON(4)" := "Force".Remote_Panel[4]."EMERGENCY STOP RESET STATUS - ON(X)" XOR (NOT "Remote_Panel_DB_4".Safety_OK AND "Clock_2Hz");
+    
+    "VTD4_ControlWord".%X7 := "Control_DB".VTD_Sys[4].Instruction.Reset;
+    "VTD4_AccFactor" := "Control_DB".VTD_Sys[4].Motor.Acc_Factor;
+    
+    //ABSOLUTE ENMCODER
+    "AE_Control_Word_1(4)" := "Control_DB".VTD_Sys[4].Outputs.AE_Control_Word_1;
+    "AE_Control_Word_2(4)" := "Control_DB".VTD_Sys[4].Outputs.AE_Control_Word_2;
+END_REGION
+
+REGION REMOTE PANEL 5
+    "C5101_SFTY STOPPER ROTATE" := "Sf_C5101_FB_DB".T_Run.Q XOR "Force".Remote_Panel[5]."CX101_SFTY STOPPER ROTATE";
+    "C5102_SFTY STOPPER ROTATE" := "Sf_C5102_FB_DB".T_Run.Q XOR "Force".Remote_Panel[5]."CX102_SFTY STOPPER ROTATE";
+    "C5103_SFTY STOPPER ROTATE" := "Sf_C5103_FB_DB".T_Run.Q XOR "Force".Remote_Panel[5]."CX103_SFTY STOPPER ROTATE";
+    "C5104_SFTY STOPPER ROTATE" := "Sf_C5104_FB_DB".T_Run.Q XOR "Force".Remote_Panel[5]."CX104_SFTY STOPPER ROTATE";
+    "C5105_SFTY STOPPER ROTATE" := "Sf_C5105_FB_DB".T_Run.Q XOR "Force".Remote_Panel[5]."CX105_SFTY STOPPER ROTATE";
+    "C5106_SFTY STOPPER ROTATE" := "Sf_C5106_FB_DB".T_Run.Q XOR "Force".Remote_Panel[5]."CX106_SFTY STOPPER ROTATE";
+    "C5107_SFTY STOPPER ROTATE" := "Sf_C5107_FB_DB".T_Run.Q XOR "Force".Remote_Panel[5]."CX107_SFTY STOPPER ROTATE";
+    "C5108_SFTY STOPPER ROTATE" := "Sf_C5108_FB_DB".T_Run.Q XOR "Force".Remote_Panel[5]."CX108_SFTY STOPPER ROTATE";
+    "VTD5 DOCKING PINS 1 EXTEND" := "Control_DB".VTD_Sys[5].Outputs.LP1_Extend XOR "Force".Remote_Panel[5]."VTDx DOCKING PINS 1 EXTEND";
+    "VTD5 DOCKING PINS 1 RETRACT" := "Control_DB".VTD_Sys[5].Outputs.LP1_Retract XOR "Force".Remote_Panel[5]."VTDx DOCKING PINS 1 RETRACT";
+    "VTD5 DOCKING PINS 2 EXTEND" := "Control_DB".VTD_Sys[5].Outputs.LP2_Extend XOR "Force".Remote_Panel[5]."VTDx DOCKING PINS 2 EXTEND";
+    "VTD5 DOCKING PINS 2 RETRACT" := "Control_DB".VTD_Sys[5].Outputs.LP2_Retract XOR "Force".Remote_Panel[5]."VTDx DOCKING PINS 2 RETRACT";
+    "SCA 5001 STACK LIGHTS GREEN" := "Stack_Lights_DB_5".Green XOR "Force".Remote_Panel[5]."SCA X00Y STACK LIGHTS GREEN";
+    "SCA 5001 STACK LIGHTS YELLOW" := "Stack_Lights_DB_5".Yellow XOR "Force".Remote_Panel[5]."SCA X00Y STACK LIGHTS AMBER";
+    "SCA 5001 STACK LIGHTS RED" := "Stack_Lights_DB_5".Red XOR "Force".Remote_Panel[5]."SCA X00Y STACK LIGHTS RED";
+    "EMERGENCY STOP RESET STATUS - ON(5)" := "Force".Remote_Panel[5]."EMERGENCY STOP RESET STATUS - ON(X)" XOR (NOT "Remote_Panel_DB_5".Safety_OK AND "Clock_2Hz");
+    
+    "VTD5_ControlWord".%X7 := "Control_DB".VTD_Sys[5].Instruction.Reset;
+    "VTD5_AccFactor" := "Control_DB".VTD_Sys[5].Motor.Acc_Factor;
+    
+    //ABSOLUTE ENMCODER
+    "AE_Control_Word_1(5)" := "Control_DB".VTD_Sys[5].Outputs.AE_Control_Word_1;
+    "AE_Control_Word_2(5)" := "Control_DB".VTD_Sys[5].Outputs.AE_Control_Word_2;
+END_REGION
+
+REGION CHARGER PANELS   
+    IF "FirstScan" THEN
+        "Charger 1 contactor(1)" := TRUE;
+        "Charger 2 contactor(1)" := TRUE;
+        "Charger 3 contactor(1)" := TRUE;
+        
+        "Charger 1 contactor(2)" := TRUE;
+        "Charger 2 contactor(2)" := TRUE;
+        "Charger 3 contactor(2)" := TRUE;
+        
+        "Charger 1 contactor(3)" := TRUE;
+        "Charger 2 contactor(3)" := TRUE;
+        "Charger 3 contactor(3)" := TRUE;
+        
+        "Charger 1 contactor(4)" := TRUE;
+        "Charger 2 contactor(4)" := TRUE;
+        "Charger 3 contactor(4)" := TRUE;
+        
+        "Charger 1 contactor(5)" := TRUE;
+        "Charger 2 contactor(5)" := TRUE;
+        "Charger 3 contactor(5)" := TRUE;
+        
+        "Charger 1 contactor(6)" := TRUE;
+        "Charger 2 contactor(6)" := TRUE;
+        "Charger 3 contactor(6)" := TRUE;
+        
+        "Charger 1 contactor(7)" := TRUE;
+        "Charger 2 contactor(7)" := TRUE;
+        "Charger 3 contactor(7)" := TRUE;
+        
+        "Charger 1 contactor(8)" := TRUE;
+        "Charger 2 contactor(8)" := TRUE;
+        "Charger 3 contactor(8)" := TRUE;
+        
+        //CHARGE DATA HMI 1
+    ELSIF "Charge_Shuttle_Commands" THEN
+        CASE "Shuttle_Level_Selected" OF
+            1:
+                "Charger 1" := "Charger 1 contactor(1)";
+                "Charger 2" := "Charger 2 contactor(1)";
+                "Charger 3" := "Charger 3 contactor(1)";
+            2:
+                "Charger 1" := "Charger 1 contactor(2)";
+                "Charger 2" := "Charger 2 contactor(2)";
+                "Charger 3" := "Charger 3 contactor(2)";
+            3:
+                "Charger 1" := "Charger 1 contactor(3)";
+                "Charger 2" := "Charger 2 contactor(3)";
+                "Charger 3" := "Charger 3 contactor(3)";
+            4:
+                "Charger 1" := "Charger 1 contactor(4)";
+                "Charger 2" := "Charger 2 contactor(4)";
+                "Charger 3" := "Charger 3 contactor(4)";
+            5:
+                "Charger 1" := "Charger 1 contactor(5)";
+                "Charger 2" := "Charger 2 contactor(5)";
+                "Charger 3" := "Charger 3 contactor(5)";
+            6:
+                "Charger 1" := "Charger 1 contactor(6)";
+                "Charger 2" := "Charger 2 contactor(6)";
+                "Charger 3" := "Charger 3 contactor(6)";
+            7:
+                "Charger 1" := "Charger 1 contactor(7)";
+                "Charger 2" := "Charger 2 contactor(7)";
+                "Charger 3" := "Charger 3 contactor(7)";
+            8:
+                "Charger 1" := "Charger 1 contactor(8)";
+                "Charger 2" := "Charger 2 contactor(8)";
+                "Charger 3" := "Charger 3 contactor(8)";
+        END_CASE;
+        
+      "T_Shuttle_Charge_Buttons".TON(IN:=TRUE,
+                                     PT:=T#100ms);
+      
+      IF "T_Shuttle_Charge_Buttons".Q THEN
+          "T_Shuttle_Charge_Buttons".TON(IN := FALSE,
+                                         PT := T#0S);
+          "Charge_Shuttle_Commands" := FALSE;
+      END_IF;
+        
+    ELSE
+        //WRITE DATA
+        CASE "Shuttle_Level_Selected" OF
+            1:
+                "Charger 1 contactor(1)" := "Charger 1";
+                "Charger 2 contactor(1)" := "Charger 2";
+                "Charger 3 contactor(1)" := "Charger 3";
+            2:
+                "Charger 1 contactor(2)" := "Charger 1";
+                "Charger 2 contactor(2)" := "Charger 2";
+                "Charger 3 contactor(2)" := "Charger 3";
+            3:
+                "Charger 1 contactor(3)" := "Charger 1";
+                "Charger 2 contactor(3)" := "Charger 2";
+                "Charger 3 contactor(3)" := "Charger 3";
+            4:
+                "Charger 1 contactor(4)" := "Charger 1";
+                "Charger 2 contactor(4)" := "Charger 2";
+                "Charger 3 contactor(4)" := "Charger 3";
+            5:
+                "Charger 1 contactor(5)" := "Charger 1";
+                "Charger 2 contactor(5)" := "Charger 2";
+                "Charger 3 contactor(5)" := "Charger 3";
+            6:
+                "Charger 1 contactor(6)" := "Charger 1";
+                "Charger 2 contactor(6)" := "Charger 2";
+                "Charger 3 contactor(6)" := "Charger 3";
+            7:
+                "Charger 1 contactor(7)" := "Charger 1";
+                "Charger 2 contactor(7)" := "Charger 2";
+                "Charger 3 contactor(7)" := "Charger 3";
+            8:
+                "Charger 1 contactor(8)" := "Charger 1";
+                "Charger 2 contactor(8)" := "Charger 2";
+                "Charger 3 contactor(8)" := "Charger 3";
+        END_CASE;
+    END_IF;
+END_REGION;
+END_FUNCTION

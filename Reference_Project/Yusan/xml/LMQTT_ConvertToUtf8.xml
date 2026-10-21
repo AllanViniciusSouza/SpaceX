@@ -1,0 +1,1061 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-20T12:46:38.3639662Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FC ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor>SIEMENS</HeaderAuthor>
+      <HeaderFamily>LMQTT</HeaderFamily>
+      <HeaderName />
+      <HeaderVersion>1.0</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="character" Datatype="WChar" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Character that shall be converted to UTF-8</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+  <Section Name="Output">
+    <Member Name="convertedUtf8" Datatype="DWord" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> UTF-8 conformant byte sequence. B0 stores first Byte, B1 second and B2 third Byte. B3 is not used</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="bytesUsed" Datatype="USInt" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Amount of Bytes converted. Ranges from 1 to 3.</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="error" Datatype="Bool" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> TRUE: An error occurred during the execution of the FC</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="status" Datatype="Word" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> 16#0000 - 16#7FFF: Status of the FC, 16#8000 - 16#FFFF: Error identification</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+  <Section Name="InOut" />
+  <Section Name="Temp">
+    <Member Name="tempStatus" Datatype="Word">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> temp value for output 'status'</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="tempConvertedUtf8" Datatype="DWord">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> temp value for output 'convertedUtf8'</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="tempBytesUsed" Datatype="USInt">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> temp value for output 'bytesUsed'</MultiLanguageText>
+      </Comment>
+    </Member>
+    <Member Name="tempCharacter" Datatype="WChar">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> temp value for input 'character'</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+  <Section Name="Constant">
+    <Member Name="STATUS_NO_ERROR" Datatype="Word" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> no error status</MultiLanguageText>
+      </Comment>
+      <StartValue>16#0000</StartValue>
+    </Member>
+    <Member Name="STATUS_EXECUTION_FINISHED" Datatype="Word" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Execution finished without errors</MultiLanguageText>
+      </Comment>
+      <StartValue>16#0000</StartValue>
+    </Member>
+    <Member Name="ERR_UNDEFINED" Datatype="Word" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Error due to an undefined case</MultiLanguageText>
+      </Comment>
+      <StartValue>16#8000</StartValue>
+    </Member>
+    <Member Name="USINT_NULL" Datatype="USInt" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Init value with 0</MultiLanguageText>
+      </Comment>
+      <StartValue>0</StartValue>
+    </Member>
+    <Member Name="DWORD_NULL" Datatype="DWord" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Init value with 0</MultiLanguageText>
+      </Comment>
+      <StartValue>16#0000_0000</StartValue>
+    </Member>
+    <Member Name="EMPTY_WCHAR" Datatype="WChar" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Empty WChar for comparison</MultiLanguageText>
+      </Comment>
+      <StartValue>WCHAR#' '</StartValue>
+    </Member>
+    <Member Name="BELOW_7F" Datatype="Word" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Upper limit for character if only one Byte used</MultiLanguageText>
+      </Comment>
+      <StartValue>16#007F</StartValue>
+    </Member>
+    <Member Name="BELOW_7FF" Datatype="Word" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Upper limit for character if  two Byte used</MultiLanguageText>
+      </Comment>
+      <StartValue>16#07FF</StartValue>
+    </Member>
+    <Member Name="BELOW_MAX_FFFF" Datatype="Word" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Upper limit for character if three Byte used</MultiLanguageText>
+      </Comment>
+      <StartValue>16#FFFF</StartValue>
+    </Member>
+    <Member Name="BYTE_3F" Datatype="Byte" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Conversion Value</MultiLanguageText>
+      </Comment>
+      <StartValue>16#3F</StartValue>
+    </Member>
+    <Member Name="BYTE_80" Datatype="Byte" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Conversion Value</MultiLanguageText>
+      </Comment>
+      <StartValue>16#80</StartValue>
+    </Member>
+    <Member Name="BYTE_C0" Datatype="Byte" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Conversion Value</MultiLanguageText>
+      </Comment>
+      <StartValue>16#C0</StartValue>
+    </Member>
+    <Member Name="BYTE_E0" Datatype="Byte" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Conversion Value</MultiLanguageText>
+      </Comment>
+      <StartValue>16#E0</StartValue>
+    </Member>
+    <Member Name="USINT_ONE" Datatype="USInt" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Const Value to assign amount of bytes used</MultiLanguageText>
+      </Comment>
+      <StartValue>1</StartValue>
+    </Member>
+    <Member Name="USINT_TWO" Datatype="USInt" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Const Value to assign amount of bytes used</MultiLanguageText>
+      </Comment>
+      <StartValue>2</StartValue>
+    </Member>
+    <Member Name="USINT_THREE" Datatype="USInt" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> Const Value to assign amount of bytes used</MultiLanguageText>
+      </Comment>
+      <StartValue>3</StartValue>
+    </Member>
+  </Section>
+  <Section Name="Return">
+    <Member Name="Ret_Val" Datatype="Void" Accessibility="Public">
+      <Comment>
+        <MultiLanguageText Lang="en-US"> No return for this FC -  see error and status output</MultiLanguageText>
+      </Comment>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <IsIECCheckEnabled>true</IsIECCheckEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>LMQTT_ConvertToUtf8</Name>
+      <Namespace />
+      <Number>6</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text>Function to convert a WCHAR to a UTF-8 conformant byte sequence</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <Token Text="REGION" UId="21" />
+  <Blank Num="1" UId="22" />
+  <Text UId="23">BLOCK INFO HEADER</Text>
+  <NewLine Num="1" UId="24" />
+  <Blank Num="4" UId="25" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="26">
+    <Text UId="27">=============================================================================</Text>
+  </LineComment>
+  <NewLine Num="1" UId="28" />
+  <Blank Num="4" UId="29" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="30">
+    <Text UId="31"> SIEMENS AG</Text>
+  </LineComment>
+  <NewLine Num="1" UId="32" />
+  <Blank Num="4" UId="33" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="34">
+    <Text UId="35"> (c)Copyright 2020</Text>
+  </LineComment>
+  <NewLine Num="1" UId="36" />
+  <Blank Num="4" UId="37" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="38">
+    <Text UId="39">-----------------------------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="40" />
+  <Blank Num="4" UId="41" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="42">
+    <Text UId="43"> Library:       LMQTT</Text>
+  </LineComment>
+  <NewLine Num="1" UId="44" />
+  <Blank Num="4" UId="45" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="46">
+    <Text UId="47"> Tested with:   CPU 1516-3 PN/DP V2.8</Text>
+  </LineComment>
+  <NewLine Num="1" UId="48" />
+  <Blank Num="4" UId="49" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="50">
+    <Text UId="51"> Engineering:   TIA Portal V16</Text>
+  </LineComment>
+  <NewLine Num="1" UId="52" />
+  <Blank Num="4" UId="53" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="54">
+    <Text UId="55"> Restrictions:  --</Text>
+  </LineComment>
+  <NewLine Num="1" UId="56" />
+  <Blank Num="4" UId="57" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="58">
+    <Text UId="59"> Requirements:  --</Text>
+  </LineComment>
+  <NewLine Num="1" UId="60" />
+  <Blank Num="4" UId="61" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="62">
+    <Text UId="63"> Functionality: Converts a single WChar Character to a valid UTF-8 encoded byte sequence and saves this to a DWord.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="64" />
+  <Blank Num="4" UId="65" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="66">
+    <Text UId="67">                The amount of bytes saved is stored in bytesUsed Output.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="68" />
+  <Blank Num="4" UId="69" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="70">
+    <Text UId="71">-----------------------------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="72" />
+  <Blank Num="4" UId="73" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="74">
+    <Text UId="75"> Change log table:</Text>
+  </LineComment>
+  <NewLine Num="1" UId="76" />
+  <Blank Num="4" UId="77" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="78">
+    <Text UId="79"> Version    Date         Expert in charge         Changes applied</Text>
+  </LineComment>
+  <NewLine Num="1" UId="80" />
+  <Blank Num="4" UId="81" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="82">
+    <Text UId="83"> 03.00.00   01.10.2020   Siemens Online Support   First released version</Text>
+  </LineComment>
+  <NewLine Num="1" UId="84" />
+  <Blank Num="4" UId="85" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="86">
+    <Text UId="87">=============================================================================</Text>
+  </LineComment>
+  <NewLine Num="1" UId="88" />
+  <Token Text="END_REGION" UId="89" />
+  <NewLine Num="2" UId="90" />
+  <Token Text="REGION" UId="91" />
+  <Blank Num="1" UId="92" />
+  <Text UId="93">INITIALISATION  </Text>
+  <NewLine Num="1" UId="94" />
+  <Blank Num="4" UId="95" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="96">
+    <Text UId="97"> Initialize functionality: reset of variables, diagnostics, etc.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="98" />
+  <Blank Num="4" UId="99" />
+  <Access Scope="LocalVariable" UId="100">
+    <Symbol UId="101">
+      <Component Name="tempConvertedUtf8" UId="102" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="103" />
+  <Token Text=":=" UId="104" />
+  <Blank Num="1" UId="105" />
+  <Access Scope="LocalConstant" UId="106">
+    <Constant Name="DWORD_NULL" UId="107" />
+  </Access>
+  <Token Text=";" UId="110" />
+  <NewLine Num="1" UId="111" />
+  <Blank Num="4" UId="112" />
+  <Access Scope="LocalVariable" UId="113">
+    <Symbol UId="114">
+      <Component Name="tempBytesUsed" UId="115" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="116" />
+  <Token Text=":=" UId="117" />
+  <Blank Num="1" UId="118" />
+  <Access Scope="LocalConstant" UId="119">
+    <Constant Name="USINT_NULL" UId="120" />
+  </Access>
+  <Token Text=";" UId="123" />
+  <NewLine Num="1" UId="124" />
+  <Blank Num="4" UId="125" />
+  <Access Scope="LocalVariable" UId="126">
+    <Symbol UId="127">
+      <Component Name="tempStatus" UId="128" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="129" />
+  <Token Text=":=" UId="130" />
+  <Blank Num="1" UId="131" />
+  <Access Scope="LocalConstant" UId="132">
+    <Constant Name="STATUS_NO_ERROR" UId="133" />
+  </Access>
+  <Token Text=";" UId="136" />
+  <NewLine Num="1" UId="137" />
+  <Blank Num="4" UId="138" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="139">
+    <Text UId="140">assign temp value from input:</Text>
+  </LineComment>
+  <NewLine Num="1" UId="141" />
+  <Blank Num="5" UId="142" />
+  <Access Scope="LocalVariable" UId="143">
+    <Symbol UId="144">
+      <Component Name="tempCharacter" UId="145" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="146" />
+  <Token Text=":=" UId="147" />
+  <Blank Num="1" UId="148" />
+  <Access Scope="LocalVariable" UId="149">
+    <Symbol UId="150">
+      <Component Name="character" UId="151" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="152" />
+  <NewLine Num="1" UId="153" />
+  <Blank Num="4" UId="154" />
+  <NewLine Num="1" UId="155" />
+  <Token Text="END_REGION" UId="156" />
+  <NewLine Num="2" UId="157" />
+  <Token Text="REGION" UId="158" />
+  <Blank Num="1" UId="159" />
+  <Text UId="160">PROGRAM LOGIC</Text>
+  <NewLine Num="1" UId="161" />
+  <Blank Num="4" UId="162" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="163">
+    <Text UId="164"> Use this region for application specific code</Text>
+  </LineComment>
+  <NewLine Num="1" UId="165" />
+  <Blank Num="4" UId="166" />
+  <Token Text="IF" UId="167" />
+  <Blank Num="1" UId="168" />
+  <Access Scope="LocalVariable" UId="169">
+    <Symbol UId="170">
+      <Component Name="tempCharacter" UId="171" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="172" />
+  <Token Text="=" UId="173" />
+  <Blank Num="1" UId="174" />
+  <Access Scope="LocalConstant" UId="175">
+    <Constant Name="EMPTY_WCHAR" UId="176" />
+  </Access>
+  <Blank Num="1" UId="179" />
+  <Token Text="THEN" UId="180" />
+  <NewLine Num="1" UId="181" />
+  <Blank Num="8" UId="182" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="183">
+    <Text UId="184">will be only 1 byte occupied</Text>
+  </LineComment>
+  <NewLine Num="1" UId="185" />
+  <Blank Num="8" UId="186" />
+  <Access Scope="LocalVariable" UId="187">
+    <Symbol UId="188">
+      <Component Name="tempConvertedUtf8" UId="189" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="190" />
+  <Token Text=":=" UId="191" />
+  <Blank Num="1" UId="192" />
+  <Access Scope="Call" UId="193">
+    <Instruction Name="WCHAR_TO_DWORD" UId="194">
+      <Token Text="(" UId="195" />
+      <NamelessParameter UId="196">
+        <Access Scope="LocalVariable" UId="197">
+          <Symbol UId="198">
+            <Component Name="tempCharacter" UId="199" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="201" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="202" />
+  <NewLine Num="1" UId="203" />
+  <Blank Num="8" UId="204" />
+  <Access Scope="LocalVariable" UId="205">
+    <Symbol UId="206">
+      <Component Name="tempBytesUsed" UId="207" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="208" />
+  <Token Text=":=" UId="209" />
+  <Blank Num="1" UId="210" />
+  <Access Scope="LocalConstant" UId="211">
+    <Constant Name="USINT_ONE" UId="212" />
+  </Access>
+  <Token Text=";" UId="215" />
+  <NewLine Num="1" UId="216" />
+  <Blank Num="4" UId="217" />
+  <Token Text="ELSIF" UId="218" />
+  <Blank Num="1" UId="219" />
+  <Token Text="(" UId="220" />
+  <Access Scope="Call" UId="221">
+    <Instruction Name="WCHAR_TO_WORD" UId="222">
+      <Token Text="(" UId="223" />
+      <NamelessParameter UId="224">
+        <Access Scope="LocalVariable" UId="225">
+          <Symbol UId="226">
+            <Component Name="tempCharacter" UId="227" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="229" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="230" />
+  <Token Text="&lt;=" UId="231" />
+  <Blank Num="1" UId="232" />
+  <Token Text="(" UId="233" />
+  <Access Scope="LocalConstant" UId="234">
+    <Constant Name="BELOW_7F" UId="235" />
+  </Access>
+  <Token Text=")" UId="238" />
+  <Token Text=")" UId="239" />
+  <Blank Num="1" UId="240" />
+  <Token Text="THEN" UId="241" />
+  <NewLine Num="1" UId="242" />
+  <Blank Num="8" UId="243" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="244">
+    <Text UId="245">will be only 1 byte occupied</Text>
+  </LineComment>
+  <NewLine Num="1" UId="246" />
+  <Blank Num="8" UId="247" />
+  <Access Scope="LocalVariable" UId="248">
+    <Symbol UId="249">
+      <Component Name="tempConvertedUtf8" UId="250" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="251" />
+  <Token Text=":=" UId="252" />
+  <Blank Num="1" UId="253" />
+  <Access Scope="Call" UId="254">
+    <Instruction Name="WCHAR_TO_DWORD" UId="255">
+      <Token Text="(" UId="256" />
+      <NamelessParameter UId="257">
+        <Access Scope="LocalVariable" UId="258">
+          <Symbol UId="259">
+            <Component Name="tempCharacter" UId="260" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="262" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="263" />
+  <NewLine Num="1" UId="264" />
+  <Blank Num="8" UId="265" />
+  <Access Scope="LocalVariable" UId="266">
+    <Symbol UId="267">
+      <Component Name="tempBytesUsed" UId="268" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="269" />
+  <Token Text=":=" UId="270" />
+  <Blank Num="1" UId="271" />
+  <Access Scope="LocalConstant" UId="272">
+    <Constant Name="USINT_ONE" UId="273" />
+  </Access>
+  <Token Text=";" UId="276" />
+  <NewLine Num="1" UId="277" />
+  <Blank Num="4" UId="278" />
+  <Token Text="ELSIF" UId="279" />
+  <Blank Num="1" UId="280" />
+  <Token Text="(" UId="281" />
+  <Access Scope="Call" UId="282">
+    <Instruction Name="WCHAR_TO_WORD" UId="283">
+      <Token Text="(" UId="284" />
+      <NamelessParameter UId="285">
+        <Access Scope="LocalVariable" UId="286">
+          <Symbol UId="287">
+            <Component Name="tempCharacter" UId="288" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="290" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="291" />
+  <Token Text="&lt;=" UId="292" />
+  <Blank Num="1" UId="293" />
+  <Token Text="(" UId="294" />
+  <Access Scope="LocalConstant" UId="295">
+    <Constant Name="BELOW_7FF" UId="296" />
+  </Access>
+  <Token Text=")" UId="299" />
+  <Token Text=")" UId="300" />
+  <Blank Num="1" UId="301" />
+  <Token Text="THEN" UId="302" />
+  <NewLine Num="1" UId="303" />
+  <Blank Num="8" UId="304" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="305">
+    <Text UId="306">will be 2 byte occupied</Text>
+  </LineComment>
+  <NewLine Num="1" UId="307" />
+  <Blank Num="8" UId="308" />
+  <Access Scope="LocalVariable" UId="309">
+    <Symbol UId="310">
+      <Component Name="tempConvertedUtf8" UId="311" />
+      <Token Text="." UId="312" />
+      <Token Text="%B1" UId="313" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="314" />
+  <Token Text=":=" UId="315" />
+  <Blank Num="1" UId="316" />
+  <Token Text="(" UId="317" />
+  <Access Scope="Call" UId="318">
+    <Instruction Name="WCHAR_TO_BYTE" UId="319">
+      <Token Text="(" UId="320" />
+      <NamelessParameter UId="321">
+        <Access Scope="LocalVariable" UId="322">
+          <Symbol UId="323">
+            <Component Name="tempCharacter" UId="324" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="326" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="327" />
+  <Token Text="AND" UId="328" />
+  <Blank Num="1" UId="329" />
+  <Access Scope="LocalConstant" UId="330">
+    <Constant Name="BYTE_3F" UId="331" />
+  </Access>
+  <Token Text=")" UId="334" />
+  <Blank Num="1" UId="335" />
+  <Token Text="OR" UId="336" />
+  <Blank Num="1" UId="337" />
+  <Access Scope="LocalConstant" UId="338">
+    <Constant Name="BYTE_80" UId="339" />
+  </Access>
+  <Token Text=";" UId="342" />
+  <NewLine Num="1" UId="343" />
+  <Blank Num="8" UId="344" />
+  <Access Scope="LocalVariable" UId="345">
+    <Symbol UId="346">
+      <Component Name="tempConvertedUtf8" UId="347" />
+      <Token Text="." UId="348" />
+      <Token Text="%B0" UId="349" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="350" />
+  <Token Text=":=" UId="351" />
+  <Blank Num="1" UId="352" />
+  <Access Scope="Call" UId="353">
+    <Instruction Name="WORD_TO_BYTE" UId="354">
+      <Token Text="(" UId="355" />
+      <NamelessParameter UId="356">
+        <Access Scope="Call" UId="357">
+          <Instruction Name="SHR" UId="358">
+            <Token Text="(" UId="359" />
+            <Parameter Name="IN" UId="360">
+              <Blank Num="1" UId="361" />
+              <Token Text=":=" UId="362" />
+              <Blank Num="1" UId="363" />
+              <Access Scope="Call" UId="364">
+                <Instruction Name="WCHAR_TO_WORD" UId="365">
+                  <Token Text="(" UId="366" />
+                  <NamelessParameter UId="367">
+                    <Access Scope="LocalVariable" UId="368">
+                      <Symbol UId="369">
+                        <Component Name="tempCharacter" UId="370" />
+                      </Symbol>
+                    </Access>
+                  </NamelessParameter>
+                  <Token Text=")" UId="372" />
+                </Instruction>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="373" />
+            <Blank Num="1" UId="374" />
+            <Parameter Name="N" UId="375">
+              <Blank Num="1" UId="376" />
+              <Token Text=":=" UId="377" />
+              <Blank Num="1" UId="378" />
+              <Access Scope="LiteralConstant" UId="379">
+                <Constant UId="380">
+                  <ConstantValue UId="382">6</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="384" />
+          </Instruction>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="386" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="387" />
+  <Token Text="OR" UId="388" />
+  <Blank Num="1" UId="389" />
+  <Access Scope="LocalConstant" UId="390">
+    <Constant Name="BYTE_C0" UId="391" />
+  </Access>
+  <Token Text=";" UId="394" />
+  <NewLine Num="1" UId="395" />
+  <Blank Num="8" UId="396" />
+  <Access Scope="LocalVariable" UId="397">
+    <Symbol UId="398">
+      <Component Name="tempBytesUsed" UId="399" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="400" />
+  <Token Text=":=" UId="401" />
+  <Blank Num="1" UId="402" />
+  <Access Scope="LocalConstant" UId="403">
+    <Constant Name="USINT_TWO" UId="404" />
+  </Access>
+  <Token Text=";" UId="407" />
+  <NewLine Num="1" UId="408" />
+  <Blank Num="4" UId="409" />
+  <Token Text="ELSIF" UId="410" />
+  <Blank Num="1" UId="411" />
+  <Token Text="(" UId="412" />
+  <Access Scope="Call" UId="413">
+    <Instruction Name="WCHAR_TO_WORD" UId="414">
+      <Token Text="(" UId="415" />
+      <NamelessParameter UId="416">
+        <Access Scope="LocalVariable" UId="417">
+          <Symbol UId="418">
+            <Component Name="tempCharacter" UId="419" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="421" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="422" />
+  <Token Text="&lt;=" UId="423" />
+  <Blank Num="1" UId="424" />
+  <Token Text="(" UId="425" />
+  <Access Scope="LocalConstant" UId="426">
+    <Constant Name="BELOW_MAX_FFFF" UId="427" />
+  </Access>
+  <Token Text=")" UId="430" />
+  <Token Text=")" UId="431" />
+  <Blank Num="1" UId="432" />
+  <Token Text="THEN" UId="433" />
+  <NewLine Num="1" UId="434" />
+  <Blank Num="8" UId="435" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="436">
+    <Text UId="437">will be 3 byte occupied</Text>
+  </LineComment>
+  <NewLine Num="1" UId="438" />
+  <Blank Num="8" UId="439" />
+  <Access Scope="LocalVariable" UId="440">
+    <Symbol UId="441">
+      <Component Name="tempConvertedUtf8" UId="442" />
+      <Token Text="." UId="443" />
+      <Token Text="%B2" UId="444" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="445" />
+  <Token Text=":=" UId="446" />
+  <Blank Num="1" UId="447" />
+  <Token Text="(" UId="448" />
+  <Access Scope="Call" UId="449">
+    <Instruction Name="WCHAR_TO_BYTE" UId="450">
+      <Token Text="(" UId="451" />
+      <NamelessParameter UId="452">
+        <Access Scope="LocalVariable" UId="453">
+          <Symbol UId="454">
+            <Component Name="tempCharacter" UId="455" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="457" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="458" />
+  <Token Text="AND" UId="459" />
+  <Blank Num="1" UId="460" />
+  <Access Scope="LocalConstant" UId="461">
+    <Constant Name="BYTE_3F" UId="462" />
+  </Access>
+  <Token Text=")" UId="465" />
+  <Blank Num="1" UId="466" />
+  <Token Text="OR" UId="467" />
+  <Blank Num="1" UId="468" />
+  <Access Scope="LocalConstant" UId="469">
+    <Constant Name="BYTE_80" UId="470" />
+  </Access>
+  <Token Text=";" UId="473" />
+  <NewLine Num="1" UId="474" />
+  <Blank Num="8" UId="475" />
+  <Access Scope="LocalVariable" UId="476">
+    <Symbol UId="477">
+      <Component Name="tempConvertedUtf8" UId="478" />
+      <Token Text="." UId="479" />
+      <Token Text="%B1" UId="480" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="481" />
+  <Token Text=":=" UId="482" />
+  <Blank Num="1" UId="483" />
+  <Token Text="(" UId="484" />
+  <Access Scope="Call" UId="485">
+    <Instruction Name="WORD_TO_BYTE" UId="486">
+      <Token Text="(" UId="487" />
+      <NamelessParameter UId="488">
+        <Access Scope="Call" UId="489">
+          <Instruction Name="SHR" UId="490">
+            <Token Text="(" UId="491" />
+            <Parameter Name="IN" UId="492">
+              <Blank Num="1" UId="493" />
+              <Token Text=":=" UId="494" />
+              <Blank Num="1" UId="495" />
+              <Access Scope="Call" UId="496">
+                <Instruction Name="WCHAR_TO_WORD" UId="497">
+                  <Token Text="(" UId="498" />
+                  <NamelessParameter UId="499">
+                    <Access Scope="LocalVariable" UId="500">
+                      <Symbol UId="501">
+                        <Component Name="tempCharacter" UId="502" />
+                      </Symbol>
+                    </Access>
+                  </NamelessParameter>
+                  <Token Text=")" UId="504" />
+                </Instruction>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="505" />
+            <Blank Num="1" UId="506" />
+            <Parameter Name="N" UId="507">
+              <Blank Num="1" UId="508" />
+              <Token Text=":=" UId="509" />
+              <Blank Num="1" UId="510" />
+              <Access Scope="LiteralConstant" UId="511">
+                <Constant UId="512">
+                  <ConstantValue UId="514">6</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="516" />
+          </Instruction>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="518" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="519" />
+  <Token Text="AND" UId="520" />
+  <Blank Num="1" UId="521" />
+  <Access Scope="LocalConstant" UId="522">
+    <Constant Name="BYTE_3F" UId="523" />
+  </Access>
+  <Token Text=")" UId="526" />
+  <Blank Num="1" UId="527" />
+  <Token Text="OR" UId="528" />
+  <Blank Num="1" UId="529" />
+  <Access Scope="LocalConstant" UId="530">
+    <Constant Name="BYTE_80" UId="531" />
+  </Access>
+  <Token Text=";" UId="534" />
+  <NewLine Num="1" UId="535" />
+  <Blank Num="8" UId="536" />
+  <Access Scope="LocalVariable" UId="537">
+    <Symbol UId="538">
+      <Component Name="tempConvertedUtf8" UId="539" />
+      <Token Text="." UId="540" />
+      <Token Text="%B0" UId="541" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="542" />
+  <Token Text=":=" UId="543" />
+  <Blank Num="1" UId="544" />
+  <Access Scope="Call" UId="545">
+    <Instruction Name="WORD_TO_BYTE" UId="546">
+      <Token Text="(" UId="547" />
+      <NamelessParameter UId="548">
+        <Access Scope="Call" UId="549">
+          <Instruction Name="SHR" UId="550">
+            <Token Text="(" UId="551" />
+            <Parameter Name="IN" UId="552">
+              <Blank Num="1" UId="553" />
+              <Token Text=":=" UId="554" />
+              <Blank Num="1" UId="555" />
+              <Access Scope="Call" UId="556">
+                <Instruction Name="WCHAR_TO_WORD" UId="557">
+                  <Token Text="(" UId="558" />
+                  <NamelessParameter UId="559">
+                    <Access Scope="LocalVariable" UId="560">
+                      <Symbol UId="561">
+                        <Component Name="tempCharacter" UId="562" />
+                      </Symbol>
+                    </Access>
+                  </NamelessParameter>
+                  <Token Text=")" UId="564" />
+                </Instruction>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="565" />
+            <Blank Num="1" UId="566" />
+            <Parameter Name="N" UId="567">
+              <Blank Num="1" UId="568" />
+              <Token Text=":=" UId="569" />
+              <Blank Num="1" UId="570" />
+              <Access Scope="LiteralConstant" UId="571">
+                <Constant UId="572">
+                  <ConstantValue UId="574">12</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="576" />
+          </Instruction>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="578" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="579" />
+  <Token Text="OR" UId="580" />
+  <Blank Num="1" UId="581" />
+  <Access Scope="LocalConstant" UId="582">
+    <Constant Name="BYTE_E0" UId="583" />
+  </Access>
+  <Token Text=";" UId="586" />
+  <NewLine Num="1" UId="587" />
+  <Blank Num="8" UId="588" />
+  <Access Scope="LocalVariable" UId="589">
+    <Symbol UId="590">
+      <Component Name="tempBytesUsed" UId="591" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="592" />
+  <Token Text=":=" UId="593" />
+  <Blank Num="1" UId="594" />
+  <Access Scope="LocalConstant" UId="595">
+    <Constant Name="USINT_THREE" UId="596" />
+  </Access>
+  <Token Text=";" UId="599" />
+  <NewLine Num="1" UId="600" />
+  <Blank Num="4" UId="601" />
+  <Token Text="END_IF" UId="602" />
+  <Token Text=";" UId="603" />
+  <NewLine Num="1" UId="604" />
+  <Token Text="END_REGION" UId="605" />
+  <NewLine Num="2" UId="606" />
+  <Token Text="REGION" UId="607" />
+  <Blank Num="1" UId="608" />
+  <Text UId="609">OUTPUTS</Text>
+  <NewLine Num="1" UId="610" />
+  <Blank Num="4" UId="611" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="612">
+    <Text UId="613"> Write application specific temp values to outputs</Text>
+  </LineComment>
+  <NewLine Num="1" UId="614" />
+  <Blank Num="4" UId="615" />
+  <Access Scope="LocalVariable" UId="616">
+    <Symbol UId="617">
+      <Component Name="bytesUsed" UId="618" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="619" />
+  <Token Text=":=" UId="620" />
+  <Blank Num="1" UId="621" />
+  <Access Scope="LocalVariable" UId="622">
+    <Symbol UId="623">
+      <Component Name="tempBytesUsed" UId="624" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="625" />
+  <NewLine Num="1" UId="626" />
+  <Blank Num="4" UId="627" />
+  <Access Scope="LocalVariable" UId="628">
+    <Symbol UId="629">
+      <Component Name="convertedUtf8" UId="630" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="631" />
+  <Token Text=":=" UId="632" />
+  <Blank Num="1" UId="633" />
+  <Access Scope="LocalVariable" UId="634">
+    <Symbol UId="635">
+      <Component Name="tempConvertedUtf8" UId="636" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="637" />
+  <NewLine Num="1" UId="638" />
+  <Blank Num="4" UId="639" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="640">
+    <Text UId="641"> Write error and status</Text>
+  </LineComment>
+  <NewLine Num="1" UId="642" />
+  <Blank Num="4" UId="643" />
+  <Access Scope="LocalVariable" UId="644">
+    <Symbol UId="645">
+      <Component Name="error" UId="646" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="647" />
+  <Token Text=":=" UId="648" />
+  <Blank Num="1" UId="649" />
+  <Access Scope="LocalVariable" UId="650">
+    <Symbol UId="651">
+      <Component Name="tempStatus" UId="652" />
+      <Token Text="." UId="653" />
+      <Token Text="%X15" UId="654" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="655" />
+  <NewLine Num="1" UId="656" />
+  <Blank Num="4" UId="657" />
+  <Access Scope="LocalVariable" UId="658">
+    <Symbol UId="659">
+      <Component Name="status" UId="660" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="661" />
+  <Token Text=":=" UId="662" />
+  <Blank Num="1" UId="663" />
+  <Access Scope="LocalVariable" UId="664">
+    <Symbol UId="665">
+      <Component Name="tempStatus" UId="666" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="667" />
+  <NewLine Num="1" UId="668" />
+  <Blank Num="4" UId="669" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="670">
+    <Text UId="671"> ENO mechanism is not used --&gt; ENO := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="672" />
+  <Blank Num="4" UId="673" />
+  <Access Scope="PredefinedVariable" UId="674">
+    <PredefinedVariable Name="ENO" UId="675" />
+  </Access>
+  <Blank Num="1" UId="676" />
+  <Token Text=":=" UId="677" />
+  <Blank Num="1" UId="678" />
+  <Access Scope="LiteralConstant" UId="679">
+    <Constant UId="680">
+      <ConstantValue UId="682">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="683" />
+  <NewLine Num="1" UId="684" />
+  <Token Text="END_REGION" UId="685" />
+  <NewLine Num="1" UId="686" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text>LMQTT_ConvertToUtf8</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FC>
+</Document>

@@ -1,0 +1,363 @@
+FUNCTION_BLOCK "MQTT_Handler_FB"   // FB 2, author 
+
+VAR_INPUT
+   Enable : Bool := True;
+END_VAR
+
+VAR_IN_OUT
+   LMQTT_DB : "LMQTT_DB_UDT";
+END_VAR
+
+VAR
+   MQTT_Setup : Bool;
+   MQTT_Topic : WString;
+   Publish_Msg_Payload : Array[1..128] of Byte;
+   Received_Topic : WString;
+   Received_Msg_Payload : Array[0..1024] of Byte;
+   i : UInt;
+   j : UInt;
+   Subscribe : Bool;
+   Unsubscribe : Bool;
+   Received_Msg_Status : USInt;
+   Received_Msg_Length : UDInt;
+   Busy : Bool;
+   Valid : Bool;
+   Done : Bool;
+   Error : Bool;
+   Status : Word;
+   Diagnostics : "typeDiagnostics";
+   JSON_Tree : Array[1..18] of "LStream_typeElement";
+   Shuttle_No : UInt;
+   sSubTopic : Array[1..24] of String;
+   bSubscribed : Bool;
+   SubscribeState : Int;
+   SubscribeIndex : Int := 1;
+   SubscribeCount : UInt := 1;
+   SubscribeTopicList : Array[1..30] of String;
+   sPayloadRcv : String;
+   sPayloadRcv_1 : String;
+   sPayloadRcv_2 : String;
+   sPayloadRcv_3 : String;
+   sPayloadRcv_4 : String;
+   sPayloadRcv_5 : String;
+END_VAR
+
+VAR_TEMP
+   iIndex : UInt;
+   sIndexStr : String;
+   k : UInt;
+   test : DWord;
+   Y : UInt;
+END_VAR
+
+BEGIN
+(*
+TODO
+1. Add timeout on subscribe event
+2. Add cyclic checks for all the different errors in the status word
+
+Status word values:
+16#0000 Last job (publish/subscribe/unsubscribe) successfully executed
+16#7000 Block is idle/client not connected
+16#7001 First call after "enable" = TRUE
+16#7002 Block processes job
+16#7003 Establishing connection to MQTT broker
+16#7004 MQTT client connected and ready for job
+16#7005 Ping is sent to the broker
+16#7006 Publish job is executed
+16#7008 Subscribe job is executed
+16#7010 Unsubscribe job is executed
+*)
+
+//Call the MQTT client function block to update all params
+// "LMQTT_Client_DB"(connParam := "Settings_DB".Shuttle_MQTT_Settings.MQTT_Con_Params,
+//                   clientIdentifier := "Settings_DB".Shuttle_MQTT_Settings.Client_ID,
+//                   username := "Settings_DB".Shuttle_MQTT_Settings.Username,
+//                   password := "Settings_DB".Shuttle_MQTT_Settings.Password,
+//                   willtopic := "Settings_DB".Shuttle_MQTT_Settings.Will_Topic,
+//                   willMsgPayload := "Settings_DB".Shuttle_MQTT_Settings.Will_Msg_Payload,
+//                   willMsgLen := 0,
+//                   mqttTopic := #MQTT_Topic,
+//                   publishMsgPayload := #Publish_Msg_Payload,
+//                   receivedTopic := #Received_Topic,
+//                   receivedMsgPayload := #Received_Msg_Payload,
+//                   receivedMsgStatus => #Received_Msg_Status,
+//                   receivedMsgDataLen => #Received_Msg_Length,
+//                   enable := #Enable,
+//                   timeOut := "Settings_DB".Shuttle_MQTT_Settings.Timeout,
+//                   qos := "Settings_DB".Shuttle_MQTT_Settings.QoS,
+//                   retain := "Settings_DB".Shuttle_MQTT_Settings.Retain,
+//                   subscribe := #Subscribe,
+//                   unsubscribe := #Unsubscribe,
+//                   busy => #Busy,
+//                   diagnostics => #Diagnostics,
+//                   done => #Done,
+//                   error => #Error,
+//                   status => #Status,
+//                   valid => #Valid);
+//   
+IF "FirstScan" THEN
+    "MQTT_Enable" := TRUE;
+END_IF;
+
+#LMQTT_DB.connParam := "Settings_DB".Shuttle_MQTT_Settings.MQTT_Con_Params;
+#LMQTT_DB.clientIdentifier := "Settings_DB".Shuttle_MQTT_Settings.Client_ID;
+#LMQTT_DB.username := "Settings_DB".Shuttle_MQTT_Settings.Username;
+#LMQTT_DB.password := "Settings_DB".Shuttle_MQTT_Settings.Password;
+#LMQTT_DB.willtopic := "Settings_DB".Shuttle_MQTT_Settings.Will_Topic;
+#LMQTT_DB.willMsgPayload := "Settings_DB".Shuttle_MQTT_Settings.Will_Msg_Payload;
+#LMQTT_DB.willMsgLen := 0;
+#LMQTT_DB.willMsgPayload := #Publish_Msg_Payload;
+#Received_Topic := #LMQTT_DB.receivedTopic;
+#Received_Msg_Payload := #LMQTT_DB.receivedMsgPayload;
+#Received_Msg_Status:=#LMQTT_DB.receivedMsgStatus;
+#Received_Msg_Length := #LMQTT_DB.receivedMsgDataLen;
+#LMQTT_DB.enable := #Enable;
+// timeOut := "Settings_DB".Shuttle_MQTT_Settings.Timeout,
+#LMQTT_DB.qos := "Settings_DB".Shuttle_MQTT_Settings.QoS;
+#LMQTT_DB.retain := "Settings_DB".Shuttle_MQTT_Settings.Retain;
+#Status := #LMQTT_DB.status;
+
+
+// REGION Subscribe to each shuttle topic
+//     //Start the MQTT interface if not yet running
+//     IF NOT #MQTT_Setup THEN
+//         //16#7004 MQTT client connected and ready for an action
+//         IF #Status = 16#7004 THEN
+//             #MQTT_Topic := "Shuttle_MQTT_DB".Shuttle_MQTT[#i].Message.Topic;
+//             #Subscribe := TRUE;
+//         ELSIF #Status = 16#7008 THEN
+//             #Subscribe := FALSE;
+//             #i := #i + 1;
+//             IF #i > "Settings_DB".System_Settings.Shuttle_Count THEN
+//                 #MQTT_Setup := TRUE;
+//             END_IF;
+//         END_IF;
+        
+//     END_IF;
+    
+// END_REGION
+
+IF NOT #bSubscribed THEN
+    FOR #Shuttle_No := 1 TO "Settings_DB".System_Settings.Shuttle_Count DO
+        #iIndex := #Shuttle_No;
+        #sIndexStr := RemovePlusSign(UINT_TO_STRING(#iIndex));
+        // preparing names of Topics for subscribing
+        #sSubTopic[#Shuttle_No] := CONCAT(IN1 := 'vehicle/', IN2 := 'Shuttle-');
+        IF #iIndex < 10 THEN
+            #sSubTopic[#Shuttle_No] := CONCAT(IN1 := #sSubTopic[#Shuttle_No], IN2 := '0');
+        END_IF;
+        #sSubTopic[#Shuttle_No] := CONCAT(IN1 := #sSubTopic[#Shuttle_No], IN2 := #sIndexStr);
+        #sSubTopic[#Shuttle_No] := CONCAT(IN1 := #sSubTopic[#Shuttle_No], IN2 := '/state');
+    END_FOR;
+    
+    #SubscribeCount := 1;
+    FOR #Y := 1 TO "Settings_DB".System_Settings.Shuttle_Count DO //1-24
+        #SubscribeTopicList[#SubscribeCount] := #sSubTopic[#Y];
+        IF #Y < "Settings_DB".System_Settings.Shuttle_Count THEN
+            #SubscribeCount := #SubscribeCount + 1;
+        END_IF;
+    END_FOR;
+    
+    CASE #SubscribeState OF
+        0: // Início
+            IF #SubscribeIndex <= #SubscribeCount THEN
+                #LMQTT_DB.mqttTopic := STRING_TO_WSTRING(#SubscribeTopicList[#SubscribeIndex]);
+                #LMQTT_DB.subscribe := TRUE; // comando por 1 ciclo
+                #SubscribeState := 1;
+            ELSE
+                #SubscribeState := 99; // Tudo assinado
+            END_IF;
+            
+        1: // Espera pelo DONE
+            IF #LMQTT_DB.done THEN
+                #LMQTT_DB.subscribe := FALSE;
+                #SubscribeIndex := #SubscribeIndex + 1;
+                #SubscribeState := 0;
+            ELSIF NOT #LMQTT_DB.done AND NOT #LMQTT_DB.subscribe THEN
+                #SubscribeState := 0;
+            ELSIF #LMQTT_DB.error THEN
+                // Lidar com erro
+                #SubscribeState := 98;
+                "Error_Word_1".%X2 := TRUE; //MQTT State in Error
+            END_IF;
+            
+        98: // Erro
+            #LMQTT_DB.subscribe := FALSE;
+            #bSubscribed := FALSE;
+            
+            IF "Reset_All" THEN
+                #SubscribeCount := 0;
+                #SubscribeIndex := 1;
+                #SubscribeState := 0;
+                "Error_Word_1".%X2 := FALSE;
+            END_IF;
+            
+        99: // Fim
+            #bSubscribed := TRUE;
+            #LMQTT_DB.subscribe := FALSE;
+    END_CASE;
+END_IF;
+
+FOR #k := 1 TO "Settings_DB".System_Settings.Shuttle_Count DO
+    IF #LMQTT_DB.receivedTopic = STRING_TO_WSTRING(#sSubTopic[#k]) THEN
+        #sPayloadRcv := ByteArrayToString(ByteArray := #LMQTT_DB.receivedMsgPayload,
+                                            Lenght := UDINT_TO_INT(#LMQTT_DB.receivedMsgDataLen),
+                                            ByteArrayToString_1 => #sPayloadRcv_1,
+                                            ByteArrayToString_2=>#sPayloadRcv_2,
+                                            ByteArrayToString_3=>#sPayloadRcv_3,
+                                            ByteArrayToString_4=>#sPayloadRcv_4,
+                                            ByteArrayToString_5=>#sPayloadRcv_5);
+        
+        IF #sPayloadRcv <> '' THEN
+            "Shuttle_MQTT_DB".Shuttle_MQTT[#k].Message.Shuttle_Status := ParseShuttle_Status(String_1 := #sPayloadRcv,
+                                                                                          String_2 := #sPayloadRcv_1,
+                                                                                          String_3 := #sPayloadRcv_2,
+                                                                                          String_4:=#sPayloadRcv_3,
+                                                                                          String_5:=#sPayloadRcv_4,
+                                                                                          String_6:=#sPayloadRcv_5);
+        END_IF;
+   END_IF;
+END_FOR;
+
+REGION Get new data from MQTT client
+    
+    //Check for new inbound messages 
+    // IF #Received_Msg_Status = 1 THEN
+        // FOR #i := 1 TO "Settings_DB".System_Settings.Shuttle_Count DO
+            // IF "Shuttle_MQTT_DB".Shuttle_MQTT[#i].Message.Topic = #Received_Topic THEN
+                // "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Received_Msg_Payload := #Received_Msg_Payload;
+                
+                // //Parse the JSON to Shuttle MQTT message data type
+                
+                // //Might need to hack this a bit
+                // "LStream_JsonDeserializer_DB"(tree := #JSON_Tree,
+                //                               raw := "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Received_Msg_Payload);
+                    
+                // //Once the JSON has been parsed assign the correct value to the correct key in the shuttle status object
+                // // FOR #j := 1 TO 18 DO
+                // IF #JSON_Tree[6].key = 'requestId' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Request_ID := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'positionId' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Position_ID := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'destinationId' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Destination_ID := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'distanceRemaining' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Distance_Remaining := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'positionsX' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Position_X := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'positionY' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Position_Y := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'floor' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Floor := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'operationalMode' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Operation_Mode := (#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'operationalState' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Operational_State := (#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'loadState' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Load_State := (#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'errorVehicle' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Error_Vehicle_1 := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'sensorInputs' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Sensor_Inputs := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'sensorOutputs' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Sensor_Outputs := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'palletType' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Pallet_Type := (#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'energyLevel' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Energy_Level := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'lastReceivedOrderId' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Last_Received_Order_ID := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'currentOrderId' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Current_Order_ID := STRING_TO_INT(#JSON_Tree[6].value);
+                // ELSIF #JSON_Tree[6].key = 'lastFinishedOrderId' THEN
+                //     "Shuttle_MQTT_DB".Shuttle_MQTT[6].Message.Shuttle_Status.Last_Finished_Order_ID := STRING_TO_INT(#JSON_Tree[6].value);
+                //     ELSE
+                //         #Error := 0; //36:17 Assign error that an unknown key is in the JSON
+                //     END_IF;
+                // END_FOR;
+            // END_IF;
+        // END_FOR;
+    // END_IF;
+
+     
+    
+    
+    
+END_REGION
+
+REGION Cyclic Error Checks
+    
+    IF #Error THEN
+        //16#8001 Simultaneous input (rising edge) at publish/subscribe/unsubscribe inputs
+        IF #Status = 16#8001 THEN
+            #Error := 0; // 36:1 
+        //16#8200 Client identifier is empty – Client identifier must be at least 1 character long
+        ELSIF #Status = 16#8200 THEN
+            #Error := 0; // 36:2 
+        //16#8201 Broker's hostname OR IP address is invalid
+        ELSIF #Status = 16#8201 THEN
+            #Error := 0; // 36:3
+        //16#8210 Invalid array size:
+        //• During connection establishment: Invalid array size at The "willMsgLen" parameter
+        //• During publish: Invalid array size at The "publishMsgLen" parameter
+        ELSIF #Status = 16#8210 THEN
+            #Error := 0; // 36:4
+        //16#8220 Invalid value at The "keepAlive" parameter
+        ELSIF #Status = 16#8220 THEN
+            #Error := 0; // 36:5
+        //16#8230 Invalid value at parameter "qos"
+        ELSIF #Status = 16#8230 THEN
+            #Error := 0; // 36:6
+        //16#8300 Topic empty OR invalid (publish)
+        ELSIF #Status = 16#8300 THEN
+            #Error := 0; // 36:7
+        //16#8310 Topic empty OR invalid (subscribe)
+        ELSIF #Status = 16#8310 THEN
+            #Error := 0; // 36:8
+        //16#8320 Topic empty OR invalid (unsubscribe)
+        ELSIF #Status = 16#8320 THEN
+            #Error := 0; // 36:9
+        //16#8600 Undefined state in The state machine
+        ELSIF #Status = 16#8600 THEN
+            #Error := 0; // 36:10
+        //16#8601 #Error OF subordinate instruction "TCON"
+        //The #Error code OF The instruction is output at "diagnostics.subfunctionStatus". The meaning OF The respective
+        //#Error code can be found in The TIA Portal Information System.
+        ELSIF #Status = 16#8601 THEN
+            #Error := 0; // 36:60
+        //16#8620 connection establishment timeout. IF necessary, increase the "timeOut" value.
+        ELSIF #Status = 16#8620 THEN
+            #Error := 0; // 36:11
+        //16#8650 timeout during The processing OF The job
+        ELSIF #Status = 16#8650 THEN
+            #Error := 0; // 36:12
+        //16#8670 timeout during MQTT connection setup with The MQTT broker
+        ELSIF #Status = 16#8670 THEN
+            #Error := 0; // 36:13
+        //16#8700 Invalid length in received MQTT packet; new connection required
+        ELSIF #Status = 16#8700 THEN
+            #Error := 0; // 36:14
+        //16#8710 Invalid QoS in received MQTT packet; new connection required
+        ELSIF #Status = 16#8710 THEN
+            #Error := 0; // 36:15
+        //16#8720 Existing session at the MQTT broker; new connection required
+        ELSIF #Status = 16#8720 THEN
+            #Error := 0; // 36:16
+        ELSE
+            ;
+        END_IF;
+    END_IF;
+END_REGION
+
+//Reset the MQTT communication when pressing the reset button
+IF "Reset_All" THEN
+    #SubscribeCount := 0;
+    #SubscribeIndex := 1;
+    #SubscribeState := 0;
+    #bSubscribed := FALSE;
+END_IF;
+
+
+
+END_FUNCTION_BLOCK

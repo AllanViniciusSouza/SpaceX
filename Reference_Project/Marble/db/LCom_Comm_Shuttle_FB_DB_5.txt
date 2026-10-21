@@ -1,0 +1,188 @@
+DATA_BLOCK "LCom_Comm_Shuttle_FB_DB_5"   // InstanceDB 364  instance of "LCom_Communication_FB"
+
+VAR_INPUT
+   enable : Bool;
+   send : Bool;
+   sendDataLength : UDInt;
+   readDataLength : UDInt;
+   configuration : "LCom_typeConfig";
+END_VAR
+
+VAR_OUTPUT
+   connected : Bool;
+   sending : Bool;
+   dataReceived : Bool;
+   receivedDataLength : UDInt;
+   busy : Bool;
+   error : Bool;
+   status : Word;
+END_VAR
+
+VAR_IN_OUT
+   sendBuffer : Variant;
+   receiveBuffer : Variant;
+   diagnostics : "LCom_typeDiagnostics";
+END_VAR
+
+VAR
+   statConnectAttempts : SInt;
+   statActualLocalLComVersion : USInt;
+   statRuntimeTask : LReal;
+   statCopyNBytes : UDInt;
+   statMaxActPacketLength : UDInt;
+   statState : Struct
+      connection : USInt;
+      cfgSender : USInt;
+      comSender : USInt;
+      comReceiver : USInt;
+      sender : USInt;
+      receiver : USInt;
+   END_STRUCT;
+   statReceive : Struct
+      tempTelegram : Struct
+         LComVersion : USInt;
+         index : USInt;
+         telegramType : USInt;
+         data : Array[0..23] of Byte;
+      END_STRUCT;
+      configTelegramV1 : Struct
+         LComVersion : USInt;
+         telegramType : USInt;
+         comMode : USInt;
+         slidingWindow : USInt;
+         cycleTime : UInt;
+         ackTimeOut : UInt;
+         lifeSignCycle : UInt;
+         status : USInt;
+         sendModeSyncTime : USInt;
+         maxSendDataLength : UInt;
+         maxReceiveDataLength : UInt;
+      END_STRUCT;
+      configTelegramV2 : Struct
+         LComVersion : USInt;
+         telegramType : USInt;
+         status : USInt;
+         sendModeSyncTime : USInt;
+         lifeSignCycle : Time;
+         cycleTime : Time;
+         ackTimeOut : Time;
+         maxSendDataLength : UDInt;
+         maxReceiveDataLength : UDInt;
+      END_STRUCT;
+      dataTelegram : Struct
+         LComVersion : USInt;
+         telegramType : USInt;
+         messageCounter : USInt;
+         ackMessageCounter : USInt;
+         messageOffset : UDInt;
+         ackMessageOffset : UDInt;
+         actPackageLength : UDInt;
+         totalMessageLength : UDInt;
+      END_STRUCT;
+      userData : Struct
+         totalLength : UDInt;
+         offset : UDInt;
+      END_STRUCT;
+      trcvFct : Struct
+         data : Array[0..4095] of Byte;
+         dataOffset : UDInt;
+         dataLength : UDInt;
+         dataLengthRest : UDInt;
+         dataReceived : Bool;
+      END_STRUCT;
+      numberOfLComHeader : USInt;
+   END_STRUCT;
+   statSend : Struct
+      configTelegramV1 : Struct
+         LComVersion : USInt;
+         comMode : USInt;
+         slidingWindow : USInt;
+         cycleTime : UInt;
+         ackTimeOut : UInt;
+         lifeSignCycle : UInt;
+         status : USInt;
+         sendModeSyncTime : USInt;
+         maxSendDataLength : UInt;
+         maxReceiveDataLength : UInt;
+      END_STRUCT;
+      configTelegramV2 : Struct
+         LComVersion : USInt;
+         status : USInt;
+         sendModeSyncTime : USInt;
+         lifeSignCycle : Time;
+         cycleTime : Time;
+         ackTimeOut : Time;
+         maxSendDataLength : UDInt;
+         maxReceiveDataLength : UDInt;
+      END_STRUCT;
+      dataTelegram : Struct
+         LComVersion : USInt;
+         telegramType : USInt;
+         messageCounter : USInt;
+         ackMessageCounter : USInt;
+         messageOffset : UDInt;
+         ackMessageOffset : UDInt;
+         actPackageLength : UDInt;
+         totalMessageLength : UDInt;
+      END_STRUCT;
+      userData : Struct
+         totalLength : UDInt;
+         offset : UDInt;
+         sendCycleViolation : Bool;
+      END_STRUCT;
+      tsendFct : Struct
+         dataLengthRest : UInt;
+         data : Array[0..4095] of Byte;
+         dataOffset : UInt;
+         status : Word;
+         enable : Bool;
+      END_STRUCT;
+      expectedAck : Struct
+         package1 : Struct
+            offset : UDInt;
+         END_STRUCT;
+      END_STRUCT;
+      numberOfLComPackage : USInt;
+   END_STRUCT;
+   statIterator : Int;
+   statOldEnable : Bool;
+   statOldSend : Bool;
+   statRisingEdgeSend : Bool;
+   statFallingEdgeEnable : Bool;
+   statRet : Int;
+   statCompare : Struct
+      sender : Struct
+         cycleTime : Time;
+         ackTimeOut : Time;
+      END_STRUCT;
+   END_STRUCT;
+   statTconPar : TCON_IP_v4;
+   statTconParQdn : TCON_QDN;
+   instTCON : TCON;
+   instTDISCON : TDISCON;
+   instTRCV : TRCV;
+   instTSEND : TSEND;
+   instLocalLifeSignCycleTimer : TON_TIME;
+   instPartnerLifeSignCycleTimer : TON_TIME;
+   instLocalCycleTimeTimer : TON_TIME;
+   instReceiveMsgCycle : TON_TIME;
+   instExpectedAckPackage1 : TON_TIME;
+   instMsgSendingTimer : TON_TIME;
+   instMsgReceivingTimer : TON_TIME;
+   instSyncTimer : TON_TIME;
+   instSendErrorTimer : TON_TIME;
+   instRcvErrorTimer : TON_TIME;
+   instRDREC : RDREC;
+   statDiag : Struct
+      buffer : Array[0..9] of Struct;
+      bufferIndex : Int;
+      actualIndex : USInt;
+   END_STRUCT;
+   statDataReceived : Bool;
+   statConnected : Bool;
+   statStatus : Word;
+   statSending : Bool;
+END_VAR
+
+
+// ---- start values (path : type := value)

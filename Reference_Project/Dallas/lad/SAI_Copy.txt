@@ -1,0 +1,25 @@
+// FC "SAI_Copy" 29  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   Src : Variant;
+END_VAR
+
+VAR_IN_OUT
+   Dest : Variant;
+END_VAR
+
+VAR_TEMP
+   TmpBuf : Array[0..100] of Byte;
+   TmpRet : Int;
+   TmpPos : DInt;
+END_VAR
+
+   // RETURN : Void
+--- Network 1  
+   parts: Move, Serialize
+   operands: #TmpPos, #Src, #TmpRet, #TmpBuf
+--- Network 2  
+   parts: Deserialize, Move
+   operands: #TmpPos, #TmpBuf, #TmpRet, #Dest
+--- Network 3  

@@ -1,0 +1,56 @@
+DATA_BLOCK "Order_Table_VTD_FB_DB_1"   // InstanceDB 6  instance of "Order_Table_VTD_FB"
+
+VAR_INPUT
+   System_Selected : Bool;
+   AutoMan_Switch : Bool;
+   CurrentTime : String;
+   CurrentDTL : DTL;
+   Watchdog : "Watchdog_Settings_UDT";
+   VTD_CurrentLevel : UInt;
+   OPC_UA_State_VTD : UInt;
+   OPC_UA_state_L2 : UInt;
+   OPC_UA_state_L3 : UInt;
+   OPC_UA_state_L4 : UInt;
+   OPC_UA_state_L5 : UInt;
+   OPC_UA_state_L6 : UInt;
+   Clear_OrderTable : Bool;
+END_VAR
+
+VAR_IN_OUT
+   VTD : "VTD_Control";
+   Extrator_Conveyor : "ECnv_Control";
+   Cnv_Buffer_21 : "Buffer_Cnv_Control";
+   Cnv_Buffer_31 : "Buffer_Cnv_Control";
+   Cnv_Buffer_41 : "Buffer_Cnv_Control";
+   Cnv_Buffer_51 : "Buffer_Cnv_Control";
+   Cnv_Buffer_61 : "Buffer_Cnv_Control";
+   System : "System_UDT";
+   Control_OPC_Ua : "WMS_OPC_UA";
+END_VAR
+
+VAR
+   VTD_CurrentOrder : UDInt;
+   Pallet_InOut_CurrentOrder : UDInt;
+   Shuttle_InOut_CurrentOrder : UDInt;
+   VTDDoneRTrig : R_TRIG;
+   Pallet_InOut_RTrig : R_TRIG;
+   Shuttle_InOut_RTrig : R_TRIG;
+   PalletRefused_RTrig : R_TRIG;
+   ErrorRTrig : R_TRIG;
+   CancelRTrig : R_TRIG;
+   PauseRTrig : R_TRIG;
+   ResumeRTrig : R_TRIG;
+   Clear_Store : R_TRIG;
+   Clear_Retrieve : R_TRIG;
+   Canceling : Bool;
+   VTD_WatchdogTimer : TON_TIME;
+   Pallet_InOut_WatchdogTimer : TON_TIME;
+   Shuttle_InOut_WatchdogTimer : TON_TIME;
+   VTD_WatchdogStart : Bool;
+   Pallet_InOut_WatchdogStart : Bool;
+   Shuttle_InOut_WatchdogStart : Bool;
+   F_AutoMode : F_TRIG;
+END_VAR
+
+
+// ---- start values (path : type := value)

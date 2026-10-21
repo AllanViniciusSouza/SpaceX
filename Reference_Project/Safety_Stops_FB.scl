@@ -1,0 +1,409 @@
+﻿TYPE "Sfts_Instruction"
+VERSION : 0.1
+   STRUCT
+      Mode_Change : UInt;
+      Enable : Bool;
+      Extend : Bool;
+      Retract : Bool;
+      Manual_Extend : Bool;
+      Manual_Retract : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Sfts_Inputs"
+VERSION : 0.1
+   STRUCT
+      DP_Extended : Bool;
+      DP_Retracted : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Shuttle_MQTT_Status_Msg"
+VERSION : 0.1
+   STRUCT
+      Request_ID : DInt;
+      Position_ID : DInt;
+      Destination_ID : DInt;
+      Distance_Remaining : DInt;
+      Position_X : DInt;
+      Position_Y : DInt;
+      Floor : Int;
+      Operation_Mode : String;
+      Operational_State : String;
+      Load_State : String;
+      Error_Vehicle_1 : UInt;
+      Error_Vehicle_2 : UInt;
+      Error_Vehicle_3 : UInt;
+      Error_Vehicle_4 : UInt;
+      Error_Vehicle_5 : UInt;
+      Error_Vehicle_6 : UInt;
+      Sensor_Inputs : UInt;
+      Sensor_Outputs : UInt;
+      Reader_Value : DInt;
+      Pallet_Type : String;
+      Energy_Level : UInt;
+      Battery_Voltage : UInt;
+      Paused : Bool;
+      Last_Received_Order_ID : Int;
+      Current_Order_ID : Int;
+      Last_Finished_Order_ID : Int;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Sfts_Control"
+VERSION : 0.1
+   STRUCT
+      Mode { ExternalWritable := 'False'} : UInt;
+      Error { ExternalWritable := 'False'} : Bool;
+      Enabled { ExternalWritable := 'False'} : Bool;
+      Running { ExternalWritable := 'False'} : Bool;
+      LP_State : USInt;
+      Motor_Extend { ExternalWritable := 'False'} : Bool;
+      Motor_Retract { ExternalWritable := 'False'} : Bool;
+      SM_State : UInt;
+      Instruction { S7_SetPoint := 'False'} : "Sfts_Instruction";
+      Inputs : "Sfts_Inputs";
+   END_STRUCT;
+
+END_TYPE
+
+DATA_BLOCK "Screen_DB_1"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      Charge_VTD_Commands : Array[1..5] of Bool;
+      Shuttle { S7_SetPoint := 'False'} : "Shuttle_MQTT_Status_Msg";
+      Reset_All : Array[1..5] of Bool;
+      Shuttle_Level_Selected : Array[1..5] of UInt;
+      Charge_Shuttle_Commands : Array[1..5] of Bool;
+      Shuttle_Select : Array[1..5] of USInt;
+      Charge_OT { S7_SetPoint := 'True'} : Array[1..5] of Bool;
+      OrderTable_Selected : Array[1..5] of UInt;
+      Automatic_Button : Array[1..5] of Bool;
+      All_In_Automatic : Array[1..5] of Bool;
+      System_Error : Array[1..5] of Bool;
+      Reset_Comissioning : Array[1..5] of Bool;
+      Alarms_ActiveTable : Array[1..5] of USInt;
+      Charger_1 : Array[1..5] of Bool;
+      Charger_2 : Array[1..5] of Bool;
+      Charger_3 : Array[1..5] of Bool;
+      Shuttle_Charge_Buttons : Array[1..5] of Bool;
+      Alarm_Current_Buttons : Array[1..5] of Bool;
+      Alarm_History_Buttons : Array[1..5] of Bool;
+      MainTemplate_Background : Array[1..5] of USInt;
+      Settings_ActivePopUp : Array[1..5] of USInt;
+      MainTemplate_ErrorActive : Array[1..5] of Bool;
+      MainTemplate_ErrorCount : Array[1..5] of USInt;
+      EmptyTemplate_Background : Array[1..5] of USInt;
+      Charge_VTD : Array[1..5] of Bool;
+      Charge_Cnv : Array[1..5] of Bool;
+      Charge_Cnv_Commands : Array[1..5] of Bool;
+   END_VAR
+
+
+BEGIN
+   Charger_1[1] := false;
+   Charger_1[2] := false;
+   Charger_1[3] := false;
+   Charger_1[4] := false;
+   Charger_1[5] := false;
+
+END_DATA_BLOCK
+
+DATA_BLOCK "CNV_HMI"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      "Manual_Sfty_Stopper_Up(1)" : Array[1..5] of Bool;
+      "Manual_Sfty_Stopper_Down(1)" : Array[1..5] of Bool;
+      In_Out : Array[1..5] of Bool;
+      ID : Array[1..5] of DInt;
+      "Task_ID(1)" : Array[1..5] of UInt;
+      Manual_Bwd : Array[1..5] of Bool;
+      "Reset(1)" : Array[1..5] of Bool;
+      "Pallet_Type(1)" : Array[1..5] of UInt;
+      Manual_Fwd : Array[1..5] of Bool;
+      Enable : Array[1..5] of Bool;
+      "Pallet_Align_Right(1)" : Array[1..5] of Bool;
+      "Enable(1)" : Array[1..5] of Bool;
+      Pallet_Type : Array[1..5] of UInt;
+      Pallet_Allignment : Array[1..5] of Bool;
+      "Transfer_To_ID(1)" : Array[1..5] of DInt;
+      Pallet_Align_Right : Array[1..5] of Bool;
+      "Manual_Bwd(1)" : Array[1..5] of Bool;
+      "Pallet_Align_Left(1)" : Array[1..5] of Bool;
+      Reset : Array[1..5] of Bool;
+      Stop : Array[1..5] of Bool;
+      Pallet_Align_Center : Array[1..5] of Bool;
+      "Stop(1)" : Array[1..5] of Bool;
+      "Start_Transfer(1)" : Array[1..5] of Bool;
+      Pallet_Align_Left : Array[1..5] of Bool;
+      Start_Transfer : Array[1..5] of Bool;
+      "ID(1)" : Array[1..5] of DInt;
+      "Transfer_From_ID(1)" : Array[1..5] of DInt;
+      "Manual_Fwd(1)" : Array[1..5] of Bool;
+      Mode_Change : Array[1..5] of UInt;
+      Transfer_To_ID : Array[1..5] of DInt;
+      "Mode_Change(1)" : Array[1..5] of UInt;
+      Transfer_From_ID : Array[1..5] of DInt;
+      UpDown : Array[1..5] of UInt;
+      Same_Cnv : Array[1..5] of Bool;
+      CNV2_Selected : Array[1..5] of UInt;
+      "Pallet_Allignment(1)" : Array[1..5] of Bool;
+      "Occupied(1)" : Array[1..5] of Bool;
+      Mode : Array[1..5] of UInt;
+      "Running(1)" : Array[1..5] of Bool;
+      "Enabled(1)" : Array[1..5] of Bool;
+      Motor_Speed_Actual : Array[1..5] of UInt;
+      Running : Array[1..5] of Bool;
+      "SM_State(1)" : Array[1..5] of UInt;
+      "Warning(1)" : Array[1..5] of UInt;
+      Stopped : Array[1..5] of Bool;
+      Enabled : Array[1..5] of Bool;
+      Error : Array[1..5] of Bool;
+      "Motor_Speed_Requested(1)" : Array[1..5] of UInt;
+      Current_Task_ID : Array[1..5] of UInt;
+      "Mode(1)" : Array[1..5] of UInt;
+      "Current_Task_Type(1)" : Array[1..5] of UInt;
+      Warning : Array[1..5] of UInt;
+      "Current_Task_ID(1)" : Array[1..5] of UInt;
+      Current_Task_Type : Array[1..5] of UInt;
+      "Stopped(1)" : Array[1..5] of Bool;
+      Motor_Direction : Array[1..5] of UInt;
+      SM_State : Array[1..5] of UInt;
+      "Ready_For_Task(1)" : Array[1..5] of Bool;
+      Ready_For_Task : Array[1..5] of Bool;
+      Occupied : Array[1..5] of Bool;
+      "Error(1)" : Array[1..5] of Bool;
+      Shuttle_in_place : Array[1..5] of Bool;
+      Motor_Speed_Requested : Array[1..5] of UInt;
+      "Motor_Direction(1)" : Array[1..5] of UInt;
+      "Motor_Speed_Actual(1)" : Array[1..5] of UInt;
+      "Shuttle_in_place(1)" : Array[1..5] of Bool;
+      Motor_Ready : Array[1..5] of Bool;
+      "Motor_Current_Actual(1)" : Array[1..5] of Real;
+      Motor_Status : Array[1..5] of UInt;
+      "Motor_Status(1)" : Array[1..5] of UInt;
+      Motor_Current_Actual : Array[1..5] of Real;
+      "Motor_Ready(1)" : Array[1..5] of Bool;
+      Task_ID : Array[1..5] of UInt;
+      Level_Selected : Array[1..5] of UInt;
+      "UpDown(1)" : Array[1..5] of UInt;
+      Motor_Actual_Torque : Array[1..5] of Real;
+      "Motor_Actual_Torque(1)" : Array[1..5] of Real;
+      Safety_OK : Array[1..5] of Bool;
+      Reset_Comissioning : Array[1..5] of Bool;
+      Charge_Commands : Array[1..5] of Bool;
+      Charge_Cnv : Array[1..5] of Bool;
+      Reset_All : Array[1..5] of Bool;
+      Sdetect1 : Array[1..5] of Bool;
+      Sdetect2 : Array[1..5] of Bool;
+      "Sdetect1(1)" : Array[1..5] of Bool;
+      "Sdetect2(1)" : Array[1..5] of Bool;
+      "Rpd2(1)" : Array[1..5] of Bool;
+      Center : Array[1..5] of Bool;
+      "Rpd1(1)" : Array[1..5] of Bool;
+      "Lpd2(1)" : Array[1..5] of Bool;
+      "Lpd1(1)" : Array[1..5] of Bool;
+      Rpd1 : Array[1..5] of Bool;
+      Lpd1 : Array[1..5] of Bool;
+      Rpd2 : Array[1..5] of Bool;
+      "Right(1)" : Array[1..5] of Bool;
+      Right : Array[1..5] of Bool;
+      Left : Array[1..5] of Bool;
+      "Left(1)" : Array[1..5] of Bool;
+   END_VAR
+
+
+BEGIN
+
+END_DATA_BLOCK
+
+FUNCTION_BLOCK "Safety_Stops_FB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      Sys_No : UInt;
+      Mode : UInt;
+      Timeout : UInt;
+      Reset : Bool;
+   END_VAR
+
+   VAR_IN_OUT 
+      Sfts_Control : "Sfts_Control";
+   END_VAR
+
+   VAR 
+      State : UInt;
+      LP_Timer {InstructionName := 'TON_TIME'; LibVersion := '1.0'; ExternalAccessible := 'False'; ExternalVisible := 'False'; ExternalWritable := 'False'; S7_SetPoint := 'False'} : TON_TIME;
+      T_Run {InstructionName := 'TOF_TIME'; LibVersion := '1.0'} : TOF_TIME;
+      Timer_1 : Time;
+   END_VAR
+
+
+BEGIN
+	#Sfts_Control.Enabled := #Sfts_Control.Instruction.Enable := #Mode = 2 OR #Mode = 3;
+	
+	//MODES
+	IF (#Mode = 1 OR #Mode = 5) AND NOT #Sfts_Control.Error THEN
+	    #State := 500;
+	END_IF;
+	
+	(*
+	TODO
+	1. Need to add the mode and running checks for manual mode
+	2. Add output for safety stop brake.
+	
+	Mode select is done via the HMI. Might add external mode select switches.
+	        
+	        Mode select mask:
+	        0: Disabled
+	        1: Manual
+	        2: Semi-Auto
+	        3: Auto
+	        4: Teach - N/A for Cnv
+	        5: Maintenance
+	        
+	Device ID Format: XXYYZZ    
+	XX = Device type   
+	    01   VTD
+	    10  Cnv_Front_of_VTD
+	    11  Cnv_Rear_of_VTD
+	    12  Cnv_On_Extractor
+	    20  Safety_Stop_Front_of_VTD
+	    21  Safety_Stop_Rear_of_VTD
+	YY = Floor   
+	ZZ = VTD Connected to 
+	*)
+	
+	
+	REGION Cyclic Checks
+	    //Update variables
+	    #Sfts_Control.SM_State := #State;
+	    
+	    #LP_Timer(IN := #Sfts_Control.Running,
+	              PT := UINT_TO_TIME(#Timeout));
+	    
+	    //STOPPER STATE
+	    IF #Sfts_Control.Inputs.DP_Extended AND NOT #Sfts_Control.Inputs.DP_Retracted THEN
+	        #Sfts_Control.LP_State := 1; // EXTENDED
+	    ELSIF NOT #Sfts_Control.Inputs.DP_Extended AND #Sfts_Control.Inputs.DP_Retracted THEN
+	        #Sfts_Control.LP_State := 0; //RETRACTED
+	    ELSE
+	        #Sfts_Control.LP_State := 2; //LOST
+	    END_IF;;
+	END_REGION
+	
+	REGION Auto Mode 
+	        CASE #State OF
+	            0: //IDLE MODE
+	                IF #Mode = 2 OR #Mode = 3 THEN
+	                    IF #Sfts_Control.Instruction.Enable AND #Sfts_Control.Error = 0 THEN
+	                        #Sfts_Control.Enabled := TRUE;
+	                        #State := 10;
+	                    END_IF;
+	                END_IF;
+	            10: //Standby
+	                IF NOT #Sfts_Control.Running AND #Sfts_Control.Error = 0 AND
+	                    (#Sfts_Control.Instruction.Extend AND (#Mode = 3 OR #Mode = 2)) OR (#Sfts_Control.Instruction.Manual_Extend AND #Mode = 2) THEN
+	                    IF #Sfts_Control.Inputs.DP_Extended THEN
+	                        ; // Complete the task as the LP ar already extended
+	                    ELSIF #Sfts_Control.Inputs.DP_Retracted THEN
+	                        #Sfts_Control.Running := True;
+	                        #State := 20;
+	                    ELSE
+	                        #Sfts_Control.Error := 0; //Unknown locking pin state
+	                        #State := 400;
+	                    END_IF;
+	                ELSIF NOT #Sfts_Control.Running AND #Sfts_Control.Error = 0 AND
+	                    (#Sfts_Control.Instruction.Retract AND #Mode = 3) OR (#Sfts_Control.Instruction.Manual_Retract AND #Mode = 2) THEN
+	                    IF #Sfts_Control.Inputs.DP_Retracted THEN
+	                        ; // Complete the task as the LP ar already extended
+	                    ELSIF #Sfts_Control.Inputs.DP_Extended THEN
+	                        #Sfts_Control.Running := True;
+	                        #State := 40;
+	                    ELSE
+	                        #Sfts_Control.Error := 0; //Unknown locking pin state
+	                        #State := 400;
+	                    END_IF;
+	                END_IF;
+	                
+	            20: //Extend safety locking pins
+	                #Sfts_Control.Motor_Extend := TRUE;
+	                IF #Sfts_Control.Inputs.DP_Extended THEN
+	                    #Sfts_Control.Motor_Extend := FALSE;
+	                    #Sfts_Control.Running := FALSE;
+	                    #State := 0;
+	                END_IF;
+	                
+	            40: //Retract safety locking pins
+	                #Sfts_Control.Motor_Retract := TRUE;
+	                IF #Sfts_Control.Inputs.DP_Retracted THEN
+	                    #Sfts_Control.Motor_Retract := FALSE;
+	                    #Sfts_Control.Running := FALSE;
+	                    #State := 0;
+	                END_IF;
+	                
+	            400: // Error#Sfts_Control
+	                #Sfts_Control.Motor_Retract := FALSE;
+	                #Sfts_Control.Motor_Extend := FALSE;
+	                #Sfts_Control.Running := FALSE;
+	                #LP_Timer(IN := FALSE,
+	                          PT := T#0S);
+	                IF #Reset OR "Reset_All" OR
+	                    "Screen_DB_1".Reset_All[1] OR "Screen_DB_1".Reset_All[2] OR
+	                    "CNV_HMI"."Reset(1)"[1] OR "CNV_HMI"."Reset(1)"[2]
+	                THEN
+	                    #Sfts_Control.Error := FALSE;
+	                    #State := 0;
+	                END_IF;
+	                
+	            500:
+	                IF #Sfts_Control.Instruction.Manual_Extend AND NOT #Sfts_Control.Inputs.DP_Extended THEN
+	                    #Sfts_Control.Motor_Extend := TRUE;
+	                    #Sfts_Control.Running := TRUE;
+	                ELSIF #Sfts_Control.Instruction.Manual_Retract AND NOT #Sfts_Control.Inputs.DP_Retracted THEN
+	                    #Sfts_Control.Motor_Retract := TRUE;
+	                    #Sfts_Control.Running := TRUE;
+	                ELSE
+	                    #Sfts_Control.Motor_Extend := FALSE;
+	                    #Sfts_Control.Motor_Retract := FALSE;
+	                    #Sfts_Control.Running := FALSE;
+	                END_IF;
+	                
+	                IF #Mode <> 1 AND #Mode <> 5 THEN
+	                    #State := 0;
+	                END_IF;
+	        END_CASE;
+	END_REGION
+	
+	REGION Cyclic Error Checks
+	    IF #Sfts_Control.Inputs.DP_Extended AND #Sfts_Control.Inputs.DP_Retracted THEN
+	        #Sfts_Control.Error := TRUE; //Cant have the locking pins extended and retracted at the same time11
+	    END_IF;
+	    
+	    // Statement section REGION
+	    IF #LP_Timer.Q THEN
+	        #Sfts_Control.Error := TRUE;//locking pin timeout
+	    END_IF;
+	    
+	    IF #Sfts_Control.Error THEN
+	        #State := 400;
+	    END_IF;
+	END_REGION
+	
+	REGION Assign outputs
+	    #T_Run(IN := #Sfts_Control.Motor_Extend OR #Sfts_Control.Motor_Retract,
+	                          PT := #Timer_1);
+	    
+	END_REGION
+	
+	
+	
+END_FUNCTION_BLOCK
+

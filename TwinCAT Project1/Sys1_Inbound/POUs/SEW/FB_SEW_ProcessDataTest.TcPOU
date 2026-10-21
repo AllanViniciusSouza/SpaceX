@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_SEW_ProcessDataTest" Id="{2a863bbb-b5f9-4d57-a13e-262a600002f2}" SpecialFunc="None">
+    <Declaration><![CDATA[// TEST ONLY - communication check between TwinCAT and a MOVIPRO running
+// MOVIKIT Positioning Drive with the "Standard 8 PD" fieldbus interface.
+//
+// PD layout confirmed from MOVISUITE (VTD > MOVIKIT Positioning Drive > Basic settings):
+//   PO 1 Control word              PI 1 Status word
+//   PO 2 Setpoint speed            PI 2 Actual speed
+//   PO 3 Setpoint acceleration     PI 3 Status/main fault - subfault
+//   PO 4 Setpoint deceleration     PI 4 Torque (selectable in MOVISUITE)
+//   PO 5 Digital outputs           PI 5 Digital inputs
+//   PO 6 Setpoint application mode PI 6 Actual application mode
+//   PO 7 Target position high word PI 7 Actual position high word
+//   PO 8 Target position low word  PI 8 Actual position low word
+//
+// NOT yet confirmed (pending SEW): control/status word bit meanings,
+// application mode values, user units and scaling of speed, ramps, torque and
+// position. All decoded values are therefore RAW and carry no engineering unit.
+//
+// This block does not control the drive. All process outputs are 0 unless a
+// TEST ONLY write is explicitly enabled online. The control word (PO 1) stays 0
+// unless it is separately enabled. A control word of 0 is not confirmed as a
+// safe state for this vertical axis; confirm with SEW before writing anything.
+FUNCTION_BLOCK FB_SEW_ProcessDataTest
+VAR_INPUT
+    i_aProcessInput : ARRAY[1..8] OF UINT;      // PI 1..8, raw from the drive
+    i_bWcStateError : BOOL;                     // EtherCAT WcState of the drive box (TRUE = data invalid)
+    i_uiEcState : UINT;                         // EtherCAT InfoData.State of the drive box (8 = OP)
+
+    i_bTestWriteEnable : BOOL;                  // TEST ONLY - allow PO 2..8 to be written
+    i_bTestAllowControlWord : BOOL;             // TEST ONLY - additionally allow PO 1 (control word)
+    i_aTestProcessOutput : ARRAY[1..8] OF UINT; // TEST ONLY - raw values to send to PO 1..8
+    i_tTestWriteTimeout : TIME := T#10M;        // TEST ONLY write is dropped after this time
+END_VAR
+VAR_OUTPUT
+    q_bCommunicationOk : BOOL;                  // Drive in OP and working counter valid
+    q_udiInputChangeCount : UDINT;              // Cycles in which any PI word changed (wraps)
+
+    q_wStatusWord : WORD;                       // PI 1, bit meanings pending SEW
+    q_iActualSpeedRaw : INT;                    // PI 2, signed assumed, unit pending SEW
+    q_wFaultCode : WORD;                        // PI 3, main fault / subfault, raw
+    q_iTorqueRaw : INT;                         // PI 4, signed assumed, unit pending SEW
+    q_wDigitalInputs : WORD;                    // PI 5, raw
+    q_uiActualApplicationMode : UINT;           // PI 6, value meanings pending SEW
+    q_diActualPositionRaw : DINT;               // PI 7 (high) + PI 8 (low), user units pending SEW
+
+    q_bTestWriteActive : BOOL;                  // TEST ONLY write currently applied
+    q_bTestWriteExpired : BOOL;                 // Timeout elapsed; toggle i_bTestWriteEnable to restart
+    q_tTestWriteElapsed : TIME;                 // Elapsed time of the current TEST ONLY write window
+    q_aProcessOutput : ARRAY[1..8] OF UINT;     // PO 1..8, raw to the drive
+END_VAR
+VAR
+    aPreviousInput : ARRAY[1..8] OF UINT;
+    bInputChanged : BOOL;
+    dwActualPosition : DWORD;
+    iWord : INT;
+
+    rtrigTestWriteEnable : R_TRIG;
+    tonTestWriteTimeout : TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Communication status: EtherCAT state OP (lower nibble = 8) and valid working counter.
+q_bCommunicationOk := (NOT i_bWcStateError) AND ((i_uiEcState AND 16#000F) = 8);
+
+// Count cycles in which the drive sends new data. A counter that keeps rising
+// while the drive is powered shows that PI data really arrives.
+bInputChanged := FALSE;
+FOR iWord := 1 TO 8 DO
+    IF i_aProcessInput[iWord] <> aPreviousInput[iWord] THEN
+        bInputChanged := TRUE;
+    END_IF
+END_FOR
+aPreviousInput := i_aProcessInput;
+
+IF bInputChanged THEN
+    q_udiInputChangeCount := q_udiInputChangeCount + 1;
+END_IF
+
+// Raw decoding. Same-size integer conversions keep the bit pattern.
+q_wStatusWord := UINT_TO_WORD(i_aProcessInput[1]);
+q_iActualSpeedRaw := UINT_TO_INT(i_aProcessInput[2]);
+q_wFaultCode := UINT_TO_WORD(i_aProcessInput[3]);
+q_iTorqueRaw := UINT_TO_INT(i_aProcessInput[4]);
+q_wDigitalInputs := UINT_TO_WORD(i_aProcessInput[5]);
+q_uiActualApplicationMode := i_aProcessInput[6];
+
+// Position word order (PI 7 = high, PI 8 = low) is shown in MOVISUITE.
+// Signed 32-bit integer: numeric value, not an IEEE-754 bit pattern.
+dwActualPosition := SHL(UINT_TO_DWORD(i_aProcessInput[7]), 16)
+                    OR UINT_TO_DWORD(i_aProcessInput[8]);
+q_diActualPositionRaw := DWORD_TO_DINT(dwActualPosition);
+
+// TEST ONLY write enable with timeout. A rising edge restarts the timeout.
+rtrigTestWriteEnable(CLK := i_bTestWriteEnable);
+IF rtrigTestWriteEnable.Q THEN
+    q_bTestWriteExpired := FALSE;
+END_IF
+
+tonTestWriteTimeout(IN := i_bTestWriteEnable AND NOT q_bTestWriteExpired,
+                    PT := i_tTestWriteTimeout);
+IF tonTestWriteTimeout.Q THEN
+    q_bTestWriteExpired := TRUE;
+END_IF
+q_tTestWriteElapsed := tonTestWriteTimeout.ET;
+
+q_bTestWriteActive := i_bTestWriteEnable AND NOT q_bTestWriteExpired;
+
+// Process outputs: 0 by default.
+FOR iWord := 1 TO 8 DO
+    q_aProcessOutput[iWord] := 0;
+END_FOR
+
+IF q_bTestWriteActive THEN
+    FOR iWord := 2 TO 8 DO
+        q_aProcessOutput[iWord] := i_aTestProcessOutput[iWord];
+    END_FOR
+
+    IF i_bTestAllowControlWord THEN
+        q_aProcessOutput[1] := i_aTestProcessOutput[1];
+    END_IF
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,40 @@
+FUNCTION_BLOCK "Stack_Lights"   // FB 21, author 
+
+VAR_INPUT
+   VTD_Mode : UInt;
+   Fault : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Red : Bool;
+   Green : Bool;
+   Blue : Bool;
+   Buzzer : Bool;
+END_VAR
+
+BEGIN
+//Commands for Stack Light
+
+IF #VTD_Mode = 1 THEN  // (1)Manual = Yellow
+    #Blue := TRUE;
+    #Red := TRUE;
+    #Green := FALSE;
+ELSIF #VTD_Mode = 2 THEN  // (2)Semi-Auto = Blue
+    #Green := FALSE;
+    #Blue := TRUE;
+    #Red := FALSE;
+ELSIF #VTD_Mode = 3 THEN  // (3)Auto = Green
+    #Green := TRUE;
+    #Red := FALSE;
+    #Blue := FALSE;
+ELSIF #Fault THEN  // Fault = Red
+    #Red := TRUE;
+    #Green := FALSE;
+    #Blue := FALSE;
+ELSE
+    #Green := FALSE;
+    #Red := FALSE;
+    #Blue := FALSE;
+END_IF;
+
+END_FUNCTION_BLOCK

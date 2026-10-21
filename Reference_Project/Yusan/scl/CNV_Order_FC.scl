@@ -1,0 +1,86 @@
+FUNCTION "CNV_Order_FC"   // FC 46, author 
+
+VAR_INPUT
+   i_Sys : UInt;
+   Level : UInt;
+   Tower : UInt;
+   Transfer_From_To : Byte;
+   Pallet_Type : Char;
+   Pallet_Allignment : Char;
+   Device : String;
+   Task_Type : Int;
+END_VAR
+
+VAR_IN_OUT
+   StepTable_0 : "OrderTable_UDT";
+END_VAR
+
+VAR_TEMP
+   StrSys : String;
+   StrLev : String;
+   Concat1 : String;
+   Concat2 : String;
+   Source_Location : DInt;
+   Destination_Location : DInt;
+   Concat3 : String;
+   Concat4 : String;
+   StrSource : String;
+   StrDestination : String;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+#StrSys := UINT_TO_STRING(#i_Sys);
+
+// Remove "+"
+IF #StrSys[1] = '+' THEN
+    #StrSys := RIGHT(IN := #StrSys, L := LEN(#StrSys) - 1);
+END_IF;
+
+#StrLev := UINT_TO_STRING(#Level);
+
+// Remove "+"
+IF #StrLev[1] = '+' THEN
+    #StrLev := RIGHT(IN := #StrLev, L := LEN(#StrLev) - 1);
+END_IF;
+
+IF #Tower = 1 AND #Transfer_From_To = 2 THEN//EXTRACTOR TO CONVEYOR 1
+    #StrSource := '120';
+    #StrDestination := '100';
+ELSIF #Tower = 2 AND #Transfer_From_To = 2 THEN //EXTRACTOR TO CONVEYOR 2
+    #StrSource := '120';
+    #StrDestination := '110';
+ELSIF #Tower = 1 AND #Transfer_From_To = 1 THEN //CONVEYOR 1 TO EXTRACTOR
+    #StrSource := '100';
+    #StrDestination := '120';
+ELSIF #Tower = 2 AND #Transfer_From_To = 1 THEN //CONVEYOR 2 TO EXTRACTOR
+    #StrSource := '110';
+    #StrDestination := '120';
+ELSIF #Tower = 1 AND #Transfer_From_To = 3 THEN //LOGISTEX TO CONVEYOR 1
+    #StrSource := '0';
+    #StrDestination := '100';
+ELSIF #Tower = 2 AND #Transfer_From_To = 4 THEN // CONVEYOR 2 TO LOGISTEX
+    #StrSource := '110';
+    #StrDestination := '0';
+END_IF;
+
+// Build Source Location
+#Concat1 := CONCAT(IN1 := #StrSource, IN2 := #StrLev);
+#Concat2 := CONCAT(IN1 := #Concat1, IN2 := '0');
+#Source_Location := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat2, IN2 := #StrSys));
+
+// Build Destinarion Location
+#Concat3 := CONCAT(IN1 := #StrDestination, IN2 := #StrLev);
+#Concat4 := CONCAT(IN1 := #Concat3, IN2 := '0');
+#Destination_Location := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat4, IN2 := #StrSys));
+
+Feed_Steptable_FC(CurrentTime := "Time".CurrentLocalTime,
+                    Task_Type := #Task_Type,
+                    Source_Location := #Source_Location,
+                    Destination_Location := #Destination_Location,
+                    Pallet_Type := #Pallet_Type,
+                    Pallet_Alignment := #Pallet_Allignment,
+                    Shuttle_ID:=0,
+                    StepTable := #StepTable_0);
+
+END_FUNCTION

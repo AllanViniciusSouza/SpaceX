@@ -1,0 +1,150 @@
+// FB "Remote_Panel" 17  language F_LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ID : Int;
+   Overtravel_Lower_limit : Bool;
+   Overtravel_Upper_limit : Bool;
+   Estop : Bool;
+   Reset : Bool;
+   Chain_Slack_1 : Bool;
+   Chain_Slack_2 : Bool;
+   Chain_Slack_3 : Bool;
+   Chain_Slack_4 : Bool;
+   Light Guards 1 : Bool;
+   Light Guards 2 : Bool;
+   Gate_1 : Bool;
+   Gate_2 : Bool;
+   EStop_Lock_1 : Bool;
+   EStop_Lock_2 : Bool;
+   Lock_Secured_1 : Bool;
+   Lock_Secured_2 : Bool;
+   EStop Level 1 : Bool;
+   EStop Level 2 : Bool;
+   EStop Level 3 : Bool;
+   EStop Level 4 : Bool;
+   EStop Level 5 : Bool;
+   EStop Level 6 : Bool;
+   Bypass : "F_Bypass_RemotePanel";
+END_VAR
+
+VAR_OUTPUT
+   Safety_OK : Bool;
+   Bypass_Warning : Bool;
+   STO VTD - CH1 : Bool;
+   STO VTD - CH2 : Bool;
+   ACK : Bool;
+   L1_OK : Bool;
+   L2_OK : Bool;
+   L3_OK : Bool;
+   L4_OK : Bool;
+   L5_OK : Bool;
+   L6_OK : Bool;
+END_VAR
+
+VAR
+   Overtravel_Lower_Limit_DB : ESTOP1;
+   Overtravel_Upper_Limit_DB : ESTOP1;
+   Estop_Cabinet_DB : ESTOP1;
+   Chain_Slack_1_DB : ESTOP1;
+   Chain_Slack_2_DB : ESTOP1;
+   Chain_Slack_3_DB : ESTOP1;
+   Chain_Slack_4_DB : ESTOP1;
+   Light_Guards 1 : ESTOP1;
+   Light_Guards 2 : ESTOP1;
+   Gate_1_DB : ESTOP1;
+   Gate_2_DB : ESTOP1;
+   EStop_Lock_1_DB : ESTOP1;
+   EStop_Lock_2_DB : ESTOP1;
+   Lock_Secured_1_DB : ESTOP1;
+   Lock_Secured_2_DB : ESTOP1;
+   EStop Level 1_DB : ESTOP1;
+   EStop Level 2_DB : ESTOP1;
+   EStop Level 3_DB : ESTOP1;
+   EStop Level 4_DB : ESTOP1;
+   EStop Level 5_DB : ESTOP1;
+   EStop Level 6_DB : ESTOP1;
+END_VAR
+
+VAR_TEMP
+   EStop_Levels_OK : Bool;
+END_VAR
+
+--- Network 1  Title: RESET CABINET
+   parts: Coil, Contact
+   operands: #Reset, #ACK
+--- Network 2  Title: Overtravel lower limit
+   parts: Contact, ESTOP1, O
+   operands: #Overtravel_Lower_limit, #Bypass.Overtravel_Lower_limit, #ACK
+--- Network 3  Title: Overtravel upper limit
+   parts: Contact, ESTOP1, O
+   operands: #Overtravel_Upper_limit, #Bypass.Overtravel_Upper_limit, #ACK
+--- Network 4  Title: Estop Main Panel
+   parts: Contact, ESTOP1, O
+   operands: #Estop, #Bypass.Estop_Main_Panel, #ACK
+--- Network 5  Title: Chain slack 1
+   parts: Contact, ESTOP1, O
+   operands: #Chain_Slack_1, #Bypass.Chain_Slack_1, #ACK
+--- Network 6  Title: Chain slack 2
+   parts: Contact, ESTOP1, O
+   operands: #Chain_Slack_2, #Bypass.Chain_Slack_2, #ACK
+--- Network 7  Title: Chain slack 3
+   parts: Contact, ESTOP1, O
+   operands: #Chain_Slack_3, #Bypass.Chain_Slack_3, #ACK
+--- Network 8  Title: Chain slack 4
+   parts: Contact, ESTOP1, O
+   operands: #Chain_Slack_4, #Bypass.Chain_Slack_4, #ACK
+--- Network 9  Title: Light Guards CX101
+   parts: Contact, ESTOP1, O
+   operands: #Light Guards 1, #Bypass.Light Guards 1, #ACK
+--- Network 10  Title: Light Guards CX201
+   parts: Contact, ESTOP1, O
+   operands: #Light Guards 2, #Bypass.Light Guards 2, #ACK
+--- Network 11  Title: Gate 1 Sensor
+   parts: Contact, ESTOP1, O
+   operands: #Gate_1, #Bypass.Gate_1, #ACK
+--- Network 12  Title: Gate 2 Sensor
+   parts: Contact, ESTOP1, O
+   operands: #Gate_2, #Bypass.Gate_2, #ACK
+--- Network 13  Title: Lock Secured 1
+   parts: Contact, ESTOP1, O
+   operands: #Lock_Secured_1, #Bypass.Lock_Secured_1, #ACK
+--- Network 14  Title: Lock Secured 1
+   parts: Contact, ESTOP1, O
+   operands: #Lock_Secured_2, #Bypass.Lock_Secured_2, #ACK
+--- Network 15  Title: Idem Lock EStop 1
+   parts: Contact, ESTOP1, O
+   operands: #EStop_Lock_1, #Bypass.EStop_Lock_1, #ACK
+--- Network 16  Title: Idem Lock EStop 2
+   parts: Contact, ESTOP1, O
+   operands: #EStop_Lock_2, #Bypass.EStop_Lock_2, #ACK
+--- Network 17  Title: ESTOP LEVEL 1
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 1, #Bypass.EStop Level 1, #ACK
+--- Network 18  Title: ESTOP LEVEL 2
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 2, #Bypass.EStop Level 2, #ACK
+--- Network 19  Title: ESTOP LEVEL 3
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 3, #Bypass.EStop Level 3, #ACK
+--- Network 20  Title: ESTOP LEVEL 4
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 4, #Bypass.EStop Level 4, #ACK
+--- Network 21  Title: ESTOP LEVEL 5
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 5, #Bypass.EStop Level 5, #ACK
+--- Network 22  Title: ESTOP LEVEL 6
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 6, #Bypass.EStop Level 6, #ACK
+--- Network 23  Title: STOP LEVEL
+   parts: Coil, Contact
+   operands: #EStop Level 1_DB.Q, #L1_OK, #EStop Level 2_DB.Q, #L2_OK, #EStop Level 3_DB.Q, #L3_OK, #EStop Level 4_DB.Q, #L4_OK, #EStop Level 5_DB.Q, #L5_OK, #EStop Level 6_DB.Q, #L6_OK, #EStop_Levels_OK
+--- Network 24  Title: Safety OK
+   parts: Coil, Contact, Ge, Le, O
+   operands: #Overtravel_Lower_Limit_DB.Q, #Overtravel_Upper_Limit_DB.Q, #Estop_Cabinet_DB.Q, #Chain_Slack_1_DB.Q, #Chain_Slack_2_DB.Q, #Chain_Slack_3_DB.Q, #Chain_Slack_4_DB.Q, #EStop_Levels_OK, #Gate_1_DB.Q, #EStop_Lock_1_DB.Q, #Lock_Secured_1_DB.Q, #Light_Guards 1.Q, #Light_Guards 2.Q, #Gate_2_DB.Q, #EStop_Lock_2_DB.Q, #Lock_Secured_2_DB.Q, #ID, #Safety_OK
+--- Network 25  Title: Bypass Warning
+   parts: Coil, Contact, O
+   operands: #Bypass.Overtravel_Lower_limit, #Bypass.Overtravel_Upper_limit, #Bypass.Estop_Main_Panel, #Bypass.Chain_Slack_1, #Bypass.Chain_Slack_2, #Bypass.Chain_Slack_3, #Bypass.Chain_Slack_4, #Bypass.Light Guards 1, #Bypass.Light Guards 2, #Bypass_Warning
+--- Network 26  Title: Enable outputs
+   parts: Coil, Contact
+   operands: #Safety_OK, #STO VTD - CH1, #STO VTD - CH2

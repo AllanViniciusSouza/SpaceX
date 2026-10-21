@@ -1,0 +1,105 @@
+FUNCTION "Encoders"   // FC 8, author 
+
+   // RETURN : Void
+BEGIN
+REGION ABSOLUTE ENCODER
+    //STATUS---------------------------------------------------------------------------------------------------------------------
+    //
+    //Encoder state word 2 - INPUT WORD 1
+    //
+    // 15 … 12 Encoder’s Sign-OF-Life (NOT relevant)
+    // 11, 10 Reserved
+    // 9 Control requested 0 = No control BY the PLC requested 1 = Control BY the PLC requested
+    // 8 … 0 Reserved
+    
+    //Sensor 1 state word - INPUT WORD 2
+    //
+    // 15 Encoder error Description 0 = No error 1 = Error The error code is output in G1_XIST2.
+    // 14 Park mode activated 0 = Normal operation 1 = Park mode activated Feedback based on G1_STW bit 14: No output OF position data G1_XIST1 AND G1_XIST2
+    // 13 Transmission OF absolute position value 0 = No transmission 1 = Position value is output in G1_XIST2
+    // 12 Status OF the Preset function (set/shift OF home position executed) 0 = No Preset function active 1 = Preset function is run Feedback based on G1_STW bit 12:  
+    // 11 Requirement OF error acknowledgement detected New position value is output in G1_XIST1 AND G1_XIST2. On conclusion OF the Preset function the bit is set TO 0. 0 = No RETURN acknowledgement OF Encoder error 1 = Requirement OF error acknowledgement detected Reaction TO bit 15 in the sensor control word 1 G1_STW is acknowledged (see Table 14)
+    // 10 Reserved
+    // 9 … 0 NOT supported
+    
+    //Position 1 - INPUT WORD 3 AND 4
+    // "AE_Position_1_Scaled" := (*SCALE_X(MIN := "Settings_DB".VTD_Settings.VTD_Min_Height,
+    //                                   VALUE := *)NORM_X(MIN := 0,
+    //                                                   VALUE := (SHL(IN:="AE_Position_1", N:=2) * 0.00228881) (*- "AE_Offset"*),
+    //                                                   MAX := 1073741824)(*,
+    //                                   MAX := "Settings_DB".VTD_Settings.VTD_Max_Heigh)*);
+    // "mm_per_pulse" := 401,5584 / 262144;
+    "AE_Position_1_Scaled" := (((1073741823 - (SHR(IN := "AE_Position_1", N := 2))) - 31381317) * 0.0015318237304688) - 1548572;
+    // Position 2 - INPUT WORD 5 AND 6
+    "AE_Position_2_Scaled" := SHR(IN := "AE_Position_2", N := 2);
+    
+    //Speed A - INPUT WORD 7
+    "AE_Speed_Justified" := "AE_Speed";
+    
+    //CONTROL---------------------------------------------------------------------------------------------------------------------
+    //
+    //Encoder control word 2 - OUTPUT WORD 1
+    //
+    // 15 … 12 Master’s Sign-OF-Life (NOT relevant)
+    // 10 control BY PLC 0 = No control BY the PLC 1 = Control BY the PLC Enables the PLC BY using control words TO activate / deactivate encoder functions
+    // 7 Fault acknowledge Error-buffer handling NOT supported
+    // 11, 9, 8, 6 … 0 Reserved
+    // "AE_Control_Word_1".%X10 := "AE_PLC_Control";
+    "AE_Control_Word_1".%X7 := "VTD_Reset_HMI_Tags";
+    
+    //Sensor 1 control word - OUTPUT WORD 2
+    //
+    // 15 Acknowledging a sensor error Description 0 = Encoder error message NOT acknowledged BY PLC 1 = Encoder error message acknowledged BY the PLC
+    // 14 Activate park mode 0 = Normal operation 1 = Activate park mode
+    // 13 Request FOR the absolute position value 0 = No request 1 = Request BY the master Results in the cyclic output OF the position values in G1_XIST2
+    // 12 Activate preset value (see note below) Defines that a configured preset value is used (see section 3.5 on page 24) 0 = Preset value is NOT activated 1 = Preset value is activated
+    // 11 Preset mode Defines how a configured preset value is used 0 = Preset value is used as a new absolute value 1 = Preset value is added TO the previous value
+    // 10 … 0 Reserved
+    // "AE_Control_Word_2".%X15 := "VTD_Reset_HMI_Tags";
+    // "AE_Control_Word_2".%X14 := "AE_Activate_ParkMode";
+    // "AE_Control_Word_2".%X13 := "AE_Request_ABS_Value";
+    // "AE_Control_Word_2".%X12 := "AE_Activate_Preset_Value";
+    // "AE_Control_Word_2".%X11 := "AE_Preset_Mode";
+END_REGION
+
+REGION LINEAR ENCODER
+    "LE_X_Unsafe_Position_1" := DINT_TO_REAL("LE_X_Unsafe_Position") / 10;
+    "LE_Speed_1" := "LE_Speed" * 10;
+    //STATUS 
+    //
+    // 0 ERR - Error message (Error code in XP00– XP15); remaining bits = 0, see Error Codes
+    // 1 NP - No position information/OUT (XP = 0, YP = 0, SP = 0)
+    // 2 WRN - Warnings present, see Warning Module
+    // 3 EV - Event present
+    // 4 posdetected - Valid position information available
+    
+    //WARNINGS
+    //
+    // 0 WRN01 A code with non-PXV content was found.
+    // 1 WRN02 the read head is too close TO the Data Matrix code tape.
+    // 2 WRN03 the read head is too far from the Data Matrix code tape.
+    // 3 WRN04 Y position too large. The sensor is just before OUT.
+    // 4 WRN05 Y position is too small. The sensor is just before OUT.
+    // 5 WRN06 the read head is rotated OR tilted in relation TO the Data Matrix code tape.
+    // 6 WRN07 Low level OF code contrast.
+    // 7 WRN08 Repair tape detected.
+    // 8 WRN09 Temperature too high.
+    // 9...15 Reserved
+    
+    //QUALITY GRADE
+    //
+    //The quality grades enable constant monitoring of the code tape and the camera along the entire
+    //traverse distance. This enables you to detect and act upon potential damage or contamination
+    //of the code tape and camera at the earliest stage possible during commissioning and normal
+    //operation. As a result, this maximizes the overall functional reliability of your plant, and
+    //it means you are able to immediately localize the issue in the case of a fault. Evaluations
+    //are made using a scale of 1 to 6. The value 1 is the best possible read quality. A value greater
+    //than 3 or worse requires the camera and its path to be inspected. The value 7 signifies "No position"
+    //because no code was detected. An evaluation that indicates poor quality as the outcome can be due to
+    //a misalignment or incorrect orientation, an incorrect measuring distance, or because the code tape has been affixed incorrectly
+END_REGION
+
+    //RESET SAFETY POSITION LINEAR ENCODER
+    "R_TRIG_DB_10"(CLK:="LE_Safe_Status" = 0);
+    "Reintegration" := "R_TRIG_DB_10".Q;
+END_FUNCTION

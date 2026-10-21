@@ -1,0 +1,126 @@
+FUNCTION "ByteArrayToString"   // FC 15, author 
+
+VAR_INPUT
+   Lenght : Int;
+   ByteArray : Array[0..1024] of Byte;
+END_VAR
+
+VAR_OUTPUT
+   ByteArrayToString_1 : String;
+   ByteArrayToString_2 : String;
+   ByteArrayToString_3 : String;
+   ByteArrayToString_4 : String;
+   ByteArrayToString_5 : String;
+END_VAR
+
+VAR_TEMP
+   tempStr_1 : String;
+   tempStr_2 : String;
+   tempStr_3 : String;
+   tempStr_4 : String;
+   tempStr_5 : String;
+   tempStr_6 : String;
+   foundPos : Int;
+   i : Int;
+END_VAR
+
+   // RETURN : String
+BEGIN
+//STRING 1
+#tempStr_1 := '';
+FOR #i := 0 TO MIN(IN1 := #Lenght - 1, IN2 := 254) DO
+    IF #ByteArray[#i] <> 0 THEN
+        #tempStr_1 := CONCAT(IN1 := #tempStr_1, IN2 := CHAR_TO_STRING(BYTE_TO_CHAR(#ByteArray[#i])));
+    END_IF;
+END_FOR;
+
+//STRING 2
+#tempStr_2 := '';
+FOR #i := 100 TO MIN(IN1 := #Lenght - 1, IN2 := 354) DO
+    IF #ByteArray[#i] <> 0 THEN
+        #tempStr_2 := CONCAT(IN1 := #tempStr_2, IN2 := CHAR_TO_STRING(BYTE_TO_CHAR(#ByteArray[#i])));
+    END_IF;
+END_FOR;
+
+//STRING 3
+#tempStr_3 := '';
+FOR #i := 200 TO MIN(IN1 := #Lenght - 1, IN2 := 454) DO
+    IF #ByteArray[#i] <> 0 THEN
+        #tempStr_3 := CONCAT(IN1 := #tempStr_3, IN2 := CHAR_TO_STRING(BYTE_TO_CHAR(#ByteArray[#i])));
+    END_IF;
+END_FOR;
+
+//STRING 4
+#tempStr_4 := '';
+FOR #i := 300 TO MIN(IN1 := #Lenght - 1, IN2 := 554) DO
+    IF #ByteArray[#i] <> 0 THEN
+        #tempStr_4 := CONCAT(IN1 := #tempStr_4, IN2 := CHAR_TO_STRING(BYTE_TO_CHAR(#ByteArray[#i])));
+    END_IF;
+END_FOR;
+
+// //STRING 5
+#tempStr_5 := '';
+FOR #i := 400 TO MIN(IN1 := #Lenght - 1, IN2 := 654) DO
+    IF #ByteArray[#i] <> 0 THEN
+        #tempStr_5 := CONCAT(IN1 := #tempStr_5, IN2 := CHAR_TO_STRING(BYTE_TO_CHAR(#ByteArray[#i])));
+    END_IF;
+END_FOR;
+
+// //STRING 6
+#tempStr_6 := '';
+FOR #i := 500 TO MIN(IN1 := #Lenght - 1, IN2 := 763) DO
+    IF #ByteArray[#i] <> 0 THEN
+        #tempStr_6 := CONCAT(IN1 := #tempStr_6, IN2 := CHAR_TO_STRING(BYTE_TO_CHAR(#ByteArray[#i])));
+    END_IF;
+END_FOR;
+
+// Remove '$R$L'
+// string 1
+#foundPos := FIND(IN1 := #tempStr_1, IN2 := '$R$L');
+WHILE #foundPos > 0 DO
+    #tempStr_1 := REPLACE(IN1 := #tempStr_1, IN2 := '', P := #foundPos, L := 2);
+    #foundPos := FIND(IN1 := #tempStr_1, IN2 := '$R$L');
+END_WHILE;
+
+// string 2
+#foundPos := FIND(IN1 := #tempStr_2, IN2 := '$R$L');
+WHILE #foundPos > 0 DO
+    #tempStr_2 := REPLACE(IN1 := #tempStr_2, IN2 := '', P := #foundPos, L := 2);
+    #foundPos := FIND(IN1 := #tempStr_2, IN2 := '$R$L');
+END_WHILE;
+
+// string 3
+#foundPos := FIND(IN1 := #tempStr_3, IN2 := '$R$L');
+WHILE #foundPos > 0 DO
+    #tempStr_3 := REPLACE(IN1 := #tempStr_3, IN2 := '', P := #foundPos, L := 2);
+    #foundPos := FIND(IN1 := #tempStr_3, IN2 := '$R$L');
+END_WHILE;
+
+// string 4
+#foundPos := FIND(IN1 := #tempStr_4, IN2 := '$R$L');
+WHILE #foundPos > 0 DO
+    #tempStr_4 := REPLACE(IN1 := #tempStr_4, IN2 := '', P := #foundPos, L := 2);
+    #foundPos := FIND(IN1 := #tempStr_4, IN2 := '$R$L');
+END_WHILE;
+
+// string 5
+#foundPos := FIND(IN1 := #tempStr_5, IN2 := '$R$L');
+WHILE #foundPos > 0 DO
+    #tempStr_5 := REPLACE(IN1 := #tempStr_5, IN2 := '', P := #foundPos, L := 2);
+    #foundPos := FIND(IN1 := #tempStr_5, IN2 := '$R$L');
+END_WHILE;
+
+// string 6
+#foundPos := FIND(IN1 := #tempStr_6, IN2 := '$R$L');
+WHILE #foundPos > 0 DO
+    #tempStr_6 := REPLACE(IN1 := #tempStr_6, IN2 := '', P := #foundPos, L := 2);
+    #foundPos := FIND(IN1 := #tempStr_6, IN2 := '$R$L');
+END_WHILE;
+
+#ByteArrayToString := #tempStr_1;
+#ByteArrayToString_1 := #tempStr_2;
+#ByteArrayToString_2 := #tempStr_3;
+#ByteArrayToString_3 := #tempStr_4;
+#ByteArrayToString_4 := #tempStr_5;
+#ByteArrayToString_5 := #tempStr_6;
+END_FUNCTION

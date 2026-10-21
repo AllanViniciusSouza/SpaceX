@@ -1,0 +1,2988 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-20T12:44:11.7296004Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.InstanceDB ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <DBAccessibleFromOPCUA>true</DBAccessibleFromOPCUA>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <InstanceOfName>Order_Table_FB</InstanceOfName>
+      <InstanceOfType>FB</InstanceOfType>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="System_Selected" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="AutoMan_Switch" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="CurrentTime" Datatype="String" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="CurrentDTL" Datatype="DTL" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Watchdog" Datatype="&quot;Watchdog_Settings_UDT&quot;" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="VTD" Datatype="UDInt" />
+          <Member Name="EConveyor" Datatype="UDInt" />
+          <Member Name="Cnv_Buffer" Datatype="Array[11..28] of UDInt" />
+          <Member Name="Pallet_INOut" Datatype="UDInt" />
+          <Member Name="Shuttle_INOut" Datatype="UDInt" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="OPC_UA_State_VTD" Datatype="UInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="OPC_UA_State_Shuttle" Datatype="UInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="OPC_UA_State_CNV" Datatype="UInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Clear_OrderTable" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="Output" />
+  <Section Name="InOut">
+    <Member Name="VTD" Datatype="&quot;VTD_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="AE" Datatype="Real" />
+          <Member Name="LE" Datatype="Real" />
+          <Member Name="Current_Level" Datatype="UInt" />
+          <Member Name="Docked" Datatype="Bool" />
+          <Member Name="LP_State" Datatype="UInt" />
+          <Member Name="DP_Extended" Datatype="Bool" />
+          <Member Name="Pallet_Loaded" Datatype="UInt" />
+          <Member Name="Shuttle_Loaded" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Motor_UP" Datatype="Bool" />
+          <Member Name="Motor_Down" Datatype="Bool" />
+          <Member Name="Motor_Speed" Datatype="UInt" />
+          <Member Name="VFD_Error" Datatype="UInt" />
+          <Member Name="LE_Error" Datatype="UInt" />
+          <Member Name="AE_Error" Datatype="UInt" />
+          <Member Name="Encoder_Delta" Datatype="Int" />
+          <Member Name="Instruction" Datatype="&quot;VTD_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Execulte" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Move_To_Level" Datatype="UInt" />
+                <Member Name="Manual_Up" Datatype="Bool" />
+                <Member Name="Manual_Down" Datatype="Bool" />
+                <Member Name="Manual_LP_Retract" Datatype="Bool" />
+                <Member Name="Manual_LP_Extend" Datatype="Bool" />
+                <Member Name="Start_Teach" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Shuttle_Interlock" Datatype="&quot;VTD_Shuttle_Interlock&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Interlock_Complete" Datatype="Bool" />
+                <Member Name="Interlock_Complete_Ack" Datatype="Bool" />
+                <Member Name="Ready_To_Interlock" Datatype="Bool" />
+                <Member Name="Interlock_Request" Datatype="Bool" />
+                <Member Name="Shuttle_ID" Datatype="UInt" />
+                <Member Name="Shuttle_Target_Location" Datatype="DInt" />
+                <Member Name="Shuttle_Start_Location" Datatype="DInt" />
+                <Member Name="Shuttle_Loaded" Datatype="Bool" />
+                <Member Name="Shuttle_Interlock_Task_ID" Datatype="UInt" />
+                <Member Name="Shuttle_Interlock_Task_Metadata" Datatype="String" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;VTD_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Upper_Overtravel" Datatype="Bool" />
+                <Member Name="Upper_limit" Datatype="Bool" />
+                <Member Name="Ultimate_SlowDown" Datatype="Bool" />
+                <Member Name="Ultimate_Creep" Datatype="Bool" />
+                <Member Name="Lower_Limit" Datatype="Bool" />
+                <Member Name="Lower_Overtravel" Datatype="Bool" />
+                <Member Name="Level_Detect1" Datatype="Bool" />
+                <Member Name="Level_Detect2" Datatype="Bool" />
+                <Member Name="DP1_Extended" Datatype="Bool" />
+                <Member Name="DP2_Extended" Datatype="Bool" />
+                <Member Name="DP1_Retracted" Datatype="Bool" />
+                <Member Name="DP2_Retracted" Datatype="Bool" />
+                <Member Name="Chain_Slack_1" Datatype="Bool" />
+                <Member Name="Chain_Slack_2" Datatype="Bool" />
+                <Member Name="Chain_Slack_3" Datatype="Bool" />
+                <Member Name="Chain_Slack_4" Datatype="Bool" />
+                <Member Name="PushToEnter" Datatype="Bool" />
+                <Member Name="PushToExit" Datatype="Bool" />
+                <Member Name="Barcode 1" Datatype="String" />
+                <Member Name="Barcode 2" Datatype="String" />
+                <Member Name="LE_Status" Datatype="UInt" />
+                <Member Name="LE_Position" Datatype="DInt" />
+                <Member Name="LE_Speed" Datatype="Int" />
+                <Member Name="LE_Warnings" Datatype="Int" />
+                <Member Name="LE_Quality_Decoded_Codes" Datatype="Byte" />
+                <Member Name="LE_Quality_Value" Datatype="Byte" />
+                <Member Name="AE_Status_1" Datatype="UInt" />
+                <Member Name="AE_Status_2" Datatype="UInt" />
+                <Member Name="AE_Position_1" Datatype="DInt" />
+                <Member Name="AE_Position_2" Datatype="DInt" />
+                <Member Name="AE_Speed" Datatype="Int" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Word" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Outputs" Datatype="&quot;VTD_Outputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="LP1_Retract" Datatype="Bool" />
+                <Member Name="LP1_Extend" Datatype="Bool" />
+                <Member Name="LP2_Retract" Datatype="Bool" />
+                <Member Name="LP2_Extend" Datatype="Bool" />
+                <Member Name="AE_Control_Word_1" Datatype="Word" />
+                <Member Name="AE_Control_Word_2" Datatype="Word" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Motor" Datatype="&quot;VTD_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Brake_Opened" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Int" />
+                <Member Name="Speed_Actual" Datatype="Int" />
+                <Member Name="Actual_Current" Datatype="Int" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Acc_Factor" Datatype="UInt" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="VTD_Errors" Datatype="&quot;VTD_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+                <Member Name="Error_Word_5" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Extrator_Conveyor" Datatype="&quot;ECnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Center" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Overhang_Left" Datatype="Bool" />
+                <Member Name="Overhang_Right" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_11" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_21" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_31" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_41" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_51" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_61" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_71" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_81" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_12" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_22" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_32" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_42" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_52" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_62" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_72" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Cnv_Buffer_82" Datatype="&quot;Buffer_Cnv_Control&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Shuttle_In_Place" Datatype="Bool" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Actual_Torque" Datatype="UInt" />
+                <Member Name="Control_Word" Datatype="Word" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;Cnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Pallet_Type" Datatype="UInt" />
+                <Member Name="Pallet_Allignment" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Pallet_Align_Left" Datatype="Bool" />
+                <Member Name="Pallet_Align_Right" Datatype="Bool" />
+                <Member Name="Pallet_Align_Center" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Buffer_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Left" Datatype="Bool" />
+                <Member Name="Lpd1" Datatype="Bool" />
+                <Member Name="Lpd2" Datatype="Bool" />
+                <Member Name="Right" Datatype="Bool" />
+                <Member Name="Rpd1" Datatype="Bool" />
+                <Member Name="Rpd2" Datatype="Bool" />
+                <Member Name="Sdetect1" Datatype="Bool" />
+                <Member Name="Sdetect2" Datatype="Bool" />
+                <Member Name="Shuttle_High" Datatype="Bool" />
+                <Member Name="VFD_Status" Datatype="Word" />
+                <Member Name="VFD_Speed_Actual" Datatype="Int" />
+                <Member Name="VFD_ActualCurrent" Datatype="Int" />
+                <Member Name="VFD_ActualTorque" Datatype="Int" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Safety_Stop_Cnrl" Datatype="&quot;Sfts_Control&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode" Datatype="UInt" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Running" Datatype="Bool" />
+                <Member Name="LP_State" Datatype="USInt" />
+                <Member Name="Motor_Extend" Datatype="Bool" />
+                <Member Name="Motor_Retract" Datatype="Bool" />
+                <Member Name="SM_State" Datatype="UInt" />
+                <Member Name="Instruction" Datatype="&quot;Sfts_Instruction&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Mode_Change" Datatype="UInt" />
+                      <Member Name="Enable" Datatype="Bool" />
+                      <Member Name="Extend" Datatype="Bool" />
+                      <Member Name="Retract" Datatype="Bool" />
+                      <Member Name="Manual_Extend" Datatype="Bool" />
+                      <Member Name="Manual_Retract" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="Inputs" Datatype="&quot;Sfts_Inputs&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="DP_Extended" Datatype="Bool" />
+                      <Member Name="DP_Retracted" Datatype="Bool" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="System" Datatype="&quot;System_UDT&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Id" Datatype="UInt" />
+          <Member Name="CancelOrders" Datatype="Bool" />
+          <Member Name="PauseOrders" Datatype="Bool" />
+          <Member Name="ResumeOrders" Datatype="Bool" />
+          <Member Name="OrderSent" Datatype="Bool" />
+          <Member Name="CurrentOrder" Datatype="UInt" />
+          <Member Name="NextOrder" Datatype="UInt" />
+          <Member Name="OrderTable" Datatype="Array[0..99] of &quot;OrderTable_UDT&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="OrderNo" Datatype="Int" />
+                <Member Name="StepNo" Datatype="Int" />
+                <Member Name="PlaceTime" Datatype="String[20]" />
+                <Member Name="Device" Datatype="String" />
+                <Member Name="Sequence" Datatype="UInt" />
+                <Member Name="Status" Datatype="String[12]" />
+                <Member Name="CompleteTime" Datatype="String[20]" />
+                <Member Name="ErrorID" Datatype="UInt" />
+                <Member Name="OPC_Control" Datatype="&quot;WMS_OPC_UA&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Task_ID" Datatype="Int" />
+                      <Member Name="Task_Metadata" Datatype="String[250]" />
+                      <Member Name="Task_Type" Datatype="Int" />
+                      <Member Name="Source_Location" Datatype="DInt" />
+                      <Member Name="Destination_Location" Datatype="DInt" />
+                      <Member Name="Task_Data_Available" Datatype="Bool" />
+                      <Member Name="SM_State" Datatype="UInt" />
+                      <Member Name="Movement_Ready" Datatype="Bool" />
+                      <Member Name="Movement_Request_Complete" Datatype="Bool" />
+                      <Member Name="Movement_Request_Complete_Ack" Datatype="Bool" />
+                      <Member Name="Shuttle_ID" Datatype="Int" />
+                      <Member Name="Shuttle_Loaded" Datatype="Bool" />
+                      <Member Name="Pallet_Type" Datatype="Char" />
+                      <Member Name="Pallet_Alignment" Datatype="Char" />
+                      <Member Name="SM_State_Maestro" Datatype="UInt" />
+                      <Member Name="Pallet_Weight" Datatype="Int" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="StepTable" Datatype="Array[0..20] of &quot;OrderTable_UDT&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="OrderNo" Datatype="Int" />
+                <Member Name="StepNo" Datatype="Int" />
+                <Member Name="PlaceTime" Datatype="String[20]" />
+                <Member Name="Device" Datatype="String" />
+                <Member Name="Sequence" Datatype="UInt" />
+                <Member Name="Status" Datatype="String[12]" />
+                <Member Name="CompleteTime" Datatype="String[20]" />
+                <Member Name="ErrorID" Datatype="UInt" />
+                <Member Name="OPC_Control" Datatype="&quot;WMS_OPC_UA&quot;">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="Task_ID" Datatype="Int" />
+                      <Member Name="Task_Metadata" Datatype="String[250]" />
+                      <Member Name="Task_Type" Datatype="Int" />
+                      <Member Name="Source_Location" Datatype="DInt" />
+                      <Member Name="Destination_Location" Datatype="DInt" />
+                      <Member Name="Task_Data_Available" Datatype="Bool" />
+                      <Member Name="SM_State" Datatype="UInt" />
+                      <Member Name="Movement_Ready" Datatype="Bool" />
+                      <Member Name="Movement_Request_Complete" Datatype="Bool" />
+                      <Member Name="Movement_Request_Complete_Ack" Datatype="Bool" />
+                      <Member Name="Shuttle_ID" Datatype="Int" />
+                      <Member Name="Shuttle_Loaded" Datatype="Bool" />
+                      <Member Name="Pallet_Type" Datatype="Char" />
+                      <Member Name="Pallet_Alignment" Datatype="Char" />
+                      <Member Name="SM_State_Maestro" Datatype="UInt" />
+                      <Member Name="Pallet_Weight" Datatype="Int" />
+                    </Section>
+                  </Sections>
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="CarParked_Confirm" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="IDLE" Datatype="Bool" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="State" Datatype="USInt" />
+          <Member Name="ResetError" Datatype="Bool" />
+          <Member Name="Ready" Datatype="Bool" />
+          <Member Name="Selected" Datatype="Bool" />
+          <Member Name="Auto_Man" Datatype="Bool" />
+          <Member Name="Paused" Datatype="Bool" />
+          <Member Name="Watchdog_TimeOut" Datatype="Struct">
+            <Member Name="Cnv_Entry" Datatype="Bool" />
+            <Member Name="Cnv_PopUp" Datatype="Array[1..4] of Bool" />
+            <Member Name="Cnv_Exit" Datatype="Bool" />
+            <Member Name="EConveyor" Datatype="Bool" />
+            <Member Name="VTD" Datatype="Bool" />
+            <Member Name="Cnv_Buffer" Datatype="Array[1..3] of Bool" />
+            <Member Name="Roller_TO_Roller" Datatype="Bool" />
+            <Member Name="Chain_TO_Chain" Datatype="Bool" />
+            <Member Name="Pop4_TO_Pick" Datatype="Bool" />
+            <Member Name="Pick_TO_Pop1" Datatype="Bool" />
+            <Member Name="Weigh_Station" Datatype="Bool" />
+            <Member Name="Profile_Station" Datatype="Bool" />
+            <Member Name="Pallet_InOut" Datatype="Bool" />
+            <Member Name="Shuttle_InOut" Datatype="Bool" />
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Control_OPC_Ua" Datatype="&quot;WMS_OPC_UA&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Task_ID" Datatype="Int" />
+          <Member Name="Task_Metadata" Datatype="String[250]" />
+          <Member Name="Task_Type" Datatype="Int" />
+          <Member Name="Source_Location" Datatype="DInt" />
+          <Member Name="Destination_Location" Datatype="DInt" />
+          <Member Name="Task_Data_Available" Datatype="Bool" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Movement_Ready" Datatype="Bool" />
+          <Member Name="Movement_Request_Complete" Datatype="Bool" />
+          <Member Name="Movement_Request_Complete_Ack" Datatype="Bool" />
+          <Member Name="Shuttle_ID" Datatype="Int" />
+          <Member Name="Shuttle_Loaded" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="Char" />
+          <Member Name="Pallet_Alignment" Datatype="Char" />
+          <Member Name="SM_State_Maestro" Datatype="UInt" />
+          <Member Name="Pallet_Weight" Datatype="Int" />
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+  <Section Name="Static">
+    <Member Name="VTD_CurrentOrder" Datatype="UDInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Pallet_InOut_CurrentOrder" Datatype="UDInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Shuttle_InOut_CurrentOrder" Datatype="UDInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="VTDDoneRTrig" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Pallet_InOut_RTrig" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Shuttle_InOut_RTrig" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="PalletRefused_RTrig" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="ErrorRTrig" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="CancelRTrig" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="PauseRTrig" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="ResumeRTrig" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Clear_Store" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Clear_Retrieve" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Canceling" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="VTD_WatchdogTimer" Datatype="TON_TIME" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Pallet_InOut_WatchdogTimer" Datatype="TON_TIME" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Shuttle_InOut_WatchdogTimer" Datatype="TON_TIME" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="VTD_WatchdogStart" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Pallet_InOut_WatchdogStart" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Shuttle_InOut_WatchdogStart" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="F_AutoMode" Datatype="F_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <Name>Order_Table_FB_DB_4</Name>
+      <Namespace />
+      <Number>327</Number>
+      <ProgrammingLanguage>DB</ProgrammingLanguage>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.InstanceDB>
+</Document>

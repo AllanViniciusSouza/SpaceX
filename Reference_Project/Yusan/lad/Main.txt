@@ -1,0 +1,364 @@
+// OB "Main" 1  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   Initial_Call : Bool;   // Initial call of this OB
+   Remanence : Bool;   // =True, if remanent data are available
+END_VAR
+
+VAR_TEMP
+   Fault_Handshake_Infeed_1 : Bool;
+   Fault_Handshake_Outfeed_1 : Bool;
+   Fault_Handshake_Infeed_2 : Bool;
+   Fault_Handshake_Infeed_3 : Bool;
+   Fault_Handshake_Outfeed_2 : Bool;
+   Fault_Handshake_Outfeed_3 : Bool;
+END_VAR
+
+--- Network 1  Title: START PLC
+   parts: Contact, RCoil, SCoil, TON
+   operands: FirstScan, Initialization
+--- Network 2  Title: INPUTS
+   CALL FC "INPUTS"
+--- Network 3  Title: MQTT
+   CALL FB "MQTT_Handler_FB"  instance "MQTT_Handler_FB_DB"
+   CALL FB "LMQTT_Client"  instance "LMQTT_Client_fb"
+   operands: MQTT_Enable, LMQTT_DB, LMQTT_DB.enable, LMQTT_DB.publish, LMQTT_DB.subscribe, LMQTT_DB.unsubscribe, LMQTT_DB.qos, LMQTT_DB.retain, LMQTT_DB.publishMsgLen, LMQTT_DB.willMsgLen, LMQTT_DB.connParam, LMQTT_DB.clientIdentifier, LMQTT_DB.username, LMQTT_DB.password, LMQTT_DB.willtopic, LMQTT_DB.willMsgPayload, LMQTT_DB.mqttTopic, LMQTT_DB.publishMsgPayload, LMQTT_DB.receivedTopic, LMQTT_DB.receivedMsgPayload, LMQTT_DB.valid, LMQTT_DB.done, LMQTT_DB.busy, LMQTT_DB.error, LMQTT_DB.status, LMQTT_DB.diagnostics, LMQTT_DB.receivedMsgStatus, LMQTT_DB.receivedMsgDataLen
+--- Network 4  Title: Absolute Encoders
+   CALL FB "FB_SICK_AFx60_PN"  instance "SICK_AFx60_DB_1"
+   CALL FB "FB_SICK_AFx60_PN"  instance "SICK_AFx60_DB_2"
+   CALL FB "FB_SICK_AFx60_PN"  instance "SICK_AFx60_DB_3"
+   CALL FB "FB_SICK_AFx60_PN"  instance "SICK_AFx60_DB_4"
+   CALL FB "FB_SICK_AFx60_PN"  instance "SICK_AFx60_DB_5"
+   operands: SICK_AFx60_Data_DB.Absolute Encoder 1, SICK_AFx60_Data_DB.Absolute Encoder 2, SICK_AFx60_Data_DB.Absolute Encoder 3, SICK_AFx60_Data_DB.Absolute Encoder 4, SICK_AFx60_Data_DB.Absolute Encoder 5
+--- Network 5  Title: Errors
+   CALL FC "Errors_Warings"
+   parts: Contact
+   operands: Initialization
+--- Network 6  Title: AUTO TEST 1
+   CALL FB "Auto_Test"  instance "Auto_Test_1_DB"
+   parts: Contact, RCoil
+   operands: System_DB_1.Auto_Man, System_DB_1.Error, System_DB_1.OrderTable, System_DB_1.StepTable, System_DB_1.OrderSent, Auto_Test_DB.System.Total_Duration, Auto_Test_DB.System.Time_Running, Auto_Test_DB.System.Start_Time, Auto_Test_DB.System.Stop_Time, Auto_Test_DB.System.Duration, Auto_Test_1_DB.Running, Auto_Test_1_DB.Start
+--- Network 7  Title: AUTO TEST 2
+   CALL FB "Auto_Test"  instance "Auto_Test_2_DB"
+   parts: Contact, RCoil
+   operands: System_DB_2.Auto_Man, System_DB_2.Error, System_DB_2.OrderTable, System_DB_2.StepTable, System_DB_2.OrderSent, Auto_Test_DB.System.Total_Duration, Auto_Test_DB.System.Time_Running, Auto_Test_DB.System.Start_Time, Auto_Test_DB.System.Stop_Time, Auto_Test_DB.System.Duration, Auto_Test_2_DB.Running, Auto_Test_2_DB.Start
+--- Network 8  Title: AUTO TEST 3
+   CALL FB "Auto_Test"  instance "Auto_Test_3_DB"
+   parts: Contact, RCoil
+   operands: System_DB_3.Auto_Man, System_DB_3.Error, System_DB_3.OrderTable, System_DB_3.StepTable, System_DB_3.OrderSent, Auto_Test_DB.System.Total_Duration, Auto_Test_DB.System.Time_Running, Auto_Test_DB.System.Start_Time, Auto_Test_DB.System.Stop_Time, Auto_Test_DB.System.Duration, Auto_Test_3_DB.Running, Auto_Test_3_DB.Start
+--- Network 9  Title: AUTO TEST 4
+   CALL FB "Auto_Test_1"  instance "Auto_Test_4_DB"
+   parts: Contact, RCoil
+   operands: System_DB_4.Auto_Man, System_DB_4.Error, System_DB_4.OrderTable, System_DB_4.StepTable, System_DB_4.OrderSent, Auto_Test_DB.System.Total_Duration, Auto_Test_DB.System.Time_Running, Auto_Test_DB.System.Start_Time, Auto_Test_DB.System.Stop_Time, Auto_Test_DB.System.Duration, Auto_Test_4_DB.Running, Auto_Test_4_DB.Start
+--- Network 10  Title: AUTO TEST 5
+   CALL FB "Auto_Test_1"  instance "Auto_Test_5_DB"
+   parts: Contact, RCoil
+   operands: System_DB_5.Auto_Man, System_DB_5.Error, System_DB_5.OrderTable, System_DB_5.StepTable, System_DB_5.OrderSent, Auto_Test_DB.System.Total_Duration, Auto_Test_DB.System.Time_Running, Auto_Test_DB.System.Start_Time, Auto_Test_DB.System.Stop_Time, Auto_Test_DB.System.Duration, Auto_Test_5_DB.Running, Auto_Test_5_DB.Start
+--- Network 11  Title: Conveyors Transfer
+   CALL FC "Conveyors_Transfer"
+--- Network 12  Title: Bypasses
+   CALL FC "Bypass_FC"
+--- Network 13  Title: LOCAL MODE Hmis (Keys)
+   CALL FC "Local_Mode_FC"
+   CALL FC "Local_Mode_FC"
+   operands: HMI_Box_Connected_1, HMI_DB.Rem_Loc_Keys, HMI_1_Local_Mode, HMI_Box_Connected_2, HMI_2_Local_Mode
+--- Network 14  Title: VTD / Extractor Conveyor 1
+   CALL FB "VTD_FB"  instance "VTD_FB_DB_1"
+   CALL FB "EConveyor_FB"  instance "ECnv_FB_DB_1"
+   operands: Remote_Panel_DB_1.Safety_OK, Remote_Panel_DB_1.Safety_Ok_Conf, Control_DB.ECnv_Sys.Inputs, Settings_DB.VTD_Sys, Bypass.Remote_Panel_1, Control_DB.VTD_Sys, SinaSpeed_VTD_DB_1, LE_Bypass(1), Settings_DB.ECnv_Sys, Control_DB.VTD_Sys.Current_Level, CNV_HMI.In_Out, CNV_HMI.CNV2_Selected, Control_DB.ECnv_Sys, SinaSpeed_CVTD1_DB
+--- Network 15  Title: VTD / Extractor Conveyor 2
+   CALL FB "VTD_FB"  instance "VTD_FB_DB_2"
+   CALL FB "EConveyor_FB"  instance "ECnv_FB_DB_2"
+   operands: Remote_Panel_DB_2.Safety_OK, Remote_Panel_DB_2.Safety_Ok_Conf, Control_DB.ECnv_Sys.Inputs, Settings_DB.VTD_Sys, Bypass.Remote_Panel_2, Control_DB.VTD_Sys, SinaSpeed_VTD_DB_2, LE_Bypass(2), Settings_DB.ECnv_Sys, Control_DB.VTD_Sys.Current_Level, CNV_HMI.In_Out, CNV_HMI.CNV2_Selected, Control_DB.ECnv_Sys, SinaSpeed_CVTD2_DB
+--- Network 16  Title: VTD / Extractor Conveyor 3
+   CALL FB "VTD_FB"  instance "VTD_FB_DB_3"
+   CALL FB "EConveyor_FB"  instance "ECnv_FB_DB_3"
+   operands: Remote_Panel_DB_3.Safety_OK, Remote_Panel_DB_3.Safety_Ok_Conf, Control_DB.ECnv_Sys.Inputs, Settings_DB.VTD_Sys, Bypass.Remote_Panel_3, Control_DB.VTD_Sys, SinaSpeed_VTD_DB_3, LE_Bypass(3), Settings_DB.ECnv_Sys, Control_DB.VTD_Sys.Current_Level, CNV_HMI.In_Out, CNV_HMI.CNV2_Selected, Control_DB.ECnv_Sys, SinaSpeed_CVTD3_DB
+--- Network 17  Title: VTD / Extractor Conveyor 4
+   CALL FB "VTD_FB"  instance "VTD_FB_DB_4"
+   CALL FB "EConveyor_FB"  instance "ECnv_FB_DB_4"
+   operands: Remote_Panel_DB_4.Safety_OK, Remote_Panel_DB_4.Safety_Ok_Conf, Control_DB.ECnv_Sys.Inputs, Settings_DB.VTD_Sys, Bypass.Remote_Panel_4, Control_DB.VTD_Sys, SinaSpeed_VTD_DB_4, LE_Bypass(4), Settings_DB.ECnv_Sys, Control_DB.VTD_Sys.Current_Level, CNV_HMI.In_Out, CNV_HMI.CNV2_Selected, Control_DB.ECnv_Sys, SinaSpeed_CVTD4_DB
+--- Network 18  Title: VTD / Extractor Conveyor 5
+   CALL FB "VTD_FB"  instance "VTD_FB_DB_5"
+   CALL FB "EConveyor_FB"  instance "ECnv_FB_DB_5"
+   operands: Remote_Panel_DB_5.Safety_OK, Remote_Panel_DB_5.Safety_Ok_Conf, Control_DB.ECnv_Sys.Inputs, Settings_DB.VTD_Sys, Bypass.Remote_Panel_5, Control_DB.VTD_Sys, SinaSpeed_VTD_DB_5, LE_Bypass(5), Settings_DB.ECnv_Sys, Control_DB.VTD_Sys.Current_Level, CNV_HMI.In_Out, CNV_HMI.CNV2_Selected, Control_DB.ECnv_Sys, SinaSpeed_CVTD5_DB
+--- Network 19  Title: SYSTEM 1
+--- Network 20  Title: Level Conveyors Tower 1 - SYSTEM 1
+   CALL FB "Buffer_Conveyor_FB"  instance "C1101_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1102_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1103_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1104_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1105_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1106_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1107_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1108_FB_DB"
+   operands: Settings_DB.LCnv_Sys.Cnv_Level.Cnv1, Control_DB.VTD_Sys.Current_Level, Remote_Panel_DB_1.Safety_OK, Remote_Panel_DB_1.Safety_Ok_Conf, CNV_HMI.In_Out, DB_Receive_Data_From_Logistex.J1310_Conv_Infeed.LGXTransferingInProgress, Control_DB.LCnv_Sys.Cnv_Level.Cnv1, SinaSpeed_C1101_DB, SinaSpeed_C1102_DB, SinaSpeed_C1103_DB, SinaSpeed_C1104_DB, SinaSpeed_C1105_DB, SinaSpeed_C1106_DB, SinaSpeed_C1107_DB, SinaSpeed_C1108_DB
+--- Network 21  Title: Level Conveyors Tower 2 - SYSTEM 1
+   CALL FB "Buffer_Conveyor_FB"  instance "C1201_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1202_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1203_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1204_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1205_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1206_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1207_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C1208_FB_DB"
+   operands: Settings_DB.LCnv_Sys.Cnv_Level.Cnv2, Control_DB.VTD_Sys.Current_Level, Remote_Panel_DB_1.Safety_OK, Remote_Panel_DB_1.Safety_Ok_Conf, CNV_HMI.In_Out, LGX_ReadyToReceive_1, Control_DB.LCnv_Sys.Cnv_Level.Cnv2, SinaSpeed_C1201_DB, SinaSpeed_C1202_DB, SinaSpeed_C1203_DB, SinaSpeed_C1204_DB, SinaSpeed_C1205_DB, SinaSpeed_C1206_DB, SinaSpeed_C1207_DB, SinaSpeed_C1208_DB
+--- Network 22  Title: SAFETY STOPPERS Tower 1 - SYSTEM 1
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1101_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1102_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1103_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1104_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1105_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1106_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1107_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1108_FB_DB"
+   operands: Control_DB.VTD_Sys.Mode, Settings_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_stop_Timeout, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Instruction.Reset, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_Stop_Cnrl
+--- Network 23  Title: SAFETY STOPPERS Tower 2 - SYSTEM 1
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1201_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1202_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1203_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1204_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1205_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1206_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1207_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C1208_FB_DB"
+   operands: Control_DB.VTD_Sys.Mode, Settings_DB.LCnv_Sys.Cnv_Level.Cnv2.Safety_stop_Timeout, Control_DB.LCnv_Sys.Cnv_Level.Cnv2.Instruction.Reset, Control_DB.LCnv_Sys.Cnv_Level.Cnv2.Safety_Stop_Cnrl
+--- Network 24  Title: SYSTEM 2
+--- Network 25  Title: Level Conveyors Tower 1 - SYSTEM 2
+   CALL FB "Buffer_Conveyor_FB"  instance "C2101_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2102_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2103_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2104_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2105_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2106_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2107_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2108_FB_DB"
+   operands: Settings_DB.LCnv_Sys.Cnv_Level.Cnv1, Control_DB.VTD_Sys.Current_Level, Remote_Panel_DB_2.Safety_OK, Remote_Panel_DB_2.Safety_Ok_Conf, CNV_HMI.In_Out, DB_Receive_Data_From_Logistex.J1320_Conv_Infeed.LGXTransferingInProgress, Control_DB.LCnv_Sys.Cnv_Level.Cnv1, SinaSpeed_C2101_DB, SinaSpeed_C2102_DB, SinaSpeed_C2103_DB, SinaSpeed_C2104_DB, SinaSpeed_C2105_DB, SinaSpeed_C2106_DB, SinaSpeed_C2107_DB, SinaSpeed_C2108_DB
+--- Network 26  Title: Level Conveyors Tower 2 - SYSTEM 2
+   CALL FB "Buffer_Conveyor_FB"  instance "C2201_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2202_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2203_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2204_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2205_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2206_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2207_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C2208_FB_DB"
+   operands: Settings_DB.LCnv_Sys.Cnv_Level.Cnv2, Control_DB.VTD_Sys.Current_Level, Remote_Panel_DB_2.Safety_OK, Remote_Panel_DB_2.Safety_Ok_Conf, CNV_HMI.In_Out, LGX_ReadyToReceive_2, Control_DB.LCnv_Sys.Cnv_Level.Cnv2, SinaSpeed_C2201_DB, SinaSpeed_C2202_DB, SinaSpeed_C2203_DB, SinaSpeed_C2204_DB, SinaSpeed_C2205_DB, SinaSpeed_C2206_DB, SinaSpeed_C2207_DB, SinaSpeed_C2208_DB
+--- Network 27  Title: SAFETY STOPPERS Tower 1 - SYSTEM 2
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2101_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2102_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2103_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2104_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2105_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2106_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2107_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2108_FB_DB"
+   operands: Control_DB.VTD_Sys.Mode, Settings_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_stop_Timeout, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Instruction.Reset, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_Stop_Cnrl
+--- Network 28  Title: SAFETY STOPPERS Tower 2 - SYSTEM 2
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2201_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2202_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2203_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2204_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2205_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2206_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2207_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C2208_FB_DB"
+   operands: Control_DB.VTD_Sys.Mode, Settings_DB.LCnv_Sys.Cnv_Level.Cnv2.Safety_stop_Timeout, Control_DB.LCnv_Sys.Cnv_Level.Cnv2.Instruction.Reset, Control_DB.LCnv_Sys.Cnv_Level.Cnv2.Safety_Stop_Cnrl
+--- Network 29  Title: SYSTEM 3
+--- Network 30  Title: Level Conveyors Tower 1 - SYSTEM 3
+   CALL FB "Buffer_Conveyor_FB"  instance "C3101_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3102_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3103_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3104_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3105_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3106_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3107_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3108_FB_DB"
+   operands: Settings_DB.LCnv_Sys.Cnv_Level.Cnv1, Control_DB.VTD_Sys.Current_Level, Remote_Panel_DB_3.Safety_OK, Remote_Panel_DB_3.Safety_Ok_Conf, CNV_HMI.In_Out, DB_Receive_Data_From_Logistex.J1330_Conv_Infeed.LGXTransferingInProgress, Control_DB.LCnv_Sys.Cnv_Level.Cnv1, SinaSpeed_C3101_DB, SinaSpeed_C3102_DB, SinaSpeed_C3103_DB, SinaSpeed_C3104_DB, SinaSpeed_C3105_DB, SinaSpeed_C3106_DB, SinaSpeed_C3107_DB, SinaSpeed_C3108_DB
+--- Network 31  Title: Level Conveyors Tower 2 - SYSTEM 3
+   CALL FB "Buffer_Conveyor_FB"  instance "C3201_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3202_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3203_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3204_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3205_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3206_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3207_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C3208_FB_DB"
+   operands: Settings_DB.LCnv_Sys.Cnv_Level.Cnv2, Control_DB.VTD_Sys.Current_Level, Remote_Panel_DB_3.Safety_OK, Remote_Panel_DB_3.Safety_Ok_Conf, CNV_HMI.In_Out, LGX_ReadyToReceive_3, Control_DB.LCnv_Sys.Cnv_Level.Cnv2, SinaSpeed_C3201_DB, SinaSpeed_C3202_DB, SinaSpeed_C3203_DB, SinaSpeed_C3204_DB, SinaSpeed_C3205_DB, SinaSpeed_C3206_DB, SinaSpeed_C3207_DB, SinaSpeed_C3208_DB
+--- Network 32  Title: SAFETY STOPPERS Tower 1 - SYSTEM 3
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3101_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3102_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3103_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3104_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3105_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3106_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3107_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3108_FB_DB"
+   operands: Control_DB.VTD_Sys.Mode, Settings_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_stop_Timeout, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Instruction.Reset, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_Stop_Cnrl
+--- Network 33  Title: SAFETY STOPPERS Tower 2 - SYSTEM 3
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3201_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3202_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3203_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3204_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3205_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3206_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3207_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C3208_FB_DB"
+   operands: Control_DB.VTD_Sys.Mode, Settings_DB.LCnv_Sys.Cnv_Level.Cnv2.Safety_stop_Timeout, Control_DB.LCnv_Sys.Cnv_Level.Cnv2.Instruction.Reset, Control_DB.LCnv_Sys.Cnv_Level.Cnv2.Safety_Stop_Cnrl
+--- Network 34  Title: SYSTEM 4
+--- Network 35  Title: Level Conveyors Tower 1 - SYSTEM 4
+   CALL FB "Buffer_Conveyor_FB"  instance "C4101_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C4102_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C4103_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C4104_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C4105_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C4106_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C4107_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C4108_FB_DB"
+   operands: Settings_DB.LCnv_Sys.Cnv_Level.Cnv1, Control_DB.VTD_Sys.Current_Level, Remote_Panel_DB_4.Safety_OK, Remote_Panel_DB_4.Safety_Ok_Conf, CNV_HMI.In_Out, Control_DB.LCnv_Sys.Cnv_Level.Cnv1, SinaSpeed_C4101_DB, SinaSpeed_C4102_DB, SinaSpeed_C4103_DB, SinaSpeed_C4104_DB, SinaSpeed_C4105_DB, SinaSpeed_C4106_DB, SinaSpeed_C4107_DB, SinaSpeed_C4108_DB
+--- Network 36  Title: SAFETY STOPPERS Tower 1 - SYSTEM 4
+   CALL FB "Safety_Stops_FB"  instance "Sf_C4101_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C4102_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C4103_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C4104_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C4105_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C4106_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C4107_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C4108_FB_DB"
+   operands: Control_DB.VTD_Sys.Mode, Settings_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_stop_Timeout, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Instruction.Reset, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_Stop_Cnrl
+--- Network 37  Title: SYSTEM 5
+--- Network 38  Title: Level Conveyors Tower 1 - SYSTEM 5
+   CALL FB "Buffer_Conveyor_FB"  instance "C5101_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C5102_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C5103_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C5104_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C5105_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C5106_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C5107_FB_DB"
+   CALL FB "Buffer_Conveyor_FB"  instance "C5108_FB_DB"
+   operands: Settings_DB.LCnv_Sys.Cnv_Level.Cnv1, Control_DB.VTD_Sys.Current_Level, Remote_Panel_DB_5.Safety_OK, Remote_Panel_DB_5.Safety_Ok_Conf, CNV_HMI.In_Out, Control_DB.LCnv_Sys.Cnv_Level.Cnv1, SinaSpeed_C5101_DB, SinaSpeed_C5102_DB, SinaSpeed_C5103_DB, SinaSpeed_C5104_DB, SinaSpeed_C5105_DB, SinaSpeed_C5106_DB, SinaSpeed_C5107_DB, SinaSpeed_C5108_DB
+--- Network 39  Title: SAFETY STOPPERS Tower 1 - SYSTEM 5
+   CALL FB "Safety_Stops_FB"  instance "Sf_C5101_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C5102_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C5103_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C5104_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C5105_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C5106_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C5107_FB_DB"
+   CALL FB "Safety_Stops_FB"  instance "Sf_C5108_FB_DB"
+   operands: Control_DB.VTD_Sys.Mode, Settings_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_stop_Timeout, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Instruction.Reset, Control_DB.LCnv_Sys.Cnv_Level.Cnv1.Safety_Stop_Cnrl
+--- Network 40  Title: Light bars
+   CALL FB "Light_Bars"  instance "Light_Bars_DB_1"
+   CALL FB "Light_Bars"  instance "Light_Bars_DB_2"
+   CALL FB "Light_Bars"  instance "Light_Bars_DB_3"
+   CALL FB "Light_Bars"  instance "Light_Bars_DB_4"
+   CALL FB "Light_Bars"  instance "Light_Bars_DB_5"
+   operands: Control_DB.VTD_Sys.Mode, Control_DB.VTD_Sys.Motor.Speed_Actual, Control_DB.VTD_Sys.Error, Light_Rear_1_Animation(1), Light_Rear_1_Color1(1), Light_Rear_1_Speed(1), Light_Front_1_Animation(1), Light_Front_1_Color1(1), Light_Front_1_Speed(1), Light_Rear_1_Animation(2), Light_Rear_1_Color1(2), Light_Rear_1_Speed(2), Light_Front_1_Animation(2), Light_Front_1_Color1(2), Light_Front_1_Speed(2), Light_Rear_1_Animation(3), Light_Rear_1_Color1(3), Light_Rear_1_Speed(3), Light_Front_1_Animation(3), Light_Front_1_Color1(3), Light_Front_1_Speed(3), Light_Rear_1_Animation(4), Light_Rear_1_Color1(4), Light_Rear_1_Speed(4), Light_Front_1_Animation(4), Light_Front_1_Color1(4), Light_Front_1_Speed(4), Light_Rear_1_Animation(5), Light_Rear_1_Color1(5), Light_Rear_1_Speed(5), Light_Front_1_Animation(5), Light_Front_1_Color1(5), Light_Front_1_Speed(5)
+--- Network 41  Title: Barcode - System 1
+   CALL FB "SICK_Lector_CLV6xx_PNDP"  instance "SICK_Lector_FB_DB_1"
+   CALL FB "SICK_Lector_Control_FB"  instance "SICK_Lector_Control_DB_1"
+   operands: SICK_Lector_DB_1.HWInputLength, SICK_Lector_DB_1.HWOutputLength, SICK_Lector_DB_1.CANId, SICK_Lector_DB_1.TOut, SICK_Lector_DB_1.Req, SICK_Lector_DB_1.TriggerOn, SICK_Lector_DB_1.TriggerOff, SICK_Lector_DB_1.Matchcode, SICK_Lector_DB_1.SavePermanent, SICK_Lector_DB_1.ComTest, SICK_Lector_DB_1.FreeCommand, SICK_Lector_DB_1.Data, SICK_Lector_DB_1.RdDone, SICK_Lector_DB_1.ReqDone, SICK_Lector_DB_1.ReqBusy, SICK_Lector_DB_1.Error, SICK_Lector_DB_1.Errorcode, SICK_Lector_DB_1.Data.ReadingResult.arrResult, SICK_Lector_DB_1.Data.ReadingResult.iCounter, SICK_Lector_DB_1.Data.ReadingResult.iLength, BCD_Test_Comm_HMI(1), BCD_Enable_Trigger_HMI(1), BCD_Disable_Trigger_HMI(1), Auto_Start_Lector(1), Auto_Stop_Lector(1), SICK_Lector_DB_1.Barcode_Result, SICK_Lector_DB_1.Test_OK
+--- Network 42  Title: Barcode - System 2
+   CALL FB "SICK_Lector_CLV6xx_PNDP"  instance "SICK_Lector_FB_DB_2"
+   CALL FB "SICK_Lector_Control_FB"  instance "SICK_Lector_Control_DB_2"
+   operands: SICK_Lector_DB_2.HWInputLength, SICK_Lector_DB_2.HWOutputLength, SICK_Lector_DB_2.CANId, SICK_Lector_DB_2.TOut, SICK_Lector_DB_2.Req, SICK_Lector_DB_2.TriggerOn, SICK_Lector_DB_2.TriggerOff, SICK_Lector_DB_2.Matchcode, SICK_Lector_DB_2.SavePermanent, SICK_Lector_DB_2.ComTest, SICK_Lector_DB_2.FreeCommand, SICK_Lector_DB_2.Data, SICK_Lector_DB_2.RdDone, SICK_Lector_DB_2.ReqDone, SICK_Lector_DB_2.ReqBusy, SICK_Lector_DB_2.Error, SICK_Lector_DB_2.Errorcode, SICK_Lector_DB_2.Data.ReadingResult.arrResult, SICK_Lector_DB_2.Data.ReadingResult.iCounter, SICK_Lector_DB_2.Data.ReadingResult.iLength, BCD_Test_Comm_HMI(2), BCD_Enable_Trigger_HMI(2), BCD_Disable_Trigger_HMI(2), Auto_Start_Lector(2), Auto_Stop_Lector(2), SICK_Lector_DB_2.Barcode_Result, SICK_Lector_DB_2.Test_OK
+--- Network 43  Title: Barcode - System 3
+   CALL FB "SICK_Lector_CLV6xx_PNDP"  instance "SICK_Lector_FB_DB_3"
+   CALL FB "SICK_Lector_Control_FB"  instance "SICK_Lector_Control_DB_3"
+   operands: SICK_Lector_DB_3.HWInputLength, SICK_Lector_DB_3.HWOutputLength, SICK_Lector_DB_3.CANId, SICK_Lector_DB_3.TOut, SICK_Lector_DB_3.Req, SICK_Lector_DB_3.TriggerOn, SICK_Lector_DB_3.TriggerOff, SICK_Lector_DB_3.Matchcode, SICK_Lector_DB_3.SavePermanent, SICK_Lector_DB_3.ComTest, SICK_Lector_DB_3.FreeCommand, SICK_Lector_DB_3.Data, SICK_Lector_DB_3.RdDone, SICK_Lector_DB_3.ReqDone, SICK_Lector_DB_3.ReqBusy, SICK_Lector_DB_3.Error, SICK_Lector_DB_3.Errorcode, SICK_Lector_DB_3.Data.ReadingResult.arrResult, SICK_Lector_DB_3.Data.ReadingResult.iCounter, SICK_Lector_DB_3.Data.ReadingResult.iLength, BCD_Test_Comm_HMI(3), BCD_Enable_Trigger_HMI(3), BCD_Disable_Trigger_HMI(3), Auto_Start_Lector(3), Auto_Stop_Lector(3), SICK_Lector_DB_3.Barcode_Result, SICK_Lector_DB_3.Test_OK
+--- Network 44  Title: Barcode - System 4
+   CALL FB "SICK_Lector_CLV6xx_PNDP"  instance "SICK_Lector_FB_DB_4"
+   CALL FB "SICK_Lector_Control_FB"  instance "SICK_Lector_Control_DB_4"
+   operands: SICK_Lector_DB_4.HWInputLength, SICK_Lector_DB_4.HWOutputLength, SICK_Lector_DB_4.CANId, SICK_Lector_DB_4.TOut, SICK_Lector_DB_4.Req, SICK_Lector_DB_4.TriggerOn, SICK_Lector_DB_4.TriggerOff, SICK_Lector_DB_4.Matchcode, SICK_Lector_DB_4.SavePermanent, SICK_Lector_DB_4.ComTest, SICK_Lector_DB_4.FreeCommand, SICK_Lector_DB_4.Data, SICK_Lector_DB_4.RdDone, SICK_Lector_DB_4.ReqDone, SICK_Lector_DB_4.ReqBusy, SICK_Lector_DB_4.Error, SICK_Lector_DB_4.Errorcode, SICK_Lector_DB_4.Data.ReadingResult.arrResult, SICK_Lector_DB_4.Data.ReadingResult.iCounter, SICK_Lector_DB_4.Data.ReadingResult.iLength, BCD_Test_Comm_HMI(4), BCD_Enable_Trigger_HMI(4), BCD_Disable_Trigger_HMI(4), Auto_Start_Lector(4), Auto_Stop_Lector(4), SICK_Lector_DB_4.Barcode_Result, SICK_Lector_DB_4.Test_OK
+--- Network 45  Title: Barcode - System 5
+   CALL FB "SICK_Lector_CLV6xx_PNDP"  instance "SICK_Lector_FB_DB_5"
+   CALL FB "SICK_Lector_Control_FB"  instance "SICK_Lector_Control_DB_5"
+   operands: SICK_Lector_DB_5.HWInputLength, SICK_Lector_DB_5.HWOutputLength, SICK_Lector_DB_5.CANId, SICK_Lector_DB_5.TOut, SICK_Lector_DB_5.Req, SICK_Lector_DB_5.TriggerOn, SICK_Lector_DB_5.TriggerOff, SICK_Lector_DB_5.Matchcode, SICK_Lector_DB_5.SavePermanent, SICK_Lector_DB_5.ComTest, SICK_Lector_DB_5.FreeCommand, SICK_Lector_DB_5.Data, SICK_Lector_DB_5.RdDone, SICK_Lector_DB_5.ReqDone, SICK_Lector_DB_5.ReqBusy, SICK_Lector_DB_5.Error, SICK_Lector_DB_5.Errorcode, SICK_Lector_DB_5.Data.ReadingResult.arrResult, SICK_Lector_DB_5.Data.ReadingResult.iCounter, SICK_Lector_DB_5.Data.ReadingResult.iLength, BCD_Test_Comm_HMI(5), BCD_Enable_Trigger_HMI(5), BCD_Disable_Trigger_HMI(5), Auto_Start_Lector(5), Auto_Stop_Lector(5), SICK_Lector_DB_5.Barcode_Result, SICK_Lector_DB_5.Test_OK
+--- Network 46  Title: Barcode Stations
+   CALL FB "Barcode_Station_FB"  instance "Barcode_FB_DB_1"
+   CALL FB "Barcode_Station_FB"  instance "Barcode_FB_DB_2"
+   CALL FB "Barcode_Station_FB"  instance "Barcode_FB_DB_3"
+   CALL FB "Barcode_Station_FB"  instance "Barcode_FB_DB_4"
+   CALL FB "Barcode_Station_FB"  instance "Barcode_FB_DB_5"
+   operands: SICK_Lector_DB_1.Barcode_Result, Control_DB.VTDBarcode_Station, Auto_Start_Lector(1), Auto_Stop_Lector(1), SICK_Lector_DB_2.Barcode_Result, Auto_Start_Lector(2), Auto_Stop_Lector(2), SICK_Lector_DB_3.Barcode_Result, Auto_Start_Lector(3), Auto_Stop_Lector(3), SICK_Lector_DB_4.Barcode_Result, Auto_Start_Lector(4), Auto_Stop_Lector(4), SICK_Lector_DB_5.Barcode_Result, Auto_Start_Lector(5), Auto_Stop_Lector(5)
+--- Network 47  Title: Stack Lights
+   CALL FB "Stack_Lights_FB"  instance "Stack_Lights_DB_0"
+   CALL FB "Stack_Lights_FB"  instance "Stack_Lights_DB_1"
+   CALL FB "Stack_Lights_FB"  instance "Stack_Lights_DB_2"
+   CALL FB "Stack_Lights_FB"  instance "Stack_Lights_DB_3"
+   CALL FB "Stack_Lights_FB"  instance "Stack_Lights_DB_4"
+   CALL FB "Stack_Lights_FB"  instance "Stack_Lights_DB_5"
+   parts: Contact, O
+   operands: All_In_Automatic_1, All_In_Automatic_2, All_In_Automatic_3, All_In_Automatic_4, All_In_Automatic_5, System_DB_1.Error, System_DB_2.Error, System_DB_3.Error, System_DB_4.Error, System_DB_5.Error
+--- Network 48  Title: OPC CONTROL
+   CALL FB "OPC_Control_FB"  instance "OPC_Control_FB_DB_1"
+   CALL FB "OPC_Control_FB"  instance "OPC_Control_FB_DB_2"
+   CALL FB "OPC_Control_FB"  instance "OPC_Control_FB_DB_3"
+   CALL FB "OPC_Control_FB"  instance "OPC_Control_FB_DB_4"
+   CALL FB "OPC_Control_FB"  instance "OPC_Control_FB_DB_5"
+   operands: All_In_Automatic_1, Control_DB.VTD_Sys.Error, OPC_Enable, Clear_OT(1), All_In_Automatic_2, Clear_OT(2), All_In_Automatic_3, Clear_OT(3), All_In_Automatic_4, Clear_OT(4), All_In_Automatic_5, Clear_OT(5)
+--- Network 49  Title: Shuttle TCPs
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_1"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_2"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_3"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_4"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_5"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_6"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_7"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_8"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_9"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_10"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_11"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_12"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_13"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_14"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_15"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_16"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_17"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_18"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_19"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_20"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_21"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_22"
+   CALL FB "Shuttle_TCP_Comms"  instance "Shuttle_TCP_Comms_FB_DB_23"
+   operands: TCP_IP_Shuttle_DB_1.enable, L1_OK, TCP_IP_Shuttle_DB_1.tcpConfig, TCP_IP_Shuttle_DB_1.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_1, TCP_IP_Shuttle_DB_1.connected, TCP_IP_Shuttle_DB_1.busy, TCP_IP_Shuttle_DB_1.status, TCP_IP_Shuttle_DB_1.error, TCP_IP_Shuttle_DB_2.enable, TCP_IP_Shuttle_DB_2.tcpConfig, TCP_IP_Shuttle_DB_2.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_2, TCP_IP_Shuttle_DB_2.connected, TCP_IP_Shuttle_DB_2.busy, TCP_IP_Shuttle_DB_2.status, TCP_IP_Shuttle_DB_2.error, TCP_IP_Shuttle_DB_3.enable, L2_OK, TCP_IP_Shuttle_DB_3.tcpConfig, TCP_IP_Shuttle_DB_3.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_3, TCP_IP_Shuttle_DB_3.connected, TCP_IP_Shuttle_DB_3.busy, TCP_IP_Shuttle_DB_3.status, TCP_IP_Shuttle_DB_3.error, TCP_IP_Shuttle_DB_4.enable, TCP_IP_Shuttle_DB_4.tcpConfig, TCP_IP_Shuttle_DB_4.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_4, TCP_IP_Shuttle_DB_4.connected, TCP_IP_Shuttle_DB_4.busy, TCP_IP_Shuttle_DB_4.status, TCP_IP_Shuttle_DB_4.error, TCP_IP_Shuttle_DB_5.enable, TCP_IP_Shuttle_DB_5.tcpConfig, TCP_IP_Shuttle_DB_5.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_5, TCP_IP_Shuttle_DB_5.connected, TCP_IP_Shuttle_DB_5.busy, TCP_IP_Shuttle_DB_5.status, TCP_IP_Shuttle_DB_5.error, TCP_IP_Shuttle_DB_6.enable, L3_OK, TCP_IP_Shuttle_DB_6.tcpConfig, TCP_IP_Shuttle_DB_6.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_6, TCP_IP_Shuttle_DB_6.connected, TCP_IP_Shuttle_DB_6.busy, TCP_IP_Shuttle_DB_6.status, TCP_IP_Shuttle_DB_6.error, TCP_IP_Shuttle_DB_7.enable, TCP_IP_Shuttle_DB_7.tcpConfig, TCP_IP_Shuttle_DB_7.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_7, TCP_IP_Shuttle_DB_7.connected, TCP_IP_Shuttle_DB_7.busy, TCP_IP_Shuttle_DB_7.status, TCP_IP_Shuttle_DB_7.error, TCP_IP_Shuttle_DB_8.enable, TCP_IP_Shuttle_DB_8.tcpConfig, TCP_IP_Shuttle_DB_8.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_8, TCP_IP_Shuttle_DB_8.connected, TCP_IP_Shuttle_DB_8.busy, TCP_IP_Shuttle_DB_8.status, TCP_IP_Shuttle_DB_8.error, TCP_IP_Shuttle_DB_9.enable, L4_OK, TCP_IP_Shuttle_DB_9.tcpConfig, TCP_IP_Shuttle_DB_9.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_9, TCP_IP_Shuttle_DB_9.connected, TCP_IP_Shuttle_DB_9.busy, TCP_IP_Shuttle_DB_9.status, TCP_IP_Shuttle_DB_9.error, TCP_IP_Shuttle_DB_10.enable, TCP_IP_Shuttle_DB_10.tcpConfig, TCP_IP_Shuttle_DB_10.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_10, TCP_IP_Shuttle_DB_10.connected, TCP_IP_Shuttle_DB_10.busy, TCP_IP_Shuttle_DB_10.status, TCP_IP_Shuttle_DB_10.error, TCP_IP_Shuttle_DB_11.enable, TCP_IP_Shuttle_DB_11.tcpConfig, TCP_IP_Shuttle_DB_11.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_11, TCP_IP_Shuttle_DB_11.connected, TCP_IP_Shuttle_DB_11.busy, TCP_IP_Shuttle_DB_11.status, TCP_IP_Shuttle_DB_11.error, TCP_IP_Shuttle_DB_12.enable, L5_OK, TCP_IP_Shuttle_DB_12.tcpConfig, TCP_IP_Shuttle_DB_12.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_12, TCP_IP_Shuttle_DB_12.connected, TCP_IP_Shuttle_DB_12.busy, TCP_IP_Shuttle_DB_12.status, TCP_IP_Shuttle_DB_12.error, TCP_IP_Shuttle_DB_13.enable, TCP_IP_Shuttle_DB_13.tcpConfig, TCP_IP_Shuttle_DB_13.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_13, TCP_IP_Shuttle_DB_13.connected, TCP_IP_Shuttle_DB_13.busy, TCP_IP_Shuttle_DB_13.status, TCP_IP_Shuttle_DB_13.error, TCP_IP_Shuttle_DB_14.enable, TCP_IP_Shuttle_DB_14.tcpConfig, TCP_IP_Shuttle_DB_14.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_14, TCP_IP_Shuttle_DB_14.connected, TCP_IP_Shuttle_DB_14.busy, TCP_IP_Shuttle_DB_14.status, TCP_IP_Shuttle_DB_14.error, TCP_IP_Shuttle_DB_15.enable, L6_OK, TCP_IP_Shuttle_DB_15.tcpConfig, TCP_IP_Shuttle_DB_15.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_15, TCP_IP_Shuttle_DB_15.connected, TCP_IP_Shuttle_DB_15.busy, TCP_IP_Shuttle_DB_15.status, TCP_IP_Shuttle_DB_15.error, TCP_IP_Shuttle_DB_16.enable, TCP_IP_Shuttle_DB_16.tcpConfig, TCP_IP_Shuttle_DB_16.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_16, TCP_IP_Shuttle_DB_16.connected, TCP_IP_Shuttle_DB_16.busy, TCP_IP_Shuttle_DB_16.status, TCP_IP_Shuttle_DB_16.error, TCP_IP_Shuttle_DB_17.enable, TCP_IP_Shuttle_DB_17.tcpConfig, TCP_IP_Shuttle_DB_17.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_17, TCP_IP_Shuttle_DB_17.connected, TCP_IP_Shuttle_DB_17.busy, TCP_IP_Shuttle_DB_17.status, TCP_IP_Shuttle_DB_17.error, TCP_IP_Shuttle_DB_18.enable, L7_OK, TCP_IP_Shuttle_DB_18.tcpConfig, TCP_IP_Shuttle_DB_18.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_18, TCP_IP_Shuttle_DB_18.connected, TCP_IP_Shuttle_DB_18.busy, TCP_IP_Shuttle_DB_18.status, TCP_IP_Shuttle_DB_18.error, TCP_IP_Shuttle_DB_19.enable, TCP_IP_Shuttle_DB_19.tcpConfig, TCP_IP_Shuttle_DB_19.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_19, TCP_IP_Shuttle_DB_19.connected, TCP_IP_Shuttle_DB_19.busy, TCP_IP_Shuttle_DB_19.status, TCP_IP_Shuttle_DB_19.error, TCP_IP_Shuttle_DB_20.enable, TCP_IP_Shuttle_DB_20.tcpConfig, TCP_IP_Shuttle_DB_20.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_20, TCP_IP_Shuttle_DB_20.connected, TCP_IP_Shuttle_DB_20.busy, TCP_IP_Shuttle_DB_20.status, TCP_IP_Shuttle_DB_20.error, TCP_IP_Shuttle_DB_21.enable, L8_OK, TCP_IP_Shuttle_DB_21.tcpConfig, TCP_IP_Shuttle_DB_21.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_21, TCP_IP_Shuttle_DB_21.connected, TCP_IP_Shuttle_DB_21.busy, TCP_IP_Shuttle_DB_21.status, TCP_IP_Shuttle_DB_21.error, TCP_IP_Shuttle_DB_22.enable, TCP_IP_Shuttle_DB_22.tcpConfig, TCP_IP_Shuttle_DB_22.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_22, TCP_IP_Shuttle_DB_22.connected, TCP_IP_Shuttle_DB_22.busy, TCP_IP_Shuttle_DB_22.status, TCP_IP_Shuttle_DB_22.error, TCP_IP_Shuttle_DB_23.enable, TCP_IP_Shuttle_DB_23.tcpConfig, TCP_IP_Shuttle_DB_23.tcpDiagnostics, LCom_Comm_Shuttle_FB_DB_23, TCP_IP_Shuttle_DB_23.connected, TCP_IP_Shuttle_DB_23.busy, TCP_IP_Shuttle_DB_23.status, TCP_IP_Shuttle_DB_23.error
+--- Network 50  Title: GATE STATIONS SYSTEMS 1,2 (Gates 1 and 2)
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_1"
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_2"
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_3"
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_4"
+   parts: Contact
+   operands: System_DB_1.Running, Switches_1, F_Lock_FB_DB_1.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_1.ESTOP.Q, Guard Position_1, Lock Position_1, Reset_Locks, System_DB_1.Ready, Remote_Panel_DB_1.Safety_OK, System_DB_1.Auto_Man, Bypass.Remote_Panel_1.Lock_Secured_1, LGX_Secure_Access_1, Control_DB.Gate_Station, Lamps_1, Solenoid Enable_1, Lock Reset_1, Switches_2, F_Lock_FB_DB_2.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_2.ESTOP.Q, Guard Position_2, Lock Position_2, Bypass.Remote_Panel_1.Lock_Secured_2, Lamps_2, Solenoid Enable_2, Lock Reset_2, System_DB_2.Running, Switches_3, F_Lock_FB_DB_3.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_3.ESTOP.Q, Guard Position_3, Lock Position_3, System_DB_2.Ready, Remote_Panel_DB_2.Safety_OK, System_DB_2.Auto_Man, Bypass.Remote_Panel_2.Lock_Secured_1, LGX_Secure_Access_2, Lamps_3, Solenoid Enable_3, Lock Reset_3, Switches_4, F_Lock_FB_DB_4.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_4.ESTOP.Q, Guard Position_4, Lock Position_4, Bypass.Remote_Panel_2.Lock_Secured_2, Lamps_4, Solenoid Enable_4, Lock Reset_4
+--- Network 51  Title: GATE STATIONS SYSTEMS 3 (Gates 1 and 2)
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_5"
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_6"
+   parts: Contact
+   operands: System_DB_3.Running, Switches_5, F_Lock_FB_DB_5.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_5.ESTOP.Q, Guard Position_5, Lock Position_5, Reset_Locks, System_DB_3.Ready, Remote_Panel_DB_3.Safety_OK, System_DB_3.Auto_Man, Bypass.Remote_Panel_3.Lock_Secured_1, LGX_Secure_Access_3, Control_DB.Gate_Station, Lamps_5, Solenoid Enable_5, Lock Reset_5, Switches_6, F_Lock_FB_DB_6.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_6.ESTOP.Q, Guard Position_6, Lock Position_6, Bypass.Remote_Panel_3.Lock_Secured_2, Lamps_6, Solenoid Enable_6, Lock Reset_6
+--- Network 52  Title: GATE STATIONS SYSTEMS 4,5 (Gate 1)
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_9"
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_10"
+   parts: Contact
+   operands: System_DB_4.Running, Switches_9, F_Lock_FB_DB_9.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_9.ESTOP.Q, Guard Position_9, Lock Position_9, Reset_Locks, System_DB_4.Ready, Remote_Panel_DB_4.Safety_OK, System_DB_4.Auto_Man, Bypass.Remote_Panel_4.Lock_Secured_1, Control_DB.Gate_Station, Lamps_9, Solenoid Enable_9, Lock Reset_9, System_DB_5.Running, Switches_10, F_Lock_FB_DB_10.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_10.ESTOP.Q, Guard Position_10, Lock Position_10, System_DB_5.Ready, Remote_Panel_DB_5.Safety_OK, System_DB_5.Auto_Man, Bypass.Remote_Panel_5.Lock_Secured_1, Lamps_10, Solenoid Enable_10, Lock Reset_10
+--- Network 53  Title: Gate Stations Left and Right, Level 1 and Level 2
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_7"
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_8"
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_11"
+   CALL FB "GateAccess_Station_FB"  instance "GateAccess_Station_FB_DB_12"
+   operands: Switches_7, F_Lock_FB_DB_7.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_7.ESTOP.Q, Guard Position_7, Lock Position_7, Reset_Locks, Control_DB.Gate_Station, Lamps_7, Solenoid Enable_7, Lock Reset_7, Switches_8, F_Lock_FB_DB_8.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_8.ESTOP.Q, Guard Position_8, Lock Position_8, Lamps_8, Solenoid Enable_8, Lock Reset_8, Switches_11, F_Lock_FB_DB_11.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_11.ESTOP.Q, Guard Position_11, Lock Position_11, Lamps_11, Solenoid Enable_11, Lock Reset_11, Switches_12, F_Lock_FB_DB_12.GUARD_SWITCH.E_STOP, F_Lock_FB_DB_12.ESTOP.Q, Guard Position_12, Lock Position_12, Lamps_12, Solenoid Enable_12, Lock Reset_12
+--- Network 54  Title: Order Tables System
+   CALL FB "Order_Table_FB"  instance "Order_Table_FB_DB_1"
+   CALL FB "Order_Table_FB"  instance "Order_Table_FB_DB_2"
+   CALL FB "Order_Table_FB"  instance "Order_Table_FB_DB_3"
+   CALL FB "Order_Table_FB"  instance "Order_Table_FB_DB_4"
+   CALL FB "Order_Table_FB"  instance "Order_Table_FB_DB_5"
+   operands: AlwaysTRUE, All_In_Automatic_1, Time.CurrentLocalTime, Time.CurrentDTL, Watchdog_Settings, OPC_Control_FB_DB_1.State_VTD, OPC_Control_FB_DB_1.State_Shuttle, OPC_Control_FB_DB_1.State_CNV, Clear_OT(1), Control_DB.VTD_Sys, Control_DB.ECnv_Sys, Control_DB.LCnv_Sys.Cnv_Level.Cnv1, Control_DB.LCnv_Sys.Cnv_Level.Cnv2, System_DB_1, Control_DB.WCS_OPC_Control, All_In_Automatic_2, OPC_Control_FB_DB_2.State_VTD, OPC_Control_FB_DB_2.State_Shuttle, OPC_Control_FB_DB_2.State_CNV, Clear_OT(2), System_DB_2, All_In_Automatic_3, OPC_Control_FB_DB_3.State_VTD, OPC_Control_FB_DB_3.State_Shuttle, OPC_Control_FB_DB_3.State_CNV, Clear_OT(3), System_DB_3, All_In_Automatic_4, OPC_Control_FB_DB_4.State_VTD, OPC_Control_FB_DB_4.State_Shuttle, OPC_Control_FB_DB_4.State_CNV, Clear_OT(4), System_DB_4, All_In_Automatic_5, OPC_Control_FB_DB_5.State_VTD, OPC_Control_FB_DB_5.State_Shuttle, OPC_Control_FB_DB_5.State_CNV, Clear_OT(5), System_DB_5
+--- Network 55  Title: LOGISTEX
+   CALL FC "LGX_SM_FC"
+   operands: #Fault_Handshake_Infeed_1, #Fault_Handshake_Infeed_2, #Fault_Handshake_Infeed_3, #Fault_Handshake_Outfeed_1, #Fault_Handshake_Outfeed_2, #Fault_Handshake_Outfeed_3
+--- Network 56  Title: CLOCK AND HEARTBEATING *
+   CALL FC "FC_CLOCK"
+   CALL FB "FB_HeartBeat"  instance "FB_HeartBeat_DB"
+   operands: Time.CurrentDTL, Time.CurrentLocalTime, Time.PC_HeartBeat, Time.PLC_HeartBeat
+--- Network 57  Title: Outputs
+   CALL FC "OUTPUTS"

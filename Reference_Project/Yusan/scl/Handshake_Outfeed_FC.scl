@@ -1,0 +1,69 @@
+FUNCTION "Handshake_Outfeed_FC"   // FC 51, author 
+
+VAR_INPUT
+   Auto_Mode : Bool;
+   Ready_To_Send : Bool;
+   Conv_Occupied : Bool;
+   Transfer_In_Progress : Bool;
+   DB_LGX_To_SM_Outfeed_Ready_To_Receive : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Fault_Handshake : Bool;
+   DB_SM_To_LGX_Outfeed_Transfer_In_Progress : Bool;
+   DB_SM_To_LGX_Outfeed_Ocuppied : Bool;
+   DB_SM_To_LGX_Outfeed_Ready_To_Send : Bool;
+END_VAR
+
+VAR_TEMP
+   tCanSend : Bool;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+// ---------------------------------------------------------
+// STEP 1: Is SM ready to send?
+// Condition: pallet waiting at exit, SM in auto,
+//            no transfer in progress
+// ---------------------------------------------------------
+#tCanSend :=
+#Auto_Mode
+AND #Conv_Occupied
+AND #Ready_To_Send
+AND NOT #DB_SM_To_LGX_Outfeed_Transfer_In_Progress;
+
+IF #tCanSend
+    AND NOT #DB_SM_To_LGX_Outfeed_Ready_To_Send THEN
+    #DB_SM_To_LGX_Outfeed_Ready_To_Send := TRUE;
+END_IF;
+
+// ---------------------------------------------------------
+// STEP 2: LGX responded Ready_To_Receive → start transfer
+// ---------------------------------------------------------
+IF NOT #Conv_Occupied THEN
+    // #DB_SM_To_LGX_Outfeed_Transfer_In_Progress := TRUE;
+    #DB_SM_To_LGX_Outfeed_Ready_To_Send := FALSE;
+END_IF;
+
+// ---------------------------------------------------------
+// STEP 3: LGX confirmed pallet received
+// → SM resets Transfer_In_Progress
+// ---------------------------------------------------------
+// IF #DB_SM_To_LGX_Outfeed_Transfer_In_Progress
+//     AND #DB_LGX_To_SM_Outfeed_Ready_To_Receive THEN
+//     #DB_SM_To_LGX_Outfeed_Transfer_In_Progress := FALSE;
+// END_IF;
+
+#DB_SM_To_LGX_Outfeed_Transfer_In_Progress := #Transfer_In_Progress;
+#DB_SM_To_LGX_Outfeed_Ocuppied := #Conv_Occupied;
+// ---------------------------------------------------------
+// STEP 4: Reset Ready_To_Send if pallet removed or SM left auto mode
+// ---------------------------------------------------------
+IF NOT #Ready_To_Send OR NOT #Auto_Mode THEN
+    IF NOT #DB_SM_To_LGX_Outfeed_Transfer_In_Progress THEN
+        #DB_SM_To_LGX_Outfeed_Ready_To_Send := FALSE;
+    END_IF;
+END_IF;
+
+#Fault_Handshake := FALSE; // Placeholder
+END_FUNCTION

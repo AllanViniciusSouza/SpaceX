@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_VTD_PdHmiCommand" Id="{fe171839-dc5a-4dda-8eff-9500bbcbc4c8}">
+    <Declaration><![CDATA[// HMI -> PLC: VTD MOVIPRO process data test commands (TEST ONLY screen).
+TYPE ST_VTD_PdHmiCommand :
+STRUCT
+    bTestWriteEnable : BOOL;                  // TEST ONLY - allow PO 2..8
+    bTestAllowControlWord : BOOL;             // TEST ONLY - additionally allow PO 1
+    aTestProcessOutput : ARRAY[1..8] OF UINT; // TEST ONLY - raw PO 1..8 values
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

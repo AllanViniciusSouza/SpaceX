@@ -1,0 +1,207 @@
+﻿TYPE "Barcode_Station_UDT"
+VERSION : 0.1
+   STRUCT
+      Start : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Done : Bool;
+      Valid : Bool;
+      "Reading Gate number" : String;
+      "Reading Gate number OLD" : String;
+      "Number of Reading Gates" : String;
+      "Number of Reading Gates OLD" : String;
+      Barcode : String;
+      Barcode_Old : String;
+   END_STRUCT;
+
+END_TYPE
+
+FUNCTION "FindStringField" : String
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      FieldName : String;
+      JsonStr : String;
+   END_VAR
+
+   VAR_TEMP 
+      searchStr : String;
+      foundPos : Int;
+      resultStr : String;
+      quotePos1 : Int;
+      quotePos2 : Int;
+   END_VAR
+
+
+BEGIN
+	// Sets search pattern → ex: '"loadstate":'
+	#searchStr := CONCAT(IN1 := '"', IN2 := #FieldName);
+	#searchStr := CONCAT(IN1 := #searchStr, IN2 := '" :');
+	
+	// Search in JSON
+	#foundPos := FIND(IN1 := #JsonStr, IN2 := #searchStr);
+	
+	IF #foundPos > 0 THEN
+	    // Finds first quote after field
+	    #quotePos1 := FIND(IN1 := MID(IN := #JsonStr, P := #foundPos + LEN(#searchStr), L := 20), IN2 := '"');
+	    
+	    IF #quotePos1 > 0 THEN
+	        // Finds second quote after the first
+	        #quotePos2 := FIND(
+	                           IN1 := MID(IN := #JsonStr, P := #foundPos + LEN(IN := #searchStr) + #quotePos1, L := 10),
+	                           IN2 := '"'
+	        );
+	        
+	        IF #quotePos2 > 0 THEN
+	            #resultStr := MID(
+	                              IN := #JsonStr,
+	                              P := #foundPos + LEN(#searchStr) + #quotePos1,
+	                              L := #quotePos2 - 1
+	            );
+	            #FindStringField := #resultStr;
+	            RETURN;
+	        END_IF;
+	    END_IF;
+	END_IF;
+	
+	// If not found, returns empty string
+	#FindStringField := '';
+	
+END_FUNCTION
+
+FUNCTION_BLOCK "Barcode_Station_FB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      Sick_Result : String;
+   END_VAR
+
+   VAR_OUTPUT 
+      "Counter" : UInt;
+   END_VAR
+
+   VAR_IN_OUT 
+      Station_Control : "Barcode_Station_UDT";
+      Auto_Start_Lector : Bool;
+      Auto_Stop_Lector : Bool;
+   END_VAR
+
+   VAR 
+      State : UInt;
+      R_Start_DB {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      T_Read_DB {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+   END_VAR
+
+   VAR_TEMP 
+      StartPos : Int;
+      EndPos : Int;
+      Code : String;
+   END_VAR
+
+
+BEGIN
+	#R_Start_DB(CLK := #Station_Control.Start);
+	
+	IF #R_Start_DB.Q THEN
+	    IF #State = 0 THEN
+	        #State := 10;
+	    END_IF;
+	END_IF;
+	
+	CASE #State OF
+	    0: // IDLE
+	        #Station_Control.Running := FALSE;
+	        #Station_Control.Ready := TRUE;
+	        #T_Read_DB(IN := FALSE,
+	                   PT := T#0S);
+	        
+	    10: // Start
+	        #Station_Control.Barcode := '';
+	        #Station_Control.Done := FALSE;
+	        #Station_Control.Valid := FALSE;
+	        #Station_Control.Ready := FALSE;
+	        #Station_Control.Running := TRUE;
+	        #State := 20;
+	        
+	    20: // Reading code
+	        #Station_Control.Start := FALSE;
+	        #Station_Control."Reading Gate number" := "FindStringField"(FieldName := 'Number', JsonStr := #Sick_Result);
+	        #Station_Control.Barcode := "FindStringField"(FieldName := 'Code', JsonStr := #Sick_Result);
+	        #Station_Control."Number of Reading Gates" := "FindStringField"(FieldName := 'NRG', JsonStr := #Sick_Result);
+	        #Auto_Start_Lector := TRUE;
+	        
+	        //Check if the gate is open
+	        IF #Station_Control."Number of Reading Gates" <> #Station_Control."Number of Reading Gates OLD" THEN
+	            #Station_Control."Number of Reading Gates OLD" := #Station_Control."Number of Reading Gates";
+	        END_IF;
+	        
+	        //Timer to read the barcode
+	        #T_Read_DB(IN := TRUE,
+	                   PT := T#15S);
+	        
+	        //If a new code was read or the time finished
+	        IF #Station_Control."Reading Gate number" <> #Station_Control."Reading Gate number OLD" OR #T_Read_DB.Q THEN
+	            #Auto_Start_Lector := FALSE; //Close the gate
+	            //New code
+	            IF #Station_Control."Reading Gate number" <> #Station_Control."Reading Gate number OLD" THEN
+	                //Check if the string is not empty
+	                IF LEN(IN := #Sick_Result) > 1 AND #Station_Control."Reading Gate number" <> '' THEN
+	                   
+	                    // Find the start position of the code value
+	                    #StartPos := FIND(IN1 := #Sick_Result, IN2 := '"Code" :"');
+	                    
+	                    IF #StartPos > 0 THEN
+	                        
+	                        // Move to the first character of the code
+	                        #StartPos := #StartPos + LEN('"Code" :"');
+	                        
+	                        // Find the next quotation mark after the code
+	                        #EndPos := FIND(
+	                                        IN1 := RIGHT(IN:=#Sick_Result, L:=LEN(#Sick_Result) - #StartPos + 1),
+	                                       IN2 := '"'
+	                        );
+	                        
+	                        IF #EndPos > 0 THEN
+	                            #Code := MID(
+	                                         IN := #Sick_Result,
+	                                        L := #EndPos - 1,
+	                                        P := #StartPos
+	                            );
+	                        END_IF;
+	                        
+	                    END_IF;
+	                    #Station_Control.Valid := TRUE;
+	                    #Station_Control.Barcode := #Code;
+	                    #Station_Control.Barcode_Old := #Station_Control.Barcode ;
+	                ELSE //Empty
+	                    #Station_Control.Valid := FALSE;
+	                    #Station_Control.Barcode := '';
+	                END_IF;
+	                //Save OLD
+	                #Station_Control."Reading Gate number OLD" := #Station_Control."Reading Gate number";
+	                #T_Read_DB(IN := FALSE,
+	                           PT := T#0S);
+	                #State := 30;
+	            ELSE // No code
+	                #Station_Control.Valid := FALSE;
+	                #Station_Control.Barcode := '';
+	                #T_Read_DB(IN := FALSE,
+	                           PT := T#0S);
+	                #State := 30;
+	            END_IF;
+	        END_IF;
+	        
+	    30: // Finally
+	        #Auto_Stop_Lector := TRUE; //Close gate
+	        //Make sure the command was sent
+	        IF #Auto_Stop_Lector THEN
+	            #Counter := #Counter + 1;
+	            #Station_Control.Running := FALSE;
+	            #Station_Control.Done := TRUE;
+	            #State := 0;
+	        END_IF;
+	END_CASE;
+	
+	
+END_FUNCTION_BLOCK
+

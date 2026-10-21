@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Turn_Table_Inputs_DUT" Id="{e91c11f5-60a8-4b04-a1c8-4d131aa5fd01}">
+    <Declaration><![CDATA[// Sensors of the turntable (Control.Turn_Table.Inputs). Written only by FC Inputs.
+// Encoder: SSI on the remote module "ENCODER (EPP5001-0002)" (candidate, AGENTS.md "Turntable").
+// Bit length, Gray/binary code, resolution, direction and status bits are NOT confirmed:
+// keep the values raw and never forward an invalid position to the drive.
+TYPE Turn_Table_Inputs_DUT :
+STRUCT
+	Encoder_Value_Raw:	UDINT;	// EPP5001 SSI value, raw (format to confirm)
+	Encoder_Status_Raw:	WORD;	// EPP5001 status, raw (width and bits to confirm)
+	Encoder_WcState_Error:	BOOL;	// WcState of the encoder module (TRUE = data invalid)
+	Encoder_EcState:	UINT;	// InfoData.State of the encoder module (8 = OP)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

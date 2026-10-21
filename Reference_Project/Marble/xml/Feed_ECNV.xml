@@ -1,0 +1,1792 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-19T18:36:28.2763147Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FC ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="System_No" Datatype="UInt" Accessibility="Public" />
+    <Member Name="Safety_OK" Datatype="Bool" Accessibility="Public" />
+  </Section>
+  <Section Name="Output" />
+  <Section Name="InOut">
+    <Member Name="System_Busy" Datatype="Bool" Accessibility="Public" />
+  </Section>
+  <Section Name="Temp" />
+  <Section Name="Constant" />
+  <Section Name="Return">
+    <Member Name="Ret_Val" Datatype="Void" Accessibility="Public" />
+  </Section>
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>Feed_ECNV</Name>
+      <Namespace />
+      <Number>1</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <LineComment Inserted="false" NoClosingBracket="false" UId="21">
+    <Text UId="22">Sensors</Text>
+  </LineComment>
+  <NewLine Num="1" UId="23" />
+  <Access Scope="GlobalVariable" UId="24">
+    <Symbol UId="25">
+      <Component Name="HMI_CNV_Forward" UId="26">
+        <BooleanAttribute Name="HasQuotes" UId="27">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="28" />
+  <Token Text=":=" UId="29" />
+  <Blank Num="1" UId="30" />
+  <Access Scope="GlobalVariable" UId="31">
+    <Symbol UId="32">
+      <Component Name="Control_DB" UId="33">
+        <BooleanAttribute Name="HasQuotes" UId="34">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="35" />
+      <Component Name="ECnv_Sys" UId="36">
+        <Token Text="[" UId="37" />
+        <Access Scope="LocalVariable" UId="38">
+          <Symbol UId="39">
+            <Component Name="System_No" UId="40" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="41" />
+      </Component>
+      <Token Text="." UId="42" />
+      <Component Name="Inputs" UId="43" />
+      <Token Text="." UId="44" />
+      <Component Name="Forward_Sensor" UId="45" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="46" />
+  <NewLine Num="1" UId="47" />
+  <Access Scope="GlobalVariable" UId="48">
+    <Symbol UId="49">
+      <Component Name="HMI_CNV_Backward" UId="50">
+        <BooleanAttribute Name="HasQuotes" UId="51">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="52" />
+  <Token Text=":=" UId="53" />
+  <Blank Num="1" UId="54" />
+  <Access Scope="GlobalVariable" UId="55">
+    <Symbol UId="56">
+      <Component Name="Control_DB" UId="57">
+        <BooleanAttribute Name="HasQuotes" UId="58">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="59" />
+      <Component Name="ECnv_Sys" UId="60">
+        <Token Text="[" UId="61" />
+        <Access Scope="LocalVariable" UId="62">
+          <Symbol UId="63">
+            <Component Name="System_No" UId="64" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="65" />
+      </Component>
+      <Token Text="." UId="66" />
+      <Component Name="Inputs" UId="67" />
+      <Token Text="." UId="68" />
+      <Component Name="Backward_Sensor" UId="69" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="70" />
+  <NewLine Num="2" UId="71" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="72">
+    <Text UId="73">Feedback</Text>
+  </LineComment>
+  <NewLine Num="1" UId="74" />
+  <Access Scope="GlobalVariable" UId="75">
+    <Symbol UId="76">
+      <Component Name="Mode_HMI" UId="77">
+        <BooleanAttribute Name="HasQuotes" UId="78">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="79" />
+  <Token Text=":=" UId="80" />
+  <Blank Num="1" UId="81" />
+  <Access Scope="GlobalVariable" UId="82">
+    <Symbol UId="83">
+      <Component Name="Control_DB" UId="84">
+        <BooleanAttribute Name="HasQuotes" UId="85">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="86" />
+      <Component Name="ECnv_Sys" UId="87">
+        <Token Text="[" UId="88" />
+        <Access Scope="LocalVariable" UId="89">
+          <Symbol UId="90">
+            <Component Name="System_No" UId="91" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="92" />
+      </Component>
+      <Token Text="." UId="93" />
+      <Component Name="Mode" UId="94" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="95" />
+  <NewLine Num="1" UId="96" />
+  <Access Scope="GlobalVariable" UId="97">
+    <Symbol UId="98">
+      <Component Name="Enabled_HMI" UId="99">
+        <BooleanAttribute Name="HasQuotes" UId="100">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="101" />
+  <Token Text=":=" UId="102" />
+  <Blank Num="1" UId="103" />
+  <Access Scope="GlobalVariable" UId="104">
+    <Symbol UId="105">
+      <Component Name="Control_DB" UId="106">
+        <BooleanAttribute Name="HasQuotes" UId="107">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="108" />
+      <Component Name="ECnv_Sys" UId="109">
+        <Token Text="[" UId="110" />
+        <Access Scope="LocalVariable" UId="111">
+          <Symbol UId="112">
+            <Component Name="System_No" UId="113" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="114" />
+      </Component>
+      <Token Text="." UId="115" />
+      <Component Name="Enabled" UId="116" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="117" />
+  <NewLine Num="1" UId="118" />
+  <Access Scope="GlobalVariable" UId="119">
+    <Symbol UId="120">
+      <Component Name="Error_HMI" UId="121">
+        <BooleanAttribute Name="HasQuotes" UId="122">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="123" />
+  <Token Text=":=" UId="124" />
+  <Blank Num="1" UId="125" />
+  <Access Scope="GlobalVariable" UId="126">
+    <Symbol UId="127">
+      <Component Name="Control_DB" UId="128">
+        <BooleanAttribute Name="HasQuotes" UId="129">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="130" />
+      <Component Name="ECnv_Sys" UId="131">
+        <Token Text="[" UId="132" />
+        <Access Scope="LocalVariable" UId="133">
+          <Symbol UId="134">
+            <Component Name="System_No" UId="135" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="136" />
+      </Component>
+      <Token Text="." UId="137" />
+      <Component Name="Error" UId="138" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="139" />
+  <NewLine Num="1" UId="140" />
+  <Access Scope="GlobalVariable" UId="141">
+    <Symbol UId="142">
+      <Component Name="Warning_HMI" UId="143">
+        <BooleanAttribute Name="HasQuotes" UId="144">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="145" />
+  <Token Text=":=" UId="146" />
+  <Blank Num="1" UId="147" />
+  <Access Scope="GlobalVariable" UId="148">
+    <Symbol UId="149">
+      <Component Name="Control_DB" UId="150">
+        <BooleanAttribute Name="HasQuotes" UId="151">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="152" />
+      <Component Name="ECnv_Sys" UId="153">
+        <Token Text="[" UId="154" />
+        <Access Scope="LocalVariable" UId="155">
+          <Symbol UId="156">
+            <Component Name="System_No" UId="157" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="158" />
+      </Component>
+      <Token Text="." UId="159" />
+      <Component Name="Warning" UId="160" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="161" />
+  <NewLine Num="1" UId="162" />
+  <Access Scope="GlobalVariable" UId="163">
+    <Symbol UId="164">
+      <Component Name="Stopped_HMI" UId="165">
+        <BooleanAttribute Name="HasQuotes" UId="166">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="167" />
+  <Token Text=":=" UId="168" />
+  <Blank Num="1" UId="169" />
+  <Access Scope="GlobalVariable" UId="170">
+    <Symbol UId="171">
+      <Component Name="Control_DB" UId="172">
+        <BooleanAttribute Name="HasQuotes" UId="173">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="174" />
+      <Component Name="ECnv_Sys" UId="175">
+        <Token Text="[" UId="176" />
+        <Access Scope="LocalVariable" UId="177">
+          <Symbol UId="178">
+            <Component Name="System_No" UId="179" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="180" />
+      </Component>
+      <Token Text="." UId="181" />
+      <Component Name="Stopped" UId="182" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="183" />
+  <NewLine Num="1" UId="184" />
+  <Access Scope="GlobalVariable" UId="185">
+    <Symbol UId="186">
+      <Component Name="Running_HMI" UId="187">
+        <BooleanAttribute Name="HasQuotes" UId="188">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="189" />
+  <Token Text=":=" UId="190" />
+  <Blank Num="1" UId="191" />
+  <Access Scope="GlobalVariable" UId="192">
+    <Symbol UId="193">
+      <Component Name="Control_DB" UId="194">
+        <BooleanAttribute Name="HasQuotes" UId="195">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="196" />
+      <Component Name="ECnv_Sys" UId="197">
+        <Token Text="[" UId="198" />
+        <Access Scope="LocalVariable" UId="199">
+          <Symbol UId="200">
+            <Component Name="System_No" UId="201" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="202" />
+      </Component>
+      <Token Text="." UId="203" />
+      <Component Name="Running" UId="204" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="205" />
+  <NewLine Num="1" UId="206" />
+  <Access Scope="GlobalVariable" UId="207">
+    <Symbol UId="208">
+      <Component Name="Ready_For_Task_HMI" UId="209">
+        <BooleanAttribute Name="HasQuotes" UId="210">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="211" />
+  <Token Text=":=" UId="212" />
+  <Blank Num="1" UId="213" />
+  <Access Scope="GlobalVariable" UId="214">
+    <Symbol UId="215">
+      <Component Name="Control_DB" UId="216">
+        <BooleanAttribute Name="HasQuotes" UId="217">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="218" />
+      <Component Name="ECnv_Sys" UId="219">
+        <Token Text="[" UId="220" />
+        <Access Scope="LocalVariable" UId="221">
+          <Symbol UId="222">
+            <Component Name="System_No" UId="223" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="224" />
+      </Component>
+      <Token Text="." UId="225" />
+      <Component Name="Ready_For_Task" UId="226" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="227" />
+  <NewLine Num="1" UId="228" />
+  <Access Scope="GlobalVariable" UId="229">
+    <Symbol UId="230">
+      <Component Name="Cnv_Occupied_HMI" UId="231">
+        <BooleanAttribute Name="HasQuotes" UId="232">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="233" />
+  <Token Text=":=" UId="234" />
+  <Blank Num="1" UId="235" />
+  <Access Scope="GlobalVariable" UId="236">
+    <Symbol UId="237">
+      <Component Name="Control_DB" UId="238">
+        <BooleanAttribute Name="HasQuotes" UId="239">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="240" />
+      <Component Name="ECnv_Sys" UId="241">
+        <Token Text="[" UId="242" />
+        <Access Scope="LocalVariable" UId="243">
+          <Symbol UId="244">
+            <Component Name="System_No" UId="245" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="246" />
+      </Component>
+      <Token Text="." UId="247" />
+      <Component Name="Cnv_Occupied" UId="248" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="249" />
+  <NewLine Num="1" UId="250" />
+  <Access Scope="GlobalVariable" UId="251">
+    <Symbol UId="252">
+      <Component Name="SM_State_HMI" UId="253">
+        <BooleanAttribute Name="HasQuotes" UId="254">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="255" />
+  <Token Text=":=" UId="256" />
+  <Blank Num="1" UId="257" />
+  <Access Scope="GlobalVariable" UId="258">
+    <Symbol UId="259">
+      <Component Name="Control_DB" UId="260">
+        <BooleanAttribute Name="HasQuotes" UId="261">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="262" />
+      <Component Name="ECnv_Sys" UId="263">
+        <Token Text="[" UId="264" />
+        <Access Scope="LocalVariable" UId="265">
+          <Symbol UId="266">
+            <Component Name="System_No" UId="267" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="268" />
+      </Component>
+      <Token Text="." UId="269" />
+      <Component Name="SM_State" UId="270" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="271" />
+  <NewLine Num="1" UId="272" />
+  <Token Text="IF" UId="273" />
+  <Blank Num="1" UId="274" />
+  <Access Scope="GlobalVariable" UId="275">
+    <Symbol UId="276">
+      <Component Name="Control_DB" UId="277">
+        <BooleanAttribute Name="HasQuotes" UId="278">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="279" />
+      <Component Name="ECnv_Sys" UId="280">
+        <Token Text="[" UId="281" />
+        <Access Scope="LocalVariable" UId="282">
+          <Symbol UId="283">
+            <Component Name="System_No" UId="284" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="285" />
+      </Component>
+      <Token Text="." UId="286" />
+      <Component Name="Motor" UId="287" />
+      <Token Text="." UId="288" />
+      <Component Name="Forward" UId="289" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="290" />
+  <Token Text="THEN" UId="291" />
+  <NewLine Num="1" UId="292" />
+  <Blank Num="4" UId="293" />
+  <Access Scope="GlobalVariable" UId="294">
+    <Symbol UId="295">
+      <Component Name="Motor_Direction_HMI" UId="296">
+        <BooleanAttribute Name="HasQuotes" UId="297">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="298" />
+  <Token Text=":=" UId="299" />
+  <Blank Num="1" UId="300" />
+  <Access Scope="LiteralConstant" UId="301">
+    <Constant UId="302">
+      <ConstantValue UId="304">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="305" />
+  <NewLine Num="1" UId="306" />
+  <Token Text="ELSIF" UId="307" />
+  <Blank Num="1" UId="308" />
+  <Access Scope="GlobalVariable" UId="309">
+    <Symbol UId="310">
+      <Component Name="Control_DB" UId="311">
+        <BooleanAttribute Name="HasQuotes" UId="312">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="313" />
+      <Component Name="ECnv_Sys" UId="314">
+        <Token Text="[" UId="315" />
+        <Access Scope="LocalVariable" UId="316">
+          <Symbol UId="317">
+            <Component Name="System_No" UId="318" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="319" />
+      </Component>
+      <Token Text="." UId="320" />
+      <Component Name="Motor" UId="321" />
+      <Token Text="." UId="322" />
+      <Component Name="Reverse" UId="323" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="324" />
+  <Token Text="THEN" UId="325" />
+  <NewLine Num="1" UId="326" />
+  <Blank Num="4" UId="327" />
+  <Access Scope="GlobalVariable" UId="328">
+    <Symbol UId="329">
+      <Component Name="Motor_Direction_HMI" UId="330">
+        <BooleanAttribute Name="HasQuotes" UId="331">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="332" />
+  <Token Text=":=" UId="333" />
+  <Blank Num="1" UId="334" />
+  <Access Scope="LiteralConstant" UId="335">
+    <Constant UId="336">
+      <ConstantValue UId="338">2</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="339" />
+  <NewLine Num="1" UId="340" />
+  <Token Text="ELSE" UId="341" />
+  <NewLine Num="1" UId="342" />
+  <Blank Num="4" UId="343" />
+  <Access Scope="GlobalVariable" UId="344">
+    <Symbol UId="345">
+      <Component Name="Motor_Direction_HMI" UId="346">
+        <BooleanAttribute Name="HasQuotes" UId="347">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="348" />
+  <Token Text=":=" UId="349" />
+  <Blank Num="1" UId="350" />
+  <Access Scope="LiteralConstant" UId="351">
+    <Constant UId="352">
+      <ConstantValue UId="354">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="355" />
+  <NewLine Num="1" UId="356" />
+  <Token Text="END_IF" UId="357" />
+  <Token Text=";" UId="358" />
+  <NewLine Num="1" UId="359" />
+  <Access Scope="GlobalVariable" UId="360">
+    <Symbol UId="361">
+      <Component Name="Motor_Speed_Requested_HMI" UId="362">
+        <BooleanAttribute Name="HasQuotes" UId="363">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="364" />
+  <Token Text=":=" UId="365" />
+  <Blank Num="1" UId="366" />
+  <Access Scope="GlobalVariable" UId="367">
+    <Symbol UId="368">
+      <Component Name="Control_DB" UId="369">
+        <BooleanAttribute Name="HasQuotes" UId="370">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="371" />
+      <Component Name="ECnv_Sys" UId="372">
+        <Token Text="[" UId="373" />
+        <Access Scope="LocalVariable" UId="374">
+          <Symbol UId="375">
+            <Component Name="System_No" UId="376" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="377" />
+      </Component>
+      <Token Text="." UId="378" />
+      <Component Name="Motor" UId="379" />
+      <Token Text="." UId="380" />
+      <Component Name="Speed" UId="381" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="382" />
+  <NewLine Num="1" UId="383" />
+  <Access Scope="GlobalVariable" UId="384">
+    <Symbol UId="385">
+      <Component Name="Motor_Speed_Actual_HMI" UId="386">
+        <BooleanAttribute Name="HasQuotes" UId="387">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="388" />
+  <Token Text=":=" UId="389" />
+  <Blank Num="1" UId="390" />
+  <Access Scope="GlobalVariable" UId="391">
+    <Symbol UId="392">
+      <Component Name="Control_DB" UId="393">
+        <BooleanAttribute Name="HasQuotes" UId="394">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="395" />
+      <Component Name="ECnv_Sys" UId="396">
+        <Token Text="[" UId="397" />
+        <Access Scope="LocalVariable" UId="398">
+          <Symbol UId="399">
+            <Component Name="System_No" UId="400" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="401" />
+      </Component>
+      <Token Text="." UId="402" />
+      <Component Name="Motor" UId="403" />
+      <Token Text="." UId="404" />
+      <Component Name="Speed_Actual" UId="405" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="406" />
+  <NewLine Num="1" UId="407" />
+  <Access Scope="GlobalVariable" UId="408">
+    <Symbol UId="409">
+      <Component Name="CNV_Motor_Ready" UId="410">
+        <BooleanAttribute Name="HasQuotes" UId="411">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="412" />
+  <Token Text=":=" UId="413" />
+  <Blank Num="1" UId="414" />
+  <Access Scope="GlobalVariable" UId="415">
+    <Symbol UId="416">
+      <Component Name="Control_DB" UId="417">
+        <BooleanAttribute Name="HasQuotes" UId="418">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="419" />
+      <Component Name="ECnv_Sys" UId="420">
+        <Token Text="[" UId="421" />
+        <Access Scope="LocalVariable" UId="422">
+          <Symbol UId="423">
+            <Component Name="System_No" UId="424" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="425" />
+      </Component>
+      <Token Text="." UId="426" />
+      <Component Name="Motor" UId="427" />
+      <Token Text="." UId="428" />
+      <Component Name="Ready" UId="429" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="430" />
+  <NewLine Num="1" UId="431" />
+  <Access Scope="GlobalVariable" UId="432">
+    <Symbol UId="433">
+      <Component Name="CNV_Motor_Current_Actual_HMI" UId="434">
+        <BooleanAttribute Name="HasQuotes" UId="435">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="436" />
+  <Token Text=":=" UId="437" />
+  <Blank Num="1" UId="438" />
+  <Access Scope="GlobalVariable" UId="439">
+    <Symbol UId="440">
+      <Component Name="Control_DB" UId="441">
+        <BooleanAttribute Name="HasQuotes" UId="442">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="443" />
+      <Component Name="ECnv_Sys" UId="444">
+        <Token Text="[" UId="445" />
+        <Access Scope="LocalVariable" UId="446">
+          <Symbol UId="447">
+            <Component Name="System_No" UId="448" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="449" />
+      </Component>
+      <Token Text="." UId="450" />
+      <Component Name="Motor" UId="451" />
+      <Token Text="." UId="452" />
+      <Component Name="Actual_Current" UId="453" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="454" />
+  <NewLine Num="1" UId="455" />
+  <Access Scope="GlobalVariable" UId="456">
+    <Symbol UId="457">
+      <Component Name="CNV_Motor_Actual_Torque" UId="458">
+        <BooleanAttribute Name="HasQuotes" UId="459">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="460" />
+  <Token Text=":=" UId="461" />
+  <Blank Num="1" UId="462" />
+  <Access Scope="GlobalVariable" UId="463">
+    <Symbol UId="464">
+      <Component Name="Control_DB" UId="465">
+        <BooleanAttribute Name="HasQuotes" UId="466">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="467" />
+      <Component Name="ECnv_Sys" UId="468">
+        <Token Text="[" UId="469" />
+        <Access Scope="LocalVariable" UId="470">
+          <Symbol UId="471">
+            <Component Name="System_No" UId="472" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="473" />
+      </Component>
+      <Token Text="." UId="474" />
+      <Component Name="Motor" UId="475" />
+      <Token Text="." UId="476" />
+      <Component Name="Actual_Torque" UId="477" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="478" />
+  <NewLine Num="1" UId="479" />
+  <Access Scope="GlobalVariable" UId="480">
+    <Symbol UId="481">
+      <Component Name="Transfer_To_ID_HMI" UId="482">
+        <BooleanAttribute Name="HasQuotes" UId="483">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="484" />
+  <Token Text=":=" UId="485" />
+  <Blank Num="1" UId="486" />
+  <Access Scope="GlobalVariable" UId="487">
+    <Symbol UId="488">
+      <Component Name="Control_DB" UId="489">
+        <BooleanAttribute Name="HasQuotes" UId="490">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="491" />
+      <Component Name="ECnv_Sys" UId="492">
+        <Token Text="[" UId="493" />
+        <Access Scope="LocalVariable" UId="494">
+          <Symbol UId="495">
+            <Component Name="System_No" UId="496" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="497" />
+      </Component>
+      <Token Text="." UId="498" />
+      <Component Name="Instruction" UId="499" />
+      <Token Text="." UId="500" />
+      <Component Name="Transfer_To_ID" UId="501" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="502" />
+  <NewLine Num="1" UId="503" />
+  <Access Scope="GlobalVariable" UId="504">
+    <Symbol UId="505">
+      <Component Name="Transfer_From_ID_HMI" UId="506">
+        <BooleanAttribute Name="HasQuotes" UId="507">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="508" />
+  <Token Text=":=" UId="509" />
+  <Blank Num="1" UId="510" />
+  <Access Scope="GlobalVariable" UId="511">
+    <Symbol UId="512">
+      <Component Name="Control_DB" UId="513">
+        <BooleanAttribute Name="HasQuotes" UId="514">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="515" />
+      <Component Name="ECnv_Sys" UId="516">
+        <Token Text="[" UId="517" />
+        <Access Scope="LocalVariable" UId="518">
+          <Symbol UId="519">
+            <Component Name="System_No" UId="520" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="521" />
+      </Component>
+      <Token Text="." UId="522" />
+      <Component Name="Instruction" UId="523" />
+      <Token Text="." UId="524" />
+      <Component Name="Transfer_From_ID" UId="525" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="526" />
+  <NewLine Num="2" UId="527" />
+  <Token Text="IF" UId="528" />
+  <Blank Num="1" UId="529" />
+  <Access Scope="GlobalVariable" UId="530">
+    <Symbol UId="531">
+      <Component Name="Control_DB" UId="532">
+        <BooleanAttribute Name="HasQuotes" UId="533">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="534" />
+      <Component Name="ECnv_Sys" UId="535">
+        <Token Text="[" UId="536" />
+        <Access Scope="LocalVariable" UId="537">
+          <Symbol UId="538">
+            <Component Name="System_No" UId="539" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="540" />
+      </Component>
+      <Token Text="." UId="541" />
+      <Component Name="Motor" UId="542" />
+      <Token Text="." UId="543" />
+      <Component Name="Error" UId="544" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="545" />
+  <Token Text="THEN" UId="546" />
+  <NewLine Num="1" UId="547" />
+  <Blank Num="4" UId="548" />
+  <Access Scope="GlobalVariable" UId="549">
+    <Symbol UId="550">
+      <Component Name="CNV_Motor_Status_HMI" UId="551">
+        <BooleanAttribute Name="HasQuotes" UId="552">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="553" />
+  <Token Text=":=" UId="554" />
+  <Blank Num="1" UId="555" />
+  <Access Scope="LiteralConstant" UId="556">
+    <Constant UId="557">
+      <ConstantValue UId="559">2</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="560" />
+  <NewLine Num="1" UId="561" />
+  <Token Text="ELSIF" UId="562" />
+  <Blank Num="1" UId="563" />
+  <Access Scope="GlobalVariable" UId="564">
+    <Symbol UId="565">
+      <Component Name="Control_DB" UId="566">
+        <BooleanAttribute Name="HasQuotes" UId="567">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="568" />
+      <Component Name="ECnv_Sys" UId="569">
+        <Token Text="[" UId="570" />
+        <Access Scope="LocalVariable" UId="571">
+          <Symbol UId="572">
+            <Component Name="System_No" UId="573" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="574" />
+      </Component>
+      <Token Text="." UId="575" />
+      <Component Name="Motor" UId="576" />
+      <Token Text="." UId="577" />
+      <Component Name="Enabled" UId="578" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="579" />
+  <Token Text="THEN" UId="580" />
+  <NewLine Num="1" UId="581" />
+  <Blank Num="4" UId="582" />
+  <Access Scope="GlobalVariable" UId="583">
+    <Symbol UId="584">
+      <Component Name="CNV_Motor_Status_HMI" UId="585">
+        <BooleanAttribute Name="HasQuotes" UId="586">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="587" />
+  <Token Text=":=" UId="588" />
+  <Blank Num="1" UId="589" />
+  <Access Scope="LiteralConstant" UId="590">
+    <Constant UId="591">
+      <ConstantValue UId="593">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="594" />
+  <NewLine Num="1" UId="595" />
+  <Token Text="ELSIF" UId="596" />
+  <Blank Num="1" UId="597" />
+  <Token Text="NOT" UId="598" />
+  <Blank Num="1" UId="599" />
+  <Access Scope="GlobalVariable" UId="600">
+    <Symbol UId="601">
+      <Component Name="Control_DB" UId="602">
+        <BooleanAttribute Name="HasQuotes" UId="603">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="604" />
+      <Component Name="ECnv_Sys" UId="605">
+        <Token Text="[" UId="606" />
+        <Access Scope="LocalVariable" UId="607">
+          <Symbol UId="608">
+            <Component Name="System_No" UId="609" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="610" />
+      </Component>
+      <Token Text="." UId="611" />
+      <Component Name="Motor" UId="612" />
+      <Token Text="." UId="613" />
+      <Component Name="Enabled" UId="614" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="615" />
+  <Token Text="THEN" UId="616" />
+  <NewLine Num="1" UId="617" />
+  <Blank Num="4" UId="618" />
+  <Access Scope="GlobalVariable" UId="619">
+    <Symbol UId="620">
+      <Component Name="CNV_Motor_Status_HMI" UId="621">
+        <BooleanAttribute Name="HasQuotes" UId="622">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="623" />
+  <Token Text=":=" UId="624" />
+  <Blank Num="1" UId="625" />
+  <Access Scope="LiteralConstant" UId="626">
+    <Constant UId="627">
+      <ConstantValue UId="629">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="630" />
+  <NewLine Num="1" UId="631" />
+  <Token Text="END_IF" UId="632" />
+  <Token Text=";" UId="633" />
+  <NewLine Num="2" UId="634" />
+  <Access Scope="GlobalVariable" UId="635">
+    <Symbol UId="636">
+      <Component Name="Safety_OK_HMI" UId="637">
+        <BooleanAttribute Name="HasQuotes" UId="638">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="639" />
+  <Token Text=":=" UId="640" />
+  <Blank Num="1" UId="641" />
+  <Access Scope="LocalVariable" UId="642">
+    <Symbol UId="643">
+      <Component Name="Safety_OK" UId="644" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="645" />
+  <NewLine Num="2" UId="646" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="647">
+    <Text UId="648">Instructions</Text>
+  </LineComment>
+  <NewLine Num="1" UId="649" />
+  <Token Text="IF" UId="650" />
+  <Blank Num="1" UId="651" />
+  <Token Text="(" UId="652" />
+  <Access Scope="GlobalVariable" UId="653">
+    <Symbol UId="654">
+      <Component Name="HMI_Box_Connected_1" UId="655">
+        <BooleanAttribute Name="HasQuotes" UId="656">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="657" />
+  <Token Text="=" UId="658" />
+  <Blank Num="1" UId="659" />
+  <Access Scope="LocalVariable" UId="660">
+    <Symbol UId="661">
+      <Component Name="System_No" UId="662" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="663" />
+  <Token Text="OR" UId="664" />
+  <Blank Num="1" UId="665" />
+  <Token Text="(" UId="666" />
+  <Access Scope="GlobalVariable" UId="667">
+    <Symbol UId="668">
+      <Component Name="HMI_Box_Connected_1" UId="669">
+        <BooleanAttribute Name="HasQuotes" UId="670">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="671" />
+  <Token Text="&gt;=" UId="672" />
+  <Blank Num="1" UId="673" />
+  <Token Text="(" UId="674" />
+  <Access Scope="LocalVariable" UId="675">
+    <Symbol UId="676">
+      <Component Name="System_No" UId="677" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="678" />
+  <Token Text="*" UId="679" />
+  <Blank Num="1" UId="680" />
+  <Access Scope="LiteralConstant" UId="681">
+    <Constant UId="682">
+      <ConstantValue UId="684">10</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="685" />
+  <Blank Num="1" UId="686" />
+  <Token Text="+" UId="687" />
+  <Blank Num="1" UId="688" />
+  <Access Scope="LiteralConstant" UId="689">
+    <Constant UId="690">
+      <ConstantValue UId="692">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="693" />
+  <Token Text="AND" UId="694" />
+  <Blank Num="1" UId="695" />
+  <Access Scope="GlobalVariable" UId="696">
+    <Symbol UId="697">
+      <Component Name="HMI_Box_Connected_1" UId="698">
+        <BooleanAttribute Name="HasQuotes" UId="699">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="700" />
+  <Token Text="&lt;=" UId="701" />
+  <Blank Num="1" UId="702" />
+  <Token Text="(" UId="703" />
+  <Access Scope="LocalVariable" UId="704">
+    <Symbol UId="705">
+      <Component Name="System_No" UId="706" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="707" />
+  <Token Text="*" UId="708" />
+  <Blank Num="1" UId="709" />
+  <Access Scope="LiteralConstant" UId="710">
+    <Constant UId="711">
+      <ConstantValue UId="713">10</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="714" />
+  <Blank Num="1" UId="715" />
+  <Token Text="+" UId="716" />
+  <Blank Num="1" UId="717" />
+  <Access Scope="LiteralConstant" UId="718">
+    <Constant UId="719">
+      <ConstantValue UId="721">8</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="722" />
+  <Token Text=")" UId="723" />
+  <Blank Num="1" UId="724" />
+  <Token Text="OR" UId="725" />
+  <NewLine Num="1" UId="726" />
+  <Blank Num="4" UId="727" />
+  <Token Text="(" UId="728" />
+  <Access Scope="GlobalVariable" UId="729">
+    <Symbol UId="730">
+      <Component Name="HMI_Box_Connected_2" UId="731">
+        <BooleanAttribute Name="HasQuotes" UId="732">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="733" />
+  <Token Text="=" UId="734" />
+  <Blank Num="1" UId="735" />
+  <Access Scope="LocalVariable" UId="736">
+    <Symbol UId="737">
+      <Component Name="System_No" UId="738" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="739" />
+  <Token Text="OR" UId="740" />
+  <Blank Num="1" UId="741" />
+  <Token Text="(" UId="742" />
+  <Access Scope="GlobalVariable" UId="743">
+    <Symbol UId="744">
+      <Component Name="HMI_Box_Connected_1" UId="745">
+        <BooleanAttribute Name="HasQuotes" UId="746">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="747" />
+  <Token Text="&gt;=" UId="748" />
+  <Blank Num="1" UId="749" />
+  <Token Text="(" UId="750" />
+  <Access Scope="LocalVariable" UId="751">
+    <Symbol UId="752">
+      <Component Name="System_No" UId="753" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="754" />
+  <Token Text="*" UId="755" />
+  <Blank Num="1" UId="756" />
+  <Access Scope="LiteralConstant" UId="757">
+    <Constant UId="758">
+      <ConstantValue UId="760">10</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="761" />
+  <Blank Num="1" UId="762" />
+  <Token Text="+" UId="763" />
+  <Blank Num="1" UId="764" />
+  <Access Scope="LiteralConstant" UId="765">
+    <Constant UId="766">
+      <ConstantValue UId="768">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="769" />
+  <Token Text="AND" UId="770" />
+  <Blank Num="1" UId="771" />
+  <Access Scope="GlobalVariable" UId="772">
+    <Symbol UId="773">
+      <Component Name="HMI_Box_Connected_1" UId="774">
+        <BooleanAttribute Name="HasQuotes" UId="775">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="776" />
+  <Token Text="&lt;=" UId="777" />
+  <Blank Num="1" UId="778" />
+  <Token Text="(" UId="779" />
+  <Access Scope="LocalVariable" UId="780">
+    <Symbol UId="781">
+      <Component Name="System_No" UId="782" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="783" />
+  <Token Text="*" UId="784" />
+  <Blank Num="1" UId="785" />
+  <Access Scope="LiteralConstant" UId="786">
+    <Constant UId="787">
+      <ConstantValue UId="789">10</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="790" />
+  <Blank Num="1" UId="791" />
+  <Token Text="+" UId="792" />
+  <Blank Num="1" UId="793" />
+  <Access Scope="LiteralConstant" UId="794">
+    <Constant UId="795">
+      <ConstantValue UId="797">8</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="798" />
+  <Token Text=")" UId="799" />
+  <NewLine Num="1" UId="800" />
+  <Token Text="THEN" UId="801" />
+  <NewLine Num="1" UId="802" />
+  <Blank Num="4" UId="803" />
+  <Access Scope="LocalVariable" UId="804">
+    <Symbol UId="805">
+      <Component Name="System_Busy" UId="806" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="807" />
+  <Token Text=":=" UId="808" />
+  <Blank Num="1" UId="809" />
+  <Access Scope="LiteralConstant" UId="810">
+    <Constant UId="811">
+      <ConstantValue UId="813">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="814" />
+  <NewLine Num="1" UId="815" />
+  <Token Text="ELSE" UId="816" />
+  <NewLine Num="1" UId="817" />
+  <Blank Num="4" UId="818" />
+  <Access Scope="LocalVariable" UId="819">
+    <Symbol UId="820">
+      <Component Name="System_Busy" UId="821" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="822" />
+  <Token Text=":=" UId="823" />
+  <Blank Num="1" UId="824" />
+  <Access Scope="LiteralConstant" UId="825">
+    <Constant UId="826">
+      <ConstantValue UId="828">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="829" />
+  <NewLine Num="1" UId="830" />
+  <Blank Num="4" UId="831" />
+  <Access Scope="GlobalVariable" UId="832">
+    <Symbol UId="833">
+      <Component Name="Control_DB" UId="834">
+        <BooleanAttribute Name="HasQuotes" UId="835">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="836" />
+      <Component Name="ECnv_Sys" UId="837">
+        <Token Text="[" UId="838" />
+        <Access Scope="LocalVariable" UId="839">
+          <Symbol UId="840">
+            <Component Name="System_No" UId="841" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="842" />
+      </Component>
+      <Token Text="." UId="843" />
+      <Component Name="Instruction" UId="844" />
+      <Token Text="." UId="845" />
+      <Component Name="Stop" UId="846" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="847" />
+  <Token Text=":=" UId="848" />
+  <Blank Num="1" UId="849" />
+  <Access Scope="GlobalVariable" UId="850">
+    <Symbol UId="851">
+      <Component Name="Stop_HMI" UId="852">
+        <BooleanAttribute Name="HasQuotes" UId="853">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="854" />
+  <NewLine Num="1" UId="855" />
+  <Blank Num="4" UId="856" />
+  <Access Scope="GlobalVariable" UId="857">
+    <Symbol UId="858">
+      <Component Name="Control_DB" UId="859">
+        <BooleanAttribute Name="HasQuotes" UId="860">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="861" />
+      <Component Name="ECnv_Sys" UId="862">
+        <Token Text="[" UId="863" />
+        <Access Scope="LocalVariable" UId="864">
+          <Symbol UId="865">
+            <Component Name="System_No" UId="866" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="867" />
+      </Component>
+      <Token Text="." UId="868" />
+      <Component Name="Instruction" UId="869" />
+      <Token Text="." UId="870" />
+      <Component Name="Execute" UId="871" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="872" />
+  <Token Text=":=" UId="873" />
+  <Blank Num="1" UId="874" />
+  <Access Scope="GlobalVariable" UId="875">
+    <Symbol UId="876">
+      <Component Name="Manual_Fwd_HMI" UId="877">
+        <BooleanAttribute Name="HasQuotes" UId="878">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="879" />
+  <Token Text="OR" UId="880" />
+  <Blank Num="1" UId="881" />
+  <Access Scope="GlobalVariable" UId="882">
+    <Symbol UId="883">
+      <Component Name="Manual_Bwd_HMI" UId="884">
+        <BooleanAttribute Name="HasQuotes" UId="885">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="886" />
+  <NewLine Num="1" UId="887" />
+  <Blank Num="4" UId="888" />
+  <Access Scope="GlobalVariable" UId="889">
+    <Symbol UId="890">
+      <Component Name="Control_DB" UId="891">
+        <BooleanAttribute Name="HasQuotes" UId="892">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="893" />
+      <Component Name="ECnv_Sys" UId="894">
+        <Token Text="[" UId="895" />
+        <Access Scope="LocalVariable" UId="896">
+          <Symbol UId="897">
+            <Component Name="System_No" UId="898" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="899" />
+      </Component>
+      <Token Text="." UId="900" />
+      <Component Name="Instruction" UId="901" />
+      <Token Text="." UId="902" />
+      <Component Name="Mode_Change" UId="903" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="904" />
+  <Token Text=":=" UId="905" />
+  <Blank Num="1" UId="906" />
+  <Access Scope="GlobalVariable" UId="907">
+    <Symbol UId="908">
+      <Component Name="Mode_Change_HMI" UId="909">
+        <BooleanAttribute Name="HasQuotes" UId="910">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="911" />
+  <NewLine Num="1" UId="912" />
+  <Blank Num="4" UId="913" />
+  <Access Scope="GlobalVariable" UId="914">
+    <Symbol UId="915">
+      <Component Name="Control_DB" UId="916">
+        <BooleanAttribute Name="HasQuotes" UId="917">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="918" />
+      <Component Name="ECnv_Sys" UId="919">
+        <Token Text="[" UId="920" />
+        <Access Scope="LocalVariable" UId="921">
+          <Symbol UId="922">
+            <Component Name="System_No" UId="923" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="924" />
+      </Component>
+      <Token Text="." UId="925" />
+      <Component Name="Instruction" UId="926" />
+      <Token Text="." UId="927" />
+      <Component Name="Enable" UId="928" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="929" />
+  <Token Text=":=" UId="930" />
+  <Blank Num="1" UId="931" />
+  <Access Scope="GlobalVariable" UId="932">
+    <Symbol UId="933">
+      <Component Name="Enable_HMI" UId="934">
+        <BooleanAttribute Name="HasQuotes" UId="935">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="936" />
+  <NewLine Num="1" UId="937" />
+  <Blank Num="4" UId="938" />
+  <NewLine Num="1" UId="939" />
+  <Blank Num="4" UId="940" />
+  <Access Scope="GlobalVariable" UId="941">
+    <Symbol UId="942">
+      <Component Name="Control_DB" UId="943">
+        <BooleanAttribute Name="HasQuotes" UId="944">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="945" />
+      <Component Name="ECnv_Sys" UId="946">
+        <Token Text="[" UId="947" />
+        <Access Scope="LocalVariable" UId="948">
+          <Symbol UId="949">
+            <Component Name="System_No" UId="950" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="951" />
+      </Component>
+      <Token Text="." UId="952" />
+      <Component Name="Instruction" UId="953" />
+      <Token Text="." UId="954" />
+      <Component Name="Reset" UId="955" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="956" />
+  <Token Text=":=" UId="957" />
+  <Blank Num="1" UId="958" />
+  <Access Scope="GlobalVariable" UId="959">
+    <Symbol UId="960">
+      <Component Name="Reset_HMI" UId="961">
+        <BooleanAttribute Name="HasQuotes" UId="962">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="963" />
+  <Token Text="OR" UId="964" />
+  <Blank Num="1" UId="965" />
+  <Access Scope="GlobalVariable" UId="966">
+    <Symbol UId="967">
+      <Component Name="Reset_All" UId="968">
+        <BooleanAttribute Name="HasQuotes" UId="969">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="970" />
+  <Token Text="OR" UId="971" />
+  <NewLine Num="1" UId="972" />
+  <Blank Num="4" UId="973" />
+  <Access Scope="GlobalVariable" UId="974">
+    <Symbol UId="975">
+      <Component Name="Screen_DB_1" UId="976">
+        <BooleanAttribute Name="HasQuotes" UId="977">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="978" />
+      <Component Name="Reset_All" UId="979">
+        <Token Text="[" UId="980" />
+        <Access Scope="LiteralConstant" UId="981">
+          <Constant UId="982">
+            <ConstantValue UId="984">1</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="985" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="986" />
+  <Token Text="OR" UId="987" />
+  <Blank Num="1" UId="988" />
+  <Access Scope="GlobalVariable" UId="989">
+    <Symbol UId="990">
+      <Component Name="CNV_HMI" UId="991">
+        <BooleanAttribute Name="HasQuotes" UId="992">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="993" />
+      <Component Name="Reset" UId="994">
+        <Token Text="[" UId="995" />
+        <Access Scope="LiteralConstant" UId="996">
+          <Constant UId="997">
+            <ConstantValue UId="999">1</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="1000" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1001" />
+  <Token Text="OR" UId="1002" />
+  <NewLine Num="1" UId="1003" />
+  <Blank Num="4" UId="1004" />
+  <Access Scope="GlobalVariable" UId="1005">
+    <Symbol UId="1006">
+      <Component Name="Screen_DB_1" UId="1007">
+        <BooleanAttribute Name="HasQuotes" UId="1008">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1009" />
+      <Component Name="Reset_All" UId="1010">
+        <Token Text="[" UId="1011" />
+        <Access Scope="LiteralConstant" UId="1012">
+          <Constant UId="1013">
+            <ConstantValue UId="1015">2</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="1016" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1017" />
+  <Token Text="OR" UId="1018" />
+  <Blank Num="1" UId="1019" />
+  <Access Scope="GlobalVariable" UId="1020">
+    <Symbol UId="1021">
+      <Component Name="CNV_HMI" UId="1022">
+        <BooleanAttribute Name="HasQuotes" UId="1023">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1024" />
+      <Component Name="Reset" UId="1025">
+        <Token Text="[" UId="1026" />
+        <Access Scope="LiteralConstant" UId="1027">
+          <Constant UId="1028">
+            <ConstantValue UId="1030">2</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="1031" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1032" />
+  <NewLine Num="1" UId="1033" />
+  <Blank Num="4" UId="1034" />
+  <NewLine Num="1" UId="1035" />
+  <Blank Num="4" UId="1036" />
+  <Token Text="IF" UId="1037" />
+  <Blank Num="1" UId="1038" />
+  <Access Scope="GlobalVariable" UId="1039">
+    <Symbol UId="1040">
+      <Component Name="Control_DB" UId="1041">
+        <BooleanAttribute Name="HasQuotes" UId="1042">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1043" />
+      <Component Name="ECnv_Sys" UId="1044">
+        <Token Text="[" UId="1045" />
+        <Access Scope="LocalVariable" UId="1046">
+          <Symbol UId="1047">
+            <Component Name="System_No" UId="1048" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="1049" />
+      </Component>
+      <Token Text="." UId="1050" />
+      <Component Name="Mode" UId="1051" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1052" />
+  <Token Text="&lt;&gt;" UId="1053" />
+  <Blank Num="1" UId="1054" />
+  <Access Scope="LiteralConstant" UId="1055">
+    <Constant UId="1056">
+      <ConstantValue UId="1058">3</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="1059" />
+  <Token Text="THEN" UId="1060" />
+  <NewLine Num="1" UId="1061" />
+  <Blank Num="8" UId="1062" />
+  <Access Scope="GlobalVariable" UId="1063">
+    <Symbol UId="1064">
+      <Component Name="Control_DB" UId="1065">
+        <BooleanAttribute Name="HasQuotes" UId="1066">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1067" />
+      <Component Name="ECnv_Sys" UId="1068">
+        <Token Text="[" UId="1069" />
+        <Access Scope="LocalVariable" UId="1070">
+          <Symbol UId="1071">
+            <Component Name="System_No" UId="1072" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="1073" />
+      </Component>
+      <Token Text="." UId="1074" />
+      <Component Name="Instruction" UId="1075" />
+      <Token Text="." UId="1076" />
+      <Component Name="Foward" UId="1077" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1078" />
+  <Token Text=":=" UId="1079" />
+  <Blank Num="1" UId="1080" />
+  <Access Scope="GlobalVariable" UId="1081">
+    <Symbol UId="1082">
+      <Component Name="Manual_Fwd_HMI" UId="1083">
+        <BooleanAttribute Name="HasQuotes" UId="1084">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1085" />
+  <NewLine Num="1" UId="1086" />
+  <Blank Num="8" UId="1087" />
+  <Access Scope="GlobalVariable" UId="1088">
+    <Symbol UId="1089">
+      <Component Name="Control_DB" UId="1090">
+        <BooleanAttribute Name="HasQuotes" UId="1091">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1092" />
+      <Component Name="ECnv_Sys" UId="1093">
+        <Token Text="[" UId="1094" />
+        <Access Scope="LocalVariable" UId="1095">
+          <Symbol UId="1096">
+            <Component Name="System_No" UId="1097" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="1098" />
+      </Component>
+      <Token Text="." UId="1099" />
+      <Component Name="Instruction" UId="1100" />
+      <Token Text="." UId="1101" />
+      <Component Name="Backward" UId="1102" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1103" />
+  <Token Text=":=" UId="1104" />
+  <Blank Num="1" UId="1105" />
+  <Access Scope="GlobalVariable" UId="1106">
+    <Symbol UId="1107">
+      <Component Name="Manual_Bwd_HMI" UId="1108">
+        <BooleanAttribute Name="HasQuotes" UId="1109">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1110" />
+  <NewLine Num="1" UId="1111" />
+  <Blank Num="8" UId="1112" />
+  <Access Scope="GlobalVariable" UId="1113">
+    <Symbol UId="1114">
+      <Component Name="Control_DB" UId="1115">
+        <BooleanAttribute Name="HasQuotes" UId="1116">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1117" />
+      <Component Name="ECnv_Sys" UId="1118">
+        <Token Text="[" UId="1119" />
+        <Access Scope="LocalVariable" UId="1120">
+          <Symbol UId="1121">
+            <Component Name="System_No" UId="1122" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="1123" />
+      </Component>
+      <Token Text="." UId="1124" />
+      <Component Name="Instruction" UId="1125" />
+      <Token Text="." UId="1126" />
+      <Component Name="Start_Transfer" UId="1127" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1128" />
+  <Token Text=":=" UId="1129" />
+  <Blank Num="1" UId="1130" />
+  <Access Scope="GlobalVariable" UId="1131">
+    <Symbol UId="1132">
+      <Component Name="Start_Transfer_HMI" UId="1133">
+        <BooleanAttribute Name="HasQuotes" UId="1134">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1135" />
+  <NewLine Num="1" UId="1136" />
+  <Blank Num="8" UId="1137" />
+  <Token Text="IF" UId="1138" />
+  <Blank Num="1" UId="1139" />
+  <Access Scope="GlobalVariable" UId="1140">
+    <Symbol UId="1141">
+      <Component Name="CNV_HMI" UId="1142">
+        <BooleanAttribute Name="HasQuotes" UId="1143">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1144" />
+      <Component Name="In_Out" UId="1145">
+        <Token Text="[" UId="1146" />
+        <Access Scope="LocalVariable" UId="1147">
+          <Symbol UId="1148">
+            <Component Name="System_No" UId="1149" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="1150" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1151" />
+  <Token Text="THEN" UId="1152" />
+  <Blank Num="1" UId="1153" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1154">
+    <Text UId="1155"> 0 = ECNV RECEIVE, 1 = ECONV SEND</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1156" />
+  <Blank Num="12" UId="1157" />
+  <Access Scope="GlobalVariable" UId="1158">
+    <Symbol UId="1159">
+      <Component Name="Control_DB" UId="1160">
+        <BooleanAttribute Name="HasQuotes" UId="1161">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1162" />
+      <Component Name="ECnv_Sys" UId="1163">
+        <Token Text="[" UId="1164" />
+        <Access Scope="LocalVariable" UId="1165">
+          <Symbol UId="1166">
+            <Component Name="System_No" UId="1167" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="1168" />
+      </Component>
+      <Token Text="." UId="1169" />
+      <Component Name="Instruction" UId="1170" />
+      <Token Text="." UId="1171" />
+      <Component Name="Transfer_To_ID" UId="1172" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1173" />
+  <Token Text=":=" UId="1174" />
+  <Blank Num="1" UId="1175" />
+  <Access Scope="GlobalVariable" UId="1176">
+    <Symbol UId="1177">
+      <Component Name="CNV_ID_HMI(1)" UId="1178" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1179" />
+  <NewLine Num="1" UId="1180" />
+  <Blank Num="12" UId="1181" />
+  <Access Scope="GlobalVariable" UId="1182">
+    <Symbol UId="1183">
+      <Component Name="Control_DB" UId="1184">
+        <BooleanAttribute Name="HasQuotes" UId="1185">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1186" />
+      <Component Name="ECnv_Sys" UId="1187">
+        <Token Text="[" UId="1188" />
+        <Access Scope="LocalVariable" UId="1189">
+          <Symbol UId="1190">
+            <Component Name="System_No" UId="1191" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="1192" />
+      </Component>
+      <Token Text="." UId="1193" />
+      <Component Name="Instruction" UId="1194" />
+      <Token Text="." UId="1195" />
+      <Component Name="Transfer_From_ID" UId="1196" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1197" />
+  <Token Text=":=" UId="1198" />
+  <Blank Num="1" UId="1199" />
+  <Access Scope="LiteralConstant" UId="1200">
+    <Constant UId="1201">
+      <ConstantValue UId="1203">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1204" />
+  <NewLine Num="1" UId="1205" />
+  <Blank Num="8" UId="1206" />
+  <Token Text="ELSE" UId="1207" />
+  <NewLine Num="1" UId="1208" />
+  <Blank Num="12" UId="1209" />
+  <Access Scope="GlobalVariable" UId="1210">
+    <Symbol UId="1211">
+      <Component Name="Control_DB" UId="1212">
+        <BooleanAttribute Name="HasQuotes" UId="1213">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1214" />
+      <Component Name="ECnv_Sys" UId="1215">
+        <Token Text="[" UId="1216" />
+        <Access Scope="LocalVariable" UId="1217">
+          <Symbol UId="1218">
+            <Component Name="System_No" UId="1219" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="1220" />
+      </Component>
+      <Token Text="." UId="1221" />
+      <Component Name="Instruction" UId="1222" />
+      <Token Text="." UId="1223" />
+      <Component Name="Transfer_To_ID" UId="1224" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1225" />
+  <Token Text=":=" UId="1226" />
+  <Blank Num="1" UId="1227" />
+  <Access Scope="LiteralConstant" UId="1228">
+    <Constant UId="1229">
+      <ConstantValue UId="1231">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1232" />
+  <NewLine Num="1" UId="1233" />
+  <Blank Num="12" UId="1234" />
+  <Access Scope="GlobalVariable" UId="1235">
+    <Symbol UId="1236">
+      <Component Name="Control_DB" UId="1237">
+        <BooleanAttribute Name="HasQuotes" UId="1238">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1239" />
+      <Component Name="ECnv_Sys" UId="1240">
+        <Token Text="[" UId="1241" />
+        <Access Scope="LocalVariable" UId="1242">
+          <Symbol UId="1243">
+            <Component Name="System_No" UId="1244" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="1245" />
+      </Component>
+      <Token Text="." UId="1246" />
+      <Component Name="Instruction" UId="1247" />
+      <Token Text="." UId="1248" />
+      <Component Name="Transfer_From_ID" UId="1249" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1250" />
+  <Token Text=":=" UId="1251" />
+  <Blank Num="1" UId="1252" />
+  <Access Scope="GlobalVariable" UId="1253">
+    <Symbol UId="1254">
+      <Component Name="CNV_ID_HMI(1)" UId="1255" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1256" />
+  <NewLine Num="1" UId="1257" />
+  <Blank Num="8" UId="1258" />
+  <Token Text="END_IF" UId="1259" />
+  <Token Text=";" UId="1260" />
+  <NewLine Num="1" UId="1261" />
+  <Blank Num="4" UId="1262" />
+  <Token Text="END_IF" UId="1263" />
+  <Token Text=";" UId="1264" />
+  <NewLine Num="1" UId="1265" />
+  <Token Text="END_IF" UId="1266" />
+  <Token Text=";" UId="1267" />
+  <NewLine Num="1" UId="1268" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FC>
+</Document>

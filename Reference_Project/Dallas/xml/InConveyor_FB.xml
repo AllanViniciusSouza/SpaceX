@@ -1,0 +1,4590 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-19T18:01:33.5357864Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FB ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor>Mertin Coetzee</HeaderAuthor>
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="Cnv_Settings" Datatype="&quot;Inbound_Cnv_Settings&quot;" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="ID" Datatype="DInt" />
+          <Member Name="TC_Time" Datatype="UInt" />
+          <Member Name="Transfer_Time" Datatype="UInt" />
+          <Member Name="Slow_Speed" Datatype="UInt" />
+          <Member Name="Full_Speed" Datatype="UInt" />
+          <Member Name="Manual_Speed" Datatype="UInt" />
+          <Member Name="No_Forklift_Detect_Timer" Datatype="UInt" />
+          <Member Name="G120_Hardware_ID" Datatype="HW_IO" />
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+  <Section Name="Output" />
+  <Section Name="InOut">
+    <Member Name="Cnv_Control" Datatype="&quot;Inbound_Cnv_Control_UDT&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="Mode" Datatype="UInt" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Warning" Datatype="UInt" />
+          <Member Name="Enabled" Datatype="Bool" />
+          <Member Name="Stopped" Datatype="Bool" />
+          <Member Name="Done" Datatype="Bool" />
+          <Member Name="Running" Datatype="Bool" />
+          <Member Name="Ready_For_Task" Datatype="Bool" />
+          <Member Name="Current_Task_Type" Datatype="UInt" />
+          <Member Name="Current_Task_ID" Datatype="UInt" />
+          <Member Name="Cnv_Occupied" Datatype="Bool" />
+          <Member Name="Pallet_Type" Datatype="UInt" />
+          <Member Name="SM_State" Datatype="UInt" />
+          <Member Name="Motor" Datatype="&quot;Cnv_Motor&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Enabled" Datatype="Bool" />
+                <Member Name="Ready" Datatype="Bool" />
+                <Member Name="Forward" Datatype="Bool" />
+                <Member Name="Reverse" Datatype="Bool" />
+                <Member Name="Speed" Datatype="Real" />
+                <Member Name="Speed_Actual" Datatype="Real" />
+                <Member Name="Actual_Current" Datatype="Real" />
+                <Member Name="Config_Axis" Datatype="Word" />
+                <Member Name="Error" Datatype="Bool" />
+                <Member Name="Status" Datatype="Word" />
+                <Member Name="Communication_Error" Datatype="Word" />
+                <Member Name="Lockout" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Instruction" Datatype="&quot;InCnv_Instruction&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Mode_Change" Datatype="UInt" />
+                <Member Name="Stop" Datatype="Bool" />
+                <Member Name="Enable" Datatype="Bool" />
+                <Member Name="Reset" Datatype="Bool" />
+                <Member Name="Automatic_Start" Datatype="Bool" />
+                <Member Name="Execute" Datatype="Bool" />
+                <Member Name="Task_ID" Datatype="UInt" />
+                <Member Name="Task_Metadata" Datatype="String" />
+                <Member Name="Transfer_To_ID" Datatype="DInt" />
+                <Member Name="Transfer_From_ID" Datatype="DInt" />
+                <Member Name="Transfer_in_Progress" Datatype="Bool" />
+                <Member Name="Inbound_Ready" Datatype="Bool" />
+                <Member Name="Transfer_Complete" Datatype="Bool" />
+                <Member Name="Outbound_Ready" Datatype="Bool" />
+                <Member Name="Start_Transfer" Datatype="Bool" />
+                <Member Name="Start_Transfer_Backward" Datatype="Bool" />
+                <Member Name="Foward" Datatype="Bool" />
+                <Member Name="Backward" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Inputs" Datatype="&quot;Inbound_Cnv_Inputs&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Pallet Detect 1" Datatype="Bool" />
+                <Member Name="Pallet Detect 2" Datatype="Bool" />
+                <Member Name="Barcode" Datatype="String" />
+                <Member Name="Fork Lift Detect" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="Cnv_Errors" Datatype="&quot;Cnv_Errors&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="Error_Word_1" Datatype="UInt" />
+                <Member Name="Error_Word_2" Datatype="UInt" />
+                <Member Name="Error_Word_3" Datatype="UInt" />
+                <Member Name="Error_Word_4" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="SinaSpeed" Datatype="SinaSpeed" Version="1.0" Accessibility="Public">
+      <Sections>
+        <Section Name="Input">
+          <Member Name="EnableAxis" Datatype="Bool" />
+          <Member Name="AckError" Datatype="Bool" />
+          <Member Name="SpeedSp" Datatype="Real" />
+          <Member Name="RefSpeed" Datatype="Real" />
+          <Member Name="ConfigAxis" Datatype="Word" />
+          <Member Name="HWIDSTW" Datatype="HW_IO" />
+          <Member Name="HWIDZSW" Datatype="HW_IO" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="AxisEnabled" Datatype="Bool" />
+          <Member Name="Lockout" Datatype="Bool" />
+          <Member Name="ActVelocity" Datatype="Real" />
+          <Member Name="Error" Datatype="Bool" />
+          <Member Name="Status" Datatype="Word" />
+          <Member Name="DiagId" Datatype="Word" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="STW1" Datatype="Word" />
+          <Member Name="VelocitySP" Datatype="Word" />
+          <Member Name="ZSW1" Datatype="Word" />
+          <Member Name="VelocityAV" Datatype="Word" />
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+  <Section Name="Static">
+    <Member Name="State" Datatype="UInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Timer_TC" Datatype="TON_TIME" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Timer_Transfer" Datatype="TON_TIME" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Watchdog" Datatype="TON_TIME" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Transfer_Direction" Datatype="String" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="MainSetpoint" Datatype="Int" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="IEC_Timer_0_Instance_1" Datatype="TON_TIME" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="R_TRIG_Instance" Datatype="R_TRIG" Version="1.0" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="Input">
+          <Member Name="CLK" Datatype="Bool" />
+        </Section>
+        <Section Name="Output">
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+        <Section Name="InOut" />
+        <Section Name="Static">
+          <Member Name="Stat_Bit" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+  <Section Name="Temp">
+    <Member Name="Execute_Old" Datatype="Bool" />
+    <Member Name="Stop_Old" Datatype="Bool" />
+  </Section>
+  <Section Name="Constant" />
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <IsRetainMemResEnabled>false</IsRetainMemResEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <MemoryReserve>100</MemoryReserve>
+      <Name>InConveyor_FB</Name>
+      <Namespace />
+      <Number>9</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <Access Scope="GlobalVariable" UId="21">
+    <Symbol UId="22">
+      <Component Name="R_TRIG_DB_8" UId="23">
+        <BooleanAttribute Name="HasQuotes" UId="24">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="25">
+    <Instruction UId="26">
+      <Token Text="(" UId="27" />
+      <Parameter Name="CLK" UId="28">
+        <Token Text=":=" UId="29" />
+        <Blank Num="1" UId="30" />
+        <Access Scope="LocalVariable" UId="31">
+          <Symbol UId="32">
+            <Component Name="Cnv_Control" UId="33" />
+            <Token Text="." UId="34" />
+            <Component Name="Instruction" UId="35" />
+            <Token Text="." UId="36" />
+            <Component Name="Execute" UId="37" />
+          </Symbol>
+        </Access>
+        <Blank Num="1" UId="38" />
+        <Token Text="AND" UId="39" />
+        <Blank Num="1" UId="40" />
+        <Token Text="NOT" UId="41" />
+        <Blank Num="1" UId="42" />
+        <Access Scope="LocalVariable" UId="43">
+          <Symbol UId="44">
+            <Component Name="Execute_Old" UId="45" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="46" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="47" />
+  <NewLine Num="1" UId="48" />
+  <Access Scope="GlobalVariable" UId="49">
+    <Symbol UId="50">
+      <Component Name="R_TRIG_DB_9" UId="51">
+        <BooleanAttribute Name="HasQuotes" UId="52">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="53">
+    <Instruction UId="54">
+      <Token Text="(" UId="55" />
+      <Parameter Name="CLK" UId="56">
+        <Token Text=":=" UId="57" />
+        <Access Scope="LocalVariable" UId="58">
+          <Symbol UId="59">
+            <Component Name="Cnv_Control" UId="60" />
+            <Token Text="." UId="61" />
+            <Component Name="Instruction" UId="62" />
+            <Token Text="." UId="63" />
+            <Component Name="Stop" UId="64" />
+          </Symbol>
+        </Access>
+        <Blank Num="1" UId="65" />
+        <Token Text="AND" UId="66" />
+        <Blank Num="1" UId="67" />
+        <Token Text="NOT" UId="68" />
+        <Blank Num="1" UId="69" />
+        <Access Scope="LocalVariable" UId="70">
+          <Symbol UId="71">
+            <Component Name="Stop_Old" UId="72" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="73" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="74" />
+  <NewLine Num="2" UId="75" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="76">
+    <Text UId="77"> "Debug_Barcode" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="2" UId="78" />
+  <Access Scope="LocalVariable" UId="79">
+    <Symbol UId="80">
+      <Component Name="Execute_Old" UId="81" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="82" />
+  <Token Text=":=" UId="83" />
+  <Blank Num="1" UId="84" />
+  <Access Scope="LocalVariable" UId="85">
+    <Symbol UId="86">
+      <Component Name="Cnv_Control" UId="87" />
+      <Token Text="." UId="88" />
+      <Component Name="Instruction" UId="89" />
+      <Token Text="." UId="90" />
+      <Component Name="Execute" UId="91" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="92" />
+  <NewLine Num="1" UId="93" />
+  <Access Scope="LocalVariable" UId="94">
+    <Symbol UId="95">
+      <Component Name="Stop_Old" UId="96" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="97" />
+  <Token Text=":=" UId="98" />
+  <Blank Num="1" UId="99" />
+  <Access Scope="LocalVariable" UId="100">
+    <Symbol UId="101">
+      <Component Name="Cnv_Control" UId="102" />
+      <Token Text="." UId="103" />
+      <Component Name="Instruction" UId="104" />
+      <Token Text="." UId="105" />
+      <Component Name="Stop" UId="106" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="107" />
+  <NewLine Num="2" UId="108" />
+  <Access Scope="LocalVariable" UId="109">
+    <Symbol UId="110">
+      <Component Name="Cnv_Control" UId="111" />
+      <Token Text="." UId="112" />
+      <Component Name="Enabled" UId="113" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="114" />
+  <Token Text=":=" UId="115" />
+  <Blank Num="1" UId="116" />
+  <Access Scope="LocalVariable" UId="117">
+    <Symbol UId="118">
+      <Component Name="Cnv_Control" UId="119" />
+      <Token Text="." UId="120" />
+      <Component Name="Instruction" UId="121" />
+      <Token Text="." UId="122" />
+      <Component Name="Enable" UId="123" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="124" />
+  <NewLine Num="2" UId="125" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="126">
+    <Text UId="127">MODES</Text>
+  </LineComment>
+  <NewLine Num="1" UId="128" />
+  <Access Scope="LocalVariable" UId="129">
+    <Symbol UId="130">
+      <Component Name="Cnv_Control" UId="131" />
+      <Token Text="." UId="132" />
+      <Component Name="Mode" UId="133" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="134" />
+  <Token Text=":=" UId="135" />
+  <Blank Num="1" UId="136" />
+  <Access Scope="LocalVariable" UId="137">
+    <Symbol UId="138">
+      <Component Name="Cnv_Control" UId="139" />
+      <Token Text="." UId="140" />
+      <Component Name="Instruction" UId="141" />
+      <Token Text="." UId="142" />
+      <Component Name="Mode_Change" UId="143" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="144" />
+  <NewLine Num="1" UId="145" />
+  <Token Text="IF" UId="146" />
+  <Blank Num="1" UId="147" />
+  <Token Text="(" UId="148" />
+  <Access Scope="LocalVariable" UId="149">
+    <Symbol UId="150">
+      <Component Name="Cnv_Control" UId="151" />
+      <Token Text="." UId="152" />
+      <Component Name="Mode" UId="153" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="154" />
+  <Token Text="=" UId="155" />
+  <Blank Num="1" UId="156" />
+  <Access Scope="LiteralConstant" UId="157">
+    <Constant UId="158">
+      <ConstantValue UId="160">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="161" />
+  <Token Text="OR" UId="162" />
+  <Blank Num="1" UId="163" />
+  <Access Scope="LocalVariable" UId="164">
+    <Symbol UId="165">
+      <Component Name="Cnv_Control" UId="166" />
+      <Token Text="." UId="167" />
+      <Component Name="Mode" UId="168" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="169" />
+  <Token Text="=" UId="170" />
+  <Blank Num="1" UId="171" />
+  <Access Scope="LiteralConstant" UId="172">
+    <Constant UId="173">
+      <ConstantValue UId="175">5</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="176" />
+  <Blank Num="1" UId="177" />
+  <Token Text="AND" UId="178" />
+  <Blank Num="1" UId="179" />
+  <Token Text="NOT" UId="180" />
+  <Blank Num="1" UId="181" />
+  <Access Scope="LocalVariable" UId="182">
+    <Symbol UId="183">
+      <Component Name="Cnv_Control" UId="184" />
+      <Token Text="." UId="185" />
+      <Component Name="Error" UId="186" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="187" />
+  <Token Text="THEN" UId="188" />
+  <NewLine Num="1" UId="189" />
+  <Blank Num="4" UId="190" />
+  <Access Scope="LocalVariable" UId="191">
+    <Symbol UId="192">
+      <Component Name="State" UId="193" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="194" />
+  <Token Text=":=" UId="195" />
+  <Blank Num="1" UId="196" />
+  <Access Scope="LiteralConstant" UId="197">
+    <Constant UId="198">
+      <ConstantValue UId="200">500</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="201" />
+  <NewLine Num="1" UId="202" />
+  <Token Text="END_IF" UId="203" />
+  <Token Text=";" UId="204" />
+  <NewLine Num="2" UId="205" />
+  <Access Scope="LocalVariable" UId="206">
+    <Symbol UId="207">
+      <Component Name="R_TRIG_Instance" UId="208" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="209">
+    <Instruction UId="210">
+      <Token Text="(" UId="211" />
+      <Parameter Name="CLK" UId="212">
+        <Token Text=":=" UId="213" />
+        <Access Scope="LocalVariable" UId="214">
+          <Symbol UId="215">
+            <Component Name="Cnv_Control" UId="216" />
+            <Token Text="." UId="217" />
+            <Component Name="Mode" UId="218" />
+          </Symbol>
+        </Access>
+        <Blank Num="1" UId="219" />
+        <Token Text="=" UId="220" />
+        <Blank Num="1" UId="221" />
+        <Access Scope="LiteralConstant" UId="222">
+          <Constant UId="223">
+            <ConstantValue UId="225">3</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="226" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="227" />
+  <NewLine Num="1" UId="228" />
+  <Token Text="IF" UId="229" />
+  <Blank Num="1" UId="230" />
+  <Access Scope="LocalVariable" UId="231">
+    <Symbol UId="232">
+      <Component Name="R_TRIG_Instance" UId="233" />
+      <Token Text="." UId="234" />
+      <Component Name="Q" UId="235" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="236" />
+  <Token Text="THEN" UId="237" />
+  <NewLine Num="1" UId="238" />
+  <Blank Num="4" UId="239" />
+  <Access Scope="LocalVariable" UId="240">
+    <Symbol UId="241">
+      <Component Name="State" UId="242" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="243" />
+  <Token Text=":=" UId="244" />
+  <Blank Num="1" UId="245" />
+  <Access Scope="LiteralConstant" UId="246">
+    <Constant UId="247">
+      <ConstantValue UId="249">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="250" />
+  <NewLine Num="1" UId="251" />
+  <Token Text="END_IF" UId="252" />
+  <Token Text=";" UId="253" />
+  <NewLine Num="2" UId="254" />
+  <LineComment Inserted="true" NoClosingBracket="false" UId="255">
+    <Text UId="256">
+TODO:
+01. Need to add statemachine watchdog - Done
+02. Extractor needs to be on same floor for pallet to be moved in manual passed Rbwd - Done
+03. Complete reset state - Done
+04. Add stop inputs - Done
+05. Need to add variable motor speed, manual needs to be slower. - Done
+06. Need to add cyclic error checking. For odd sensor combinations as well - Partially done
+07. Need to add Shuttle monitor - Done
+08. Need to add Task ID check and start bit check to outbound pallet move. Check direction of pallet movement based on connected Cnv.
+09. Need to add checks for wrong direction of travel - Done
+10. Add checks for unsafe conditions with Cnv_Inputs - Partially Done
+11. Define Error codes - DOne
+12. Add watchdof time to Cnv Settings - Done
+13. Add self-timeout on manual 
+14. For shuttle in place sensor checks take into account extractor floor and safety stopper state
+15. Confirm modes and states are correct (Semi-auto and maintenance as well)
+16. Add the correct transfer process for the logistex-spacemaker pallet handovers.
+
+Mode select is done via the HMI. Might add external mode select switches.
+        
+        Mode select mask:
+        0: Disabled
+        1: Manual
+        2: Semi-Auto
+        3: Auto
+        4: Teach - N/A for Cnv
+        5: Maintenance
+        
+Device ID Format: XXYYZZ    
+XX = Device type   
+    01   VTD
+    10  Cnv_Front_of_VTD
+    11  Cnv_Rear_of_VTD
+    12  Cnv_On_Extractor
+    20  Safety_Stop_Front_of_VTD
+    21  Safety_Stop_Rear_of_VTD
+YY = Floor   
+ZZ = VTD Connected to    
+Example: 110203 Conveyor at the rear of VTD 3 on level 2
+
+Pallet Alignment
+0 = no alignment
+1 = center alignment
+2 = Left
+3 = Right
+
+ Sensor order for the conveyor:
+ Lfwd Lpd1 Lpd2
+  []   []   []
+ ##############################
+ #        Pallet Flow         #
+ #         -------&gt;&gt;          #
+ #                            #
+ #                            #
+ ##############################
+                  []   []   []
+                 Rpd2 Rpd1 Rbwd      
+</Text>
+  </LineComment>
+  <NewLine Num="2" UId="257" />
+  <Token Text="REGION" UId="258" />
+  <Blank Num="1" UId="259" />
+  <Text UId="260">Cyclic Checks    </Text>
+  <NewLine Num="1" UId="261" />
+  <Blank Num="4" UId="262" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="263">
+    <Text UId="264"> Update the pallet type as the Cnv_Inputs are triggered.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="265" />
+  <Blank Num="4" UId="266" />
+  <Access Scope="LocalVariable" UId="267">
+    <Symbol UId="268">
+      <Component Name="Cnv_Control" UId="269" />
+      <Token Text="." UId="270" />
+      <Component Name="Cnv_Occupied" UId="271" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="272" />
+  <Token Text=":=" UId="273" />
+  <Blank Num="1" UId="274" />
+  <Token Text="NOT" UId="275" />
+  <Blank Num="1" UId="276" />
+  <Access Scope="GlobalVariable" UId="277">
+    <Symbol UId="278">
+      <Component Name="Inbound Conveyor - Back Sensor" UId="279" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="280" />
+  <Token Text="OR" UId="281" />
+  <Blank Num="1" UId="282" />
+  <Token Text="NOT" UId="283" />
+  <Blank Num="1" UId="284" />
+  <Access Scope="GlobalVariable" UId="285">
+    <Symbol UId="286">
+      <Component Name="Inbound Conveyor - Front Sensor" UId="287" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="288" />
+  <NewLine Num="1" UId="289" />
+  <Blank Num="4" UId="290" />
+  <NewLine Num="1" UId="291" />
+  <Blank Num="4" UId="292" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="293">
+    <Text UId="294"> Update the Cnv_Control opbject</Text>
+  </LineComment>
+  <NewLine Num="1" UId="295" />
+  <Blank Num="4" UId="296" />
+  <Access Scope="LocalVariable" UId="297">
+    <Symbol UId="298">
+      <Component Name="Cnv_Control" UId="299" />
+      <Token Text="." UId="300" />
+      <Component Name="SM_State" UId="301" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="302" />
+  <Token Text=":=" UId="303" />
+  <Blank Num="1" UId="304" />
+  <Access Scope="LocalVariable" UId="305">
+    <Symbol UId="306">
+      <Component Name="State" UId="307" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="308" />
+  <NewLine Num="1" UId="309" />
+  <Blank Num="4" UId="310" />
+  <Access Scope="LocalVariable" UId="311">
+    <Symbol UId="312">
+      <Component Name="Cnv_Control" UId="313" />
+      <Token Text="." UId="314" />
+      <Component Name="Stopped" UId="315" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="316" />
+  <Token Text=":=" UId="317" />
+  <Blank Num="1" UId="318" />
+  <Token Text="NOT" UId="319" />
+  <Blank Num="1" UId="320" />
+  <Access Scope="LocalVariable" UId="321">
+    <Symbol UId="322">
+      <Component Name="Cnv_Control" UId="323" />
+      <Token Text="." UId="324" />
+      <Component Name="Running" UId="325" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="326" />
+  <NewLine Num="1" UId="327" />
+  <Blank Num="4" UId="328" />
+  <Token Text="IF" UId="329" />
+  <Blank Num="1" UId="330" />
+  <Access Scope="LocalVariable" UId="331">
+    <Symbol UId="332">
+      <Component Name="Cnv_Control" UId="333" />
+      <Token Text="." UId="334" />
+      <Component Name="Instruction" UId="335" />
+      <Token Text="." UId="336" />
+      <Component Name="Inbound_Ready" UId="337" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="338" />
+  <Token Text="OR" UId="339" />
+  <Blank Num="1" UId="340" />
+  <Access Scope="LocalVariable" UId="341">
+    <Symbol UId="342">
+      <Component Name="Cnv_Control" UId="343" />
+      <Token Text="." UId="344" />
+      <Component Name="Instruction" UId="345" />
+      <Token Text="." UId="346" />
+      <Component Name="Outbound_Ready" UId="347" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="348" />
+  <Token Text="THEN" UId="349" />
+  <NewLine Num="1" UId="350" />
+  <Blank Num="8" UId="351" />
+  <Access Scope="LocalVariable" UId="352">
+    <Symbol UId="353">
+      <Component Name="Cnv_Control" UId="354" />
+      <Token Text="." UId="355" />
+      <Component Name="Ready_For_Task" UId="356" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="357" />
+  <Token Text=":=" UId="358" />
+  <Blank Num="1" UId="359" />
+  <Access Scope="LiteralConstant" UId="360">
+    <Constant UId="361">
+      <ConstantValue UId="363">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="364" />
+  <NewLine Num="1" UId="365" />
+  <Blank Num="4" UId="366" />
+  <Token Text="ELSE" UId="367" />
+  <NewLine Num="1" UId="368" />
+  <Blank Num="8" UId="369" />
+  <Access Scope="LocalVariable" UId="370">
+    <Symbol UId="371">
+      <Component Name="Cnv_Control" UId="372" />
+      <Token Text="." UId="373" />
+      <Component Name="Ready_For_Task" UId="374" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="375" />
+  <Token Text=":=" UId="376" />
+  <Blank Num="1" UId="377" />
+  <Access Scope="LiteralConstant" UId="378">
+    <Constant UId="379">
+      <ConstantValue UId="381">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="382" />
+  <NewLine Num="1" UId="383" />
+  <Blank Num="4" UId="384" />
+  <Token Text="END_IF" UId="385" />
+  <Token Text=";" UId="386" />
+  <NewLine Num="1" UId="387" />
+  <Blank Num="4" UId="388" />
+  <NewLine Num="1" UId="389" />
+  <Blank Num="4" UId="390" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="391">
+    <Text UId="392">Automatic Start</Text>
+  </LineComment>
+  <NewLine Num="1" UId="393" />
+  <Blank Num="4" UId="394" />
+  <Access Scope="GlobalVariable" UId="395">
+    <Symbol UId="396">
+      <Component Name="IEC_Timer_0_DB_14" UId="397">
+        <BooleanAttribute Name="HasQuotes" UId="398">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="399" />
+  <Access Scope="Call" UId="400">
+    <Instruction Name="TON" UId="401">
+      <Token Text="(" UId="402" />
+      <Parameter Name="IN" UId="403">
+        <Blank Num="1" UId="404" />
+        <Token Text=":=" UId="405" />
+        <Blank Num="1" UId="406" />
+        <Token Text="NOT" UId="407" />
+        <Blank Num="1" UId="408" />
+        <Access Scope="LocalVariable" UId="409">
+          <Symbol UId="410">
+            <Component Name="Cnv_Control" UId="411" />
+            <Token Text="." UId="412" />
+            <Component Name="Inputs" UId="413" />
+            <Token Text="." UId="414" />
+            <Component Name="Fork Lift Detect" UId="415" />
+          </Symbol>
+        </Access>
+        <Blank Num="1" UId="416" />
+        <Token Text="AND" UId="417" />
+        <Blank Num="1" UId="418" />
+        <Access Scope="LocalVariable" UId="419">
+          <Symbol UId="420">
+            <Component Name="Cnv_Control" UId="421" />
+            <Token Text="." UId="422" />
+            <Component Name="Inputs" UId="423" />
+            <Token Text="." UId="424" />
+            <Component Name="Pallet Detect 1" UId="425" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="426" />
+      <NewLine Num="1" UId="427" />
+      <Blank Num="28" UId="428" />
+      <Parameter Name="PT" UId="429">
+        <Blank Num="1" UId="430" />
+        <Token Text=":=" UId="431" />
+        <Blank Num="1" UId="432" />
+        <Access Scope="Call" UId="433">
+          <Instruction Name="UINT_TO_TIME" UId="434">
+            <Token Text="(" UId="435" />
+            <NamelessParameter UId="436">
+              <Access Scope="LocalVariable" UId="437">
+                <Symbol UId="438">
+                  <Component Name="Cnv_Settings" UId="439" />
+                  <Token Text="." UId="440" />
+                  <Component Name="No_Forklift_Detect_Timer" UId="441" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="443" />
+          </Instruction>
+        </Access>
+        <Blank Num="1" UId="444" />
+        <Token Text="*" UId="445" />
+        <Blank Num="1" UId="446" />
+        <Access Scope="LiteralConstant" UId="447">
+          <Constant UId="448">
+            <ConstantValue UId="450">1000</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="451" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="452" />
+  <NewLine Num="1" UId="453" />
+  <Blank Num="4" UId="454" />
+  <NewLine Num="1" UId="455" />
+  <Blank Num="4" UId="456" />
+  <Access Scope="GlobalVariable" UId="457">
+    <Symbol UId="458">
+      <Component Name="IEC_Timer_0_DB_13" UId="459">
+        <BooleanAttribute Name="HasQuotes" UId="460">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="461" />
+  <Access Scope="Call" UId="462">
+    <Instruction Name="TP" UId="463">
+      <Token Text="(" UId="464" />
+      <Parameter Name="IN" UId="465">
+        <Token Text=":=" UId="466" />
+        <Access Scope="LocalVariable" UId="467">
+          <Symbol UId="468">
+            <Component Name="Cnv_Control" UId="469" />
+            <Token Text="." UId="470" />
+            <Component Name="Inputs" UId="471" />
+            <Token Text="." UId="472" />
+            <Component Name="Pallet Detect 1" UId="473" />
+          </Symbol>
+        </Access>
+        <Blank Num="1" UId="474" />
+        <Token Text="AND" UId="475" />
+        <Blank Num="1" UId="476" />
+        <Access Scope="GlobalVariable" UId="477">
+          <Symbol UId="478">
+            <Component Name="IEC_Timer_0_DB_14" UId="479">
+              <BooleanAttribute Name="HasQuotes" UId="480">true</BooleanAttribute>
+            </Component>
+            <Token Text="." UId="481" />
+            <Component Name="Q" UId="482" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="483" />
+      <NewLine Num="1" UId="484" />
+      <Blank Num="28" UId="485" />
+      <Parameter Name="PT" UId="486">
+        <Token Text=":=" UId="487" />
+        <Access Scope="TypedConstant" UId="488">
+          <Constant UId="489">
+            <ConstantValue UId="490">T#3S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="491" />
+      <NewLine Num="1" UId="492" />
+      <Blank Num="28" UId="493" />
+      <Parameter Name="Q" UId="494">
+        <Token Text="=&gt;" UId="495" />
+        <Access Scope="LocalVariable" UId="496">
+          <Symbol UId="497">
+            <Component Name="Cnv_Control" UId="498" />
+            <Token Text="." UId="499" />
+            <Component Name="Instruction" UId="500" />
+            <Token Text="." UId="501" />
+            <Component Name="Automatic_Start" UId="502" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="503" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="504" />
+  <NewLine Num="1" UId="505" />
+  <Blank Num="4" UId="506" />
+  <NewLine Num="1" UId="507" />
+  <Token Text="END_REGION" UId="508" />
+  <NewLine Num="2" UId="509" />
+  <Token Text="REGION" UId="510" />
+  <Blank Num="1" UId="511" />
+  <Text UId="512">Auto/Semi/Manual mode</Text>
+  <NewLine Num="1" UId="513" />
+  <Blank Num="4" UId="514" />
+  <Token Text="CASE" UId="515" />
+  <Blank Num="1" UId="516" />
+  <Access Scope="LocalVariable" UId="517">
+    <Symbol UId="518">
+      <Component Name="State" UId="519" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="520" />
+  <Token Text="OF" UId="521" />
+  <NewLine Num="1" UId="522" />
+  <Blank Num="8" UId="523" />
+  <Access Scope="LiteralConstant" UId="524">
+    <Constant UId="525">
+      <ConstantValue UId="527">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=":" UId="528" />
+  <Blank Num="1" UId="529" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="530">
+    <Text UId="531">Initialization</Text>
+  </LineComment>
+  <NewLine Num="1" UId="532" />
+  <Blank Num="12" UId="533" />
+  <Access Scope="LocalVariable" UId="534">
+    <Symbol UId="535">
+      <Component Name="Cnv_Control" UId="536" />
+      <Token Text="." UId="537" />
+      <Component Name="Instruction" UId="538" />
+      <Token Text="." UId="539" />
+      <Component Name="Transfer_Complete" UId="540" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="541" />
+  <Token Text=":=" UId="542" />
+  <Blank Num="1" UId="543" />
+  <Access Scope="LiteralConstant" UId="544">
+    <Constant UId="545">
+      <ConstantValue UId="547">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="548" />
+  <NewLine Num="1" UId="549" />
+  <Blank Num="12" UId="550" />
+  <Access Scope="LocalVariable" UId="551">
+    <Symbol UId="552">
+      <Component Name="Cnv_Control" UId="553" />
+      <Token Text="." UId="554" />
+      <Component Name="Instruction" UId="555" />
+      <Token Text="." UId="556" />
+      <Component Name="Transfer_in_Progress" UId="557" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="558" />
+  <Token Text=":=" UId="559" />
+  <Blank Num="1" UId="560" />
+  <Access Scope="LiteralConstant" UId="561">
+    <Constant UId="562">
+      <ConstantValue UId="564">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="565" />
+  <NewLine Num="1" UId="566" />
+  <Blank Num="12" UId="567" />
+  <Access Scope="LocalVariable" UId="568">
+    <Symbol UId="569">
+      <Component Name="Cnv_Control" UId="570" />
+      <Token Text="." UId="571" />
+      <Component Name="Running" UId="572" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="573" />
+  <Token Text=":=" UId="574" />
+  <Blank Num="1" UId="575" />
+  <Access Scope="LiteralConstant" UId="576">
+    <Constant UId="577">
+      <ConstantValue UId="579">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="580" />
+  <NewLine Num="1" UId="581" />
+  <Blank Num="12" UId="582" />
+  <Access Scope="LocalVariable" UId="583">
+    <Symbol UId="584">
+      <Component Name="Cnv_Control" UId="585" />
+      <Token Text="." UId="586" />
+      <Component Name="Motor" UId="587" />
+      <Token Text="." UId="588" />
+      <Component Name="Forward" UId="589" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="590" />
+  <Token Text=":=" UId="591" />
+  <Blank Num="1" UId="592" />
+  <Access Scope="LiteralConstant" UId="593">
+    <Constant UId="594">
+      <ConstantValue UId="596">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="597" />
+  <NewLine Num="1" UId="598" />
+  <Blank Num="12" UId="599" />
+  <Access Scope="LocalVariable" UId="600">
+    <Symbol UId="601">
+      <Component Name="Cnv_Control" UId="602" />
+      <Token Text="." UId="603" />
+      <Component Name="Motor" UId="604" />
+      <Token Text="." UId="605" />
+      <Component Name="Reverse" UId="606" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="607" />
+  <Token Text=":=" UId="608" />
+  <Blank Num="1" UId="609" />
+  <Access Scope="LiteralConstant" UId="610">
+    <Constant UId="611">
+      <ConstantValue UId="613">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="614" />
+  <NewLine Num="1" UId="615" />
+  <Blank Num="12" UId="616" />
+  <Access Scope="LocalVariable" UId="617">
+    <Symbol UId="618">
+      <Component Name="Cnv_Control" UId="619" />
+      <Token Text="." UId="620" />
+      <Component Name="Motor" UId="621" />
+      <Token Text="." UId="622" />
+      <Component Name="Speed" UId="623" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="624" />
+  <Token Text=":=" UId="625" />
+  <Blank Num="1" UId="626" />
+  <Access Scope="LiteralConstant" UId="627">
+    <Constant UId="628">
+      <ConstantValue UId="630">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="631" />
+  <NewLine Num="1" UId="632" />
+  <Blank Num="12" UId="633" />
+  <Access Scope="LocalVariable" UId="634">
+    <Symbol UId="635">
+      <Component Name="Timer_Transfer" UId="636" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="637">
+    <Instruction UId="638">
+      <Token Text="(" UId="639" />
+      <Parameter Name="IN" UId="640">
+        <Blank Num="1" UId="641" />
+        <Token Text=":=" UId="642" />
+        <Blank Num="1" UId="643" />
+        <Access Scope="LiteralConstant" UId="644">
+          <Constant UId="645">
+            <ConstantValue UId="647">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="648" />
+      <NewLine Num="1" UId="649" />
+      <Blank Num="28" UId="650" />
+      <Parameter Name="PT" UId="651">
+        <Blank Num="1" UId="652" />
+        <Token Text=":=" UId="653" />
+        <Blank Num="1" UId="654" />
+        <Access Scope="TypedConstant" UId="655">
+          <Constant UId="656">
+            <ConstantValue UId="657">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="658" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="659" />
+  <NewLine Num="1" UId="660" />
+  <Blank Num="12" UId="661" />
+  <Token Text="IF" UId="662" />
+  <Blank Num="1" UId="663" />
+  <Access Scope="LocalVariable" UId="664">
+    <Symbol UId="665">
+      <Component Name="Cnv_Control" UId="666" />
+      <Token Text="." UId="667" />
+      <Component Name="Enabled" UId="668" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="669" />
+  <Token Text="AND" UId="670" />
+  <Blank Num="1" UId="671" />
+  <Token Text="(" UId="672" />
+  <Access Scope="LocalVariable" UId="673">
+    <Symbol UId="674">
+      <Component Name="Cnv_Control" UId="675" />
+      <Token Text="." UId="676" />
+      <Component Name="Mode" UId="677" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="678" />
+  <Token Text="=" UId="679" />
+  <Blank Num="1" UId="680" />
+  <Access Scope="LiteralConstant" UId="681">
+    <Constant UId="682">
+      <ConstantValue UId="684">3</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="685" />
+  <Token Text="OR" UId="686" />
+  <Blank Num="1" UId="687" />
+  <Access Scope="LocalVariable" UId="688">
+    <Symbol UId="689">
+      <Component Name="Cnv_Control" UId="690" />
+      <Token Text="." UId="691" />
+      <Component Name="Mode" UId="692" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="693" />
+  <Token Text="=" UId="694" />
+  <Blank Num="1" UId="695" />
+  <Access Scope="LiteralConstant" UId="696">
+    <Constant UId="697">
+      <ConstantValue UId="699">2</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="700" />
+  <Blank Num="1" UId="701" />
+  <Token Text="AND" UId="702" />
+  <Blank Num="1" UId="703" />
+  <Access Scope="LocalVariable" UId="704">
+    <Symbol UId="705">
+      <Component Name="Cnv_Control" UId="706" />
+      <Token Text="." UId="707" />
+      <Component Name="Error" UId="708" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="709" />
+  <Token Text="=" UId="710" />
+  <Blank Num="1" UId="711" />
+  <Access Scope="LiteralConstant" UId="712">
+    <Constant UId="713">
+      <ConstantValue UId="715">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="716" />
+  <Token Text="THEN" UId="717" />
+  <NewLine Num="1" UId="718" />
+  <Blank Num="16" UId="719" />
+  <Access Scope="LocalVariable" UId="720">
+    <Symbol UId="721">
+      <Component Name="State" UId="722" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="723" />
+  <Token Text=":=" UId="724" />
+  <Blank Num="1" UId="725" />
+  <Access Scope="LiteralConstant" UId="726">
+    <Constant UId="727">
+      <ConstantValue UId="729">10</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="730" />
+  <NewLine Num="1" UId="731" />
+  <Blank Num="12" UId="732" />
+  <Token Text="END_IF" UId="733" />
+  <Token Text=";" UId="734" />
+  <NewLine Num="1" UId="735" />
+  <Blank Num="16" UId="736" />
+  <NewLine Num="1" UId="737" />
+  <Blank Num="8" UId="738" />
+  <Access Scope="LiteralConstant" UId="739">
+    <Constant UId="740">
+      <ConstantValue UId="742">10</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=":" UId="743" />
+  <Blank Num="1" UId="744" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="745">
+    <Text UId="746"> Idle - Waiting for Execute</Text>
+  </LineComment>
+  <NewLine Num="1" UId="747" />
+  <Blank Num="12" UId="748" />
+  <Token Text="IF" UId="749" />
+  <Blank Num="1" UId="750" />
+  <Access Scope="GlobalVariable" UId="751">
+    <Symbol UId="752">
+      <Component Name="R_TRIG_DB_8" UId="753">
+        <BooleanAttribute Name="HasQuotes" UId="754">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="755" />
+      <Component Name="Q" UId="756" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="757" />
+  <Token Text="AND" UId="758" />
+  <Blank Num="1" UId="759" />
+  <Token Text="NOT" UId="760" />
+  <Blank Num="1" UId="761" />
+  <Access Scope="LocalVariable" UId="762">
+    <Symbol UId="763">
+      <Component Name="Cnv_Control" UId="764" />
+      <Token Text="." UId="765" />
+      <Component Name="Error" UId="766" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="767" />
+  <Token Text="THEN" UId="768" />
+  <NewLine Num="1" UId="769" />
+  <Blank Num="16" UId="770" />
+  <Access Scope="LocalVariable" UId="771">
+    <Symbol UId="772">
+      <Component Name="Cnv_Control" UId="773" />
+      <Token Text="." UId="774" />
+      <Component Name="Done" UId="775" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="776" />
+  <Token Text=":=" UId="777" />
+  <Blank Num="1" UId="778" />
+  <Access Scope="LiteralConstant" UId="779">
+    <Constant UId="780">
+      <ConstantValue UId="782">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="783" />
+  <NewLine Num="1" UId="784" />
+  <Blank Num="16" UId="785" />
+  <Access Scope="LocalVariable" UId="786">
+    <Symbol UId="787">
+      <Component Name="Cnv_Control" UId="788" />
+      <Token Text="." UId="789" />
+      <Component Name="Running" UId="790" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="791" />
+  <Token Text=":=" UId="792" />
+  <Blank Num="1" UId="793" />
+  <Access Scope="LiteralConstant" UId="794">
+    <Constant UId="795">
+      <ConstantValue UId="797">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="798" />
+  <NewLine Num="1" UId="799" />
+  <Blank Num="16" UId="800" />
+  <Access Scope="LocalVariable" UId="801">
+    <Symbol UId="802">
+      <Component Name="Cnv_Control" UId="803" />
+      <Token Text="." UId="804" />
+      <Component Name="Motor" UId="805" />
+      <Token Text="." UId="806" />
+      <Component Name="Forward" UId="807" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="808" />
+  <Token Text=":=" UId="809" />
+  <Blank Num="1" UId="810" />
+  <Access Scope="LiteralConstant" UId="811">
+    <Constant UId="812">
+      <ConstantValue UId="814">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="815" />
+  <NewLine Num="1" UId="816" />
+  <Blank Num="16" UId="817" />
+  <Access Scope="LocalVariable" UId="818">
+    <Symbol UId="819">
+      <Component Name="Cnv_Control" UId="820" />
+      <Token Text="." UId="821" />
+      <Component Name="Motor" UId="822" />
+      <Token Text="." UId="823" />
+      <Component Name="Speed" UId="824" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="825" />
+  <Token Text=":=" UId="826" />
+  <Blank Num="1" UId="827" />
+  <Access Scope="LocalVariable" UId="828">
+    <Symbol UId="829">
+      <Component Name="Cnv_Settings" UId="830" />
+      <Token Text="." UId="831" />
+      <Component Name="Full_Speed" UId="832" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="833" />
+  <NewLine Num="1" UId="834" />
+  <Blank Num="16" UId="835" />
+  <Access Scope="LocalVariable" UId="836">
+    <Symbol UId="837">
+      <Component Name="Transfer_Direction" UId="838" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="839" />
+  <Token Text=":=" UId="840" />
+  <Blank Num="1" UId="841" />
+  <Access Scope="LiteralConstant" UId="842">
+    <Constant UId="843">
+      <ConstantValue UId="845">'Foward'</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="846" />
+  <NewLine Num="1" UId="847" />
+  <Blank Num="16" UId="848" />
+  <Access Scope="LocalVariable" UId="849">
+    <Symbol UId="850">
+      <Component Name="Cnv_Control" UId="851" />
+      <Token Text="." UId="852" />
+      <Component Name="Instruction" UId="853" />
+      <Token Text="." UId="854" />
+      <Component Name="Transfer_in_Progress" UId="855" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="856" />
+  <Token Text=":=" UId="857" />
+  <Blank Num="1" UId="858" />
+  <Access Scope="LiteralConstant" UId="859">
+    <Constant UId="860">
+      <ConstantValue UId="862">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="863" />
+  <NewLine Num="1" UId="864" />
+  <Blank Num="16" UId="865" />
+  <Access Scope="LocalVariable" UId="866">
+    <Symbol UId="867">
+      <Component Name="State" UId="868" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="869" />
+  <Token Text=":=" UId="870" />
+  <Blank Num="1" UId="871" />
+  <Access Scope="LiteralConstant" UId="872">
+    <Constant UId="873">
+      <ConstantValue UId="875">20</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="876" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="877">
+    <Text UId="878">Without bacode</Text>
+  </LineComment>
+  <NewLine Num="1" UId="879" />
+  <Blank Num="12" UId="880" />
+  <Token Text="ELSIF" UId="881" />
+  <Blank Num="1" UId="882" />
+  <Access Scope="LocalVariable" UId="883">
+    <Symbol UId="884">
+      <Component Name="Cnv_Control" UId="885" />
+      <Token Text="." UId="886" />
+      <Component Name="Instruction" UId="887" />
+      <Token Text="." UId="888" />
+      <Component Name="Start_Transfer" UId="889" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="890" />
+  <Token Text="AND" UId="891" />
+  <Blank Num="1" UId="892" />
+  <Token Text="NOT" UId="893" />
+  <Blank Num="1" UId="894" />
+  <Access Scope="LocalVariable" UId="895">
+    <Symbol UId="896">
+      <Component Name="Cnv_Control" UId="897" />
+      <Token Text="." UId="898" />
+      <Component Name="Error" UId="899" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="900" />
+  <Token Text="AND" UId="901" />
+  <NewLine Num="1" UId="902" />
+  <Blank Num="16" UId="903" />
+  <Token Text="NOT" UId="904" />
+  <Blank Num="1" UId="905" />
+  <Access Scope="GlobalVariable" UId="906">
+    <Symbol UId="907">
+      <Component Name="Inbound Conveyor - Back Sensor" UId="908" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="909" />
+  <Token Text="AND" UId="910" />
+  <Blank Num="1" UId="911" />
+  <Access Scope="GlobalVariable" UId="912">
+    <Symbol UId="913">
+      <Component Name="Inbound Conveyor - Front Sensor" UId="914" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="915" />
+  <Token Text="THEN" UId="916" />
+  <NewLine Num="1" UId="917" />
+  <Blank Num="16" UId="918" />
+  <Access Scope="LocalVariable" UId="919">
+    <Symbol UId="920">
+      <Component Name="Cnv_Control" UId="921" />
+      <Token Text="." UId="922" />
+      <Component Name="Done" UId="923" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="924" />
+  <Token Text=":=" UId="925" />
+  <Blank Num="1" UId="926" />
+  <Access Scope="LiteralConstant" UId="927">
+    <Constant UId="928">
+      <ConstantValue UId="930">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="931" />
+  <NewLine Num="1" UId="932" />
+  <Blank Num="16" UId="933" />
+  <Access Scope="LocalVariable" UId="934">
+    <Symbol UId="935">
+      <Component Name="Cnv_Control" UId="936" />
+      <Token Text="." UId="937" />
+      <Component Name="Running" UId="938" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="939" />
+  <Token Text=":=" UId="940" />
+  <Blank Num="1" UId="941" />
+  <Access Scope="LiteralConstant" UId="942">
+    <Constant UId="943">
+      <ConstantValue UId="945">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="946" />
+  <NewLine Num="1" UId="947" />
+  <Blank Num="16" UId="948" />
+  <Access Scope="LocalVariable" UId="949">
+    <Symbol UId="950">
+      <Component Name="Cnv_Control" UId="951" />
+      <Token Text="." UId="952" />
+      <Component Name="Motor" UId="953" />
+      <Token Text="." UId="954" />
+      <Component Name="Forward" UId="955" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="956" />
+  <Token Text=":=" UId="957" />
+  <Blank Num="1" UId="958" />
+  <Access Scope="LiteralConstant" UId="959">
+    <Constant UId="960">
+      <ConstantValue UId="962">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="963" />
+  <NewLine Num="1" UId="964" />
+  <Blank Num="16" UId="965" />
+  <Access Scope="LocalVariable" UId="966">
+    <Symbol UId="967">
+      <Component Name="Cnv_Control" UId="968" />
+      <Token Text="." UId="969" />
+      <Component Name="Motor" UId="970" />
+      <Token Text="." UId="971" />
+      <Component Name="Speed" UId="972" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="973" />
+  <Token Text=":=" UId="974" />
+  <Blank Num="1" UId="975" />
+  <Access Scope="LocalVariable" UId="976">
+    <Symbol UId="977">
+      <Component Name="Cnv_Settings" UId="978" />
+      <Token Text="." UId="979" />
+      <Component Name="Full_Speed" UId="980" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="981" />
+  <NewLine Num="1" UId="982" />
+  <Blank Num="16" UId="983" />
+  <Access Scope="LocalVariable" UId="984">
+    <Symbol UId="985">
+      <Component Name="Transfer_Direction" UId="986" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="987" />
+  <Token Text=":=" UId="988" />
+  <Blank Num="1" UId="989" />
+  <Access Scope="LiteralConstant" UId="990">
+    <Constant UId="991">
+      <ConstantValue UId="993">'Foward'</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="994" />
+  <NewLine Num="1" UId="995" />
+  <Blank Num="16" UId="996" />
+  <Access Scope="LocalVariable" UId="997">
+    <Symbol UId="998">
+      <Component Name="Cnv_Control" UId="999" />
+      <Token Text="." UId="1000" />
+      <Component Name="Instruction" UId="1001" />
+      <Token Text="." UId="1002" />
+      <Component Name="Transfer_in_Progress" UId="1003" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1004" />
+  <Token Text=":=" UId="1005" />
+  <Blank Num="1" UId="1006" />
+  <Access Scope="LiteralConstant" UId="1007">
+    <Constant UId="1008">
+      <ConstantValue UId="1010">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1011" />
+  <NewLine Num="1" UId="1012" />
+  <Blank Num="16" UId="1013" />
+  <Access Scope="LocalVariable" UId="1014">
+    <Symbol UId="1015">
+      <Component Name="State" UId="1016" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1017" />
+  <Token Text=":=" UId="1018" />
+  <Blank Num="1" UId="1019" />
+  <Access Scope="LiteralConstant" UId="1020">
+    <Constant UId="1021">
+      <ConstantValue UId="1023">15</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1024" />
+  <NewLine Num="1" UId="1025" />
+  <Blank Num="12" UId="1026" />
+  <Token Text="END_IF" UId="1027" />
+  <Token Text=";" UId="1028" />
+  <NewLine Num="1" UId="1029" />
+  <Blank Num="12" UId="1030" />
+  <NewLine Num="1" UId="1031" />
+  <Blank Num="8" UId="1032" />
+  <Access Scope="LiteralConstant" UId="1033">
+    <Constant UId="1034">
+      <ConstantValue UId="1036">15</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=":" UId="1037" />
+  <Blank Num="1" UId="1038" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1039">
+    <Text UId="1040"> Running Roller till the second sensor</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1041" />
+  <Blank Num="12" UId="1042" />
+  <Token Text="IF" UId="1043" />
+  <Blank Num="1" UId="1044" />
+  <Token Text="NOT" UId="1045" />
+  <Blank Num="1" UId="1046" />
+  <Access Scope="GlobalVariable" UId="1047">
+    <Symbol UId="1048">
+      <Component Name="Inbound Conveyor - Front Sensor" UId="1049" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1050" />
+  <Token Text="THEN" UId="1051" />
+  <NewLine Num="1" UId="1052" />
+  <Blank Num="16" UId="1053" />
+  <Access Scope="LocalVariable" UId="1054">
+    <Symbol UId="1055">
+      <Component Name="Cnv_Control" UId="1056" />
+      <Token Text="." UId="1057" />
+      <Component Name="Motor" UId="1058" />
+      <Token Text="." UId="1059" />
+      <Component Name="Speed" UId="1060" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1061" />
+  <Token Text=":=" UId="1062" />
+  <Blank Num="1" UId="1063" />
+  <Access Scope="LiteralConstant" UId="1064">
+    <Constant UId="1065">
+      <ConstantValue UId="1067">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1068" />
+  <NewLine Num="1" UId="1069" />
+  <Blank Num="16" UId="1070" />
+  <Access Scope="LocalVariable" UId="1071">
+    <Symbol UId="1072">
+      <Component Name="Cnv_Control" UId="1073" />
+      <Token Text="." UId="1074" />
+      <Component Name="Motor" UId="1075" />
+      <Token Text="." UId="1076" />
+      <Component Name="Forward" UId="1077" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1078" />
+  <Token Text=":=" UId="1079" />
+  <Blank Num="1" UId="1080" />
+  <Access Scope="LiteralConstant" UId="1081">
+    <Constant UId="1082">
+      <ConstantValue UId="1084">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1085" />
+  <NewLine Num="1" UId="1086" />
+  <Blank Num="16" UId="1087" />
+  <Access Scope="LocalVariable" UId="1088">
+    <Symbol UId="1089">
+      <Component Name="Cnv_Control" UId="1090" />
+      <Token Text="." UId="1091" />
+      <Component Name="Running" UId="1092" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1093" />
+  <Token Text=":=" UId="1094" />
+  <Blank Num="1" UId="1095" />
+  <Access Scope="LiteralConstant" UId="1096">
+    <Constant UId="1097">
+      <ConstantValue UId="1099">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1100" />
+  <NewLine Num="1" UId="1101" />
+  <Blank Num="16" UId="1102" />
+  <Access Scope="LocalVariable" UId="1103">
+    <Symbol UId="1104">
+      <Component Name="State" UId="1105" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1106" />
+  <Token Text=":=" UId="1107" />
+  <Blank Num="1" UId="1108" />
+  <Access Scope="LiteralConstant" UId="1109">
+    <Constant UId="1110">
+      <ConstantValue UId="1112">20</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1113" />
+  <NewLine Num="1" UId="1114" />
+  <Blank Num="12" UId="1115" />
+  <Token Text="END_IF" UId="1116" />
+  <Token Text=";" UId="1117" />
+  <NewLine Num="1" UId="1118" />
+  <Blank Num="12" UId="1119" />
+  <NewLine Num="1" UId="1120" />
+  <Blank Num="12" UId="1121" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1122">
+    <Text UId="1123">Monitor the transfer progress</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1124" />
+  <Blank Num="12" UId="1125" />
+  <Access Scope="LocalVariable" UId="1126">
+    <Symbol UId="1127">
+      <Component Name="Timer_Transfer" UId="1128" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="1129">
+    <Instruction UId="1130">
+      <Token Text="(" UId="1131" />
+      <Parameter Name="IN" UId="1132">
+        <Blank Num="1" UId="1133" />
+        <Token Text=":=" UId="1134" />
+        <Blank Num="1" UId="1135" />
+        <Access Scope="LiteralConstant" UId="1136">
+          <Constant UId="1137">
+            <ConstantValue UId="1139">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1140" />
+      <NewLine Num="1" UId="1141" />
+      <Blank Num="28" UId="1142" />
+      <Parameter Name="PT" UId="1143">
+        <Blank Num="1" UId="1144" />
+        <Token Text=":=" UId="1145" />
+        <Blank Num="1" UId="1146" />
+        <Access Scope="Call" UId="1147">
+          <Instruction Name="UINT_TO_TIME" UId="1148">
+            <Token Text="(" UId="1149" />
+            <NamelessParameter UId="1150">
+              <Access Scope="LocalVariable" UId="1151">
+                <Symbol UId="1152">
+                  <Component Name="Cnv_Settings" UId="1153" />
+                  <Token Text="." UId="1154" />
+                  <Component Name="Transfer_Time" UId="1155" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="1157" />
+          </Instruction>
+        </Access>
+        <Blank Num="1" UId="1158" />
+        <Token Text="*" UId="1159" />
+        <Blank Num="1" UId="1160" />
+        <Access Scope="LiteralConstant" UId="1161">
+          <Constant UId="1162">
+            <ConstantValue UId="1164">1000</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1165" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1166" />
+  <NewLine Num="1" UId="1167" />
+  <Blank Num="12" UId="1168" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1169">
+    <Text UId="1170">If the watchdog bites, kill the process</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1171" />
+  <Blank Num="12" UId="1172" />
+  <Token Text="IF" UId="1173" />
+  <Blank Num="1" UId="1174" />
+  <Access Scope="LocalVariable" UId="1175">
+    <Symbol UId="1176">
+      <Component Name="Timer_Transfer" UId="1177" />
+      <Token Text="." UId="1178" />
+      <Component Name="Q" UId="1179" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1180" />
+  <Token Text="THEN" UId="1181" />
+  <Blank Num="1" UId="1182" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1183">
+    <Text UId="1184">14:1 Transfer timed out</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1185" />
+  <Blank Num="16" UId="1186" />
+  <Access Scope="Call" UId="1187">
+    <CallInfo UId="1188" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="1190">
+        <Component Name="Set_Bit_F" UId="1189" />
+      </Instance>
+      <Token Text="(" UId="1191" />
+      <Parameter Name="Bit" UId="1192">
+        <Blank Num="1" UId="1193" />
+        <Token Text=":=" UId="1194" />
+        <Blank Num="1" UId="1195" />
+        <Access Scope="LiteralConstant" UId="1196">
+          <Constant UId="1197">
+            <ConstantValue UId="1199">3</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1200" />
+      <NewLine Num="1" UId="1201" />
+      <Blank Num="28" UId="1202" />
+      <Parameter Name="Bit_Value" UId="1203">
+        <Blank Num="1" UId="1204" />
+        <Token Text=":=" UId="1205" />
+        <Blank Num="1" UId="1206" />
+        <Access Scope="LiteralConstant" UId="1207">
+          <Constant UId="1208">
+            <ConstantValue UId="1210">1</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1211" />
+      <NewLine Num="1" UId="1212" />
+      <Blank Num="28" UId="1213" />
+      <Parameter Name="Var" UId="1214">
+        <Blank Num="1" UId="1215" />
+        <Token Text=":=" UId="1216" />
+        <Blank Num="1" UId="1217" />
+        <Access Scope="LocalVariable" UId="1218">
+          <Symbol UId="1219">
+            <Component Name="Cnv_Control" UId="1220" />
+            <Token Text="." UId="1221" />
+            <Component Name="Cnv_Errors" UId="1222" />
+            <Token Text="." UId="1223" />
+            <Component Name="Error_Word_2" UId="1224" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1225" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="1226" />
+  <NewLine Num="1" UId="1227" />
+  <Blank Num="12" UId="1228" />
+  <Token Text="END_IF" UId="1229" />
+  <Token Text=";" UId="1230" />
+  <NewLine Num="1" UId="1231" />
+  <Blank Num="12" UId="1232" />
+  <NewLine Num="1" UId="1233" />
+  <Blank Num="12" UId="1234" />
+  <NewLine Num="1" UId="1235" />
+  <Blank Num="8" UId="1236" />
+  <Access Scope="LiteralConstant" UId="1237">
+    <Constant UId="1238">
+      <ConstantValue UId="1240">20</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=":" UId="1241" />
+  <Blank Num="1" UId="1242" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1243">
+    <Text UId="1244">Read Barcode</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1245" />
+  <Blank Num="12" UId="1246" />
+  <Access Scope="GlobalVariable" UId="1247">
+    <Symbol UId="1248">
+      <Component Name="IEC_Timer_0_DB_20" UId="1249">
+        <BooleanAttribute Name="HasQuotes" UId="1250">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="1251" />
+  <Access Scope="Call" UId="1252">
+    <Instruction Name="TON" UId="1253">
+      <Token Text="(" UId="1254" />
+      <Parameter Name="IN" UId="1255">
+        <Token Text=":=" UId="1256" />
+        <Access Scope="LiteralConstant" UId="1257">
+          <Constant UId="1258">
+            <ConstantValue UId="1260">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1261" />
+      <NewLine Num="1" UId="1262" />
+      <Blank Num="36" UId="1263" />
+      <Parameter Name="PT" UId="1264">
+        <Token Text=":=" UId="1265" />
+        <Access Scope="TypedConstant" UId="1266">
+          <Constant UId="1267">
+            <ConstantValue UId="1268">T#1S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1269" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1270" />
+  <NewLine Num="1" UId="1271" />
+  <Blank Num="12" UId="1272" />
+  <NewLine Num="1" UId="1273" />
+  <Blank Num="12" UId="1274" />
+  <Token Text="IF" UId="1275" />
+  <Blank Num="1" UId="1276" />
+  <Access Scope="GlobalVariable" UId="1277">
+    <Symbol UId="1278">
+      <Component Name="IEC_Timer_0_DB_20" UId="1279">
+        <BooleanAttribute Name="HasQuotes" UId="1280">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1281" />
+      <Component Name="Q" UId="1282" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1283" />
+  <Token Text="OR" UId="1284" />
+  <Blank Num="1" UId="1285" />
+  <Access Scope="GlobalVariable" UId="1286">
+    <Symbol UId="1287">
+      <Component Name="Control_DB" UId="1288">
+        <BooleanAttribute Name="HasQuotes" UId="1289">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1290" />
+      <Component Name="InBarcode_Station" UId="1291" />
+      <Token Text="." UId="1292" />
+      <Component Name="Valid" UId="1293" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1294" />
+  <Token Text="OR" UId="1295" />
+  <Blank Num="1" UId="1296" />
+  <Access Scope="GlobalVariable" UId="1297">
+    <Symbol UId="1298">
+      <Component Name="Debug_Barcode" UId="1299">
+        <BooleanAttribute Name="HasQuotes" UId="1300">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1301" />
+  <Token Text="THEN" UId="1302" />
+  <NewLine Num="1" UId="1303" />
+  <Blank Num="16" UId="1304" />
+  <Access Scope="LocalVariable" UId="1305">
+    <Symbol UId="1306">
+      <Component Name="State" UId="1307" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1308" />
+  <Token Text=":=" UId="1309" />
+  <Blank Num="1" UId="1310" />
+  <Access Scope="LiteralConstant" UId="1311">
+    <Constant UId="1312">
+      <ConstantValue UId="1314">30</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1315" />
+  <NewLine Num="1" UId="1316" />
+  <Blank Num="12" UId="1317" />
+  <Token Text="END_IF" UId="1318" />
+  <Token Text=";" UId="1319" />
+  <NewLine Num="1" UId="1320" />
+  <Blank Num="12" UId="1321" />
+  <NewLine Num="1" UId="1322" />
+  <Blank Num="8" UId="1323" />
+  <Access Scope="LiteralConstant" UId="1324">
+    <Constant UId="1325">
+      <ConstantValue UId="1327">30</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=":" UId="1328" />
+  <Blank Num="1" UId="1329" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1330">
+    <Text UId="1331">Wait PopUp 1 to run</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1332" />
+  <Blank Num="12" UId="1333" />
+  <Token Text="IF" UId="1334" />
+  <Blank Num="1" UId="1335" />
+  <Access Scope="GlobalVariable" UId="1336">
+    <Symbol UId="1337">
+      <Component Name="Control_DB" UId="1338">
+        <BooleanAttribute Name="HasQuotes" UId="1339">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1340" />
+      <Component Name="PopUp_Cnv" UId="1341">
+        <Token Text="[" UId="1342" />
+        <Access Scope="LiteralConstant" UId="1343">
+          <Constant UId="1344">
+            <ConstantValue UId="1346">1</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="1347" />
+      </Component>
+      <Token Text="." UId="1348" />
+      <Component Name="Roller_Motor" UId="1349" />
+      <Token Text="." UId="1350" />
+      <Component Name="Status" UId="1351" />
+      <Token Text="." UId="1352" />
+      <Token Text="%X0" UId="1353" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1354" />
+  <Token Text="THEN" UId="1355" />
+  <NewLine Num="1" UId="1356" />
+  <Blank Num="16" UId="1357" />
+  <Access Scope="LocalVariable" UId="1358">
+    <Symbol UId="1359">
+      <Component Name="Cnv_Control" UId="1360" />
+      <Token Text="." UId="1361" />
+      <Component Name="Running" UId="1362" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1363" />
+  <Token Text=":=" UId="1364" />
+  <Blank Num="1" UId="1365" />
+  <Access Scope="LiteralConstant" UId="1366">
+    <Constant UId="1367">
+      <ConstantValue UId="1369">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1370" />
+  <NewLine Num="1" UId="1371" />
+  <Blank Num="16" UId="1372" />
+  <Access Scope="LocalVariable" UId="1373">
+    <Symbol UId="1374">
+      <Component Name="Cnv_Control" UId="1375" />
+      <Token Text="." UId="1376" />
+      <Component Name="Motor" UId="1377" />
+      <Token Text="." UId="1378" />
+      <Component Name="Forward" UId="1379" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1380" />
+  <Token Text=":=" UId="1381" />
+  <Blank Num="1" UId="1382" />
+  <Access Scope="LiteralConstant" UId="1383">
+    <Constant UId="1384">
+      <ConstantValue UId="1386">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1387" />
+  <NewLine Num="1" UId="1388" />
+  <Blank Num="16" UId="1389" />
+  <Access Scope="LocalVariable" UId="1390">
+    <Symbol UId="1391">
+      <Component Name="Cnv_Control" UId="1392" />
+      <Token Text="." UId="1393" />
+      <Component Name="Motor" UId="1394" />
+      <Token Text="." UId="1395" />
+      <Component Name="Speed" UId="1396" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1397" />
+  <Token Text=":=" UId="1398" />
+  <Blank Num="1" UId="1399" />
+  <Access Scope="LocalVariable" UId="1400">
+    <Symbol UId="1401">
+      <Component Name="Cnv_Settings" UId="1402" />
+      <Token Text="." UId="1403" />
+      <Component Name="Full_Speed" UId="1404" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1405" />
+  <NewLine Num="1" UId="1406" />
+  <Blank Num="16" UId="1407" />
+  <Access Scope="LocalVariable" UId="1408">
+    <Symbol UId="1409">
+      <Component Name="Transfer_Direction" UId="1410" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1411" />
+  <Token Text=":=" UId="1412" />
+  <Blank Num="1" UId="1413" />
+  <Access Scope="LiteralConstant" UId="1414">
+    <Constant UId="1415">
+      <ConstantValue UId="1417">'Foward'</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1418" />
+  <NewLine Num="1" UId="1419" />
+  <Blank Num="16" UId="1420" />
+  <Access Scope="LocalVariable" UId="1421">
+    <Symbol UId="1422">
+      <Component Name="Cnv_Control" UId="1423" />
+      <Token Text="." UId="1424" />
+      <Component Name="Instruction" UId="1425" />
+      <Token Text="." UId="1426" />
+      <Component Name="Transfer_in_Progress" UId="1427" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1428" />
+  <Token Text=":=" UId="1429" />
+  <Blank Num="1" UId="1430" />
+  <Access Scope="LiteralConstant" UId="1431">
+    <Constant UId="1432">
+      <ConstantValue UId="1434">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1435" />
+  <NewLine Num="1" UId="1436" />
+  <Blank Num="16" UId="1437" />
+  <Access Scope="LocalVariable" UId="1438">
+    <Symbol UId="1439">
+      <Component Name="State" UId="1440" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1441" />
+  <Token Text=":=" UId="1442" />
+  <Blank Num="1" UId="1443" />
+  <Access Scope="LiteralConstant" UId="1444">
+    <Constant UId="1445">
+      <ConstantValue UId="1447">40</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1448" />
+  <NewLine Num="1" UId="1449" />
+  <Blank Num="12" UId="1450" />
+  <Token Text="END_IF" UId="1451" />
+  <Token Text=";" UId="1452" />
+  <NewLine Num="1" UId="1453" />
+  <Blank Num="12" UId="1454" />
+  <NewLine Num="1" UId="1455" />
+  <Blank Num="8" UId="1456" />
+  <Access Scope="LiteralConstant" UId="1457">
+    <Constant UId="1458">
+      <ConstantValue UId="1460">40</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=":" UId="1461" />
+  <Blank Num="1" UId="1462" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1463">
+    <Text UId="1464"> Running Roller</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1465" />
+  <Blank Num="12" UId="1466" />
+  <Token Text="IF" UId="1467" />
+  <Blank Num="1" UId="1468" />
+  <Access Scope="GlobalVariable" UId="1469">
+    <Symbol UId="1470">
+      <Component Name="R_TRIG_DB_9" UId="1471">
+        <BooleanAttribute Name="HasQuotes" UId="1472">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1473" />
+      <Component Name="Q" UId="1474" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1475" />
+  <Token Text="OR" UId="1476" />
+  <Blank Num="1" UId="1477" />
+  <Access Scope="GlobalVariable" UId="1478">
+    <Symbol UId="1479">
+      <Component Name="PopUp Conveyor 2 - Pallet present 3" UId="1480" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1481" />
+  <Token Text="THEN" UId="1482" />
+  <NewLine Num="1" UId="1483" />
+  <Blank Num="16" UId="1484" />
+  <Access Scope="LocalVariable" UId="1485">
+    <Symbol UId="1486">
+      <Component Name="Cnv_Control" UId="1487" />
+      <Token Text="." UId="1488" />
+      <Component Name="Done" UId="1489" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1490" />
+  <Token Text=":=" UId="1491" />
+  <Blank Num="1" UId="1492" />
+  <Access Scope="LiteralConstant" UId="1493">
+    <Constant UId="1494">
+      <ConstantValue UId="1496">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1497" />
+  <NewLine Num="1" UId="1498" />
+  <Blank Num="16" UId="1499" />
+  <Access Scope="LocalVariable" UId="1500">
+    <Symbol UId="1501">
+      <Component Name="Cnv_Control" UId="1502" />
+      <Token Text="." UId="1503" />
+      <Component Name="Motor" UId="1504" />
+      <Token Text="." UId="1505" />
+      <Component Name="Speed" UId="1506" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1507" />
+  <Token Text=":=" UId="1508" />
+  <Blank Num="1" UId="1509" />
+  <Access Scope="LiteralConstant" UId="1510">
+    <Constant UId="1511">
+      <ConstantValue UId="1513">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1514" />
+  <NewLine Num="1" UId="1515" />
+  <Blank Num="16" UId="1516" />
+  <Access Scope="LocalVariable" UId="1517">
+    <Symbol UId="1518">
+      <Component Name="Cnv_Control" UId="1519" />
+      <Token Text="." UId="1520" />
+      <Component Name="Motor" UId="1521" />
+      <Token Text="." UId="1522" />
+      <Component Name="Forward" UId="1523" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1524" />
+  <Token Text=":=" UId="1525" />
+  <Blank Num="1" UId="1526" />
+  <Access Scope="LiteralConstant" UId="1527">
+    <Constant UId="1528">
+      <ConstantValue UId="1530">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1531" />
+  <NewLine Num="1" UId="1532" />
+  <Blank Num="16" UId="1533" />
+  <Access Scope="LocalVariable" UId="1534">
+    <Symbol UId="1535">
+      <Component Name="Cnv_Control" UId="1536" />
+      <Token Text="." UId="1537" />
+      <Component Name="Running" UId="1538" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1539" />
+  <Token Text=":=" UId="1540" />
+  <Blank Num="1" UId="1541" />
+  <Access Scope="LiteralConstant" UId="1542">
+    <Constant UId="1543">
+      <ConstantValue UId="1545">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1546" />
+  <NewLine Num="1" UId="1547" />
+  <Blank Num="16" UId="1548" />
+  <Access Scope="LocalVariable" UId="1549">
+    <Symbol UId="1550">
+      <Component Name="State" UId="1551" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1552" />
+  <Token Text=":=" UId="1553" />
+  <Blank Num="1" UId="1554" />
+  <Access Scope="LiteralConstant" UId="1555">
+    <Constant UId="1556">
+      <ConstantValue UId="1558">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1559" />
+  <NewLine Num="1" UId="1560" />
+  <Blank Num="12" UId="1561" />
+  <Token Text="END_IF" UId="1562" />
+  <Token Text=";" UId="1563" />
+  <NewLine Num="1" UId="1564" />
+  <Blank Num="12" UId="1565" />
+  <NewLine Num="1" UId="1566" />
+  <Blank Num="12" UId="1567" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1568">
+    <Text UId="1569">Monitor the transfer progress</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1570" />
+  <Blank Num="12" UId="1571" />
+  <Access Scope="LocalVariable" UId="1572">
+    <Symbol UId="1573">
+      <Component Name="Timer_Transfer" UId="1574" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="1575">
+    <Instruction UId="1576">
+      <Token Text="(" UId="1577" />
+      <Parameter Name="IN" UId="1578">
+        <Blank Num="1" UId="1579" />
+        <Token Text=":=" UId="1580" />
+        <Blank Num="1" UId="1581" />
+        <Access Scope="LiteralConstant" UId="1582">
+          <Constant UId="1583">
+            <ConstantValue UId="1585">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1586" />
+      <NewLine Num="1" UId="1587" />
+      <Blank Num="28" UId="1588" />
+      <Parameter Name="PT" UId="1589">
+        <Blank Num="1" UId="1590" />
+        <Token Text=":=" UId="1591" />
+        <Blank Num="1" UId="1592" />
+        <Access Scope="Call" UId="1593">
+          <Instruction Name="UINT_TO_TIME" UId="1594">
+            <Token Text="(" UId="1595" />
+            <NamelessParameter UId="1596">
+              <Access Scope="LocalVariable" UId="1597">
+                <Symbol UId="1598">
+                  <Component Name="Cnv_Settings" UId="1599" />
+                  <Token Text="." UId="1600" />
+                  <Component Name="Transfer_Time" UId="1601" />
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="1603" />
+          </Instruction>
+        </Access>
+        <Blank Num="1" UId="1604" />
+        <Token Text="*" UId="1605" />
+        <Blank Num="1" UId="1606" />
+        <Access Scope="LiteralConstant" UId="1607">
+          <Constant UId="1608">
+            <ConstantValue UId="1610">1000</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1611" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1612" />
+  <NewLine Num="1" UId="1613" />
+  <Blank Num="12" UId="1614" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1615">
+    <Text UId="1616">If the watchdog bites, kill the process</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1617" />
+  <Blank Num="12" UId="1618" />
+  <Token Text="IF" UId="1619" />
+  <Blank Num="1" UId="1620" />
+  <Access Scope="LocalVariable" UId="1621">
+    <Symbol UId="1622">
+      <Component Name="Timer_Transfer" UId="1623" />
+      <Token Text="." UId="1624" />
+      <Component Name="Q" UId="1625" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1626" />
+  <Token Text="THEN" UId="1627" />
+  <Blank Num="1" UId="1628" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1629">
+    <Text UId="1630">14:1 Transfer timed out</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1631" />
+  <Blank Num="16" UId="1632" />
+  <Access Scope="Call" UId="1633">
+    <CallInfo UId="1634" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="1636">
+        <Component Name="Set_Bit_F" UId="1635" />
+      </Instance>
+      <Token Text="(" UId="1637" />
+      <Parameter Name="Bit" UId="1638">
+        <Blank Num="1" UId="1639" />
+        <Token Text=":=" UId="1640" />
+        <Blank Num="1" UId="1641" />
+        <Access Scope="LiteralConstant" UId="1642">
+          <Constant UId="1643">
+            <ConstantValue UId="1645">3</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1646" />
+      <NewLine Num="1" UId="1647" />
+      <Blank Num="28" UId="1648" />
+      <Parameter Name="Bit_Value" UId="1649">
+        <Blank Num="1" UId="1650" />
+        <Token Text=":=" UId="1651" />
+        <Blank Num="1" UId="1652" />
+        <Access Scope="LiteralConstant" UId="1653">
+          <Constant UId="1654">
+            <ConstantValue UId="1656">1</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1657" />
+      <NewLine Num="1" UId="1658" />
+      <Blank Num="28" UId="1659" />
+      <Parameter Name="Var" UId="1660">
+        <Blank Num="1" UId="1661" />
+        <Token Text=":=" UId="1662" />
+        <Blank Num="1" UId="1663" />
+        <Access Scope="LocalVariable" UId="1664">
+          <Symbol UId="1665">
+            <Component Name="Cnv_Control" UId="1666" />
+            <Token Text="." UId="1667" />
+            <Component Name="Cnv_Errors" UId="1668" />
+            <Token Text="." UId="1669" />
+            <Component Name="Error_Word_2" UId="1670" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1671" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="1672" />
+  <NewLine Num="1" UId="1673" />
+  <Blank Num="12" UId="1674" />
+  <Token Text="END_IF" UId="1675" />
+  <Token Text=";" UId="1676" />
+  <NewLine Num="1" UId="1677" />
+  <Blank Num="12" UId="1678" />
+  <NewLine Num="1" UId="1679" />
+  <Blank Num="12" UId="1680" />
+  <Access Scope="LiteralConstant" UId="1681">
+    <Constant UId="1682">
+      <ConstantValue UId="1684">400</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=":" UId="1685" />
+  <Blank Num="1" UId="1686" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1687">
+    <Text UId="1688">Error state</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1689" />
+  <Blank Num="16" UId="1690" />
+  <Access Scope="LocalVariable" UId="1691">
+    <Symbol UId="1692">
+      <Component Name="Cnv_Control" UId="1693" />
+      <Token Text="." UId="1694" />
+      <Component Name="Running" UId="1695" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1696" />
+  <Token Text=":=" UId="1697" />
+  <Blank Num="1" UId="1698" />
+  <Access Scope="LiteralConstant" UId="1699">
+    <Constant UId="1700">
+      <ConstantValue UId="1702">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1703" />
+  <NewLine Num="1" UId="1704" />
+  <Blank Num="16" UId="1705" />
+  <Access Scope="LocalVariable" UId="1706">
+    <Symbol UId="1707">
+      <Component Name="Cnv_Control" UId="1708" />
+      <Token Text="." UId="1709" />
+      <Component Name="Motor" UId="1710" />
+      <Token Text="." UId="1711" />
+      <Component Name="Speed" UId="1712" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1713" />
+  <Token Text=":=" UId="1714" />
+  <Blank Num="1" UId="1715" />
+  <Access Scope="LiteralConstant" UId="1716">
+    <Constant UId="1717">
+      <ConstantValue UId="1719">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1720" />
+  <NewLine Num="1" UId="1721" />
+  <Blank Num="16" UId="1722" />
+  <Access Scope="LocalVariable" UId="1723">
+    <Symbol UId="1724">
+      <Component Name="Cnv_Control" UId="1725" />
+      <Token Text="." UId="1726" />
+      <Component Name="Motor" UId="1727" />
+      <Token Text="." UId="1728" />
+      <Component Name="Forward" UId="1729" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1730" />
+  <Token Text=":=" UId="1731" />
+  <Blank Num="1" UId="1732" />
+  <Access Scope="LiteralConstant" UId="1733">
+    <Constant UId="1734">
+      <ConstantValue UId="1736">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1737" />
+  <NewLine Num="1" UId="1738" />
+  <Blank Num="16" UId="1739" />
+  <Access Scope="LocalVariable" UId="1740">
+    <Symbol UId="1741">
+      <Component Name="Cnv_Control" UId="1742" />
+      <Token Text="." UId="1743" />
+      <Component Name="Motor" UId="1744" />
+      <Token Text="." UId="1745" />
+      <Component Name="Reverse" UId="1746" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1747" />
+  <Token Text=":=" UId="1748" />
+  <Blank Num="1" UId="1749" />
+  <Access Scope="LiteralConstant" UId="1750">
+    <Constant UId="1751">
+      <ConstantValue UId="1753">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1754" />
+  <NewLine Num="1" UId="1755" />
+  <Blank Num="16" UId="1756" />
+  <Access Scope="LocalVariable" UId="1757">
+    <Symbol UId="1758">
+      <Component Name="Cnv_Control" UId="1759" />
+      <Token Text="." UId="1760" />
+      <Component Name="Instruction" UId="1761" />
+      <Token Text="." UId="1762" />
+      <Component Name="Stop" UId="1763" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1764" />
+  <Token Text=":=" UId="1765" />
+  <Blank Num="1" UId="1766" />
+  <Access Scope="LiteralConstant" UId="1767">
+    <Constant UId="1768">
+      <ConstantValue UId="1770">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1771" />
+  <NewLine Num="1" UId="1772" />
+  <Blank Num="16" UId="1773" />
+  <Access Scope="LocalVariable" UId="1774">
+    <Symbol UId="1775">
+      <Component Name="Cnv_Control" UId="1776" />
+      <Token Text="." UId="1777" />
+      <Component Name="Instruction" UId="1778" />
+      <Token Text="." UId="1779" />
+      <Component Name="Transfer_in_Progress" UId="1780" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1781" />
+  <Token Text=":=" UId="1782" />
+  <Blank Num="1" UId="1783" />
+  <Access Scope="LiteralConstant" UId="1784">
+    <Constant UId="1785">
+      <ConstantValue UId="1787">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1788" />
+  <NewLine Num="1" UId="1789" />
+  <Blank Num="16" UId="1790" />
+  <Access Scope="LocalVariable" UId="1791">
+    <Symbol UId="1792">
+      <Component Name="Watchdog" UId="1793" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="1794">
+    <Instruction UId="1795">
+      <Token Text="(" UId="1796" />
+      <Parameter Name="IN" UId="1797">
+        <Blank Num="1" UId="1798" />
+        <Token Text=":=" UId="1799" />
+        <Blank Num="1" UId="1800" />
+        <Access Scope="LiteralConstant" UId="1801">
+          <Constant UId="1802">
+            <ConstantValue UId="1804">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1805" />
+      <NewLine Num="1" UId="1806" />
+      <Blank Num="32" UId="1807" />
+      <Parameter Name="PT" UId="1808">
+        <Blank Num="1" UId="1809" />
+        <Token Text=":=" UId="1810" />
+        <Blank Num="1" UId="1811" />
+        <Access Scope="TypedConstant" UId="1812">
+          <Constant UId="1813">
+            <ConstantValue UId="1814">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1815" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1816" />
+  <NewLine Num="1" UId="1817" />
+  <Blank Num="16" UId="1818" />
+  <Access Scope="LocalVariable" UId="1819">
+    <Symbol UId="1820">
+      <Component Name="Timer_TC" UId="1821" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="1822">
+    <Instruction UId="1823">
+      <Token Text="(" UId="1824" />
+      <Parameter Name="IN" UId="1825">
+        <Blank Num="1" UId="1826" />
+        <Token Text=":=" UId="1827" />
+        <Blank Num="1" UId="1828" />
+        <Access Scope="LiteralConstant" UId="1829">
+          <Constant UId="1830">
+            <ConstantValue UId="1832">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1833" />
+      <NewLine Num="1" UId="1834" />
+      <Blank Num="32" UId="1835" />
+      <Parameter Name="PT" UId="1836">
+        <Blank Num="1" UId="1837" />
+        <Token Text=":=" UId="1838" />
+        <Blank Num="1" UId="1839" />
+        <Access Scope="TypedConstant" UId="1840">
+          <Constant UId="1841">
+            <ConstantValue UId="1842">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1843" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1844" />
+  <NewLine Num="1" UId="1845" />
+  <Blank Num="16" UId="1846" />
+  <Access Scope="LocalVariable" UId="1847">
+    <Symbol UId="1848">
+      <Component Name="Timer_Transfer" UId="1849" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="1850">
+    <Instruction UId="1851">
+      <Token Text="(" UId="1852" />
+      <Parameter Name="IN" UId="1853">
+        <Blank Num="1" UId="1854" />
+        <Token Text=":=" UId="1855" />
+        <Blank Num="1" UId="1856" />
+        <Access Scope="LiteralConstant" UId="1857">
+          <Constant UId="1858">
+            <ConstantValue UId="1860">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1861" />
+      <NewLine Num="1" UId="1862" />
+      <Blank Num="32" UId="1863" />
+      <Parameter Name="PT" UId="1864">
+        <Blank Num="1" UId="1865" />
+        <Token Text=":=" UId="1866" />
+        <Blank Num="1" UId="1867" />
+        <Access Scope="TypedConstant" UId="1868">
+          <Constant UId="1869">
+            <ConstantValue UId="1870">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1871" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1872" />
+  <NewLine Num="1" UId="1873" />
+  <Blank Num="16" UId="1874" />
+  <Access Scope="LocalVariable" UId="1875">
+    <Symbol UId="1876">
+      <Component Name="IEC_Timer_0_Instance_1" UId="1877" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="1878">
+    <Instruction UId="1879">
+      <Token Text="(" UId="1880" />
+      <Parameter Name="IN" UId="1881">
+        <Blank Num="1" UId="1882" />
+        <Token Text=":=" UId="1883" />
+        <Blank Num="1" UId="1884" />
+        <Access Scope="LiteralConstant" UId="1885">
+          <Constant UId="1886">
+            <ConstantValue UId="1888">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1889" />
+      <NewLine Num="1" UId="1890" />
+      <Blank Num="40" UId="1891" />
+      <Parameter Name="PT" UId="1892">
+        <Blank Num="1" UId="1893" />
+        <Token Text=":=" UId="1894" />
+        <Blank Num="1" UId="1895" />
+        <Access Scope="TypedConstant" UId="1896">
+          <Constant UId="1897">
+            <ConstantValue UId="1898">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1899" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1900" />
+  <NewLine Num="1" UId="1901" />
+  <Blank Num="16" UId="1902" />
+  <Token Text="IF" UId="1903" />
+  <Blank Num="1" UId="1904" />
+  <Access Scope="LocalVariable" UId="1905">
+    <Symbol UId="1906">
+      <Component Name="Cnv_Control" UId="1907" />
+      <Token Text="." UId="1908" />
+      <Component Name="Instruction" UId="1909" />
+      <Token Text="." UId="1910" />
+      <Component Name="Reset" UId="1911" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1912" />
+  <Token Text="THEN" UId="1913" />
+  <NewLine Num="1" UId="1914" />
+  <Blank Num="20" UId="1915" />
+  <Access Scope="LocalVariable" UId="1916">
+    <Symbol UId="1917">
+      <Component Name="Cnv_Control" UId="1918" />
+      <Token Text="." UId="1919" />
+      <Component Name="Warning" UId="1920" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1921" />
+  <Token Text=":=" UId="1922" />
+  <Blank Num="1" UId="1923" />
+  <Access Scope="LiteralConstant" UId="1924">
+    <Constant UId="1925">
+      <ConstantValue UId="1927">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1928" />
+  <NewLine Num="1" UId="1929" />
+  <Blank Num="20" UId="1930" />
+  <Access Scope="LocalVariable" UId="1931">
+    <Symbol UId="1932">
+      <Component Name="Cnv_Control" UId="1933" />
+      <Token Text="." UId="1934" />
+      <Component Name="Current_Task_ID" UId="1935" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1936" />
+  <Token Text=":=" UId="1937" />
+  <Blank Num="1" UId="1938" />
+  <Access Scope="LiteralConstant" UId="1939">
+    <Constant UId="1940">
+      <ConstantValue UId="1942">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1943" />
+  <NewLine Num="1" UId="1944" />
+  <Blank Num="20" UId="1945" />
+  <Access Scope="LocalVariable" UId="1946">
+    <Symbol UId="1947">
+      <Component Name="Cnv_Control" UId="1948" />
+      <Token Text="." UId="1949" />
+      <Component Name="Error" UId="1950" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1951" />
+  <Token Text=":=" UId="1952" />
+  <Blank Num="1" UId="1953" />
+  <Access Scope="LiteralConstant" UId="1954">
+    <Constant UId="1955">
+      <ConstantValue UId="1957">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1958" />
+  <Blank Num="1" UId="1959" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1960">
+    <Text UId="1961">Reset the conveyor</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1962" />
+  <Blank Num="20" UId="1963" />
+  <NewLine Num="1" UId="1964" />
+  <Blank Num="20" UId="1965" />
+  <Access Scope="LocalVariable" UId="1966">
+    <Symbol UId="1967">
+      <Component Name="Cnv_Control" UId="1968" />
+      <Token Text="." UId="1969" />
+      <Component Name="Cnv_Errors" UId="1970" />
+      <Token Text="." UId="1971" />
+      <Component Name="Error_Word_1" UId="1972" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1973" />
+  <Token Text=":=" UId="1974" />
+  <Blank Num="1" UId="1975" />
+  <Access Scope="LiteralConstant" UId="1976">
+    <Constant UId="1977">
+      <ConstantValue UId="1979">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1980" />
+  <NewLine Num="1" UId="1981" />
+  <Blank Num="20" UId="1982" />
+  <Access Scope="LocalVariable" UId="1983">
+    <Symbol UId="1984">
+      <Component Name="Cnv_Control" UId="1985" />
+      <Token Text="." UId="1986" />
+      <Component Name="Cnv_Errors" UId="1987" />
+      <Token Text="." UId="1988" />
+      <Component Name="Error_Word_2" UId="1989" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1990" />
+  <Token Text=":=" UId="1991" />
+  <Blank Num="1" UId="1992" />
+  <Access Scope="LiteralConstant" UId="1993">
+    <Constant UId="1994">
+      <ConstantValue UId="1996">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1997" />
+  <NewLine Num="1" UId="1998" />
+  <Blank Num="20" UId="1999" />
+  <Access Scope="LocalVariable" UId="2000">
+    <Symbol UId="2001">
+      <Component Name="Cnv_Control" UId="2002" />
+      <Token Text="." UId="2003" />
+      <Component Name="Cnv_Errors" UId="2004" />
+      <Token Text="." UId="2005" />
+      <Component Name="Error_Word_3" UId="2006" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2007" />
+  <Token Text=":=" UId="2008" />
+  <Blank Num="1" UId="2009" />
+  <Access Scope="LiteralConstant" UId="2010">
+    <Constant UId="2011">
+      <ConstantValue UId="2013">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2014" />
+  <NewLine Num="1" UId="2015" />
+  <Blank Num="20" UId="2016" />
+  <Access Scope="LocalVariable" UId="2017">
+    <Symbol UId="2018">
+      <Component Name="Cnv_Control" UId="2019" />
+      <Token Text="." UId="2020" />
+      <Component Name="Cnv_Errors" UId="2021" />
+      <Token Text="." UId="2022" />
+      <Component Name="Error_Word_4" UId="2023" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2024" />
+  <Token Text=":=" UId="2025" />
+  <Blank Num="1" UId="2026" />
+  <Access Scope="LiteralConstant" UId="2027">
+    <Constant UId="2028">
+      <ConstantValue UId="2030">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2031" />
+  <NewLine Num="1" UId="2032" />
+  <Blank Num="20" UId="2033" />
+  <Access Scope="LocalVariable" UId="2034">
+    <Symbol UId="2035">
+      <Component Name="State" UId="2036" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2037" />
+  <Token Text=":=" UId="2038" />
+  <Blank Num="1" UId="2039" />
+  <Access Scope="LiteralConstant" UId="2040">
+    <Constant UId="2041">
+      <ConstantValue UId="2043">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2044" />
+  <NewLine Num="1" UId="2045" />
+  <Blank Num="16" UId="2046" />
+  <Token Text="END_IF" UId="2047" />
+  <Token Text=";" UId="2048" />
+  <NewLine Num="1" UId="2049" />
+  <Blank Num="16" UId="2050" />
+  <NewLine Num="1" UId="2051" />
+  <Blank Num="12" UId="2052" />
+  <Access Scope="LiteralConstant" UId="2053">
+    <Constant UId="2054">
+      <ConstantValue UId="2056">500</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=":" UId="2057" />
+  <Blank Num="1" UId="2058" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2059">
+    <Text UId="2060">MANUAL MODE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2061" />
+  <Blank Num="16" UId="2062" />
+  <Token Text="IF" UId="2063" />
+  <Blank Num="1" UId="2064" />
+  <Access Scope="LocalVariable" UId="2065">
+    <Symbol UId="2066">
+      <Component Name="Cnv_Control" UId="2067" />
+      <Token Text="." UId="2068" />
+      <Component Name="Enabled" UId="2069" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2070" />
+  <Token Text="THEN" UId="2071" />
+  <NewLine Num="1" UId="2072" />
+  <Blank Num="20" UId="2073" />
+  <Token Text="IF" UId="2074" />
+  <Blank Num="1" UId="2075" />
+  <Access Scope="LocalVariable" UId="2076">
+    <Symbol UId="2077">
+      <Component Name="Cnv_Control" UId="2078" />
+      <Token Text="." UId="2079" />
+      <Component Name="Instruction" UId="2080" />
+      <Token Text="." UId="2081" />
+      <Component Name="Foward" UId="2082" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2083" />
+  <Token Text="OR" UId="2084" />
+  <Blank Num="1" UId="2085" />
+  <Access Scope="LocalVariable" UId="2086">
+    <Symbol UId="2087">
+      <Component Name="Cnv_Control" UId="2088" />
+      <Token Text="." UId="2089" />
+      <Component Name="Instruction" UId="2090" />
+      <Token Text="." UId="2091" />
+      <Component Name="Start_Transfer" UId="2092" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2093" />
+  <Token Text="THEN" UId="2094" />
+  <NewLine Num="1" UId="2095" />
+  <Blank Num="24" UId="2096" />
+  <Access Scope="LocalVariable" UId="2097">
+    <Symbol UId="2098">
+      <Component Name="Cnv_Control" UId="2099" />
+      <Token Text="." UId="2100" />
+      <Component Name="Motor" UId="2101" />
+      <Token Text="." UId="2102" />
+      <Component Name="Speed" UId="2103" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2104" />
+  <Token Text=":=" UId="2105" />
+  <Blank Num="1" UId="2106" />
+  <Access Scope="LocalVariable" UId="2107">
+    <Symbol UId="2108">
+      <Component Name="Cnv_Settings" UId="2109" />
+      <Token Text="." UId="2110" />
+      <Component Name="Manual_Speed" UId="2111" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="2112" />
+  <NewLine Num="1" UId="2113" />
+  <Blank Num="24" UId="2114" />
+  <Access Scope="LocalVariable" UId="2115">
+    <Symbol UId="2116">
+      <Component Name="Cnv_Control" UId="2117" />
+      <Token Text="." UId="2118" />
+      <Component Name="Motor" UId="2119" />
+      <Token Text="." UId="2120" />
+      <Component Name="Forward" UId="2121" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2122" />
+  <Token Text=":=" UId="2123" />
+  <Blank Num="1" UId="2124" />
+  <Access Scope="LiteralConstant" UId="2125">
+    <Constant UId="2126">
+      <ConstantValue UId="2128">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2129" />
+  <NewLine Num="1" UId="2130" />
+  <Blank Num="24" UId="2131" />
+  <Access Scope="LocalVariable" UId="2132">
+    <Symbol UId="2133">
+      <Component Name="Cnv_Control" UId="2134" />
+      <Token Text="." UId="2135" />
+      <Component Name="Running" UId="2136" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2137" />
+  <Token Text=":=" UId="2138" />
+  <Blank Num="1" UId="2139" />
+  <Access Scope="LiteralConstant" UId="2140">
+    <Constant UId="2141">
+      <ConstantValue UId="2143">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2144" />
+  <NewLine Num="1" UId="2145" />
+  <Blank Num="20" UId="2146" />
+  <Token Text="ELSIF" UId="2147" />
+  <Blank Num="1" UId="2148" />
+  <Token Text="(" UId="2149" />
+  <Access Scope="LocalVariable" UId="2150">
+    <Symbol UId="2151">
+      <Component Name="Cnv_Control" UId="2152" />
+      <Token Text="." UId="2153" />
+      <Component Name="Instruction" UId="2154" />
+      <Token Text="." UId="2155" />
+      <Component Name="Backward" UId="2156" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2157" />
+  <Token Text="OR" UId="2158" />
+  <Blank Num="1" UId="2159" />
+  <Access Scope="LocalVariable" UId="2160">
+    <Symbol UId="2161">
+      <Component Name="Cnv_Control" UId="2162" />
+      <Token Text="." UId="2163" />
+      <Component Name="Instruction" UId="2164" />
+      <Token Text="." UId="2165" />
+      <Component Name="Start_Transfer_Backward" UId="2166" />
+    </Symbol>
+  </Access>
+  <Token Text=")" UId="2167" />
+  <Blank Num="1" UId="2168" />
+  <Token Text="AND" UId="2169" />
+  <Blank Num="1" UId="2170" />
+  <Token Text="NOT" UId="2171" />
+  <Blank Num="1" UId="2172" />
+  <Access Scope="LocalVariable" UId="2173">
+    <Symbol UId="2174">
+      <Component Name="Cnv_Control" UId="2175" />
+      <Token Text="." UId="2176" />
+      <Component Name="Inputs" UId="2177" />
+      <Token Text="." UId="2178" />
+      <Component Name="Pallet Detect 1" UId="2179" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2180" />
+  <Token Text="THEN" UId="2181" />
+  <NewLine Num="1" UId="2182" />
+  <Blank Num="24" UId="2183" />
+  <Access Scope="LocalVariable" UId="2184">
+    <Symbol UId="2185">
+      <Component Name="Cnv_Control" UId="2186" />
+      <Token Text="." UId="2187" />
+      <Component Name="Motor" UId="2188" />
+      <Token Text="." UId="2189" />
+      <Component Name="Speed" UId="2190" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2191" />
+  <Token Text=":=" UId="2192" />
+  <Blank Num="1" UId="2193" />
+  <Access Scope="LocalVariable" UId="2194">
+    <Symbol UId="2195">
+      <Component Name="Cnv_Settings" UId="2196" />
+      <Token Text="." UId="2197" />
+      <Component Name="Manual_Speed" UId="2198" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="2199" />
+  <NewLine Num="1" UId="2200" />
+  <Blank Num="24" UId="2201" />
+  <Access Scope="LocalVariable" UId="2202">
+    <Symbol UId="2203">
+      <Component Name="Cnv_Control" UId="2204" />
+      <Token Text="." UId="2205" />
+      <Component Name="Motor" UId="2206" />
+      <Token Text="." UId="2207" />
+      <Component Name="Reverse" UId="2208" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2209" />
+  <Token Text=":=" UId="2210" />
+  <Blank Num="1" UId="2211" />
+  <Access Scope="LiteralConstant" UId="2212">
+    <Constant UId="2213">
+      <ConstantValue UId="2215">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2216" />
+  <NewLine Num="1" UId="2217" />
+  <Blank Num="24" UId="2218" />
+  <Access Scope="LocalVariable" UId="2219">
+    <Symbol UId="2220">
+      <Component Name="Cnv_Control" UId="2221" />
+      <Token Text="." UId="2222" />
+      <Component Name="Running" UId="2223" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2224" />
+  <Token Text=":=" UId="2225" />
+  <Blank Num="1" UId="2226" />
+  <Access Scope="LiteralConstant" UId="2227">
+    <Constant UId="2228">
+      <ConstantValue UId="2230">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2231" />
+  <NewLine Num="1" UId="2232" />
+  <Blank Num="20" UId="2233" />
+  <Token Text="ELSE" UId="2234" />
+  <NewLine Num="1" UId="2235" />
+  <Blank Num="24" UId="2236" />
+  <Access Scope="LocalVariable" UId="2237">
+    <Symbol UId="2238">
+      <Component Name="Cnv_Control" UId="2239" />
+      <Token Text="." UId="2240" />
+      <Component Name="Motor" UId="2241" />
+      <Token Text="." UId="2242" />
+      <Component Name="Speed" UId="2243" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2244" />
+  <Token Text=":=" UId="2245" />
+  <Blank Num="1" UId="2246" />
+  <Access Scope="LiteralConstant" UId="2247">
+    <Constant UId="2248">
+      <ConstantValue UId="2250">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2251" />
+  <NewLine Num="1" UId="2252" />
+  <Blank Num="24" UId="2253" />
+  <Access Scope="LocalVariable" UId="2254">
+    <Symbol UId="2255">
+      <Component Name="Cnv_Control" UId="2256" />
+      <Token Text="." UId="2257" />
+      <Component Name="Motor" UId="2258" />
+      <Token Text="." UId="2259" />
+      <Component Name="Forward" UId="2260" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2261" />
+  <Token Text=":=" UId="2262" />
+  <Blank Num="1" UId="2263" />
+  <Access Scope="LiteralConstant" UId="2264">
+    <Constant UId="2265">
+      <ConstantValue UId="2267">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2268" />
+  <NewLine Num="1" UId="2269" />
+  <Blank Num="24" UId="2270" />
+  <Access Scope="LocalVariable" UId="2271">
+    <Symbol UId="2272">
+      <Component Name="Cnv_Control" UId="2273" />
+      <Token Text="." UId="2274" />
+      <Component Name="Motor" UId="2275" />
+      <Token Text="." UId="2276" />
+      <Component Name="Reverse" UId="2277" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2278" />
+  <Token Text=":=" UId="2279" />
+  <Blank Num="1" UId="2280" />
+  <Access Scope="LiteralConstant" UId="2281">
+    <Constant UId="2282">
+      <ConstantValue UId="2284">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2285" />
+  <NewLine Num="1" UId="2286" />
+  <Blank Num="24" UId="2287" />
+  <Access Scope="LocalVariable" UId="2288">
+    <Symbol UId="2289">
+      <Component Name="Cnv_Control" UId="2290" />
+      <Token Text="." UId="2291" />
+      <Component Name="Running" UId="2292" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2293" />
+  <Token Text=":=" UId="2294" />
+  <Blank Num="1" UId="2295" />
+  <Access Scope="LiteralConstant" UId="2296">
+    <Constant UId="2297">
+      <ConstantValue UId="2299">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2300" />
+  <NewLine Num="1" UId="2301" />
+  <Blank Num="20" UId="2302" />
+  <Token Text="END_IF" UId="2303" />
+  <Token Text=";" UId="2304" />
+  <NewLine Num="1" UId="2305" />
+  <Blank Num="16" UId="2306" />
+  <Token Text="END_IF" UId="2307" />
+  <Token Text=";" UId="2308" />
+  <NewLine Num="1" UId="2309" />
+  <Blank Num="16" UId="2310" />
+  <Token Text="IF" UId="2311" />
+  <Blank Num="1" UId="2312" />
+  <Access Scope="LocalVariable" UId="2313">
+    <Symbol UId="2314">
+      <Component Name="Cnv_Control" UId="2315" />
+      <Token Text="." UId="2316" />
+      <Component Name="Mode" UId="2317" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2318" />
+  <Token Text="&lt;&gt;" UId="2319" />
+  <Blank Num="1" UId="2320" />
+  <Access Scope="LiteralConstant" UId="2321">
+    <Constant UId="2322">
+      <ConstantValue UId="2324">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="2325" />
+  <Token Text="AND" UId="2326" />
+  <Blank Num="1" UId="2327" />
+  <Access Scope="LocalVariable" UId="2328">
+    <Symbol UId="2329">
+      <Component Name="Cnv_Control" UId="2330" />
+      <Token Text="." UId="2331" />
+      <Component Name="Mode" UId="2332" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2333" />
+  <Token Text="&lt;&gt;" UId="2334" />
+  <Blank Num="1" UId="2335" />
+  <Access Scope="LiteralConstant" UId="2336">
+    <Constant UId="2337">
+      <ConstantValue UId="2339">5</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="2340" />
+  <Token Text="THEN" UId="2341" />
+  <NewLine Num="1" UId="2342" />
+  <Blank Num="20" UId="2343" />
+  <Access Scope="LocalVariable" UId="2344">
+    <Symbol UId="2345">
+      <Component Name="State" UId="2346" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2347" />
+  <Token Text=":=" UId="2348" />
+  <Blank Num="1" UId="2349" />
+  <Access Scope="LiteralConstant" UId="2350">
+    <Constant UId="2351">
+      <ConstantValue UId="2353">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2354" />
+  <NewLine Num="1" UId="2355" />
+  <Blank Num="16" UId="2356" />
+  <Token Text="END_IF" UId="2357" />
+  <Token Text=";" UId="2358" />
+  <NewLine Num="1" UId="2359" />
+  <Blank Num="8" UId="2360" />
+  <Token Text="END_CASE" UId="2361" />
+  <Token Text=";" UId="2362" />
+  <NewLine Num="1" UId="2363" />
+  <Blank Num="4" UId="2364" />
+  <Token Text="END_REGION" UId="2365" />
+  <NewLine Num="1" UId="2366" />
+  <Blank Num="4" UId="2367" />
+  <NewLine Num="3" UId="2368" />
+  <Token Text="REGION" UId="2369" />
+  <Blank Num="1" UId="2370" />
+  <Text UId="2371">Cyclic Error Checks</Text>
+  <NewLine Num="1" UId="2372" />
+  <Blank Num="4" UId="2373" />
+  <Token Text="IF" UId="2374" />
+  <Blank Num="1" UId="2375" />
+  <Token Text="NOT" UId="2376" />
+  <Blank Num="1" UId="2377" />
+  <Access Scope="GlobalVariable" UId="2378">
+    <Symbol UId="2379">
+      <Component Name="Main_Safety_RTG1_DB" UId="2380">
+        <BooleanAttribute Name="HasQuotes" UId="2381">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2382" />
+      <Component Name="SAFETY_OK_CAROUSEL" UId="2383" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2384" />
+  <Token Text="THEN" UId="2385" />
+  <Blank Num="1" UId="2386" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2387">
+    <Text UId="2388">11:1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2389" />
+  <Blank Num="8" UId="2390" />
+  <Access Scope="Call" UId="2391">
+    <CallInfo UId="2392" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="2394">
+        <Component Name="Set_Bit_F" UId="2393" />
+      </Instance>
+      <Token Text="(" UId="2395" />
+      <Parameter Name="Bit" UId="2396">
+        <Blank Num="1" UId="2397" />
+        <Token Text=":=" UId="2398" />
+        <Blank Num="1" UId="2399" />
+        <Access Scope="LiteralConstant" UId="2400">
+          <Constant UId="2401">
+            <ConstantValue UId="2403">0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2404" />
+      <NewLine Num="1" UId="2405" />
+      <Blank Num="20" UId="2406" />
+      <Parameter Name="Bit_Value" UId="2407">
+        <Blank Num="1" UId="2408" />
+        <Token Text=":=" UId="2409" />
+        <Blank Num="1" UId="2410" />
+        <Access Scope="LiteralConstant" UId="2411">
+          <Constant UId="2412">
+            <ConstantValue UId="2414">1</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2415" />
+      <NewLine Num="1" UId="2416" />
+      <Blank Num="20" UId="2417" />
+      <Parameter Name="Var" UId="2418">
+        <Blank Num="1" UId="2419" />
+        <Token Text=":=" UId="2420" />
+        <Blank Num="1" UId="2421" />
+        <Access Scope="LocalVariable" UId="2422">
+          <Symbol UId="2423">
+            <Component Name="Cnv_Control" UId="2424" />
+            <Token Text="." UId="2425" />
+            <Component Name="Cnv_Errors" UId="2426" />
+            <Token Text="." UId="2427" />
+            <Component Name="Error_Word_1" UId="2428" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="2429" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="2430" />
+  <NewLine Num="1" UId="2431" />
+  <Blank Num="4" UId="2432" />
+  <Token Text="END_IF" UId="2433" />
+  <Token Text=";" UId="2434" />
+  <NewLine Num="1" UId="2435" />
+  <Blank Num="4" UId="2436" />
+  <NewLine Num="1" UId="2437" />
+  <Blank Num="4" UId="2438" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2439">
+    <Text UId="2440"> IF #Cnv_Control.Instruction.Stop THEN //11:2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2441" />
+  <Blank Num="4" UId="2442" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2443">
+    <Text UId="2444">     "Set_Bit_F"(Bit := 1,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2445" />
+  <Blank Num="4" UId="2446" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2447">
+    <Text UId="2448">                 Bit_Value := 1,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2449" />
+  <Blank Num="4" UId="2450" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2451">
+    <Text UId="2452">                 Var := #Cnv_Control.Cnv_Errors.Error_Word_1);</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2453" />
+  <Blank Num="4" UId="2454" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2455">
+    <Text UId="2456"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2457" />
+  <Blank Num="4" UId="2458" />
+  <NewLine Num="1" UId="2459" />
+  <Blank Num="4" UId="2460" />
+  <Token Text="IF" UId="2461" />
+  <Blank Num="1" UId="2462" />
+  <Access Scope="LocalVariable" UId="2463">
+    <Symbol UId="2464">
+      <Component Name="Cnv_Control" UId="2465" />
+      <Token Text="." UId="2466" />
+      <Component Name="Motor" UId="2467" />
+      <Token Text="." UId="2468" />
+      <Component Name="Error" UId="2469" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2470" />
+  <Token Text="THEN" UId="2471" />
+  <NewLine Num="1" UId="2472" />
+  <Blank Num="8" UId="2473" />
+  <Access Scope="Call" UId="2474">
+    <CallInfo UId="2475" BlockType="FC">
+      <Instance Scope="GlobalVariable" UId="2477">
+        <Component Name="Set_Bit_F" UId="2476" />
+      </Instance>
+      <Token Text="(" UId="2478" />
+      <Parameter Name="Bit" UId="2479">
+        <Blank Num="1" UId="2480" />
+        <Token Text=":=" UId="2481" />
+        <Blank Num="1" UId="2482" />
+        <Access Scope="LiteralConstant" UId="2483">
+          <Constant UId="2484">
+            <ConstantValue UId="2486">0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2487" />
+      <NewLine Num="1" UId="2488" />
+      <Blank Num="20" UId="2489" />
+      <Parameter Name="Bit_Value" UId="2490">
+        <Blank Num="1" UId="2491" />
+        <Token Text=":=" UId="2492" />
+        <Blank Num="1" UId="2493" />
+        <Access Scope="LiteralConstant" UId="2494">
+          <Constant UId="2495">
+            <ConstantValue UId="2497">1</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2498" />
+      <NewLine Num="1" UId="2499" />
+      <Blank Num="20" UId="2500" />
+      <Parameter Name="Var" UId="2501">
+        <Blank Num="1" UId="2502" />
+        <Token Text=":=" UId="2503" />
+        <Blank Num="1" UId="2504" />
+        <Access Scope="LocalVariable" UId="2505">
+          <Symbol UId="2506">
+            <Component Name="Cnv_Control" UId="2507" />
+            <Token Text="." UId="2508" />
+            <Component Name="Cnv_Errors" UId="2509" />
+            <Token Text="." UId="2510" />
+            <Component Name="Error_Word_4" UId="2511" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="2512" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="2513" />
+  <NewLine Num="1" UId="2514" />
+  <Blank Num="4" UId="2515" />
+  <Token Text="END_IF" UId="2516" />
+  <Token Text=";" UId="2517" />
+  <NewLine Num="1" UId="2518" />
+  <Blank Num="4" UId="2519" />
+  <NewLine Num="1" UId="2520" />
+  <Blank Num="4" UId="2521" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2522">
+    <Text UId="2523"> Pallet Sensor Checks</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2524" />
+  <Blank Num="4" UId="2525" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2526">
+    <Text UId="2527"> IF #Cnv_Control.Inputs.Lfwd AND #Cnv_Control.Inputs.Rbwd THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2528" />
+  <Blank Num="4" UId="2529" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2530">
+    <Text UId="2531">     #Cnv_Control.Error := TRUE; //15:2 Combination of Cnv_Inputs indicates issue in conveyor</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2532" />
+  <Blank Num="4" UId="2533" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2534">
+    <Text UId="2535">     "Set_Bit_F"(Bit := 1,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2536" />
+  <Blank Num="4" UId="2537" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2538">
+    <Text UId="2539">                 Bit_Value := 1,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2540" />
+  <Blank Num="4" UId="2541" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2542">
+    <Text UId="2543">                 Var := #Cnv_Control.Cnv_Errors.Error_Word_4);</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2544" />
+  <Blank Num="4" UId="2545" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2546">
+    <Text UId="2547">     #State := 400;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2548" />
+  <Blank Num="4" UId="2549" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2550">
+    <Text UId="2551"> IF #Cnv_Control.Inputs.Lfwd AND #Cnv_Control.Inputs.Lpd1 AND #Cnv_Control.Inputs.Rpd1 THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2552" />
+  <Blank Num="4" UId="2553" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2554">
+    <Text UId="2555">     #Cnv_Control.Error := TRUE; //15:3 Combination of Cnv_Inputs indicates issue in conveyor</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2556" />
+  <Blank Num="4" UId="2557" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2558">
+    <Text UId="2559">     "Set_Bit_F"(Bit := 2,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2560" />
+  <Blank Num="4" UId="2561" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2562">
+    <Text UId="2563">                 Bit_Value := 1,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2564" />
+  <Blank Num="4" UId="2565" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2566">
+    <Text UId="2567">                 Var := #Cnv_Control.Cnv_Errors.Error_Word_4);</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2568" />
+  <Blank Num="4" UId="2569" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2570">
+    <Text UId="2571">     #State := 400;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2572" />
+  <Blank Num="4" UId="2573" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2574">
+    <Text UId="2575"> ELSIF #Cnv_Control.Inputs.Rbwd AND #Cnv_Control.Inputs.Lpd1 AND #Cnv_Control.Inputs.Rpd1 THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2576" />
+  <Blank Num="4" UId="2577" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2578">
+    <Text UId="2579">     #Cnv_Control.Error := TRUE; //15:4 Combination of Cnv_Inputs indicates issue in conveyor</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2580" />
+  <Blank Num="4" UId="2581" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2582">
+    <Text UId="2583">     "Set_Bit_F"(Bit := 3,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2584" />
+  <Blank Num="4" UId="2585" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2586">
+    <Text UId="2587">                 Bit_Value := 1,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2588" />
+  <Blank Num="4" UId="2589" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2590">
+    <Text UId="2591">                 Var := #Cnv_Control.Cnv_Errors.Error_Word_4);</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2592" />
+  <Blank Num="4" UId="2593" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2594">
+    <Text UId="2595">     #State := 400;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2596" />
+  <Blank Num="4" UId="2597" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2598">
+    <Text UId="2599"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2600" />
+  <Blank Num="4" UId="2601" />
+  <NewLine Num="1" UId="2602" />
+  <Blank Num="4" UId="2603" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2604">
+    <Text UId="2605"> Shuttle in Place Cnv_Inputs - Need to confirm the order of these Cnv_Inputs.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2606" />
+  <Blank Num="4" UId="2607" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2608">
+    <Text UId="2609"> IF (#Cnv_Settings.ID &gt; 110000 AND #Cnv_Settings.ID &lt; 120000 AND NOT #Cnv_Control.Inputs.Sdetect1 AND #Cnv_Control.Inputs.Sdetect2)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2610" />
+  <Blank Num="4" UId="2611" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2612">
+    <Text UId="2613">     OR (#Cnv_Settings.ID &gt; 120000 AND #Cnv_Settings.ID &lt; 130000 AND NOT #Cnv_Control.Inputs.Sdetect1 AND #Cnv_Control.Inputs.Sdetect2) THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2614" />
+  <Blank Num="4" UId="2615" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2616">
+    <Text UId="2617">     #Cnv_Control.Error := TRUE; //14:5 Shuttle is about to yeet itself down the VTD shaft</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2618" />
+  <Blank Num="4" UId="2619" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2620">
+    <Text UId="2621">     "Set_Bit_F"(Bit := 7,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2622" />
+  <Blank Num="4" UId="2623" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2624">
+    <Text UId="2625">                 Bit_Value := 1,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2626" />
+  <Blank Num="4" UId="2627" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2628">
+    <Text UId="2629">                 Var := #Cnv_Control.Cnv_Errors.Error_Word_2);</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2630" />
+  <Blank Num="4" UId="2631" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2632">
+    <Text UId="2633">     #State := 400;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2634" />
+  <Blank Num="4" UId="2635" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2636">
+    <Text UId="2637"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2638" />
+  <Blank Num="4" UId="2639" />
+  <NewLine Num="1" UId="2640" />
+  <Blank Num="4" UId="2641" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2642">
+    <Text UId="2643"> IF (#Cnv_Settings.ID &gt; 110000 AND #Cnv_Settings.ID &lt; 120000 AND #Cnv_Control.Inputs.Sdetect1 AND NOT #Cnv_Control.Inputs.Sdetect2)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2644" />
+  <Blank Num="4" UId="2645" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2646">
+    <Text UId="2647">     OR (#Cnv_Settings.ID &gt; 120000 AND #Cnv_Settings.ID &lt; 130000 AND #Cnv_Control.Inputs.Sdetect1 AND NOT #Cnv_Control.Inputs.Sdetect2) THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2648" />
+  <Blank Num="4" UId="2649" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2650">
+    <Text UId="2651">     #Cnv_Control.Warning := 0; //Shuttle detected in conveyor not yet on barcode</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2652" />
+  <Blank Num="4" UId="2653" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2654">
+    <Text UId="2655"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2656" />
+  <Blank Num="4" UId="2657" />
+  <NewLine Num="1" UId="2658" />
+  <Blank Num="4" UId="2659" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2660">
+    <Text UId="2661"> // #Watchdog auto starts the moment Any form OF transfer occurs.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2662" />
+  <Blank Num="4" UId="2663" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2664">
+    <Text UId="2665"> IF #State &gt; 10 AND #State &lt; 400 THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2666" />
+  <Blank Num="4" UId="2667" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2668">
+    <Text UId="2669">     #Watchdog(IN := TRUE,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2670" />
+  <Blank Num="4" UId="2671" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2672">
+    <Text UId="2673">               PT := T#200s);</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2674" />
+  <Blank Num="4" UId="2675" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2676">
+    <Text UId="2677"> ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2678" />
+  <Blank Num="4" UId="2679" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2680">
+    <Text UId="2681">     #Watchdog.IN := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2682" />
+  <Blank Num="4" UId="2683" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2684">
+    <Text UId="2685"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2686" />
+  <Blank Num="4" UId="2687" />
+  <NewLine Num="1" UId="2688" />
+  <Blank Num="4" UId="2689" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2690">
+    <Text UId="2691"> IF #Watchdog.Q THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2692" />
+  <Blank Num="4" UId="2693" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2694">
+    <Text UId="2695">     #Watchdog.IN := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2696" />
+  <Blank Num="4" UId="2697" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2698">
+    <Text UId="2699">     #Cnv_Control.Error := TRUE; //14:2  Watchdog bit</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2700" />
+  <Blank Num="4" UId="2701" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2702">
+    <Text UId="2703">     "Set_Bit_F"(Bit := 4,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2704" />
+  <Blank Num="4" UId="2705" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2706">
+    <Text UId="2707">                 Bit_Value := 1,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2708" />
+  <Blank Num="4" UId="2709" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2710">
+    <Text UId="2711">                 Var := #Cnv_Control.Cnv_Errors.Error_Word_2);</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2712" />
+  <Blank Num="4" UId="2713" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2714">
+    <Text UId="2715">     #State := 400;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2716" />
+  <Blank Num="4" UId="2717" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2718">
+    <Text UId="2719"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2720" />
+  <Blank Num="4" UId="2721" />
+  <NewLine Num="1" UId="2722" />
+  <Blank Num="4" UId="2723" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2724">
+    <Text UId="2725"> go to error state</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2726" />
+  <Blank Num="4" UId="2727" />
+  <Token Text="IF" UId="2728" />
+  <Blank Num="1" UId="2729" />
+  <Access Scope="LocalVariable" UId="2730">
+    <Symbol UId="2731">
+      <Component Name="Cnv_Control" UId="2732" />
+      <Token Text="." UId="2733" />
+      <Component Name="Cnv_Errors" UId="2734" />
+      <Token Text="." UId="2735" />
+      <Component Name="Error_Word_1" UId="2736" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2737" />
+  <Token Text="&lt;&gt;" UId="2738" />
+  <Blank Num="1" UId="2739" />
+  <Access Scope="LiteralConstant" UId="2740">
+    <Constant UId="2741">
+      <ConstantValue UId="2743">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="2744" />
+  <Token Text="OR" UId="2745" />
+  <NewLine Num="1" UId="2746" />
+  <Blank Num="8" UId="2747" />
+  <Access Scope="LocalVariable" UId="2748">
+    <Symbol UId="2749">
+      <Component Name="Cnv_Control" UId="2750" />
+      <Token Text="." UId="2751" />
+      <Component Name="Cnv_Errors" UId="2752" />
+      <Token Text="." UId="2753" />
+      <Component Name="Error_Word_2" UId="2754" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2755" />
+  <Token Text="&lt;&gt;" UId="2756" />
+  <Blank Num="1" UId="2757" />
+  <Access Scope="LiteralConstant" UId="2758">
+    <Constant UId="2759">
+      <ConstantValue UId="2761">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="2762" />
+  <Token Text="OR" UId="2763" />
+  <NewLine Num="1" UId="2764" />
+  <Blank Num="8" UId="2765" />
+  <Access Scope="LocalVariable" UId="2766">
+    <Symbol UId="2767">
+      <Component Name="Cnv_Control" UId="2768" />
+      <Token Text="." UId="2769" />
+      <Component Name="Cnv_Errors" UId="2770" />
+      <Token Text="." UId="2771" />
+      <Component Name="Error_Word_3" UId="2772" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2773" />
+  <Token Text="&lt;&gt;" UId="2774" />
+  <Blank Num="1" UId="2775" />
+  <Access Scope="LiteralConstant" UId="2776">
+    <Constant UId="2777">
+      <ConstantValue UId="2779">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="2780" />
+  <Token Text="OR" UId="2781" />
+  <NewLine Num="1" UId="2782" />
+  <Blank Num="8" UId="2783" />
+  <Access Scope="LocalVariable" UId="2784">
+    <Symbol UId="2785">
+      <Component Name="Cnv_Control" UId="2786" />
+      <Token Text="." UId="2787" />
+      <Component Name="Cnv_Errors" UId="2788" />
+      <Token Text="." UId="2789" />
+      <Component Name="Error_Word_4" UId="2790" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2791" />
+  <Token Text="&lt;&gt;" UId="2792" />
+  <Blank Num="1" UId="2793" />
+  <Access Scope="LiteralConstant" UId="2794">
+    <Constant UId="2795">
+      <ConstantValue UId="2797">0</ConstantValue>
+    </Constant>
+  </Access>
+  <NewLine Num="1" UId="2798" />
+  <Blank Num="8" UId="2799" />
+  <Token Text="THEN" UId="2800" />
+  <NewLine Num="1" UId="2801" />
+  <Blank Num="12" UId="2802" />
+  <Access Scope="LocalVariable" UId="2803">
+    <Symbol UId="2804">
+      <Component Name="Cnv_Control" UId="2805" />
+      <Token Text="." UId="2806" />
+      <Component Name="Error" UId="2807" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2808" />
+  <Token Text=":=" UId="2809" />
+  <Blank Num="1" UId="2810" />
+  <Access Scope="LiteralConstant" UId="2811">
+    <Constant UId="2812">
+      <ConstantValue UId="2814">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2815" />
+  <NewLine Num="1" UId="2816" />
+  <Blank Num="12" UId="2817" />
+  <Access Scope="LocalVariable" UId="2818">
+    <Symbol UId="2819">
+      <Component Name="State" UId="2820" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2821" />
+  <Token Text=":=" UId="2822" />
+  <Blank Num="1" UId="2823" />
+  <Access Scope="LiteralConstant" UId="2824">
+    <Constant UId="2825">
+      <ConstantValue UId="2827">400</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2828" />
+  <NewLine Num="1" UId="2829" />
+  <Blank Num="4" UId="2830" />
+  <Token Text="END_IF" UId="2831" />
+  <Token Text=";" UId="2832" />
+  <NewLine Num="1" UId="2833" />
+  <Token Text="END_REGION" UId="2834" />
+  <NewLine Num="2" UId="2835" />
+  <Token Text="REGION" UId="2836" />
+  <Blank Num="1" UId="2837" />
+  <Text UId="2838">VFD</Text>
+  <NewLine Num="1" UId="2839" />
+  <Blank Num="4" UId="2840" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2841">
+    <Text UId="2842">Status</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2843" />
+  <Blank Num="4" UId="2844" />
+  <Access Scope="LocalVariable" UId="2845">
+    <Symbol UId="2846">
+      <Component Name="Cnv_Control" UId="2847" />
+      <Token Text="." UId="2848" />
+      <Component Name="Motor" UId="2849" />
+      <Token Text="." UId="2850" />
+      <Component Name="Ready" UId="2851" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2852" />
+  <Token Text=":=" UId="2853" />
+  <Blank Num="1" UId="2854" />
+  <Token Text="NOT" UId="2855" />
+  <Blank Num="1" UId="2856" />
+  <Access Scope="LocalVariable" UId="2857">
+    <Symbol UId="2858">
+      <Component Name="Cnv_Control" UId="2859" />
+      <Token Text="." UId="2860" />
+      <Component Name="Motor" UId="2861" />
+      <Token Text="." UId="2862" />
+      <Component Name="Error" UId="2863" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="2864" />
+  <NewLine Num="1" UId="2865" />
+  <Blank Num="4" UId="2866" />
+  <NewLine Num="1" UId="2867" />
+  <Blank Num="4" UId="2868" />
+  <Access Scope="LocalVariable" UId="2869">
+    <Symbol UId="2870">
+      <Component Name="SinaSpeed" UId="2871" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="2872">
+    <Instruction UId="2873">
+      <Token Text="(" UId="2874" />
+      <Parameter Name="EnableAxis" UId="2875">
+        <Blank Num="1" UId="2876" />
+        <Token Text=":=" UId="2877" />
+        <Blank Num="1" UId="2878" />
+        <Access Scope="LocalVariable" UId="2879">
+          <Symbol UId="2880">
+            <Component Name="Cnv_Control" UId="2881" />
+            <Token Text="." UId="2882" />
+            <Component Name="Motor" UId="2883" />
+            <Token Text="." UId="2884" />
+            <Component Name="Forward" UId="2885" />
+          </Symbol>
+        </Access>
+        <Blank Num="1" UId="2886" />
+        <Token Text="OR" UId="2887" />
+        <Blank Num="1" UId="2888" />
+        <Access Scope="LocalVariable" UId="2889">
+          <Symbol UId="2890">
+            <Component Name="Cnv_Control" UId="2891" />
+            <Token Text="." UId="2892" />
+            <Component Name="Motor" UId="2893" />
+            <Token Text="." UId="2894" />
+            <Component Name="Reverse" UId="2895" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2896" />
+      <NewLine Num="1" UId="2897" />
+      <Blank Num="15" UId="2898" />
+      <Parameter Name="AckError" UId="2899">
+        <Blank Num="1" UId="2900" />
+        <Token Text=":=" UId="2901" />
+        <Blank Num="1" UId="2902" />
+        <Access Scope="LocalVariable" UId="2903">
+          <Symbol UId="2904">
+            <Component Name="Cnv_Control" UId="2905" />
+            <Token Text="." UId="2906" />
+            <Component Name="Instruction" UId="2907" />
+            <Token Text="." UId="2908" />
+            <Component Name="Reset" UId="2909" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2910" />
+      <NewLine Num="1" UId="2911" />
+      <Blank Num="15" UId="2912" />
+      <Parameter Name="SpeedSp" UId="2913">
+        <Blank Num="1" UId="2914" />
+        <Token Text=":=" UId="2915" />
+        <Blank Num="1" UId="2916" />
+        <Access Scope="LocalVariable" UId="2917">
+          <Symbol UId="2918">
+            <Component Name="MainSetpoint" UId="2919" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2920" />
+      <NewLine Num="1" UId="2921" />
+      <Blank Num="15" UId="2922" />
+      <Parameter Name="RefSpeed" UId="2923">
+        <Blank Num="1" UId="2924" />
+        <Token Text=":=" UId="2925" />
+        <Blank Num="1" UId="2926" />
+        <Access Scope="LiteralConstant" UId="2927">
+          <Constant UId="2928">
+            <ConstantValue UId="2930">1745.0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2931" />
+      <NewLine Num="1" UId="2932" />
+      <Blank Num="15" UId="2933" />
+      <Parameter Name="HWIDSTW" UId="2934">
+        <Blank Num="1" UId="2935" />
+        <Token Text=":=" UId="2936" />
+        <Blank Num="1" UId="2937" />
+        <Access Scope="LocalVariable" UId="2938">
+          <Symbol UId="2939">
+            <Component Name="Cnv_Settings" UId="2940" />
+            <Token Text="." UId="2941" />
+            <Component Name="G120_Hardware_ID" UId="2942" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2943" />
+      <NewLine Num="1" UId="2944" />
+      <Blank Num="15" UId="2945" />
+      <Parameter Name="HWIDZSW" UId="2946">
+        <Blank Num="1" UId="2947" />
+        <Token Text=":=" UId="2948" />
+        <Blank Num="1" UId="2949" />
+        <Access Scope="LocalVariable" UId="2950">
+          <Symbol UId="2951">
+            <Component Name="Cnv_Settings" UId="2952" />
+            <Token Text="." UId="2953" />
+            <Component Name="G120_Hardware_ID" UId="2954" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2955" />
+      <NewLine Num="1" UId="2956" />
+      <Blank Num="15" UId="2957" />
+      <Parameter Name="AxisEnabled" UId="2958">
+        <Blank Num="1" UId="2959" />
+        <Token Text="=&gt;" UId="2960" />
+        <Blank Num="1" UId="2961" />
+        <Access Scope="LocalVariable" UId="2962">
+          <Symbol UId="2963">
+            <Component Name="Cnv_Control" UId="2964" />
+            <Token Text="." UId="2965" />
+            <Component Name="Motor" UId="2966" />
+            <Token Text="." UId="2967" />
+            <Component Name="Status" UId="2968" />
+            <Token Text="." UId="2969" />
+            <Token Text="%X0" UId="2970" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2971" />
+      <NewLine Num="1" UId="2972" />
+      <Blank Num="15" UId="2973" />
+      <Parameter Name="Lockout" UId="2974">
+        <Blank Num="1" UId="2975" />
+        <Token Text="=&gt;" UId="2976" />
+        <Blank Num="1" UId="2977" />
+        <Access Scope="LocalVariable" UId="2978">
+          <Symbol UId="2979">
+            <Component Name="Cnv_Control" UId="2980" />
+            <Token Text="." UId="2981" />
+            <Component Name="Motor" UId="2982" />
+            <Token Text="." UId="2983" />
+            <Component Name="Error" UId="2984" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="2985" />
+      <NewLine Num="1" UId="2986" />
+      <Blank Num="15" UId="2987" />
+      <Parameter Name="Error" UId="2988">
+        <Blank Num="1" UId="2989" />
+        <Token Text="=&gt;" UId="2990" />
+        <Blank Num="1" UId="2991" />
+        <Access Scope="LocalVariable" UId="2992">
+          <Symbol UId="2993">
+            <Component Name="Cnv_Control" UId="2994" />
+            <Token Text="." UId="2995" />
+            <Component Name="Motor" UId="2996" />
+            <Token Text="." UId="2997" />
+            <Component Name="Error" UId="2998" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="2999" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="3000" />
+  <NewLine Num="1" UId="3001" />
+  <Blank Num="4" UId="3002" />
+  <NewLine Num="1" UId="3003" />
+  <Blank Num="4" UId="3004" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="3005">
+    <Text UId="3006">MAIN SETPOINT</Text>
+  </LineComment>
+  <NewLine Num="1" UId="3007" />
+  <Blank Num="4" UId="3008" />
+  <Token Text="IF" UId="3009" />
+  <Blank Num="1" UId="3010" />
+  <Access Scope="LocalVariable" UId="3011">
+    <Symbol UId="3012">
+      <Component Name="Cnv_Control" UId="3013" />
+      <Token Text="." UId="3014" />
+      <Component Name="Motor" UId="3015" />
+      <Token Text="." UId="3016" />
+      <Component Name="Forward" UId="3017" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3018" />
+  <Token Text="THEN" UId="3019" />
+  <NewLine Num="1" UId="3020" />
+  <Blank Num="8" UId="3021" />
+  <Access Scope="LocalVariable" UId="3022">
+    <Symbol UId="3023">
+      <Component Name="MainSetpoint" UId="3024" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3025" />
+  <Token Text=":=" UId="3026" />
+  <Blank Num="1" UId="3027" />
+  <Token Text="(" UId="3028" />
+  <Access Scope="Call" UId="3029">
+    <Instruction Name="SCALE_X" UId="3030">
+      <Token Text="(" UId="3031" />
+      <Parameter Name="MIN" UId="3032">
+        <Blank Num="1" UId="3033" />
+        <Token Text=":=" UId="3034" />
+        <Blank Num="1" UId="3035" />
+        <Access Scope="LiteralConstant" UId="3036">
+          <Constant UId="3037">
+            <ConstantValue UId="3039">0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="3040" />
+      <NewLine Num="1" UId="3041" />
+      <Blank Num="33" UId="3042" />
+      <Parameter Name="VALUE" UId="3043">
+        <Blank Num="1" UId="3044" />
+        <Token Text=":=" UId="3045" />
+        <Blank Num="1" UId="3046" />
+        <Access Scope="Call" UId="3047">
+          <Instruction Name="NORM_X" UId="3048">
+            <Token Text="(" UId="3049" />
+            <Parameter Name="MIN" UId="3050">
+              <Blank Num="1" UId="3051" />
+              <Token Text=":=" UId="3052" />
+              <Blank Num="1" UId="3053" />
+              <Access Scope="LiteralConstant" UId="3054">
+                <Constant UId="3055">
+                  <ConstantValue UId="3057">0</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="3058" />
+            <NewLine Num="1" UId="3059" />
+            <Blank Num="49" UId="3060" />
+            <Parameter Name="VALUE" UId="3061">
+              <Blank Num="1" UId="3062" />
+              <Token Text=":=" UId="3063" />
+              <Blank Num="1" UId="3064" />
+              <Access Scope="LocalVariable" UId="3065">
+                <Symbol UId="3066">
+                  <Component Name="Cnv_Control" UId="3067" />
+                  <Token Text="." UId="3068" />
+                  <Component Name="Motor" UId="3069" />
+                  <Token Text="." UId="3070" />
+                  <Component Name="Speed" UId="3071" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="3072" />
+            <NewLine Num="1" UId="3073" />
+            <Blank Num="49" UId="3074" />
+            <Parameter Name="MAX" UId="3075">
+              <Blank Num="1" UId="3076" />
+              <Token Text=":=" UId="3077" />
+              <Blank Num="1" UId="3078" />
+              <Access Scope="LiteralConstant" UId="3079">
+                <Constant UId="3080">
+                  <ConstantValue UId="3082">100</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="3084" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="3085" />
+      <NewLine Num="1" UId="3086" />
+      <Blank Num="33" UId="3087" />
+      <Parameter Name="MAX" UId="3088">
+        <Blank Num="1" UId="3089" />
+        <Token Text=":=" UId="3090" />
+        <Blank Num="1" UId="3091" />
+        <Access Scope="LiteralConstant" UId="3092">
+          <Constant UId="3093">
+            <ConstantValue UId="3095">1745.0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="3097" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="3098" />
+  <Token Text="*" UId="3099" />
+  <Blank Num="1" UId="3100" />
+  <Access Scope="LiteralConstant" UId="3101">
+    <Constant UId="3102">
+      <ConstantValue UId="3104">-1</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="3105" />
+  <Token Text=";" UId="3106" />
+  <NewLine Num="1" UId="3107" />
+  <Blank Num="4" UId="3108" />
+  <Token Text="ELSIF" UId="3109" />
+  <Blank Num="1" UId="3110" />
+  <Access Scope="LocalVariable" UId="3111">
+    <Symbol UId="3112">
+      <Component Name="Cnv_Control" UId="3113" />
+      <Token Text="." UId="3114" />
+      <Component Name="Motor" UId="3115" />
+      <Token Text="." UId="3116" />
+      <Component Name="Reverse" UId="3117" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3118" />
+  <Token Text="THEN" UId="3119" />
+  <NewLine Num="1" UId="3120" />
+  <Blank Num="8" UId="3121" />
+  <Access Scope="LocalVariable" UId="3122">
+    <Symbol UId="3123">
+      <Component Name="MainSetpoint" UId="3124" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3125" />
+  <Token Text=":=" UId="3126" />
+  <Blank Num="1" UId="3127" />
+  <Access Scope="Call" UId="3128">
+    <Instruction Name="SCALE_X" UId="3129">
+      <Token Text="(" UId="3130" />
+      <Parameter Name="MIN" UId="3131">
+        <Blank Num="1" UId="3132" />
+        <Token Text=":=" UId="3133" />
+        <Blank Num="1" UId="3134" />
+        <Access Scope="LiteralConstant" UId="3135">
+          <Constant UId="3136">
+            <ConstantValue UId="3138">0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="3139" />
+      <NewLine Num="1" UId="3140" />
+      <Blank Num="34" UId="3141" />
+      <Parameter Name="VALUE" UId="3142">
+        <Blank Num="1" UId="3143" />
+        <Token Text=":=" UId="3144" />
+        <Blank Num="1" UId="3145" />
+        <Access Scope="Call" UId="3146">
+          <Instruction Name="NORM_X" UId="3147">
+            <Token Text="(" UId="3148" />
+            <Parameter Name="MIN" UId="3149">
+              <Blank Num="1" UId="3150" />
+              <Token Text=":=" UId="3151" />
+              <Blank Num="1" UId="3152" />
+              <Access Scope="LiteralConstant" UId="3153">
+                <Constant UId="3154">
+                  <ConstantValue UId="3156">0</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="3157" />
+            <NewLine Num="1" UId="3158" />
+            <Blank Num="50" UId="3159" />
+            <Parameter Name="VALUE" UId="3160">
+              <Blank Num="1" UId="3161" />
+              <Token Text=":=" UId="3162" />
+              <Blank Num="1" UId="3163" />
+              <Access Scope="LocalVariable" UId="3164">
+                <Symbol UId="3165">
+                  <Component Name="Cnv_Control" UId="3166" />
+                  <Token Text="." UId="3167" />
+                  <Component Name="Motor" UId="3168" />
+                  <Token Text="." UId="3169" />
+                  <Component Name="Speed" UId="3170" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="3171" />
+            <NewLine Num="1" UId="3172" />
+            <Blank Num="50" UId="3173" />
+            <Parameter Name="MAX" UId="3174">
+              <Blank Num="1" UId="3175" />
+              <Token Text=":=" UId="3176" />
+              <Blank Num="1" UId="3177" />
+              <Access Scope="LiteralConstant" UId="3178">
+                <Constant UId="3179">
+                  <ConstantValue UId="3181">100</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="3183" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="3184" />
+      <NewLine Num="1" UId="3185" />
+      <Blank Num="34" UId="3186" />
+      <Parameter Name="MAX" UId="3187">
+        <Blank Num="1" UId="3188" />
+        <Token Text=":=" UId="3189" />
+        <Blank Num="1" UId="3190" />
+        <Access Scope="LiteralConstant" UId="3191">
+          <Constant UId="3192">
+            <ConstantValue UId="3194">1745.0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="3196" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="3197" />
+  <NewLine Num="1" UId="3198" />
+  <Blank Num="4" UId="3199" />
+  <Token Text="ELSE" UId="3200" />
+  <NewLine Num="1" UId="3201" />
+  <Blank Num="8" UId="3202" />
+  <Access Scope="LocalVariable" UId="3203">
+    <Symbol UId="3204">
+      <Component Name="MainSetpoint" UId="3205" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3206" />
+  <Token Text=":=" UId="3207" />
+  <Blank Num="1" UId="3208" />
+  <Access Scope="LiteralConstant" UId="3209">
+    <Constant UId="3210">
+      <ConstantValue UId="3212">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="3213" />
+  <NewLine Num="1" UId="3214" />
+  <Blank Num="4" UId="3215" />
+  <Token Text="END_IF" UId="3216" />
+  <Token Text=";" UId="3217" />
+  <NewLine Num="1" UId="3218" />
+  <Blank Num="4" UId="3219" />
+  <NewLine Num="1" UId="3220" />
+  <Blank Num="4" UId="3221" />
+  <NewLine Num="1" UId="3222" />
+  <Blank Num="4" UId="3223" />
+  <Token Text="REGION" UId="3224" />
+  <Blank Num="1" UId="3225" />
+  <Text UId="3226">Actual Speed</Text>
+  <NewLine Num="1" UId="3227" />
+  <Blank Num="8" UId="3228" />
+  <Token Text="IF" UId="3229" />
+  <Blank Num="1" UId="3230" />
+  <Access Scope="LocalVariable" UId="3231">
+    <Symbol UId="3232">
+      <Component Name="MainSetpoint" UId="3233" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3234" />
+  <Token Text="&gt;" UId="3235" />
+  <Blank Num="1" UId="3236" />
+  <Access Scope="LiteralConstant" UId="3237">
+    <Constant UId="3238">
+      <ConstantValue UId="3240">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="3241" />
+  <Token Text="THEN" UId="3242" />
+  <NewLine Num="1" UId="3243" />
+  <Blank Num="12" UId="3244" />
+  <Access Scope="LocalVariable" UId="3245">
+    <Symbol UId="3246">
+      <Component Name="Cnv_Control" UId="3247" />
+      <Token Text="." UId="3248" />
+      <Component Name="Motor" UId="3249" />
+      <Token Text="." UId="3250" />
+      <Component Name="Speed_Actual" UId="3251" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3252" />
+  <Token Text=":=" UId="3253" />
+  <Blank Num="1" UId="3254" />
+  <Access Scope="Call" UId="3255">
+    <Instruction Name="SCALE_X" UId="3256">
+      <Token Text="(" UId="3257" />
+      <Parameter Name="MIN" UId="3258">
+        <Blank Num="1" UId="3259" />
+        <Token Text=":=" UId="3260" />
+        <Blank Num="1" UId="3261" />
+        <Access Scope="LiteralConstant" UId="3262">
+          <Constant UId="3263">
+            <ConstantValue UId="3265">0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="3266" />
+      <NewLine Num="1" UId="3267" />
+      <Blank Num="55" UId="3268" />
+      <Parameter Name="VALUE" UId="3269">
+        <Blank Num="1" UId="3270" />
+        <Token Text=":=" UId="3271" />
+        <Blank Num="1" UId="3272" />
+        <Access Scope="Call" UId="3273">
+          <Instruction Name="NORM_X" UId="3274">
+            <Token Text="(" UId="3275" />
+            <Parameter Name="MIN" UId="3276">
+              <Blank Num="1" UId="3277" />
+              <Token Text=":=" UId="3278" />
+              <Blank Num="1" UId="3279" />
+              <Access Scope="LiteralConstant" UId="3280">
+                <Constant UId="3281">
+                  <ConstantValue UId="3283">0</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="3284" />
+            <NewLine Num="1" UId="3285" />
+            <Blank Num="71" UId="3286" />
+            <Parameter Name="VALUE" UId="3287">
+              <Blank Num="1" UId="3288" />
+              <Token Text=":=" UId="3289" />
+              <Blank Num="1" UId="3290" />
+              <Access Scope="LocalVariable" UId="3291">
+                <Symbol UId="3292">
+                  <Component Name="SinaSpeed" UId="3293" />
+                  <Token Text="." UId="3294" />
+                  <Component Name="ActVelocity" UId="3295" />
+                </Symbol>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="3296" />
+            <NewLine Num="1" UId="3297" />
+            <Blank Num="71" UId="3298" />
+            <Parameter Name="MAX" UId="3299">
+              <Blank Num="1" UId="3300" />
+              <Token Text=":=" UId="3301" />
+              <Blank Num="1" UId="3302" />
+              <Access Scope="LiteralConstant" UId="3303">
+                <Constant UId="3304">
+                  <ConstantValue UId="3306">1745.0</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="3308" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="3309" />
+      <NewLine Num="1" UId="3310" />
+      <Blank Num="55" UId="3311" />
+      <Parameter Name="MAX" UId="3312">
+        <Blank Num="1" UId="3313" />
+        <Token Text=":=" UId="3314" />
+        <Blank Num="1" UId="3315" />
+        <Access Scope="LiteralConstant" UId="3316">
+          <Constant UId="3317">
+            <ConstantValue UId="3319">100</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="3321" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="3322" />
+  <NewLine Num="1" UId="3323" />
+  <Blank Num="8" UId="3324" />
+  <Token Text="ELSIF" UId="3325" />
+  <Blank Num="1" UId="3326" />
+  <Access Scope="LocalVariable" UId="3327">
+    <Symbol UId="3328">
+      <Component Name="MainSetpoint" UId="3329" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3330" />
+  <Token Text="&lt;" UId="3331" />
+  <Blank Num="1" UId="3332" />
+  <Access Scope="LiteralConstant" UId="3333">
+    <Constant UId="3334">
+      <ConstantValue UId="3336">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="3337" />
+  <Token Text="THEN" UId="3338" />
+  <NewLine Num="1" UId="3339" />
+  <Blank Num="12" UId="3340" />
+  <Access Scope="LocalVariable" UId="3341">
+    <Symbol UId="3342">
+      <Component Name="Cnv_Control" UId="3343" />
+      <Token Text="." UId="3344" />
+      <Component Name="Motor" UId="3345" />
+      <Token Text="." UId="3346" />
+      <Component Name="Speed_Actual" UId="3347" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3348" />
+  <Token Text=":=" UId="3349" />
+  <Blank Num="1" UId="3350" />
+  <Access Scope="Call" UId="3351">
+    <Instruction Name="SCALE_X" UId="3352">
+      <Token Text="(" UId="3353" />
+      <Parameter Name="MIN" UId="3354">
+        <Blank Num="1" UId="3355" />
+        <Token Text=":=" UId="3356" />
+        <Blank Num="1" UId="3357" />
+        <Access Scope="LiteralConstant" UId="3358">
+          <Constant UId="3359">
+            <ConstantValue UId="3361">0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="3362" />
+      <NewLine Num="1" UId="3363" />
+      <Blank Num="55" UId="3364" />
+      <Parameter Name="VALUE" UId="3365">
+        <Blank Num="1" UId="3366" />
+        <Token Text=":=" UId="3367" />
+        <Blank Num="1" UId="3368" />
+        <Access Scope="Call" UId="3369">
+          <Instruction Name="NORM_X" UId="3370">
+            <Token Text="(" UId="3371" />
+            <Parameter Name="MIN" UId="3372">
+              <Blank Num="1" UId="3373" />
+              <Token Text=":=" UId="3374" />
+              <Blank Num="1" UId="3375" />
+              <Access Scope="LiteralConstant" UId="3376">
+                <Constant UId="3377">
+                  <ConstantValue UId="3379">0</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="3380" />
+            <NewLine Num="1" UId="3381" />
+            <Blank Num="71" UId="3382" />
+            <Parameter Name="VALUE" UId="3383">
+              <Blank Num="1" UId="3384" />
+              <Token Text=":=" UId="3385" />
+              <Blank Num="1" UId="3386" />
+              <Access Scope="LocalVariable" UId="3387">
+                <Symbol UId="3388">
+                  <Component Name="SinaSpeed" UId="3389" />
+                  <Token Text="." UId="3390" />
+                  <Component Name="ActVelocity" UId="3391" />
+                </Symbol>
+              </Access>
+              <Blank Num="1" UId="3392" />
+              <Token Text="*" UId="3393" />
+              <Blank Num="1" UId="3394" />
+              <Access Scope="LiteralConstant" UId="3395">
+                <Constant UId="3396">
+                  <ConstantValue UId="3398">-1</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text="," UId="3399" />
+            <NewLine Num="1" UId="3400" />
+            <Blank Num="71" UId="3401" />
+            <Parameter Name="MAX" UId="3402">
+              <Blank Num="1" UId="3403" />
+              <Token Text=":=" UId="3404" />
+              <Blank Num="1" UId="3405" />
+              <Access Scope="LiteralConstant" UId="3406">
+                <Constant UId="3407">
+                  <ConstantValue UId="3409">1745.0</ConstantValue>
+                </Constant>
+              </Access>
+            </Parameter>
+            <Token Text=")" UId="3411" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="3412" />
+      <NewLine Num="1" UId="3413" />
+      <Blank Num="55" UId="3414" />
+      <Parameter Name="MAX" UId="3415">
+        <Blank Num="1" UId="3416" />
+        <Token Text=":=" UId="3417" />
+        <Blank Num="1" UId="3418" />
+        <Access Scope="LiteralConstant" UId="3419">
+          <Constant UId="3420">
+            <ConstantValue UId="3422">100</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="3424" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="3425" />
+  <NewLine Num="1" UId="3426" />
+  <Blank Num="8" UId="3427" />
+  <Token Text="ELSE" UId="3428" />
+  <NewLine Num="1" UId="3429" />
+  <Blank Num="12" UId="3430" />
+  <Access Scope="LocalVariable" UId="3431">
+    <Symbol UId="3432">
+      <Component Name="Cnv_Control" UId="3433" />
+      <Token Text="." UId="3434" />
+      <Component Name="Motor" UId="3435" />
+      <Token Text="." UId="3436" />
+      <Component Name="Speed_Actual" UId="3437" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="3438" />
+  <Token Text=":=" UId="3439" />
+  <Blank Num="1" UId="3440" />
+  <Access Scope="LiteralConstant" UId="3441">
+    <Constant UId="3442">
+      <ConstantValue UId="3444">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="3445" />
+  <NewLine Num="1" UId="3446" />
+  <Blank Num="8" UId="3447" />
+  <Token Text="END_IF" UId="3448" />
+  <Token Text=";" UId="3449" />
+  <NewLine Num="1" UId="3450" />
+  <Blank Num="4" UId="3451" />
+  <Token Text="END_REGION" UId="3452" />
+  <NewLine Num="1" UId="3453" />
+  <Token Text="END_REGION" UId="3454" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text>Conveyor Instance FB</Text>
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FB>
+</Document>

@@ -1,0 +1,1583 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-20T12:55:01.9490651Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FB ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="Enable" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="E-stop" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="TCP_Configuration" Datatype="&quot;LCom_typeConfig&quot;" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="connection" Datatype="Struct">
+            <Member Name="interfaceID" Datatype="HW_ANY" />
+            <Member Name="connectionID" Datatype="CONN_ANY" />
+            <Member Name="comService" Datatype="USInt" />
+            <Member Name="isClient" Datatype="Bool" />
+            <Member Name="connectType" Datatype="USInt" />
+            <Member Name="localPort" Datatype="UInt" />
+            <Member Name="partnerPort" Datatype="UInt" />
+            <Member Name="partnerIP" Datatype="IP_V4" Version="1.0">
+              <Sections>
+                <Section Name="None">
+                  <Member Name="ADDR" Datatype="Array[1..4] of Byte" />
+                </Section>
+              </Sections>
+            </Member>
+            <Member Name="partnerQDN" Datatype="String [254]" />
+            <Member Name="acceptUnknownPartner" Datatype="Bool" />
+            <Member Name="lifeSignCycleTime" Datatype="Time" />
+          </Member>
+          <Member Name="sender" Datatype="Struct">
+            <Member Name="cycleTime" Datatype="Time" />
+            <Member Name="ackTimeout" Datatype="Time" />
+          </Member>
+          <Member Name="timeSync" Datatype="Struct">
+            <Member Name="usePartnerTimestamps" Datatype="Bool" />
+            <Member Name="sendMode" Datatype="USInt" />
+            <Member Name="cycleTime" Datatype="Time" />
+            <Member Name="sendAtTimeOfDay" Datatype="Time_Of_Day" />
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="Shuttle_No" Datatype="UInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="Output">
+    <Member Name="Connected" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Busy" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Status" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Error" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+  <Section Name="InOut">
+    <Member Name="TCP_Diag" Datatype="&quot;LCom_typeDiagnostics&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="None">
+          <Member Name="localConfig" Datatype="Struct">
+            <Member Name="connection" Datatype="Struct">
+              <Member Name="interfaceID" Datatype="HW_ANY" />
+              <Member Name="connectionID" Datatype="CONN_ANY" />
+              <Member Name="comService" Datatype="USInt" />
+              <Member Name="isClient" Datatype="Bool" />
+              <Member Name="connectType" Datatype="USInt" />
+              <Member Name="localPort" Datatype="UInt" />
+              <Member Name="localIP" Datatype="IP_V4" Version="1.0">
+                <Sections>
+                  <Section Name="None">
+                    <Member Name="ADDR" Datatype="Array[1..4] of Byte" />
+                  </Section>
+                </Sections>
+              </Member>
+              <Member Name="partnerPort" Datatype="UInt" />
+              <Member Name="partnerIP" Datatype="IP_V4" Version="1.0">
+                <Sections>
+                  <Section Name="None">
+                    <Member Name="ADDR" Datatype="Array[1..4] of Byte" />
+                  </Section>
+                </Sections>
+              </Member>
+              <Member Name="partnerQDN" Datatype="String [254]" />
+              <Member Name="acceptUnknownPartner" Datatype="Bool" />
+              <Member Name="useLComProtocol" Datatype="Bool" />
+              <Member Name="lifeSignCycleTime" Datatype="Time" />
+            </Member>
+            <Member Name="sender" Datatype="Struct">
+              <Member Name="cycleTime" Datatype="Time" />
+              <Member Name="ackTimeout" Datatype="Time" />
+            </Member>
+            <Member Name="timeSync" Datatype="Struct">
+              <Member Name="usePartnerTimestamps" Datatype="Bool" />
+              <Member Name="sendMode" Datatype="USInt" />
+              <Member Name="cycleTime" Datatype="Time" />
+              <Member Name="sendAtTimeOfDay" Datatype="Time_Of_Day" />
+            </Member>
+            <Member Name="sizeOfSendBuffer" Datatype="UDInt" />
+            <Member Name="sizeOfReceiveBuffer" Datatype="UDInt" />
+          </Member>
+          <Member Name="partnerConfig" Datatype="Struct">
+            <Member Name="connnection" Datatype="Struct">
+              <Member Name="lifeSignCycleTime" Datatype="Time" />
+            </Member>
+            <Member Name="sender" Datatype="Struct">
+              <Member Name="cycleTime" Datatype="Time" />
+              <Member Name="ackTimeout" Datatype="Time" />
+            </Member>
+            <Member Name="timeSync" Datatype="Struct">
+              <Member Name="usePartnerTimestamps" Datatype="Bool" />
+              <Member Name="sendMode" Datatype="USInt" />
+            </Member>
+            <Member Name="sizeOfSendBuffer" Datatype="UDInt" />
+            <Member Name="sizeOfReceiveBuffer" Datatype="UDInt" />
+          </Member>
+          <Member Name="statistics" Datatype="Struct">
+            <Member Name="avgCallCycle" Datatype="Real" />
+            <Member Name="avgReceiveMsgCycle" Datatype="Real" />
+            <Member Name="maxReceiveMsgCycle" Datatype="Time" />
+            <Member Name="LComProtocolUsed" Datatype="Bool" />
+            <Member Name="activeLComVersion" Datatype="USInt" />
+            <Member Name="avgMsgSendingTime" Datatype="Real" />
+            <Member Name="maxMsgSendingTime" Datatype="Time" />
+            <Member Name="avgMsgReceivingTime" Datatype="Real" />
+            <Member Name="maxMsgReceivingTime" Datatype="Time" />
+            <Member Name="numberOfSentMessages" Datatype="UDInt" />
+            <Member Name="numberOfReceivedMessages" Datatype="UDInt" />
+            <Member Name="totalAckTimeouts" Datatype="UInt" />
+            <Member Name="totalSendCycleViolations" Datatype="UInt" />
+            <Member Name="totalReceiveCycleViolations" Datatype="UInt" />
+            <Member Name="totalReconnects" Datatype="UInt" />
+            <Member Name="lastConnect" Datatype="DTL" Version="1.0" />
+            <Member Name="lastTimeSync" Datatype="DTL" Version="1.0" />
+          </Member>
+          <Member Name="bufferIndex" Datatype="USInt" />
+          <Member Name="buffer" Datatype="Array[0..63] of Struct">
+            <Member Name="status" Datatype="Word" />
+            <Member Name="timestamp" Datatype="DTL" Version="1.0" />
+            <Member Name="isActive" Datatype="Bool" />
+            <Member Name="subFunctionErrorID" Datatype="Word" />
+            <Member Name="additionalValue1" Datatype="Real" />
+            <Member Name="additionalValue2" Datatype="Real" />
+            <Member Name="additionalValue3" Datatype="Real" />
+            <Member Name="additionalValue4" Datatype="Time" />
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="LCom_Communication_DB" Datatype="&quot;LCom_Communication_FB&quot;" Accessibility="Public">
+      <Sections>
+        <Section Name="Input">
+          <Member Name="enable" Datatype="Bool" />
+          <Member Name="send" Datatype="Bool" />
+          <Member Name="sendDataLength" Datatype="UDInt" />
+          <Member Name="readDataLength" Datatype="UDInt" />
+          <Member Name="configuration" Datatype="&quot;LCom_typeConfig&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="connection" Datatype="Struct">
+                  <Member Name="interfaceID" Datatype="HW_ANY" />
+                  <Member Name="connectionID" Datatype="CONN_ANY" />
+                  <Member Name="comService" Datatype="USInt" />
+                  <Member Name="isClient" Datatype="Bool" />
+                  <Member Name="connectType" Datatype="USInt" />
+                  <Member Name="localPort" Datatype="UInt" />
+                  <Member Name="partnerPort" Datatype="UInt" />
+                  <Member Name="partnerIP" Datatype="IP_V4" Version="1.0">
+                    <Sections>
+                      <Section Name="None">
+                        <Member Name="ADDR" Datatype="Array[1..4] of Byte" />
+                      </Section>
+                    </Sections>
+                  </Member>
+                  <Member Name="partnerQDN" Datatype="String [254]" />
+                  <Member Name="acceptUnknownPartner" Datatype="Bool" />
+                  <Member Name="lifeSignCycleTime" Datatype="Time" />
+                </Member>
+                <Member Name="sender" Datatype="Struct">
+                  <Member Name="cycleTime" Datatype="Time" />
+                  <Member Name="ackTimeout" Datatype="Time" />
+                </Member>
+                <Member Name="timeSync" Datatype="Struct">
+                  <Member Name="usePartnerTimestamps" Datatype="Bool" />
+                  <Member Name="sendMode" Datatype="USInt" />
+                  <Member Name="cycleTime" Datatype="Time" />
+                  <Member Name="sendAtTimeOfDay" Datatype="Time_Of_Day" />
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+        <Section Name="Output">
+          <Member Name="connected" Datatype="Bool" />
+          <Member Name="sending" Datatype="Bool" />
+          <Member Name="dataReceived" Datatype="Bool" />
+          <Member Name="receivedDataLength" Datatype="UDInt" />
+          <Member Name="busy" Datatype="Bool" />
+          <Member Name="error" Datatype="Bool" />
+          <Member Name="status" Datatype="Word" />
+        </Section>
+        <Section Name="InOut">
+          <Member Name="sendBuffer" Datatype="Variant" />
+          <Member Name="receiveBuffer" Datatype="Variant" />
+          <Member Name="diagnostics" Datatype="&quot;LCom_typeDiagnostics&quot;">
+            <Sections>
+              <Section Name="None">
+                <Member Name="localConfig" Datatype="Struct">
+                  <Member Name="connection" Datatype="Struct">
+                    <Member Name="interfaceID" Datatype="HW_ANY" />
+                    <Member Name="connectionID" Datatype="CONN_ANY" />
+                    <Member Name="comService" Datatype="USInt" />
+                    <Member Name="isClient" Datatype="Bool" />
+                    <Member Name="connectType" Datatype="USInt" />
+                    <Member Name="localPort" Datatype="UInt" />
+                    <Member Name="localIP" Datatype="IP_V4" Version="1.0">
+                      <Sections>
+                        <Section Name="None">
+                          <Member Name="ADDR" Datatype="Array[1..4] of Byte" />
+                        </Section>
+                      </Sections>
+                    </Member>
+                    <Member Name="partnerPort" Datatype="UInt" />
+                    <Member Name="partnerIP" Datatype="IP_V4" Version="1.0">
+                      <Sections>
+                        <Section Name="None">
+                          <Member Name="ADDR" Datatype="Array[1..4] of Byte" />
+                        </Section>
+                      </Sections>
+                    </Member>
+                    <Member Name="partnerQDN" Datatype="String [254]" />
+                    <Member Name="acceptUnknownPartner" Datatype="Bool" />
+                    <Member Name="useLComProtocol" Datatype="Bool" />
+                    <Member Name="lifeSignCycleTime" Datatype="Time" />
+                  </Member>
+                  <Member Name="sender" Datatype="Struct">
+                    <Member Name="cycleTime" Datatype="Time" />
+                    <Member Name="ackTimeout" Datatype="Time" />
+                  </Member>
+                  <Member Name="timeSync" Datatype="Struct">
+                    <Member Name="usePartnerTimestamps" Datatype="Bool" />
+                    <Member Name="sendMode" Datatype="USInt" />
+                    <Member Name="cycleTime" Datatype="Time" />
+                    <Member Name="sendAtTimeOfDay" Datatype="Time_Of_Day" />
+                  </Member>
+                  <Member Name="sizeOfSendBuffer" Datatype="UDInt" />
+                  <Member Name="sizeOfReceiveBuffer" Datatype="UDInt" />
+                </Member>
+                <Member Name="partnerConfig" Datatype="Struct">
+                  <Member Name="connnection" Datatype="Struct">
+                    <Member Name="lifeSignCycleTime" Datatype="Time" />
+                  </Member>
+                  <Member Name="sender" Datatype="Struct">
+                    <Member Name="cycleTime" Datatype="Time" />
+                    <Member Name="ackTimeout" Datatype="Time" />
+                  </Member>
+                  <Member Name="timeSync" Datatype="Struct">
+                    <Member Name="usePartnerTimestamps" Datatype="Bool" />
+                    <Member Name="sendMode" Datatype="USInt" />
+                  </Member>
+                  <Member Name="sizeOfSendBuffer" Datatype="UDInt" />
+                  <Member Name="sizeOfReceiveBuffer" Datatype="UDInt" />
+                </Member>
+                <Member Name="statistics" Datatype="Struct">
+                  <Member Name="avgCallCycle" Datatype="Real" />
+                  <Member Name="avgReceiveMsgCycle" Datatype="Real" />
+                  <Member Name="maxReceiveMsgCycle" Datatype="Time" />
+                  <Member Name="LComProtocolUsed" Datatype="Bool" />
+                  <Member Name="activeLComVersion" Datatype="USInt" />
+                  <Member Name="avgMsgSendingTime" Datatype="Real" />
+                  <Member Name="maxMsgSendingTime" Datatype="Time" />
+                  <Member Name="avgMsgReceivingTime" Datatype="Real" />
+                  <Member Name="maxMsgReceivingTime" Datatype="Time" />
+                  <Member Name="numberOfSentMessages" Datatype="UDInt" />
+                  <Member Name="numberOfReceivedMessages" Datatype="UDInt" />
+                  <Member Name="totalAckTimeouts" Datatype="UInt" />
+                  <Member Name="totalSendCycleViolations" Datatype="UInt" />
+                  <Member Name="totalReceiveCycleViolations" Datatype="UInt" />
+                  <Member Name="totalReconnects" Datatype="UInt" />
+                  <Member Name="lastConnect" Datatype="DTL" Version="1.0" />
+                  <Member Name="lastTimeSync" Datatype="DTL" Version="1.0" />
+                </Member>
+                <Member Name="bufferIndex" Datatype="USInt" />
+                <Member Name="buffer" Datatype="Array[0..63] of Struct">
+                  <Member Name="status" Datatype="Word" />
+                  <Member Name="timestamp" Datatype="DTL" Version="1.0" />
+                  <Member Name="isActive" Datatype="Bool" />
+                  <Member Name="subFunctionErrorID" Datatype="Word" />
+                  <Member Name="additionalValue1" Datatype="Real" />
+                  <Member Name="additionalValue2" Datatype="Real" />
+                  <Member Name="additionalValue3" Datatype="Real" />
+                  <Member Name="additionalValue4" Datatype="Time" />
+                </Member>
+              </Section>
+            </Sections>
+          </Member>
+        </Section>
+        <Section Name="Static">
+          <Member Name="statConnectAttempts" Datatype="SInt" />
+          <Member Name="statActualLocalLComVersion" Datatype="USInt" />
+          <Member Name="statRuntimeTask" Datatype="LReal" />
+          <Member Name="statCopyNBytes" Datatype="UDInt" />
+          <Member Name="statMaxActPacketLength" Datatype="UDInt" />
+          <Member Name="statState" Datatype="Struct">
+            <Member Name="connection" Datatype="USInt" />
+            <Member Name="cfgSender" Datatype="USInt" />
+            <Member Name="comSender" Datatype="USInt" />
+            <Member Name="comReceiver" Datatype="USInt" />
+            <Member Name="sender" Datatype="USInt" />
+            <Member Name="receiver" Datatype="USInt" />
+          </Member>
+          <Member Name="statReceive" Datatype="Struct">
+            <Member Name="tempTelegram" Datatype="Struct">
+              <Member Name="LComVersion" Datatype="USInt" />
+              <Member Name="index" Datatype="USInt" />
+              <Member Name="telegramType" Datatype="USInt" />
+              <Member Name="data" Datatype="Array[0..23] of Byte" />
+            </Member>
+            <Member Name="configTelegramV1" Datatype="Struct">
+              <Member Name="LComVersion" Datatype="USInt" />
+              <Member Name="telegramType" Datatype="USInt" />
+              <Member Name="comMode" Datatype="USInt" />
+              <Member Name="slidingWindow" Datatype="USInt" />
+              <Member Name="cycleTime" Datatype="UInt" />
+              <Member Name="ackTimeOut" Datatype="UInt" />
+              <Member Name="lifeSignCycle" Datatype="UInt" />
+              <Member Name="status" Datatype="USInt" />
+              <Member Name="sendModeSyncTime" Datatype="USInt" />
+              <Member Name="maxSendDataLength" Datatype="UInt" />
+              <Member Name="maxReceiveDataLength" Datatype="UInt" />
+            </Member>
+            <Member Name="configTelegramV2" Datatype="Struct">
+              <Member Name="LComVersion" Datatype="USInt" />
+              <Member Name="telegramType" Datatype="USInt" />
+              <Member Name="status" Datatype="USInt" />
+              <Member Name="sendModeSyncTime" Datatype="USInt" />
+              <Member Name="lifeSignCycle" Datatype="Time" />
+              <Member Name="cycleTime" Datatype="Time" />
+              <Member Name="ackTimeOut" Datatype="Time" />
+              <Member Name="maxSendDataLength" Datatype="UDInt" />
+              <Member Name="maxReceiveDataLength" Datatype="UDInt" />
+            </Member>
+            <Member Name="dataTelegram" Datatype="Struct">
+              <Member Name="LComVersion" Datatype="USInt" />
+              <Member Name="telegramType" Datatype="USInt" />
+              <Member Name="messageCounter" Datatype="USInt" />
+              <Member Name="ackMessageCounter" Datatype="USInt" />
+              <Member Name="messageOffset" Datatype="UDInt" />
+              <Member Name="ackMessageOffset" Datatype="UDInt" />
+              <Member Name="actPackageLength" Datatype="UDInt" />
+              <Member Name="totalMessageLength" Datatype="UDInt" />
+            </Member>
+            <Member Name="userData" Datatype="Struct">
+              <Member Name="totalLength" Datatype="UDInt" />
+              <Member Name="offset" Datatype="UDInt" />
+            </Member>
+            <Member Name="trcvFct" Datatype="Struct">
+              <Member Name="data" Datatype="Array[0..4095] of Byte" />
+              <Member Name="dataOffset" Datatype="UDInt" />
+              <Member Name="dataLength" Datatype="UDInt" />
+              <Member Name="dataLengthRest" Datatype="UDInt" />
+              <Member Name="dataReceived" Datatype="Bool" />
+            </Member>
+            <Member Name="numberOfLComHeader" Datatype="USInt" />
+          </Member>
+          <Member Name="statSend" Datatype="Struct">
+            <Member Name="configTelegramV1" Datatype="Struct">
+              <Member Name="LComVersion" Datatype="USInt" />
+              <Member Name="comMode" Datatype="USInt" />
+              <Member Name="slidingWindow" Datatype="USInt" />
+              <Member Name="cycleTime" Datatype="UInt" />
+              <Member Name="ackTimeOut" Datatype="UInt" />
+              <Member Name="lifeSignCycle" Datatype="UInt" />
+              <Member Name="status" Datatype="USInt" />
+              <Member Name="sendModeSyncTime" Datatype="USInt" />
+              <Member Name="maxSendDataLength" Datatype="UInt" />
+              <Member Name="maxReceiveDataLength" Datatype="UInt" />
+            </Member>
+            <Member Name="configTelegramV2" Datatype="Struct">
+              <Member Name="LComVersion" Datatype="USInt" />
+              <Member Name="status" Datatype="USInt" />
+              <Member Name="sendModeSyncTime" Datatype="USInt" />
+              <Member Name="lifeSignCycle" Datatype="Time" />
+              <Member Name="cycleTime" Datatype="Time" />
+              <Member Name="ackTimeOut" Datatype="Time" />
+              <Member Name="maxSendDataLength" Datatype="UDInt" />
+              <Member Name="maxReceiveDataLength" Datatype="UDInt" />
+            </Member>
+            <Member Name="dataTelegram" Datatype="Struct">
+              <Member Name="LComVersion" Datatype="USInt" />
+              <Member Name="telegramType" Datatype="USInt" />
+              <Member Name="messageCounter" Datatype="USInt" />
+              <Member Name="ackMessageCounter" Datatype="USInt" />
+              <Member Name="messageOffset" Datatype="UDInt" />
+              <Member Name="ackMessageOffset" Datatype="UDInt" />
+              <Member Name="actPackageLength" Datatype="UDInt" />
+              <Member Name="totalMessageLength" Datatype="UDInt" />
+            </Member>
+            <Member Name="userData" Datatype="Struct">
+              <Member Name="totalLength" Datatype="UDInt" />
+              <Member Name="offset" Datatype="UDInt" />
+              <Member Name="sendCycleViolation" Datatype="Bool" />
+            </Member>
+            <Member Name="tsendFct" Datatype="Struct">
+              <Member Name="dataLengthRest" Datatype="UInt" />
+              <Member Name="data" Datatype="Array[0..4095] of Byte" />
+              <Member Name="dataOffset" Datatype="UInt" />
+              <Member Name="status" Datatype="Word" />
+              <Member Name="enable" Datatype="Bool" />
+            </Member>
+            <Member Name="expectedAck" Datatype="Struct">
+              <Member Name="package1" Datatype="Struct">
+                <Member Name="offset" Datatype="UDInt" />
+              </Member>
+            </Member>
+            <Member Name="numberOfLComPackage" Datatype="USInt" />
+          </Member>
+          <Member Name="statIterator" Datatype="Int" />
+          <Member Name="statOldEnable" Datatype="Bool" />
+          <Member Name="statOldSend" Datatype="Bool" />
+          <Member Name="statRisingEdgeSend" Datatype="Bool" />
+          <Member Name="statFallingEdgeEnable" Datatype="Bool" />
+          <Member Name="statRet" Datatype="Int" />
+          <Member Name="statCompare" Datatype="Struct">
+            <Member Name="sender" Datatype="Struct">
+              <Member Name="cycleTime" Datatype="Time" />
+              <Member Name="ackTimeOut" Datatype="Time" />
+            </Member>
+          </Member>
+          <Member Name="statTconPar" Datatype="TCON_IP_v4" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="InterfaceId" Datatype="HW_ANY" />
+                <Member Name="ID" Datatype="CONN_OUC" />
+                <Member Name="ConnectionType" Datatype="Byte" />
+                <Member Name="ActiveEstablished" Datatype="Bool" />
+                <Member Name="RemoteAddress" Datatype="IP_V4" Version="1.0">
+                  <Sections>
+                    <Section Name="None">
+                      <Member Name="ADDR" Datatype="Array[1..4] of Byte" />
+                    </Section>
+                  </Sections>
+                </Member>
+                <Member Name="RemotePort" Datatype="UInt" />
+                <Member Name="LocalPort" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="statTconParQdn" Datatype="TCON_QDN" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="InterfaceId" Datatype="HW_ANY" />
+                <Member Name="ID" Datatype="CONN_OUC" />
+                <Member Name="ConnectionType" Datatype="Byte" />
+                <Member Name="ActiveEstablished" Datatype="Bool" />
+                <Member Name="RemoteQDN" Datatype="String[254]" />
+                <Member Name="RemotePort" Datatype="UInt" />
+                <Member Name="LocalPort" Datatype="UInt" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instTCON" Datatype="TCON" Version="4.0">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="REQ" Datatype="Bool" />
+                <Member Name="ID" Datatype="CONN_OUC" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="DONE" Datatype="Bool" />
+                <Member Name="BUSY" Datatype="Bool" />
+                <Member Name="ERROR" Datatype="Bool" />
+                <Member Name="STATUS" Datatype="Word" />
+              </Section>
+              <Section Name="InOut">
+                <Member Name="CONNECT" Datatype="Variant" />
+              </Section>
+              <Section Name="Static" />
+            </Sections>
+          </Member>
+          <Member Name="instTDISCON" Datatype="TDISCON" Version="2.1">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="REQ" Datatype="Bool" />
+                <Member Name="ID" Datatype="CONN_OUC" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="DONE" Datatype="Bool" />
+                <Member Name="BUSY" Datatype="Bool" />
+                <Member Name="ERROR" Datatype="Bool" />
+                <Member Name="STATUS" Datatype="Word" />
+              </Section>
+              <Section Name="InOut" />
+              <Section Name="Static" />
+            </Sections>
+          </Member>
+          <Member Name="instTRCV" Datatype="TRCV" Version="4.0">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="EN_R" Datatype="Bool" />
+                <Member Name="ID" Datatype="CONN_OUC" />
+                <Member Name="LEN" Datatype="UDInt" />
+                <Member Name="ADHOC" Datatype="Bool" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="NDR" Datatype="Bool" />
+                <Member Name="BUSY" Datatype="Bool" />
+                <Member Name="ERROR" Datatype="Bool" />
+                <Member Name="STATUS" Datatype="Word" />
+                <Member Name="RCVD_LEN" Datatype="UDInt" />
+              </Section>
+              <Section Name="InOut">
+                <Member Name="DATA" Datatype="Variant" />
+                <Member Name="ADDR" Datatype="Variant" />
+              </Section>
+              <Section Name="Static" />
+            </Sections>
+          </Member>
+          <Member Name="instTSEND" Datatype="TSEND" Version="4.0">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="REQ" Datatype="Bool" />
+                <Member Name="ID" Datatype="CONN_OUC" />
+                <Member Name="LEN" Datatype="UDInt" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="DONE" Datatype="Bool" />
+                <Member Name="BUSY" Datatype="Bool" />
+                <Member Name="ERROR" Datatype="Bool" />
+                <Member Name="STATUS" Datatype="Word" />
+              </Section>
+              <Section Name="InOut">
+                <Member Name="DATA" Datatype="Variant" />
+                <Member Name="ADDR" Datatype="Variant" />
+              </Section>
+              <Section Name="Static" />
+            </Sections>
+          </Member>
+          <Member Name="instLocalLifeSignCycleTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instPartnerLifeSignCycleTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instLocalCycleTimeTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instReceiveMsgCycle" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instExpectedAckPackage1" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instMsgSendingTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instMsgReceivingTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instSyncTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instSendErrorTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instRcvErrorTimer" Datatype="TON_TIME" Version="1.0">
+            <Sections>
+              <Section Name="None">
+                <Member Name="PT" Datatype="Time" />
+                <Member Name="ET" Datatype="Time" />
+                <Member Name="IN" Datatype="Bool" />
+                <Member Name="Q" Datatype="Bool" />
+              </Section>
+            </Sections>
+          </Member>
+          <Member Name="instRDREC" Datatype="RDREC" Version="1.0">
+            <Sections>
+              <Section Name="Input">
+                <Member Name="REQ" Datatype="Bool" />
+                <Member Name="ID" Datatype="HW_IO" />
+                <Member Name="INDEX" Datatype="DInt" />
+                <Member Name="MLEN" Datatype="UInt" />
+              </Section>
+              <Section Name="Output">
+                <Member Name="VALID" Datatype="Bool" />
+                <Member Name="BUSY" Datatype="Bool" />
+                <Member Name="ERROR" Datatype="Bool" />
+                <Member Name="STATUS" Datatype="DWord" />
+                <Member Name="LEN" Datatype="UInt" />
+              </Section>
+              <Section Name="InOut">
+                <Member Name="RECORD" Datatype="Variant" />
+              </Section>
+              <Section Name="Static" />
+            </Sections>
+          </Member>
+          <Member Name="statDiag" Datatype="Struct">
+            <Member Name="buffer" Datatype="Array[0..9] of Struct">
+              <Member Name="status" Datatype="Word" />
+              <Member Name="isActive" Datatype="Bool" />
+              <Member Name="subFunctionErrorID" Datatype="Word" />
+              <Member Name="additionalValue1" Datatype="Real" />
+              <Member Name="additionalValue2" Datatype="Real" />
+              <Member Name="additionalValue3" Datatype="Real" />
+              <Member Name="additionalValue4" Datatype="Time" />
+            </Member>
+            <Member Name="bufferIndex" Datatype="Int" />
+            <Member Name="actualIndex" Datatype="USInt" />
+          </Member>
+          <Member Name="statDataReceived" Datatype="Bool" />
+          <Member Name="statConnected" Datatype="Bool" />
+          <Member Name="statStatus" Datatype="Word" />
+          <Member Name="statSending" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+  <Section Name="Static">
+    <Member Name="SendBuffer" Datatype="Array[0..6] of Byte" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="ReceiveBuffer" Datatype="Array[0..1] of Byte" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="Send" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="SendDataLength" Datatype="USInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <StartValue>2</StartValue>
+    </Member>
+    <Member Name="Sending" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="T_Send_DB" Datatype="TON_TIME" Version="1.0" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="PT" Datatype="Time" />
+          <Member Name="ET" Datatype="Time" />
+          <Member Name="IN" Datatype="Bool" />
+          <Member Name="Q" Datatype="Bool" />
+        </Section>
+      </Sections>
+    </Member>
+  </Section>
+  <Section Name="Temp" />
+  <Section Name="Constant" />
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <IsRetainMemResEnabled>false</IsRetainMemResEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <MemoryReserve>100</MemoryReserve>
+      <Name>Shuttle_TCP_Comms</Name>
+      <Namespace />
+      <Number>22</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <Token Text="IF" UId="21" />
+  <Blank Num="1" UId="22" />
+  <Token Text="NOT" UId="23" />
+  <Blank Num="1" UId="24" />
+  <Access Scope="LocalVariable" UId="25">
+    <Symbol UId="26">
+      <Component Name="E-stop" UId="27" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="28" />
+  <Token Text="THEN" UId="29" />
+  <NewLine Num="1" UId="30" />
+  <Blank Num="4" UId="31" />
+  <Access Scope="LocalVariable" UId="32">
+    <Symbol UId="33">
+      <Component Name="SendBuffer" UId="34">
+        <Token Text="[" UId="35" />
+        <Access Scope="LiteralConstant" UId="36">
+          <Constant UId="37">
+            <ConstantValue UId="39">0</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="40" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="41" />
+  <Token Text=":=" UId="42" />
+  <Blank Num="1" UId="43" />
+  <Access Scope="LiteralConstant" UId="44">
+    <Constant UId="45">
+      <ConstantValue UId="47">83</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="48" />
+  <NewLine Num="1" UId="49" />
+  <Blank Num="4" UId="50" />
+  <Token Text="IF" UId="51" />
+  <Blank Num="1" UId="52" />
+  <Token Text="NOT" UId="53" />
+  <Blank Num="1" UId="54" />
+  <Access Scope="LocalVariable" UId="55">
+    <Symbol UId="56">
+      <Component Name="Send" UId="57" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="58" />
+  <Token Text="THEN" UId="59" />
+  <NewLine Num="1" UId="60" />
+  <Blank Num="8" UId="61" />
+  <Access Scope="LocalVariable" UId="62">
+    <Symbol UId="63">
+      <Component Name="Send" UId="64" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="65" />
+  <Token Text=":=" UId="66" />
+  <Blank Num="1" UId="67" />
+  <Access Scope="LiteralConstant" UId="68">
+    <Constant UId="69">
+      <ConstantValue UId="71">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="72" />
+  <NewLine Num="1" UId="73" />
+  <Blank Num="4" UId="74" />
+  <Token Text="END_IF" UId="75" />
+  <Token Text=";" UId="76" />
+  <NewLine Num="1" UId="77" />
+  <Token Text="ELSE" UId="78" />
+  <NewLine Num="1" UId="79" />
+  <Blank Num="4" UId="80" />
+  <Access Scope="LocalVariable" UId="81">
+    <Symbol UId="82">
+      <Component Name="SendBuffer" UId="83">
+        <Token Text="[" UId="84" />
+        <Access Scope="LiteralConstant" UId="85">
+          <Constant UId="86">
+            <ConstantValue UId="88">0</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="89" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="90" />
+  <Token Text=":=" UId="91" />
+  <Blank Num="1" UId="92" />
+  <Access Scope="LiteralConstant" UId="93">
+    <Constant UId="94">
+      <ConstantValue UId="96">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="97" />
+  <NewLine Num="1" UId="98" />
+  <Token Text="END_IF" UId="99" />
+  <Token Text=";" UId="100" />
+  <NewLine Num="2" UId="101" />
+  <Access Scope="Call" UId="102">
+    <CallInfo UId="103" BlockType="FB" Name="LCom_Communication_FB">
+      <Instance Scope="LocalVariable" UId="104">
+        <Component Name="LCom_Communication_DB" UId="105" />
+      </Instance>
+      <Token Text="(" UId="106" />
+      <Parameter Name="enable" UId="107">
+        <Token Text=":=" UId="108" />
+        <Access Scope="LocalVariable" UId="109">
+          <Symbol UId="110">
+            <Component Name="Enable" UId="111" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="112" />
+      <NewLine Num="1" UId="113" />
+      <Blank Num="24" UId="114" />
+      <Parameter Name="send" UId="115">
+        <Token Text=":=" UId="116" />
+        <Access Scope="LocalVariable" UId="117">
+          <Symbol UId="118">
+            <Component Name="Send" UId="119" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="120" />
+      <NewLine Num="1" UId="121" />
+      <Blank Num="24" UId="122" />
+      <Parameter Name="sendDataLength" UId="123">
+        <Token Text=":=" UId="124" />
+        <Access Scope="LocalVariable" UId="125">
+          <Symbol UId="126">
+            <Component Name="SendDataLength" UId="127" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="128" />
+      <NewLine Num="1" UId="129" />
+      <Blank Num="24" UId="130" />
+      <Parameter Name="readDataLength" UId="131">
+        <Token Text=":=" UId="132" />
+        <Access Scope="LiteralConstant" UId="133">
+          <Constant UId="134">
+            <ConstantValue UId="136">16#FFFF_FFFF</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="137" />
+      <NewLine Num="1" UId="138" />
+      <Blank Num="24" UId="139" />
+      <Parameter Name="configuration" UId="140">
+        <Token Text=":=" UId="141" />
+        <Access Scope="LocalVariable" UId="142">
+          <Symbol UId="143">
+            <Component Name="TCP_Configuration" UId="144" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="145" />
+      <NewLine Num="1" UId="146" />
+      <Blank Num="24" UId="147" />
+      <Parameter Name="connected" UId="148">
+        <Token Text="=&gt;" UId="149" />
+        <Access Scope="LocalVariable" UId="150">
+          <Symbol UId="151">
+            <Component Name="Connected" UId="152" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="153" />
+      <NewLine Num="1" UId="154" />
+      <Blank Num="24" UId="155" />
+      <Parameter Name="sending" UId="156">
+        <Token Text="=&gt;" UId="157" />
+        <Access Scope="LocalVariable" UId="158">
+          <Symbol UId="159">
+            <Component Name="Sending" UId="160" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="161" />
+      <NewLine Num="1" UId="162" />
+      <Blank Num="24" UId="163" />
+      <Parameter Name="busy" UId="164">
+        <Token Text="=&gt;" UId="165" />
+        <Access Scope="LocalVariable" UId="166">
+          <Symbol UId="167">
+            <Component Name="Busy" UId="168" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="169" />
+      <NewLine Num="1" UId="170" />
+      <Blank Num="24" UId="171" />
+      <Parameter Name="error" UId="172">
+        <Token Text="=&gt;" UId="173" />
+        <Access Scope="LocalVariable" UId="174">
+          <Symbol UId="175">
+            <Component Name="Error" UId="176" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="177" />
+      <NewLine Num="1" UId="178" />
+      <Blank Num="24" UId="179" />
+      <Parameter Name="status" UId="180">
+        <Token Text="=&gt;" UId="181" />
+        <Access Scope="LocalVariable" UId="182">
+          <Symbol UId="183">
+            <Component Name="Status" UId="184" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="185" />
+      <NewLine Num="1" UId="186" />
+      <Blank Num="24" UId="187" />
+      <Parameter Name="sendBuffer" UId="188">
+        <Token Text=":=" UId="189" />
+        <Access Scope="LocalVariable" UId="190">
+          <Symbol UId="191">
+            <Component Name="SendBuffer" UId="192" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="193" />
+      <NewLine Num="1" UId="194" />
+      <Blank Num="24" UId="195" />
+      <Parameter Name="receiveBuffer" UId="196">
+        <Token Text=":=" UId="197" />
+        <Access Scope="LocalVariable" UId="198">
+          <Symbol UId="199">
+            <Component Name="ReceiveBuffer" UId="200" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="201" />
+      <NewLine Num="1" UId="202" />
+      <Blank Num="24" UId="203" />
+      <Parameter Name="diagnostics" UId="204">
+        <Token Text=":=" UId="205" />
+        <Access Scope="LocalVariable" UId="206">
+          <Symbol UId="207">
+            <Component Name="TCP_Diag" UId="208" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="211" />
+    </CallInfo>
+  </Access>
+  <Token Text=";" UId="212" />
+  <NewLine Num="3" UId="213" />
+  <Blank Num="1" UId="214" />
+  <Access Scope="LocalVariable" UId="215">
+    <Symbol UId="216">
+      <Component Name="SendBuffer" UId="217">
+        <Token Text="[" UId="218" />
+        <Access Scope="LiteralConstant" UId="219">
+          <Constant UId="220">
+            <ConstantValue UId="222">1</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="223" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="224" />
+  <Token Text=":=" UId="225" />
+  <Blank Num="1" UId="226" />
+  <Access Scope="Call" UId="227">
+    <Instruction Name="UINT_TO_BYTE" UId="228">
+      <Token Text="(" UId="229" />
+      <NamelessParameter UId="230">
+        <Access Scope="GlobalVariable" UId="231">
+          <Symbol UId="232">
+            <Component Name="Control_DB" UId="233">
+              <BooleanAttribute Name="HasQuotes" UId="234">true</BooleanAttribute>
+            </Component>
+            <Token Text="." UId="235" />
+            <Component Name="VTD_Sys" UId="236">
+              <Token Text="[" UId="237" />
+              <Access Scope="LiteralConstant" UId="238">
+                <Constant UId="239">
+                  <ConstantValue UId="241">1</ConstantValue>
+                </Constant>
+              </Access>
+              <Token Text="]" UId="242" />
+            </Component>
+            <Token Text="." UId="243" />
+            <Component Name="Current_Level" UId="244" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="246" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="247" />
+  <NewLine Num="1" UId="248" />
+  <Blank Num="1" UId="249" />
+  <Access Scope="LocalVariable" UId="250">
+    <Symbol UId="251">
+      <Component Name="SendBuffer" UId="252">
+        <Token Text="[" UId="253" />
+        <Access Scope="LiteralConstant" UId="254">
+          <Constant UId="255">
+            <ConstantValue UId="257">2</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="258" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="259" />
+  <Token Text=":=" UId="260" />
+  <Blank Num="1" UId="261" />
+  <Access Scope="Call" UId="262">
+    <Instruction Name="UINT_TO_BYTE" UId="263">
+      <Token Text="(" UId="264" />
+      <NamelessParameter UId="265">
+        <Access Scope="GlobalVariable" UId="266">
+          <Symbol UId="267">
+            <Component Name="Control_DB" UId="268">
+              <BooleanAttribute Name="HasQuotes" UId="269">true</BooleanAttribute>
+            </Component>
+            <Token Text="." UId="270" />
+            <Component Name="VTD_Sys" UId="271">
+              <Token Text="[" UId="272" />
+              <Access Scope="LiteralConstant" UId="273">
+                <Constant UId="274">
+                  <ConstantValue UId="276">2</ConstantValue>
+                </Constant>
+              </Access>
+              <Token Text="]" UId="277" />
+            </Component>
+            <Token Text="." UId="278" />
+            <Component Name="Current_Level" UId="279" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="281" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="282" />
+  <NewLine Num="1" UId="283" />
+  <Blank Num="1" UId="284" />
+  <Access Scope="LocalVariable" UId="285">
+    <Symbol UId="286">
+      <Component Name="SendBuffer" UId="287">
+        <Token Text="[" UId="288" />
+        <Access Scope="LiteralConstant" UId="289">
+          <Constant UId="290">
+            <ConstantValue UId="292">3</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="293" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="294" />
+  <Token Text=":=" UId="295" />
+  <Blank Num="1" UId="296" />
+  <Access Scope="Call" UId="297">
+    <Instruction Name="UINT_TO_BYTE" UId="298">
+      <Token Text="(" UId="299" />
+      <NamelessParameter UId="300">
+        <Access Scope="GlobalVariable" UId="301">
+          <Symbol UId="302">
+            <Component Name="Control_DB" UId="303">
+              <BooleanAttribute Name="HasQuotes" UId="304">true</BooleanAttribute>
+            </Component>
+            <Token Text="." UId="305" />
+            <Component Name="VTD_Sys" UId="306">
+              <Token Text="[" UId="307" />
+              <Access Scope="LiteralConstant" UId="308">
+                <Constant UId="309">
+                  <ConstantValue UId="311">3</ConstantValue>
+                </Constant>
+              </Access>
+              <Token Text="]" UId="312" />
+            </Component>
+            <Token Text="." UId="313" />
+            <Component Name="Current_Level" UId="314" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="316" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="317" />
+  <NewLine Num="1" UId="318" />
+  <Blank Num="1" UId="319" />
+  <Access Scope="LocalVariable" UId="320">
+    <Symbol UId="321">
+      <Component Name="SendBuffer" UId="322">
+        <Token Text="[" UId="323" />
+        <Access Scope="LiteralConstant" UId="324">
+          <Constant UId="325">
+            <ConstantValue UId="327">4</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="328" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="329" />
+  <Token Text=":=" UId="330" />
+  <Blank Num="1" UId="331" />
+  <Access Scope="Call" UId="332">
+    <Instruction Name="UINT_TO_BYTE" UId="333">
+      <Token Text="(" UId="334" />
+      <NamelessParameter UId="335">
+        <Access Scope="GlobalVariable" UId="336">
+          <Symbol UId="337">
+            <Component Name="Control_DB" UId="338">
+              <BooleanAttribute Name="HasQuotes" UId="339">true</BooleanAttribute>
+            </Component>
+            <Token Text="." UId="340" />
+            <Component Name="VTD_Sys" UId="341">
+              <Token Text="[" UId="342" />
+              <Access Scope="LiteralConstant" UId="343">
+                <Constant UId="344">
+                  <ConstantValue UId="346">4</ConstantValue>
+                </Constant>
+              </Access>
+              <Token Text="]" UId="347" />
+            </Component>
+            <Token Text="." UId="348" />
+            <Component Name="Current_Level" UId="349" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="351" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="352" />
+  <NewLine Num="1" UId="353" />
+  <Blank Num="1" UId="354" />
+  <Access Scope="LocalVariable" UId="355">
+    <Symbol UId="356">
+      <Component Name="SendBuffer" UId="357">
+        <Token Text="[" UId="358" />
+        <Access Scope="LiteralConstant" UId="359">
+          <Constant UId="360">
+            <ConstantValue UId="362">5</ConstantValue>
+          </Constant>
+        </Access>
+        <Token Text="]" UId="363" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="364" />
+  <Token Text=":=" UId="365" />
+  <Blank Num="1" UId="366" />
+  <Access Scope="Call" UId="367">
+    <Instruction Name="UINT_TO_BYTE" UId="368">
+      <Token Text="(" UId="369" />
+      <NamelessParameter UId="370">
+        <Access Scope="GlobalVariable" UId="371">
+          <Symbol UId="372">
+            <Component Name="Control_DB" UId="373">
+              <BooleanAttribute Name="HasQuotes" UId="374">true</BooleanAttribute>
+            </Component>
+            <Token Text="." UId="375" />
+            <Component Name="VTD_Sys" UId="376">
+              <Token Text="[" UId="377" />
+              <Access Scope="LiteralConstant" UId="378">
+                <Constant UId="379">
+                  <ConstantValue UId="381">5</ConstantValue>
+                </Constant>
+              </Access>
+              <Token Text="]" UId="382" />
+            </Component>
+            <Token Text="." UId="383" />
+            <Component Name="Current_Level" UId="384" />
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="386" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="387" />
+  <NewLine Num="2" UId="388" />
+  <Access Scope="GlobalVariable" UId="389">
+    <Symbol UId="390">
+      <Component Name="Control_DB" UId="391">
+        <BooleanAttribute Name="HasQuotes" UId="392">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="393" />
+      <Component Name="Shuttles_Position" UId="394">
+        <Token Text="[" UId="395" />
+        <Access Scope="LocalVariable" UId="396">
+          <Symbol UId="397">
+            <Component Name="Shuttle_No" UId="398" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="399" />
+      </Component>
+      <Token Text="." UId="400" />
+      <Component Name="Charging" UId="401" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="402" />
+  <Token Text=":=" UId="403" />
+  <Blank Num="1" UId="404" />
+  <Access Scope="GlobalVariable" UId="405">
+    <Symbol UId="406">
+      <Component Name="Shuttle_MQTT_DB" UId="407">
+        <BooleanAttribute Name="HasQuotes" UId="408">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="409" />
+      <Component Name="Shuttle_MQTT" UId="410">
+        <Token Text="[" UId="411" />
+        <Access Scope="LocalVariable" UId="412">
+          <Symbol UId="413">
+            <Component Name="Shuttle_No" UId="414" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="415" />
+      </Component>
+      <Token Text="." UId="416" />
+      <Component Name="Message" UId="417" />
+      <Token Text="." UId="418" />
+      <Component Name="Shuttle_Status" UId="419" />
+      <Token Text="." UId="420" />
+      <Component Name="Paused" UId="421" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="422" />
+  <NewLine Num="2" UId="423" />
+  <Token Text="IF" UId="424" />
+  <Blank Num="1" UId="425" />
+  <Access Scope="LocalVariable" UId="426">
+    <Symbol UId="427">
+      <Component Name="Send" UId="428" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="429" />
+  <Token Text="AND" UId="430" />
+  <Blank Num="1" UId="431" />
+  <Token Text="NOT" UId="432" />
+  <Blank Num="1" UId="433" />
+  <Access Scope="LocalVariable" UId="434">
+    <Symbol UId="435">
+      <Component Name="Sending" UId="436" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="437" />
+  <Token Text="THEN" UId="438" />
+  <NewLine Num="1" UId="439" />
+  <Blank Num="4" UId="440" />
+  <Access Scope="LocalVariable" UId="441">
+    <Symbol UId="442">
+      <Component Name="Send" UId="443" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="444" />
+  <Token Text=":=" UId="445" />
+  <Blank Num="1" UId="446" />
+  <Access Scope="LiteralConstant" UId="447">
+    <Constant UId="448">
+      <ConstantValue UId="450">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="451" />
+  <NewLine Num="1" UId="452" />
+  <Token Text="END_IF" UId="453" />
+  <Token Text=";" UId="454" />
+  <NewLine Num="2" UId="455" />
+  <Token Text="IF" UId="456" />
+  <Blank Num="1" UId="457" />
+  <Token Text="NOT" UId="458" />
+  <Blank Num="1" UId="459" />
+  <Access Scope="LocalVariable" UId="460">
+    <Symbol UId="461">
+      <Component Name="Send" UId="462" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="463" />
+  <Token Text="THEN" UId="464" />
+  <NewLine Num="1" UId="465" />
+  <Blank Num="4" UId="466" />
+  <Access Scope="LocalVariable" UId="467">
+    <Symbol UId="468">
+      <Component Name="T_Send_DB" UId="469" />
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="470">
+    <Instruction UId="471">
+      <Token Text="(" UId="472" />
+      <Parameter Name="IN" UId="473">
+        <Token Text=":=" UId="474" />
+        <Access Scope="LiteralConstant" UId="475">
+          <Constant UId="476">
+            <ConstantValue UId="478">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="479" />
+      <NewLine Num="1" UId="480" />
+      <Blank Num="15" UId="481" />
+      <Parameter Name="PT" UId="482">
+        <Token Text=":=" UId="483" />
+        <Access Scope="TypedConstant" UId="484">
+          <Constant UId="485">
+            <ConstantValue UId="486">T#500ms</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="487" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="488" />
+  <NewLine Num="1" UId="489" />
+  <Token Text="END_IF" UId="490" />
+  <Token Text=";" UId="491" />
+  <NewLine Num="1" UId="492" />
+  <Blank Num="7" UId="493" />
+  <NewLine Num="1" UId="494" />
+  <Token Text="IF" UId="495" />
+  <Blank Num="1" UId="496" />
+  <Access Scope="LocalVariable" UId="497">
+    <Symbol UId="498">
+      <Component Name="T_Send_DB" UId="499" />
+      <Token Text="." UId="500" />
+      <Component Name="Q" UId="501" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="502" />
+  <Token Text="THEN" UId="503" />
+  <NewLine Num="1" UId="504" />
+  <Blank Num="4" UId="505" />
+  <Access Scope="LocalVariable" UId="506">
+    <Symbol UId="507">
+      <Component Name="Send" UId="508" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="509" />
+  <Token Text=":=" UId="510" />
+  <Blank Num="1" UId="511" />
+  <Access Scope="LiteralConstant" UId="512">
+    <Constant UId="513">
+      <ConstantValue UId="515">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="516" />
+  <NewLine Num="1" UId="517" />
+  <Blank Num="4" UId="518" />
+  <Access Scope="LocalVariable" UId="519">
+    <Symbol UId="520">
+      <Component Name="T_Send_DB" UId="521" />
+    </Symbol>
+  </Access>
+  <Token Text="." UId="522" />
+  <Access Scope="Call" UId="523">
+    <Instruction Name="TON" UId="524">
+      <Token Text="(" UId="525" />
+      <Parameter Name="IN" UId="526">
+        <Blank Num="1" UId="527" />
+        <Token Text=":=" UId="528" />
+        <Blank Num="1" UId="529" />
+        <Access Scope="LiteralConstant" UId="530">
+          <Constant UId="531">
+            <ConstantValue UId="533">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="534" />
+      <NewLine Num="1" UId="535" />
+      <Blank Num="28" UId="536" />
+      <Parameter Name="PT" UId="537">
+        <Blank Num="1" UId="538" />
+        <Token Text=":=" UId="539" />
+        <Blank Num="1" UId="540" />
+        <Access Scope="TypedConstant" UId="541">
+          <Constant UId="542">
+            <ConstantValue UId="543">T#0ms</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="544" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="545" />
+  <NewLine Num="1" UId="546" />
+  <Token Text="END_IF" UId="547" />
+  <Token Text=";" UId="548" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FB>
+</Document>

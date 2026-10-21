@@ -1,0 +1,92 @@
+FUNCTION "Feed_ECNV_1"   // FC 53, author 
+
+VAR_INPUT
+   HMI_No : UInt;
+   HMI_Box : UInt;
+   Overhang_Left : Bool;
+   Overhang_Right : Bool;
+   Sys_No : UInt;
+   Safety_OK : Bool;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+//Sensors
+"CNV_HMI".Left[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Inputs.Left;
+"CNV_HMI".Lpd1[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Inputs.Lpd1;
+"CNV_HMI".Center[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Inputs.Center;
+"CNV_HMI".Rpd1[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Inputs.Rpd1;
+"CNV_HMI".Right[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Inputs.Right;
+
+"CNV_HMI".Sdetect1[#HMI_No] := #Overhang_Left;
+"CNV_HMI".Sdetect2[#HMI_No] := #Overhang_Right;
+
+//Feedback
+"CNV_HMI".Mode[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Mode;
+"CNV_HMI".Enabled[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Enabled;
+"CNV_HMI".Error[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Error;
+"CNV_HMI".Warning[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Warning;
+"CNV_HMI".Stopped[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Stopped;
+"CNV_HMI".Running[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Running;
+"CNV_HMI".Ready_For_Task[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Ready_For_Task;
+"CNV_HMI".Occupied[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Cnv_Occupied;
+"CNV_HMI".Shuttle_in_place[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Shuttle_In_Place;
+"CNV_HMI".Current_Task_Type[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Current_Task_Type;
+"CNV_HMI".Current_Task_ID[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Current_Task_ID;
+"CNV_HMI".SM_State[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].SM_State;
+"CNV_HMI".Pallet_Type[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Pallet_Type;
+IF "Control_DB".ECnv_Sys[#Sys_No].Motor.Forward THEN
+    "CNV_HMI".Motor_Direction[#HMI_No] := 1;
+ELSIF "Control_DB".ECnv_Sys[#Sys_No].Motor.Reverse THEN
+    "CNV_HMI".Motor_Direction[#HMI_No] := 2;
+ELSE
+    "CNV_HMI".Motor_Direction[#HMI_No] := 0;
+END_IF;
+"CNV_HMI".Motor_Speed_Requested[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Motor.Speed;
+"CNV_HMI".Motor_Speed_Actual[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Motor.Speed_Actual;
+"CNV_HMI".Motor_Ready[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Motor.Ready;
+"CNV_HMI".Motor_Current_Actual[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Motor.Actual_Current;
+"CNV_HMI".Motor_Actual_Torque[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Motor.Actual_Torque;
+"CNV_HMI".Transfer_To_ID[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Instruction.Transfer_To_ID;
+"CNV_HMI".Transfer_From_ID[#HMI_No] := "Control_DB".ECnv_Sys[#Sys_No].Instruction.Transfer_From_ID;
+
+IF "Control_DB".ECnv_Sys[#Sys_No].Motor.Error THEN
+    "CNV_HMI".Motor_Status[#HMI_No] := 2;
+ELSIF "Control_DB".ECnv_Sys[#Sys_No].Motor.Enabled THEN
+    "CNV_HMI".Motor_Status[#HMI_No] := 1;
+ELSIF NOT "Control_DB".ECnv_Sys[#Sys_No].Motor.Enabled THEN
+    "CNV_HMI".Motor_Status[#HMI_No] := 0;
+END_IF;
+
+"CNV_HMI".Safety_OK[#HMI_No] := #Safety_OK;
+
+//Instructions
+IF "Control_DB".VTD_Sys[#Sys_No].Current_Level = #HMI_Box MOD 10 THEN
+    "Control_DB".ECnv_Sys[#Sys_No].Instruction.Stop := "CNV_HMI".Stop[#HMI_No];
+    "Control_DB".ECnv_Sys[#Sys_No].Instruction.Execute := "CNV_HMI".Manual_Fwd[#HMI_No] OR "CNV_HMI".Manual_Bwd[#HMI_No];
+    "Control_DB".ECnv_Sys[#Sys_No].Instruction.Mode_Change := "CNV_HMI".Mode_Change[#HMI_No];
+    "Control_DB".ECnv_Sys[#Sys_No].Instruction.Enable := "CNV_HMI".Enable[#HMI_No];
+    "Control_DB".ECnv_Sys[#Sys_No].Instruction.Reset := "CNV_HMI".Reset[#HMI_No] OR "Screen_DB_1".Reset_All[#HMI_No];
+    IF "Control_DB".ECnv_Sys[#Sys_No].Mode <> 3 THEN
+        "Control_DB".ECnv_Sys[#Sys_No].Instruction.Foward := "CNV_HMI".Manual_Fwd[#HMI_No];
+        "Control_DB".ECnv_Sys[#Sys_No].Instruction.Backward := "CNV_HMI".Manual_Bwd[#HMI_No];
+        "Control_DB".ECnv_Sys[#Sys_No].Instruction.Start_Transfer := "CNV_HMI".Start_Transfer[#HMI_No];
+        "Control_DB".ECnv_Sys[#Sys_No].Instruction.Task_ID := "CNV_HMI".Task_ID[#HMI_No];
+        "Control_DB".ECnv_Sys[#Sys_No].Instruction.Pallet_Align_Left := "CNV_HMI".Pallet_Align_Left[#HMI_No];
+        "Control_DB".ECnv_Sys[#Sys_No].Instruction.Pallet_Align_Right := "CNV_HMI".Pallet_Align_Right[#HMI_No];
+        "Control_DB".ECnv_Sys[#Sys_No].Instruction.Pallet_Align_Center := "CNV_HMI".Pallet_Align_Center[#HMI_No];
+        IF "CNV_HMI".Mode_Change[#HMI_No] <> 2 THEN
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Pallet_Allignment := "CNV_HMI".Pallet_Allignment[#HMI_No] := FALSE;
+        ELSE
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Pallet_Allignment := "CNV_HMI".Pallet_Allignment[#HMI_No];
+        END_IF;
+        IF "CNV_HMI".In_Out[#HMI_No] THEN // 0 = ECNV RECEIVE, 1 = ECONV SEND
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Transfer_To_ID := "CNV_HMI"."ID(1)"[#HMI_No];
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Transfer_From_ID := 0;
+        ELSE
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Transfer_To_ID := 0;
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Transfer_From_ID := "CNV_HMI"."ID(1)"[#HMI_No];
+        END_IF;
+    END_IF;
+END_IF;
+END_FUNCTION

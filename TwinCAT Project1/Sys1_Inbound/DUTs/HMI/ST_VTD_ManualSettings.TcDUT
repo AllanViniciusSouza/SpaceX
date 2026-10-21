@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_VTD_ManualSettings" Id="{ec34aa2b-af68-45d1-b92b-149bc5b55489}">
+    <Declaration><![CDATA[// Settings of the VTD manual test screen (TEST ONLY). Kept in
+// GVL_HMI_VTD.stManualSettings (PERSISTENT) and editable on the screen.
+// Speed and ramps are MOVISUITE user units (PO 2..4); the scaling of the VTD is
+// not confirmed yet - check the user units in MOVISUITE before entering values.
+// 0 = not configured: no motion is accepted until all three values are > 0.
+// The application limits configured in MOVISUITE still limit the drive.
+TYPE ST_VTD_ManualSettings :
+STRUCT
+    iMaxSpeed : INT;             // Speed at 100 % on the screen, PO 2 user units (> 0)
+    uiAcceleration : UINT;       // PO 3 user units (> 0)
+    uiDeceleration : UINT;       // PO 4 user units (> 0)
+    tJogMaxTime : TIME := T#30S; // Max continuous jog; the button must be released afterwards
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

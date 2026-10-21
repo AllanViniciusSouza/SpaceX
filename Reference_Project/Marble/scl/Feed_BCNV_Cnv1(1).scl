@@ -1,0 +1,95 @@
+FUNCTION "Feed_BCNV_Cnv1(1)"   // FC 54, author 
+
+VAR_INPUT
+   System_No : UInt;
+   Level : UInt;
+END_VAR
+
+VAR_IN_OUT
+   System_Busy : Bool;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+//Sensors
+"HMI_CNV_Forward(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Inputs.Forward_Sensor;
+"HMI_CNV_Backward(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Inputs.Backward_Sensor;
+"HMI_CNV_SftyPinUp(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended;
+"HMI_CNV_SftyPinDown(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted;
+IF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+    NOT "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted THEN
+    "UpDown(1)" := 1;
+ELSIF NOT "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended AND
+    "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted THEN
+    "UpDown(1)" := 2;
+ELSE
+    "UpDown(1)" := 0;
+END_IF;
+
+//Status
+"Mode_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Mode;
+"Enabled_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Enabled;
+"Error_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Error;
+"Warning_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Warning;
+"Stopped_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Stopped;
+"Running_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Running;
+"Ready_For_Task_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Ready_For_Task;
+"Cnv_Occupied_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Cnv_Occupied;
+"SM_State_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.SM_State;
+IF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Forward THEN
+    "Motor_Direction_HMI(1)" := 1;
+ELSIF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Reverse THEN
+    "Motor_Direction_HMI(1)" := 2;
+ELSE
+    "Motor_Direction_HMI(1)" := 0;
+END_IF;
+"Motor_Speed_Requested_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Speed;
+"Motor_Speed_Actual_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Speed_Actual;
+"CNV_Motor_Ready(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Ready;
+"CNV_Motor_Current_Actual_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Actual_Current;
+"CNV_Motor_Actual_Torque(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Actual_Torque;
+"Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Transfer_To_ID;
+"Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Transfer_From_ID;
+
+IF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Error THEN
+    "CNV_Motor_Status_HMI(1)" := 2;
+ELSIF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Enabled THEN
+    "CNV_Motor_Status_HMI(1)" := 1;
+ELSIF NOT "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Motor.Enabled THEN
+    "CNV_Motor_Status_HMI(1)" := 0;
+END_IF;
+
+//Instructions
+IF ("HMI_Box_Connected_1" = #System_No OR ("HMI_Box_Connected_1" >= (#System_No * 10) + 1 AND "HMI_Box_Connected_1" <= (#System_No * 10) + 8)) OR
+    ("HMI_Box_Connected_2" = #System_No OR ("HMI_Box_Connected_1" >= (#System_No * 10) + 1 AND "HMI_Box_Connected_1" <= (#System_No * 10) + 8))
+THEN
+    #System_Busy := TRUE;
+ELSE
+    #System_Busy := FALSE;
+    "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Stop := "Stop_HMI";
+    "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Execute := "Manual_Fwd_HMI(1)" OR "Manual_Bwd_HMI(1)";
+    "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Mode_Change := "Mode_Change_HMI(1)";
+    "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Enable := "Enable_HMI(1)";
+    
+    IF "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Mode <> 3 THEN
+        "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Foward := "Manual_Fwd_HMI(1)";
+        "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Backward := "Manual_Bwd_HMI(1)";
+        "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Start_Transfer := "Start_Transfer_HMI(1)";
+        "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Safety_Stop_Cnrl.Instruction.Manual_Extend := "Manual_Sfty_Stopper_Up(1)";
+        "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Safety_Stop_Cnrl.Instruction.Manual_Retract := "Manual_Sfty_Stopper_Down(1)";
+        IF "CNV_In_Out(1)" THEN // 0 = CNV1 RECEIVE, 1 = CNV1 SEND
+            "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Transfer_To_ID := 0;
+            "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Transfer_From_ID := "CNV_ID_HMI";
+        ELSE
+            "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Transfer_To_ID := "CNV_ID_HMI";
+            "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Transfer_From_ID := 0;
+        END_IF;
+    END_IF;
+    
+    "Control_DB".LCnv_Sys[#System_No].Cnv_Level[#Level].Cnv1.Instruction.Reset :=
+    "Reset_HMI(1)" OR "Reset_All" OR
+    "CNV_HMI"."Reset(1)"[1] OR "Screen_DB_1".Reset_All[1] OR
+    "CNV_HMI"."Reset(1)"[2] OR "Screen_DB_1".Reset_All[2];
+END_IF;
+
+END_FUNCTION

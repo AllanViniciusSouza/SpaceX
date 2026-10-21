@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_HMI_DeviceSummary" Id="{da542811-4579-4780-9d94-f9698a598444}">
+    <Declaration><![CDATA[// PLC -> HMI: summary of one device (conveyor, popup, roller, chain, turntable)
+// for the tiles of the screen Main.
+TYPE ST_HMI_DeviceSummary :
+STRUCT
+    bEnabled : BOOL;        // Device / drive enabled
+    bRunning : BOOL;        // Moving (motor turning)
+    bOccupied : BOOL;       // Pallet present
+    bError : BOOL;          // Fault active (tile turns red)
+    bWarning : BOOL;        // Warning active
+    bManualMode : BOOL;     // Device in manual mode
+    uiStateMachine : UINT;  // Current state number, diagnostics only
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

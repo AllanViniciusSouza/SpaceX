@@ -1,0 +1,1164 @@
+FUNCTION_BLOCK "FB_SICK_AFx60_PN"   // FB 30, author SICKAG
+
+VAR_INPUT
+   ID : HW_IO;   // Hardware identifier of the "Parameter access point" module
+   TOut : Time := T#5s;   // Timeout time
+   Req : Bool;   // Positive trigger starts a request with the parameter set in the parameter selection
+   RW : Bool;   // False= Read parameter | True= Write parameter
+END_VAR
+
+VAR_OUTPUT
+   Done : Bool;   // The rising edge indicates if the FB processing is completed
+   Busy : Bool;   // Request in process
+   Error : Bool;   // Error detected
+   Errorcode : "ST_SICK_AFx60_Error";   // Error code (see documentation)
+END_VAR
+
+VAR_IN_OUT
+   Data : "ST_SICK_AFx60";   // Parameter values and data selection
+END_VAR
+
+VAR
+   bTriggerReq : Bool;   // Positive edge of the "Req" flag
+   bTriggerReqMem : Bool;   // Edge detection memory flag
+   bTriggerReadDone : Bool;   // Positive edge of the "RDREC.VALID" flag
+   bTriggerReadDoneMem : Bool;   // Edge detection memory flag
+   bTriggerReadError : Bool;   // Positive edge of the "RDREC.ERROR" flag
+   bTriggerReadErrorMem : Bool;   // Edge detection memory flag
+   bTriggerWriteDone : Bool;   // Positive edge of the "WRREC.DONE" flag
+   bTriggerWriteDoneMem : Bool;   // Edge detection memory flag
+   bTriggerWriteError : Bool;   // Positive edge of the "WRREC.ERROR" flag
+   bTriggerWriteErrorMem : Bool;   // Edge detection memory flag
+   bRWMem : Bool;   // Backup of the RW flag
+   bBusyMem : Bool;   // Backup of the Busy output
+   iStep : USInt;   // Program step
+   iReqReference : USInt;   // Request reference (PROFIdrive)
+   iIndex : Int;   // Temporarily variable
+   iCommandIndex : Int;   // Current command index
+   fbTimeout : TON_TIME;   // Instance TON
+   fbReadRec : RDREC;   // Instance RDREC
+   fbWriteRec : WRREC;   // Instance WRREC
+   stTempErrorCode : "ST_SICK_AFx60_Error";   // Temporariliy error code
+   stRead : Struct   // RDREC parameter
+      bDone : Bool;
+      bBusy : Bool;
+      bError : Bool;
+      nStatus : DWord;
+   END_STRUCT;
+   stWrite : Struct   // WRREC parameter
+      bDone : Bool;
+      bBusy : Bool;
+      bError : Bool;
+      nStatus : DWord;
+   END_STRUCT;
+   arrCommandQueue : Array[0..31] of Struct;   // Command queue
+   arrSelection : Array[0..31] of Bool;   // Backup of the bit selection flags
+   arrRecord : Array[0..254] of Byte;   // Raw data array
+END_VAR
+
+VAR_TEMP
+   iTemp : Int;   // Temporarily variable
+END_VAR
+
+BEGIN
+(*=============================================================================================
+Name: FB_SICK_AFx60_PN
+Author: SICK AG
+Supported PLC: S7-1200/S7-1500
+
+===============================================================================================
+Description:
+This function block simplifies the usage of the AFx60 encoder on Siemens S7-1200 /S7-1500 PLCs.
+It's support you to exchange the acyclic service data between the PLC and the AFx60 via
+Profinet (according to PROFIdrive V4.1).
+
+The function block uses the data structure ST_SICK_AFx60 to handle data. This data structure
+includes all service data parameters of the encoder which can exchanged via the PLC.
+
+===============================================================================================
+Version history:
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Date       | Version | Created Under        | Author  | Remark
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+28/04/2016 | 1.0     | TIA V12 SP1 Update 4 | SICK AG | Initial version
+08/03/2017 | 1.1     | TIA V12 SP1          | SICK AG | Change units of the parameters 1002.1 
+                                                        / 1003.1 from [min] to [s]
+
+=============================================================================================*)
+
+(*===================================== INITIALIZATION ======================================*)
+(*Rising edge detection*)
+#bTriggerReq:= #Req AND NOT #bTriggerReqMem;
+#bTriggerReqMem:= #Req;
+#bTriggerReadDone:= #stRead.bDone AND NOT #bTriggerReadDoneMem;
+#bTriggerReadDoneMem:= #stRead.bDone;
+#bTriggerReadError:= #stRead.bError AND NOT #bTriggerReadErrorMem;
+#bTriggerReadErrorMem:= #stRead.bError;
+#bTriggerWriteDone:= #stWrite.bDone AND NOT #bTriggerWriteDoneMem;
+#bTriggerWriteDoneMem:= #stWrite.bDone;
+#bTriggerWriteError:= #stWrite.bError AND NOT #bTriggerWriteErrorMem;
+#bTriggerWriteErrorMem:= #stWrite.bError;
+
+(*====================================== RECEIVE DATA =======================================*)
+#fbReadRec(ID:= #ID,
+           INDEX:=16#B02E,
+           MLEN:= 255,
+           VALID => #stRead.bDone,
+           BUSY => #stRead.bBusy,
+           ERROR => #stRead.bError,
+           STATUS => #stRead.nStatus,
+           RECORD:= #arrRecord);
+#fbReadRec.REQ:= false;
+
+
+(*======================================== SEND DATA ========================================*)
+#fbWriteRec(ID:= #ID,
+            INDEX:=16#B02E,
+            DONE => #stWrite.bDone,
+            BUSY => #stWrite.bBusy,
+            ERROR => #stWrite.bError,
+            STATUS => #stWrite.nStatus,
+            RECORD:= #arrRecord);
+#fbWriteRec.REQ:= false;
+
+
+(*===================================== ERROR HANDLING ======================================*)
+IF (#stTempErrorCode.nBlockError <>0) OR (#stTempErrorCode.nCommunicationError <>0) OR (#stTempErrorCode.nEncoderError <>0) THEN
+  #Done:= false;
+  #Busy:= false;
+  #bBusyMem:= false;
+  #Error:= true;
+  #Errorcode:= #stTempErrorCode;
+  #stTempErrorCode.nBlockError:= 16#0000;
+  #stTempErrorCode.nEncoderError:= 16#0000;
+  #stTempErrorCode.nCommunicationError:= 16#0000_0000;
+  #iStep:= 0;
+  RETURN;
+END_IF;
+
+(*Time out detection*)
+#fbTimeout(IN:= #bBusyMem, PT:= #TOut);
+IF #fbTimeout.Q THEN
+  #stTempErrorCode.nBlockError:= 16#0001; (*Error: Time out*)
+  RETURN;
+END_IF;
+
+(*Read error*)
+IF #stRead.bError AND #bBusyMem THEN
+  #stTempErrorCode.nBlockError:= 16#0010; (*Error: Communication error (RDREC)*)
+  #stTempErrorCode.nCommunicationError:= #stRead.nStatus;
+  RETURN;
+END_IF;
+
+(*Write error*)
+IF #stWrite.bError AND #bBusyMem THEN
+  #stTempErrorCode.nBlockError:= 16#0011; (*Error: Communication error (WRREC)*)
+  #stTempErrorCode.nCommunicationError:= #stWrite.nStatus;
+  RETURN;
+END_IF;
+
+
+(*================================== START REQUEST (STEP 1) ==================================*)
+IF NOT #bBusyMem AND #bTriggerReq THEN
+  #Done:= false;
+  #Busy:= true;
+  #bBusyMem:= true;
+  #Error:= false;
+  #Errorcode.nBlockError:= 16#0000;
+  #Errorcode.nEncoderError:= 16#0000;
+  #Errorcode.nCommunicationError:= 16#0000_0000;
+  #bRWMem:= #RW;
+  
+  (*Save the current bit selection*)
+  #arrSelection[0]:= #Data.ParameterSelection.Telegram_Number;
+  #arrSelection[1]:= #Data.ParameterSelection.Device_Identification;
+  #arrSelection[2]:= #Data.ParameterSelection.Enc_Profile_Number;
+  #arrSelection[3]:= #Data.ParameterSelection.Eeprom_Storage;
+  #arrSelection[4]:= #Data.ParameterSelection.Object_Identification;
+  #arrSelection[5]:= #Data.ParameterSelection.Sensor_Format;
+  #arrSelection[6]:= #Data.ParameterSelection.Parameter_List;
+  #arrSelection[7]:= #Data.ParameterSelection.Encoder_Status_Flag;
+  #arrSelection[8]:= #Data.ParameterSelection.Device_Status_Flag;
+  #arrSelection[9]:= #Data.ParameterSelection.Diag_History_Absolute;
+  #arrSelection[10]:= #Data.ParameterSelection.Diag_History_Relative;
+  #arrSelection[11]:= #Data.ParameterSelection.Diag_Hist_Err_Counter;
+  #arrSelection[12]:= #Data.ParameterSelection.Speed_Calculation;
+  #arrSelection[13]:= #Data.ParameterSelection.Temperature_Limits;
+  #arrSelection[14]:= #Data.ParameterSelection.Voltage_Limits;
+  #arrSelection[15]:= #Data.ParameterSelection.Scaling_Parameters;
+  #arrSelection[16]:= #Data.ParameterSelection.Operation_Test_1;
+  #arrSelection[17]:= #Data.ParameterSelection.MAC_ID_Port_1;
+  #arrSelection[18]:= #Data.ParameterSelection.MAC_ID_Port_2;
+  #arrSelection[19]:= #Data.ParameterSelection.Version_FW_FPGA;
+  #arrSelection[20]:= #Data.ParameterSelection.Temperature;
+  #arrSelection[21]:= #Data.ParameterSelection.Station_Name;
+  #arrSelection[22]:= #Data.ParameterSelection.Station_IP;
+  #arrSelection[23]:= #Data.ParameterSelection.Station_MAC_ID;
+  #arrSelection[24]:= #Data.ParameterSelection.Station_Gateway;
+  #arrSelection[25]:= #Data.ParameterSelection.Station_Subnet;
+  #arrSelection[26]:= #Data.ParameterSelection.Preset_Value;
+  #arrSelection[27]:= #Data.ParameterSelection.Operating_Status;
+  #arrSelection[28]:= false;
+  #arrSelection[29]:= false;
+  #arrSelection[30]:= false;
+  #arrSelection[31]:= false;
+  
+  #iStep:= 2; (*Check parameter input options*)
+  RETURN;
+END_IF;
+
+
+(*========================= CHECK PARAMETER INPUT OPTIONS (STEP 2) =========================*)
+IF #iStep = 2 THEN
+(*Check bit sum of the command selection*)
+  #iTemp:= 0;
+  FOR #iIndex:= 0 TO 31 DO
+    IF #arrSelection[#iIndex] THEN
+      #iTemp:= #iTemp + 1;
+    END_IF;
+  END_FOR;
+  IF #iTemp =0 THEN
+    #stTempErrorCode.nBlockError:= 16#0003; (*Error: No parameter selected (Read/Write)*)
+  ELSIF #iTemp > 1 AND #bRWMem THEN
+    #stTempErrorCode.nBlockError:= 16#0004; (*Error: More than one parameter selected (Write)*)
+  ELSE
+    #iStep:= 3; (*Creating command queue*)
+  END_IF;
+END_IF;
+
+
+(*============================ CREATING COMMAND QUEUE (STEP 3) =============================*)
+IF #iStep = 3 THEN
+  (*Clear command queue*)
+  FOR #iIndex:= 0 TO 31 DO
+    #arrCommandQueue[#iIndex].iPNU:= 0;
+  END_FOR;
+  #iIndex:= 0;
+  #iCommandIndex:= 0;
+  
+  (*eTelegramNumber*)
+  IF #arrSelection[0] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 922;
+      #arrCommandQueue[#iIndex].nFormat:= 16#42;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 1;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+  
+  (*eDeviceIdentification*)
+  IF #arrSelection[1] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 964;
+      #arrCommandQueue[#iIndex].nFormat:= 16#42;
+      #arrCommandQueue[#iIndex].iNoElements:= 6;
+      #arrCommandQueue[#iIndex].iNoValues:= 6;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+  
+  (*eEncProfileNumber*)
+  IF #arrSelection[2] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 965;
+      #arrCommandQueue[#iIndex].nFormat:= 16#0A;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 2;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+  
+  (*eEepromStorage*)
+  IF #arrSelection[3] THEN
+    #arrCommandQueue[#iIndex].iPNU:= 971;
+    #arrCommandQueue[#iIndex].nFormat:= 16#42;
+    #arrCommandQueue[#iIndex].iNoElements:= 0;
+    #arrCommandQueue[#iIndex].iNoValues:= 1;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+
+  (*eObjectIdentification*)
+  IF #arrSelection[4] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 975;
+      #arrCommandQueue[#iIndex].nFormat:= 16#42;
+      #arrCommandQueue[#iIndex].iNoElements:= 7;
+      #arrCommandQueue[#iIndex].iNoValues:= 7;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+  
+  (*eSensorFormat*)
+  IF #arrSelection[5] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 979;
+      #arrCommandQueue[#iIndex].nFormat:= 16#43;
+      #arrCommandQueue[#iIndex].iNoElements:= 6;
+      #arrCommandQueue[#iIndex].iNoValues:= 6;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;  
+
+  (*eParameterList*)
+  IF #arrSelection[6] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 980;
+      #arrCommandQueue[#iIndex].nFormat:= 16#42;
+      #arrCommandQueue[#iIndex].iNoElements:= 27;
+      #arrCommandQueue[#iIndex].iNoValues:= 27;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF; 
+
+  (*eEncoderStatusFlag*)
+  IF #arrSelection[7] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1000;
+      #arrCommandQueue[#iIndex].nFormat:= 16#42;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 1;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF; 
+  
+  (*eDeviceStatusFlag*)
+  IF #arrSelection[8] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1001;
+      #arrCommandQueue[#iIndex].nFormat:= 16#42;
+      #arrCommandQueue[#iIndex].iNoElements:= 3;
+      #arrCommandQueue[#iIndex].iNoValues:= 3;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF; 
+   
+  (*eDiagHistoryAbsolute*)
+  IF #arrSelection[9] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1002;
+      #arrCommandQueue[#iIndex].nFormat:= 16#43;
+      #arrCommandQueue[#iIndex].iNoElements:= 13;
+      #arrCommandQueue[#iIndex].iNoValues:= 13;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;   
+  
+  (*eDiagHistoryRelative*)
+  IF #arrSelection[10] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1003;
+      #arrCommandQueue[#iIndex].nFormat:= 16#43;
+      #arrCommandQueue[#iIndex].iNoElements:= 13;
+      #arrCommandQueue[#iIndex].iNoValues:= 13;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;    
+
+  (*eDiagHistErrorCounter*)
+  IF #arrSelection[11] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1004;
+      #arrCommandQueue[#iIndex].nFormat:= 16#42;
+      #arrCommandQueue[#iIndex].iNoElements:= 16;
+      #arrCommandQueue[#iIndex].iNoValues:= 16;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;    
+
+  (*eSpeedCalculation*)
+  IF #arrSelection[12] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1005;
+      #arrCommandQueue[#iIndex].nFormat:= 16#42;
+      #arrCommandQueue[#iIndex].iNoElements:= 6;
+      #arrCommandQueue[#iIndex].iNoValues:= 6;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;    
+
+  (*eTemperatureLimits*)
+  IF #arrSelection[13] THEN
+    #arrCommandQueue[#iIndex].iPNU:= 1006;
+    #arrCommandQueue[#iIndex].nFormat:= 16#42;
+    #arrCommandQueue[#iIndex].iNoElements:= 2;
+    #arrCommandQueue[#iIndex].iNoValues:= 2;
+    #iIndex:= #iIndex + 1;
+  END_IF;    
+
+  (*eVoltagesLimits*)
+  IF #arrSelection[14] THEN
+    #arrCommandQueue[#iIndex].iPNU:= 1007;
+    #arrCommandQueue[#iIndex].nFormat:= 16#42;
+    #arrCommandQueue[#iIndex].iNoElements:= 2;
+    #arrCommandQueue[#iIndex].iNoValues:= 2;
+    #iIndex:= #iIndex + 1;
+  END_IF;    
+
+  (*eScalingParameters*)
+  IF #arrSelection[15] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1009;
+      #arrCommandQueue[#iIndex].nFormat:= 16#43;
+      #arrCommandQueue[#iIndex].iNoElements:= 11;
+      #arrCommandQueue[#iIndex].iNoValues:= 11;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;  
+
+  (*eOperationTest1*)
+  IF #arrSelection[16] THEN
+    #arrCommandQueue[#iIndex].iPNU:= 1010;
+    #arrCommandQueue[#iIndex].nFormat:= 16#42;
+    #arrCommandQueue[#iIndex].iNoElements:= 0;
+    #arrCommandQueue[#iIndex].iNoValues:= 1;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+
+  (*eMACIDPort1*)
+  IF #arrSelection[17] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1011;
+      #arrCommandQueue[#iIndex].nFormat:= 16#0A;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 6;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;  
+
+  (*eMACIDPort2*)
+  IF #arrSelection[18] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1012;
+      #arrCommandQueue[#iIndex].nFormat:= 16#0A;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 6;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+ 
+  (*eVersionFWFPGA*)
+  IF #arrSelection[19] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1013;
+      #arrCommandQueue[#iIndex].nFormat:= 16#43;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 1;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+
+  (*eTemperature*)
+  IF #arrSelection[20] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 1014;
+      #arrCommandQueue[#iIndex].nFormat:= 16#42;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 1;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+ 
+  (*eStationName*)
+  IF #arrSelection[21] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 61000;
+      #arrCommandQueue[#iIndex].nFormat:= 16#0A;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 240;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+
+  (*eStationIP*)
+  IF #arrSelection[22] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 61001;
+      #arrCommandQueue[#iIndex].nFormat:= 16#43;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 1;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+
+  (*eStationMACID*)
+  IF #arrSelection[23] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 61002;
+      #arrCommandQueue[#iIndex].nFormat:= 16#0A;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 6;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+
+  (*eStationGateway*)
+  IF #arrSelection[24] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 61003;
+      #arrCommandQueue[#iIndex].nFormat:= 16#43;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 1;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+
+  (*eStationSubnet*)
+  IF #arrSelection[25] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 61004;
+      #arrCommandQueue[#iIndex].nFormat:= 16#43;
+      #arrCommandQueue[#iIndex].iNoElements:= 0;
+      #arrCommandQueue[#iIndex].iNoValues:= 1;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+  
+  (*ePresetValue*)
+  IF #arrSelection[26] THEN
+    #arrCommandQueue[#iIndex].iPNU:= 65000;
+    #arrCommandQueue[#iIndex].nFormat:= 16#43;
+    #arrCommandQueue[#iIndex].iNoElements:= 0;
+    #arrCommandQueue[#iIndex].iNoValues:= 1;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+  
+  (*eOperatingStatus*)
+  IF #arrSelection[27] THEN
+    IF #bRWMem THEN
+      #stTempErrorCode.nBlockError:= 16#0009; (*Error: Parameter not writable*)
+    ELSE
+      #arrCommandQueue[#iIndex].iPNU:= 65001;
+      #arrCommandQueue[#iIndex].nFormat:= 16#43;
+      #arrCommandQueue[#iIndex].iNoElements:= 12;
+      #arrCommandQueue[#iIndex].iNoValues:= 12;
+    END_IF;
+    #iIndex:= #iIndex + 1;
+  END_IF;
+  
+  (*Check if no error occurs while validation*)
+  IF #stTempErrorCode.nBlockError = 0 THEN
+    #iStep:= 4; (*Check communication status*)
+  END_IF;
+END_IF;
+
+
+(*========================== CHECK COMMUNICATION STATUS (STEP 4) ==========================*)
+IF #iStep = 4 THEN
+  IF NOT #stRead.bBusy AND NOT #stWrite.bBusy THEN
+    #iStep:= 5; (*Send request*)
+  END_IF;
+END_IF;
+
+
+(*================================= SEND REQUEST (STEP 5) =================================*)
+IF #iStep = 5 THEN
+  
+  (*Request reference calculation*)
+  #iReqReference:= #iReqReference + 1;
+  IF #iReqReference = 0 THEN
+    #iReqReference:= 1;
+  END_IF;
+  
+  (*Request parameter*)
+  #arrRecord[0]:= #iReqReference; (*Request reference*)
+  IF #bRWMem THEN
+    #arrRecord[1]:= 2; (*Request ID = Change parameter*)
+  ELSE
+    #arrRecord[1]:= 1; (*Request ID = Request parameter*)
+  END_IF;
+  #arrRecord[2]:= 0; (*DO-ID*)
+  #arrRecord[3]:= 1; (*No. of parameters*)
+  #arrRecord[4]:= 16#10; (*Attribute = Value*)
+  #arrRecord[5]:= #arrCommandQueue[#iCommandIndex].iNoElements; (*No. of elements*)
+  #arrRecord[6]:= #arrCommandQueue[#iCommandIndex].iPNU.%B1; (*PNU high byte*)
+  #arrRecord[7]:= #arrCommandQueue[#iCommandIndex].iPNU.%B0; (*PNU low byte*)
+  #arrRecord[8]:= 0; (*Subindex high byte*)
+  #arrRecord[9]:= 0; (*Subindex low byte*)
+  #fbWriteRec.REQ:= true;
+
+  (*Add parameter value*)
+  IF #bRWMem THEN
+    #arrRecord[10]:= #arrCommandQueue[#iCommandIndex].nFormat;
+    #arrRecord[11]:= #arrCommandQueue[#iCommandIndex].iNoValues;
+    
+    CASE #arrCommandQueue[#iCommandIndex].iPNU OF
+      (*eEepromStorage*)
+      971:
+        #arrRecord[12]:= #Data.Parameter.Eeprom_Storage.%B1;
+        #arrRecord[13]:= #Data.Parameter.Eeprom_Storage.%B0;
+      
+      (*eTemperatureLimits*)
+      1006:
+        #arrRecord[12]:= #Data.Parameter.Temperature_Limits.Lower_Limit.%B1;
+        #arrRecord[13]:= #Data.Parameter.Temperature_Limits.Lower_Limit.%B0;
+        #arrRecord[14]:= #Data.Parameter.Temperature_Limits.Upper_Limit.%B1;
+        #arrRecord[15]:= #Data.Parameter.Temperature_Limits.Upper_Limit.%B0;
+        
+      (*eVoltageLimits*)
+      1007:
+        #arrRecord[12]:= #Data.Parameter.Voltage_Limits.Lower_Limit.%B1;
+        #arrRecord[13]:= #Data.Parameter.Voltage_Limits.Lower_Limit.%B0;
+        #arrRecord[14]:= #Data.Parameter.Voltage_Limits.Upper_Limit.%B1;
+        #arrRecord[15]:= #Data.Parameter.Voltage_Limits.Upper_Limit.%B0;
+      
+      (*eOperationTest1*)
+      1010:
+        #arrRecord[12]:= #Data.Parameter.Operation_Test_1.%B1;
+        #arrRecord[13]:= #Data.Parameter.Operation_Test_1.%B0;
+      
+      (*ePresetValue*)
+      65000:
+        #arrRecord[12]:= #Data.Parameter.Preset_Value.%B3;
+        #arrRecord[13]:= #Data.Parameter.Preset_Value.%B2;
+        #arrRecord[14]:= #Data.Parameter.Preset_Value.%B1;
+        #arrRecord[15]:= #Data.Parameter.Preset_Value.%B0;     
+      ELSE
+        #stTempErrorCode.nBlockError:= 16#0002; (*Error: Internal error*)
+        RETURN;
+      END_CASE;
+      
+    (*Add telegram length (write)*)
+    IF #arrCommandQueue[#iCommandIndex].nFormat = 16#41 THEN
+      #fbWriteRec.LEN:= 12 + #arrCommandQueue[#iCommandIndex].iNoValues; (*Byte*)
+    ELSIF #arrCommandQueue[#iCommandIndex].nFormat = 16#42 THEN
+      #fbWriteRec.LEN:= 12 + (#arrCommandQueue[#iCommandIndex].iNoValues * 2); (*Word*)
+    ELSIF #arrCommandQueue[#iCommandIndex].nFormat =16#43 THEN
+      #fbWriteRec.LEN:= 12 + (#arrCommandQueue[#iCommandIndex].iNoValues * 4); (*DWord*)
+    ELSE
+      #stTempErrorCode.nBlockError:= 16#0002; (*Error: Internal error*)
+      RETURN;
+    END_IF;
+  ELSE
+    (*Add telegram length (read)*)
+    #fbWriteRec.LEN:= 10;
+  END_IF;
+
+  #iStep:= 6; (*Waiting for a write response*)
+END_IF;
+
+
+(*========================== WAITING FOR A WRITE RESPONSE (STEP 6) ==========================*)
+IF #iStep = 6 THEN
+  IF #stWrite.bDone THEN
+    #fbReadRec.REQ:= true;
+    #iStep:= 7;
+    RETURN;
+  END_IF;
+END_IF;
+
+
+(*========================== WAITING FOR A READ RESPONSE (STEP 7) ===========================*)
+IF #iStep = 7 THEN
+  IF #stRead.bDone THEN
+    
+    (*Check: Request reference*)
+    IF #iReqReference <> #arrRecord[0] THEN
+      #stTempErrorCode.nBlockError:= 16#0005; (*Error: Invalid request reference received*)
+      RETURN;
+    END_IF;
+    
+    (*Check: Response negative*)
+    IF #arrRecord[4] = 16#44 THEN
+      #stTempErrorCode.nBlockError:= 16#000A; (*Error: Encoder error*)
+      #stTempErrorCode.nEncoderError.%B0:= #arrRecord[7];
+      #stTempErrorCode.nEncoderError.%B1:= #arrRecord[6];
+      RETURN;
+    END_IF;
+    
+    (*Check: Response positive*)
+    IF #arrRecord[4] = 16#40 THEN
+      #iStep:= 9; (*Action permormed / Next command*)
+    ELSE
+      #iStep:= 8; (*Check response data*)
+    END_IF;
+  END_IF;
+END_IF;
+
+
+(*============================= CHECKING RESPONSE DATA (STEP 8) =============================*)
+IF #iStep = 8 THEN
+  (*Check: Data type format*)
+  IF #arrRecord[4] <> #arrCommandQueue[#iCommandIndex].nFormat THEN
+    #stTempErrorCode.nBlockError:= 16#0006; (*Error: Unexpected data type format received*)
+    RETURN;
+    
+  (*Check: No. of values*)
+  ELSIF (#arrRecord[5] <> #arrCommandQueue[#iCommandIndex].iNoValues) AND (#arrRecord[4] <> 16#0A) THEN
+    #stTempErrorCode.nBlockError:= 16#0007; (*Error: Unexpected no. of values received*)
+    RETURN;
+  END_IF;
+
+  (*Get value*)
+  CASE #arrCommandQueue[#iCommandIndex].iPNU OF
+    (*eTelegramNumber*)
+    922:
+      #Data.Parameter.Telegram_Number.%B0:= #arrRecord[7];
+      #Data.Parameter.Telegram_Number.%B1:= #arrRecord[8];
+ 
+    (*eDeviceIdentification*)
+    964:
+      #Data.Parameter.Device_Identification.Manufacturer.%B1:= #arrRecord[6];
+      #Data.Parameter.Device_Identification.Manufacturer.%B0:= #arrRecord[7];
+      #Data.Parameter.Device_Identification.Encoder_Unit_Type.%B1:= #arrRecord[8];
+      #Data.Parameter.Device_Identification.Encoder_Unit_Type.%B0:= #arrRecord[9];
+      #Data.Parameter.Device_Identification.FW_Version.%B1:= #arrRecord[10];
+      #Data.Parameter.Device_Identification.FW_Version.%B0:= #arrRecord[11];
+      #Data.Parameter.Device_Identification.FW_Date_Year.%B1:= #arrRecord[12];
+      #Data.Parameter.Device_Identification.FW_Date_Year.%B0:= #arrRecord[13];
+      #Data.Parameter.Device_Identification.FW_Date_Day_Month.%B1:= #arrRecord[14];
+      #Data.Parameter.Device_Identification.FW_Date_Day_Month.%B0:= #arrRecord[15];
+      #Data.Parameter.Device_Identification.Number_Of_Objects.%B1:= #arrRecord[16];
+      #Data.Parameter.Device_Identification.Number_Of_Objects.%B0:= #arrRecord[17];
+  
+    (*eEncProfileNumber*)
+    965:
+      #Data.Parameter.Enc_Profile_Number.Profile_Number:= #arrRecord[6];
+      #Data.Parameter.Enc_Profile_Number.Profile_Version:= #arrRecord[7];
+      
+    (*eEepromStorage*)
+    971:
+      #Data.Parameter.Eeprom_Storage.%B1:= #arrRecord[6];
+      #Data.Parameter.Eeprom_Storage.%B0:= #arrRecord[7];
+      
+    (*eObjectIdentification*)
+    975:
+      #Data.Parameter.Object_Identification.Manufacturer.%B1:= #arrRecord[6];
+      #Data.Parameter.Object_Identification.Manufacturer.%B0:= #arrRecord[7];
+      #Data.Parameter.Object_Identification.Encoder_Unit_Type.%B1:= #arrRecord[8];
+      #Data.Parameter.Object_Identification.Encoder_Unit_Type.%B0:= #arrRecord[9];
+      #Data.Parameter.Object_Identification.FW_Version.%B1:= #arrRecord[10];
+      #Data.Parameter.Object_Identification.FW_Version.%B0:= #arrRecord[11];
+      #Data.Parameter.Object_Identification.FW_Date_Year.%B1:= #arrRecord[12];
+      #Data.Parameter.Object_Identification.FW_Date_Year.%B0:= #arrRecord[13];
+      #Data.Parameter.Object_Identification.FW_Date_Day_Month.%B1:= #arrRecord[14];
+      #Data.Parameter.Object_Identification.FW_Date_Day_Month.%B0:= #arrRecord[15];  
+      #Data.Parameter.Object_Identification.EO_Type_Class.%B1:= #arrRecord[16];
+      #Data.Parameter.Object_Identification.EO_Type_Class.%B0:= #arrRecord[17];
+      #Data.Parameter.Object_Identification.EO_Sub_Class.%B1:= #arrRecord[18];
+      #Data.Parameter.Object_Identification.EO_Sub_Class.%B0:= #arrRecord[19];
+     
+    (*eSensorFormat*)
+    979:
+      #Data.Parameter.Sensor_Format.Header.%B3:= #arrRecord[6];
+      #Data.Parameter.Sensor_Format.Header.%B2:= #arrRecord[7];
+      #Data.Parameter.Sensor_Format.Header.%B1:= #arrRecord[8];
+      #Data.Parameter.Sensor_Format.Header.%B0:= #arrRecord[9];
+      #Data.Parameter.Sensor_Format.Sensor_Type.%B3:= #arrRecord[10];
+      #Data.Parameter.Sensor_Format.Sensor_Type.%B2:= #arrRecord[11];
+      #Data.Parameter.Sensor_Format.Sensor_Type.%B1:= #arrRecord[12];
+      #Data.Parameter.Sensor_Format.Sensor_Type.%B0:= #arrRecord[13];
+      #Data.Parameter.Sensor_Format.Sensor_Resolution.%B3:= #arrRecord[14];
+      #Data.Parameter.Sensor_Format.Sensor_Resolution.%B2:= #arrRecord[15];
+      #Data.Parameter.Sensor_Format.Sensor_Resolution.%B1:= #arrRecord[16];
+      #Data.Parameter.Sensor_Format.Sensor_Resolution.%B0:= #arrRecord[17];
+      #Data.Parameter.Sensor_Format.Shift_Factor_Left.%B3:= #arrRecord[18];
+      #Data.Parameter.Sensor_Format.Shift_Factor_Left.%B2:= #arrRecord[19];
+      #Data.Parameter.Sensor_Format.Shift_Factor_Left.%B1:= #arrRecord[20];
+      #Data.Parameter.Sensor_Format.Shift_Factor_Left.%B0:= #arrRecord[21];
+      #Data.Parameter.Sensor_Format.Shift_Factor_Right.%B3:= #arrRecord[22];
+      #Data.Parameter.Sensor_Format.Shift_Factor_Right.%B2:= #arrRecord[23];
+      #Data.Parameter.Sensor_Format.Shift_Factor_Right.%B1:= #arrRecord[24];
+      #Data.Parameter.Sensor_Format.Shift_Factor_Right.%B0:= #arrRecord[25];
+      #Data.Parameter.Sensor_Format.Revolutions.%B3:= #arrRecord[26];
+      #Data.Parameter.Sensor_Format.Revolutions.%B2:= #arrRecord[27];
+      #Data.Parameter.Sensor_Format.Revolutions.%B1:= #arrRecord[28];
+      #Data.Parameter.Sensor_Format.Revolutions.%B0:= #arrRecord[29];
+      
+    (*eParameterList*)
+    980:
+      FOR #iIndex:= 0 TO 26 DO
+        #Data.Parameter.Parameter_List[#iIndex].%B1:= #arrRecord[6 + 2 * #iIndex];
+        #Data.Parameter.Parameter_List[#iIndex].%B0:= #arrRecord[7 + 2 * #iIndex];
+      END_FOR;
+      
+    (*eEncoderStatusFlag*)
+    1000:
+      #Data.Parameter.Encoder_Status_Flag.%B1:= #arrRecord[6];
+      #Data.Parameter.Encoder_Status_Flag.%B0:= #arrRecord[7];
+     
+    (*eDeviceStatusFlag*)
+    1001:
+      #Data.Parameter.Device_Status_Flag.S_STAT_A.%B1:= #arrRecord[6];
+      #Data.Parameter.Device_Status_Flag.S_STAT_A.%B0:= #arrRecord[7];
+      #Data.Parameter.Device_Status_Flag.S_STAT_B.%B1:= #arrRecord[8];
+      #Data.Parameter.Device_Status_Flag.S_STAT_B.%B0:= #arrRecord[9];      
+      #Data.Parameter.Device_Status_Flag.S_STAT_C.%B1:= #arrRecord[10];
+      #Data.Parameter.Device_Status_Flag.S_STAT_C.%B0:= #arrRecord[11];
+      
+    (*eDiagHistoryAbsolute*)
+    1002:
+      #Data.Parameter.Diag_History_Absolute.Power_Up_Counter.%B3:= #arrRecord[6];
+      #Data.Parameter.Diag_History_Absolute.Power_Up_Counter.%B2:= #arrRecord[7];
+      #Data.Parameter.Diag_History_Absolute.Power_Up_Counter.%B1:= #arrRecord[8];
+      #Data.Parameter.Diag_History_Absolute.Power_Up_Counter.%B0:= #arrRecord[9];
+      #Data.Parameter.Diag_History_Absolute.Operating_Time.%B3:= #arrRecord[10];
+      #Data.Parameter.Diag_History_Absolute.Operating_Time.%B2:= #arrRecord[11];
+      #Data.Parameter.Diag_History_Absolute.Operating_Time.%B1:= #arrRecord[12];
+      #Data.Parameter.Diag_History_Absolute.Operating_Time.%B0:= #arrRecord[13];
+      #Data.Parameter.Diag_History_Absolute.Maximum_Speed.%B3:= #arrRecord[14];
+      #Data.Parameter.Diag_History_Absolute.Maximum_Speed.%B2:= #arrRecord[15];
+      #Data.Parameter.Diag_History_Absolute.Maximum_Speed.%B1:= #arrRecord[16];
+      #Data.Parameter.Diag_History_Absolute.Maximum_Speed.%B0:= #arrRecord[17];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_fw.%B3:= #arrRecord[18];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_fw.%B2:= #arrRecord[19];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_fw.%B1:= #arrRecord[20];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_fw.%B0:= #arrRecord[21];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_bw.%B3:= #arrRecord[22];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_bw.%B2:= #arrRecord[23];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_bw.%B1:= #arrRecord[24];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_bw.%B0:= #arrRecord[25];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_alt.%B3:= #arrRecord[26];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_alt.%B2:= #arrRecord[27];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_alt.%B1:= #arrRecord[28];
+      #Data.Parameter.Diag_History_Absolute.Counter_Rotation_alt.%B0:= #arrRecord[29];
+      #Data.Parameter.Diag_History_Absolute.Counter_Motion.%B3:= #arrRecord[30];
+      #Data.Parameter.Diag_History_Absolute.Counter_Motion.%B2:= #arrRecord[31];
+      #Data.Parameter.Diag_History_Absolute.Counter_Motion.%B1:= #arrRecord[32];
+      #Data.Parameter.Diag_History_Absolute.Counter_Motion.%B0:= #arrRecord[33];
+      #Data.Parameter.Diag_History_Absolute.Reserved.%B3:= #arrRecord[34];
+      #Data.Parameter.Diag_History_Absolute.Reserved.%B2:= #arrRecord[35];
+      #Data.Parameter.Diag_History_Absolute.Reserved.%B1:= #arrRecord[36];
+      #Data.Parameter.Diag_History_Absolute.Reserved.%B0:= #arrRecord[37];
+      #Data.Parameter.Diag_History_Absolute.LED_Current_Maximum.%B3:= #arrRecord[38];
+      #Data.Parameter.Diag_History_Absolute.LED_Current_Maximum.%B2:= #arrRecord[39];
+      #Data.Parameter.Diag_History_Absolute.LED_Current_Maximum.%B1:= #arrRecord[40];
+      #Data.Parameter.Diag_History_Absolute.LED_Current_Maximum.%B0:= #arrRecord[41];
+      #Data.Parameter.Diag_History_Absolute.LED_Current_Minimum.%B3:= #arrRecord[42];
+      #Data.Parameter.Diag_History_Absolute.LED_Current_Minimum.%B2:= #arrRecord[43];
+      #Data.Parameter.Diag_History_Absolute.LED_Current_Minimum.%B1:= #arrRecord[44];
+      #Data.Parameter.Diag_History_Absolute.LED_Current_Minimum.%B0:= #arrRecord[45];
+      #Data.Parameter.Diag_History_Absolute.Voltage_Maximum.%B3:= #arrRecord[46];
+      #Data.Parameter.Diag_History_Absolute.Voltage_Maximum.%B2:= #arrRecord[47];
+      #Data.Parameter.Diag_History_Absolute.Voltage_Maximum.%B1:= #arrRecord[48];
+      #Data.Parameter.Diag_History_Absolute.Voltage_Maximum.%B0:= #arrRecord[49];   
+      #Data.Parameter.Diag_History_Absolute.Temperatur_Maximum.%B3:= #arrRecord[50];
+      #Data.Parameter.Diag_History_Absolute.Temperatur_Maximum.%B2:= #arrRecord[51];
+      #Data.Parameter.Diag_History_Absolute.Temperatur_Maximum.%B1:= #arrRecord[52];
+      #Data.Parameter.Diag_History_Absolute.Temperatur_Maximum.%B0:= #arrRecord[53];
+      #Data.Parameter.Diag_History_Absolute.Temperature_Minimum.%B3:= #arrRecord[54];
+      #Data.Parameter.Diag_History_Absolute.Temperature_Minimum.%B2:= #arrRecord[55];
+      #Data.Parameter.Diag_History_Absolute.Temperature_Minimum.%B1:= #arrRecord[56];
+      #Data.Parameter.Diag_History_Absolute.Temperature_Minimum.%B0:= #arrRecord[57];
+
+    (*eDiagHistoryRelative*)
+    1003:
+      #Data.Parameter.Diag_History_Relative.Power_Up_Counter.%B3:= #arrRecord[6];
+      #Data.Parameter.Diag_History_Relative.Power_Up_Counter.%B2:= #arrRecord[7];
+      #Data.Parameter.Diag_History_Relative.Power_Up_Counter.%B1:= #arrRecord[8];
+      #Data.Parameter.Diag_History_Relative.Power_Up_Counter.%B0:= #arrRecord[9];
+      #Data.Parameter.Diag_History_Relative.Operating_Time.%B3:= #arrRecord[10];
+      #Data.Parameter.Diag_History_Relative.Operating_Time.%B2:= #arrRecord[11];
+      #Data.Parameter.Diag_History_Relative.Operating_Time.%B1:= #arrRecord[12];
+      #Data.Parameter.Diag_History_Relative.Operating_Time.%B0:= #arrRecord[13];
+      #Data.Parameter.Diag_History_Relative.Maximum_Speed.%B3:= #arrRecord[14];
+      #Data.Parameter.Diag_History_Relative.Maximum_Speed.%B2:= #arrRecord[15];
+      #Data.Parameter.Diag_History_Relative.Maximum_Speed.%B1:= #arrRecord[16];
+      #Data.Parameter.Diag_History_Relative.Maximum_Speed.%B0:= #arrRecord[17];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_fw.%B3:= #arrRecord[18];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_fw.%B2:= #arrRecord[19];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_fw.%B1:= #arrRecord[20];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_fw.%B0:= #arrRecord[21];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_bw.%B3:= #arrRecord[22];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_bw.%B2:= #arrRecord[23];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_bw.%B1:= #arrRecord[24];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_bw.%B0:= #arrRecord[25];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_alt.%B3:= #arrRecord[26];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_alt.%B2:= #arrRecord[27];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_alt.%B1:= #arrRecord[28];
+      #Data.Parameter.Diag_History_Relative.Counter_Rotation_alt.%B0:= #arrRecord[29];
+      #Data.Parameter.Diag_History_Relative.Counter_Motion.%B3:= #arrRecord[30];
+      #Data.Parameter.Diag_History_Relative.Counter_Motion.%B2:= #arrRecord[31];
+      #Data.Parameter.Diag_History_Relative.Counter_Motion.%B1:= #arrRecord[32];
+      #Data.Parameter.Diag_History_Relative.Counter_Motion.%B0:= #arrRecord[33];
+      #Data.Parameter.Diag_History_Relative.Reserved.%B3:= #arrRecord[34];
+      #Data.Parameter.Diag_History_Relative.Reserved.%B2:= #arrRecord[35];
+      #Data.Parameter.Diag_History_Relative.Reserved.%B1:= #arrRecord[36];
+      #Data.Parameter.Diag_History_Relative.Reserved.%B0:= #arrRecord[37];
+      #Data.Parameter.Diag_History_Relative.LED_Current_Maximum.%B3:= #arrRecord[38];
+      #Data.Parameter.Diag_History_Relative.LED_Current_Maximum.%B2:= #arrRecord[39];
+      #Data.Parameter.Diag_History_Relative.LED_Current_Maximum.%B1:= #arrRecord[40];
+      #Data.Parameter.Diag_History_Relative.LED_Current_Maximum.%B0:= #arrRecord[41];
+      #Data.Parameter.Diag_History_Relative.LED_Current_Minimum.%B3:= #arrRecord[42];
+      #Data.Parameter.Diag_History_Relative.LED_Current_Minimum.%B2:= #arrRecord[43];
+      #Data.Parameter.Diag_History_Relative.LED_Current_Minimum.%B1:= #arrRecord[44];
+      #Data.Parameter.Diag_History_Relative.LED_Current_Minimum.%B0:= #arrRecord[45];
+      #Data.Parameter.Diag_History_Relative.Voltage_Maximum.%B3:= #arrRecord[46];
+      #Data.Parameter.Diag_History_Relative.Voltage_Maximum.%B2:= #arrRecord[47];
+      #Data.Parameter.Diag_History_Relative.Voltage_Maximum.%B1:= #arrRecord[48];
+      #Data.Parameter.Diag_History_Relative.Voltage_Maximum.%B0:= #arrRecord[49];   
+      #Data.Parameter.Diag_History_Relative.Temperatur_Maximum.%B3:= #arrRecord[50];
+      #Data.Parameter.Diag_History_Relative.Temperatur_Maximum.%B2:= #arrRecord[51];
+      #Data.Parameter.Diag_History_Relative.Temperatur_Maximum.%B1:= #arrRecord[52];
+      #Data.Parameter.Diag_History_Relative.Temperatur_Maximum.%B0:= #arrRecord[53];
+      #Data.Parameter.Diag_History_Relative.Temperature_Minimum.%B3:= #arrRecord[54];
+      #Data.Parameter.Diag_History_Relative.Temperature_Minimum.%B2:= #arrRecord[55];
+      #Data.Parameter.Diag_History_Relative.Temperature_Minimum.%B1:= #arrRecord[56];
+      #Data.Parameter.Diag_History_Relative.Temperature_Minimum.%B0:= #arrRecord[57];
+      
+    (*eDiagHistErrCounter*)
+    1004:
+      FOR #iIndex:= 0 TO 15 DO
+        #Data.Parameter.Diag_Hist_Err_Counter[#iIndex].%B1:= #arrRecord[6 + 2 * #iIndex];
+        #Data.Parameter.Diag_Hist_Err_Counter[#iIndex].%B0:= #arrRecord[7 + 2 * #iIndex];
+      END_FOR;
+      
+    (*eSpeedCalculation*)
+    1005:
+      #Data.Parameter.Speed_Calculation.Control.%B1:= #arrRecord[6];
+      #Data.Parameter.Speed_Calculation.Control.%B0:= #arrRecord[7];
+      #Data.Parameter.Speed_Calculation.Velocity_Measuring_Unit.%B1:= #arrRecord[8];
+      #Data.Parameter.Speed_Calculation.Velocity_Measuring_Unit.%B0:= #arrRecord[9];
+      #Data.Parameter.Speed_Calculation.Update_Time_Tu.%B1:= #arrRecord[10];
+      #Data.Parameter.Speed_Calculation.Update_Time_Tu.%B0:= #arrRecord[11];
+      #Data.Parameter.Speed_Calculation.Update_Time_Ti.%B1:= #arrRecord[12];
+      #Data.Parameter.Speed_Calculation.Update_Time_Ti.%B0:= #arrRecord[13];
+      #Data.Parameter.Speed_Calculation.Upper_Limit.%B1:= #arrRecord[14];
+      #Data.Parameter.Speed_Calculation.Upper_Limit.%B0:= #arrRecord[15];
+      #Data.Parameter.Speed_Calculation.Lower_Limit.%B1:= #arrRecord[16];
+      #Data.Parameter.Speed_Calculation.Lower_Limit.%B0:= #arrRecord[17];     
+      
+    (*eTemperatureLimits*)
+    1006:
+      #Data.Parameter.Temperature_Limits.Lower_Limit.%B1:= #arrRecord[6];
+      #Data.Parameter.Temperature_Limits.Lower_Limit.%B0:= #arrRecord[7];
+      #Data.Parameter.Temperature_Limits.Upper_Limit.%B1:= #arrRecord[8];
+      #Data.Parameter.Temperature_Limits.Upper_Limit.%B0:= #arrRecord[9];   
+
+    (*eVoltageLimits*)
+    1007:
+      #Data.Parameter.Voltage_Limits.Lower_Limit.%B1:= #arrRecord[6];
+      #Data.Parameter.Voltage_Limits.Lower_Limit.%B0:= #arrRecord[7];
+      #Data.Parameter.Voltage_Limits.Upper_Limit.%B1:= #arrRecord[8];
+      #Data.Parameter.Voltage_Limits.Upper_Limit.%B0:= #arrRecord[9];   
+
+    (*eScalingParameters*)
+    1009: 
+      #Data.Parameter.Scaling_Parameters.ES_Functionality.%B3:= #arrRecord[6];
+      #Data.Parameter.Scaling_Parameters.ES_Functionality.%B2:= #arrRecord[7];
+      #Data.Parameter.Scaling_Parameters.ES_Functionality.%B1:= #arrRecord[8];
+      #Data.Parameter.Scaling_Parameters.ES_Functionality.%B0:= #arrRecord[9];
+      #Data.Parameter.Scaling_Parameters.Input_CNR_N.%B3:= #arrRecord[10];
+      #Data.Parameter.Scaling_Parameters.Input_CNR_N.%B2:= #arrRecord[11];
+      #Data.Parameter.Scaling_Parameters.Input_CNR_N.%B1:= #arrRecord[12];
+      #Data.Parameter.Scaling_Parameters.Input_CNR_N.%B0:= #arrRecord[13];
+      #Data.Parameter.Scaling_Parameters.Input_CNR_D.%B3:= #arrRecord[14];
+      #Data.Parameter.Scaling_Parameters.Input_CNR_D.%B2:= #arrRecord[15];
+      #Data.Parameter.Scaling_Parameters.Input_CNR_D.%B1:= #arrRecord[16];
+      #Data.Parameter.Scaling_Parameters.Input_CNR_D.%B0:= #arrRecord[17];
+      #Data.Parameter.Scaling_Parameters.Input_CMR.%B3:= #arrRecord[18];
+      #Data.Parameter.Scaling_Parameters.Input_CMR.%B2:= #arrRecord[19];
+      #Data.Parameter.Scaling_Parameters.Input_CMR.%B1:= #arrRecord[20];
+      #Data.Parameter.Scaling_Parameters.Input_CMR.%B0:= #arrRecord[21];
+      #Data.Parameter.Scaling_Parameters.Range_Offset.%B3:= #arrRecord[22];
+      #Data.Parameter.Scaling_Parameters.Range_Offset.%B2:= #arrRecord[23];
+      #Data.Parameter.Scaling_Parameters.Range_Offset.%B1:= #arrRecord[24];
+      #Data.Parameter.Scaling_Parameters.Range_Offset.%B0:= #arrRecord[25];
+      #Data.Parameter.Scaling_Parameters.PMR_Shift.%B3:= #arrRecord[26];
+      #Data.Parameter.Scaling_Parameters.PMR_Shift.%B2:= #arrRecord[27];
+      #Data.Parameter.Scaling_Parameters.PMR_Shift.%B1:= #arrRecord[28];
+      #Data.Parameter.Scaling_Parameters.PMR_Shift.%B0:= #arrRecord[29];
+      #Data.Parameter.Scaling_Parameters.Output_CNR_N.%B3:= #arrRecord[30];
+      #Data.Parameter.Scaling_Parameters.Output_CNR_N.%B2:= #arrRecord[31];
+      #Data.Parameter.Scaling_Parameters.Output_CNR_N.%B1:= #arrRecord[32];
+      #Data.Parameter.Scaling_Parameters.Output_CNR_N.%B0:= #arrRecord[33];
+      #Data.Parameter.Scaling_Parameters.Output_CNR_D.%B3:= #arrRecord[34];
+      #Data.Parameter.Scaling_Parameters.Output_CNR_D.%B2:= #arrRecord[35];
+      #Data.Parameter.Scaling_Parameters.Output_CNR_D.%B1:= #arrRecord[36];
+      #Data.Parameter.Scaling_Parameters.Output_CNR_D.%B0:= #arrRecord[37];
+      #Data.Parameter.Scaling_Parameters.Output_CMR.%B3:= #arrRecord[38];
+      #Data.Parameter.Scaling_Parameters.Output_CMR.%B2:= #arrRecord[39];
+      #Data.Parameter.Scaling_Parameters.Output_CMR.%B1:= #arrRecord[40];
+      #Data.Parameter.Scaling_Parameters.Output_CMR.%B0:= #arrRecord[41];
+      #Data.Parameter.Scaling_Parameters.Out_CPR_Integer.%B3:= #arrRecord[42];
+      #Data.Parameter.Scaling_Parameters.Out_CPR_Integer.%B2:= #arrRecord[43];
+      #Data.Parameter.Scaling_Parameters.Out_CPR_Integer.%B1:= #arrRecord[44];
+      #Data.Parameter.Scaling_Parameters.Out_CPR_Integer.%B0:= #arrRecord[45];
+      #Data.Parameter.Scaling_Parameters.Out_CPR_Fract.%B3:= #arrRecord[46];
+      #Data.Parameter.Scaling_Parameters.Out_CPR_Fract.%B2:= #arrRecord[47];
+      #Data.Parameter.Scaling_Parameters.Out_CPR_Fract.%B1:= #arrRecord[48];
+      #Data.Parameter.Scaling_Parameters.Out_CPR_Fract.%B0:= #arrRecord[49];
+      
+    (*eOperationTest1*)
+    1010:
+      #Data.Parameter.Operation_Test_1.%B1:= #arrRecord[6];
+      #Data.Parameter.Operation_Test_1.%B0:= #arrRecord[7];
+      
+    (*eMACIDPort1*)
+    1011:
+      FOR #iIndex:= 0 TO 5 DO
+        #Data.Parameter.MAC_ID_Port_1[#iIndex]:= #arrRecord[6 + #iIndex];
+      END_FOR;
+      
+    (*eMACIDPort2*)
+    1012:
+      FOR #iIndex:= 0 TO 5 DO
+        #Data.Parameter.MAC_ID_Port_2[#iIndex]:= #arrRecord[6 + #iIndex];
+      END_FOR;
+
+    (*eVersionFWFPGA*)
+    1013:
+      #Data.Parameter.Version_FW_FPGA.%B3:= #arrRecord[6];
+      #Data.Parameter.Version_FW_FPGA.%B2:= #arrRecord[7];
+      #Data.Parameter.Version_FW_FPGA.%B1:= #arrRecord[8];
+      #Data.Parameter.Version_FW_FPGA.%B0:= #arrRecord[9];
+      
+    (*eTemperature*)
+    1014:
+      #Data.Parameter.Temperature.%B1:= #arrRecord[6];  
+      #Data.Parameter.Temperature.%B0:= #arrRecord[7];  
+      
+    (*eStationName*)
+    61000:
+      Chars_TO_Strg(Chars:= #arrRecord, pChars:= 6, Cnt:= BYTE_TO_UINT(#arrRecord[5]), Strg=>#Data.Parameter.Station_Name);
+     
+    (*eStationIP*)
+    61001:
+      FOR #iIndex:= 0 TO 3 DO
+        #Data.Parameter.Station_IP[#iIndex]:= #arrRecord[6 + #iIndex];
+      END_FOR;
+
+    (*eStationMACID*)
+    61002:
+      FOR #iIndex:= 0 TO 5 DO
+        #Data.Parameter.Station_MAC_ID[#iIndex]:= #arrRecord[6 + #iIndex];
+      END_FOR;
+
+    (*eStationGateway*)
+    61003:
+      FOR #iIndex:= 0 TO 3 DO
+        #Data.Parameter.Station_Gateway[#iIndex]:= #arrRecord[6 + #iIndex];
+      END_FOR;
+      
+    (*eStationSubnet*)
+    61004:
+      FOR #iIndex:= 0 TO 3 DO
+        #Data.Parameter.Station_Subnet[#iIndex]:= #arrRecord[6 + #iIndex];
+      END_FOR;
+
+    (*ePresetValue*)
+    65000:
+      #Data.Parameter.Preset_Value.%B3:= #arrRecord[6];
+      #Data.Parameter.Preset_Value.%B2:= #arrRecord[7];
+      #Data.Parameter.Preset_Value.%B1:= #arrRecord[8];
+      #Data.Parameter.Preset_Value.%B0:= #arrRecord[9];
+  
+    (*eOperatingStatus*)
+    65001:
+      #Data.Parameter.Operating_Status.Header.%B3:= #arrRecord[6];
+      #Data.Parameter.Operating_Status.Header.%B2:= #arrRecord[7];
+      #Data.Parameter.Operating_Status.Header.%B1:= #arrRecord[8];
+      #Data.Parameter.Operating_Status.Header.%B0:= #arrRecord[9];
+      #Data.Parameter.Operating_Status.Operating_Status.%B3:= #arrRecord[10];
+      #Data.Parameter.Operating_Status.Operating_Status.%B2:= #arrRecord[11];
+      #Data.Parameter.Operating_Status.Operating_Status.%B1:= #arrRecord[12];
+      #Data.Parameter.Operating_Status.Operating_Status.%B0:= #arrRecord[13];
+      #Data.Parameter.Operating_Status.Faults.%B3:= #arrRecord[14];
+      #Data.Parameter.Operating_Status.Faults.%B2:= #arrRecord[15];
+      #Data.Parameter.Operating_Status.Faults.%B1:= #arrRecord[16];
+      #Data.Parameter.Operating_Status.Faults.%B0:= #arrRecord[17];
+      #Data.Parameter.Operating_Status.Supported_Faults.%B3:= #arrRecord[18];
+      #Data.Parameter.Operating_Status.Supported_Faults.%B2:= #arrRecord[19];
+      #Data.Parameter.Operating_Status.Supported_Faults.%B1:= #arrRecord[20];
+      #Data.Parameter.Operating_Status.Supported_Faults.%B0:= #arrRecord[21];
+      #Data.Parameter.Operating_Status.Warnings.%B3:= #arrRecord[22];
+      #Data.Parameter.Operating_Status.Warnings.%B2:= #arrRecord[23];
+      #Data.Parameter.Operating_Status.Warnings.%B1:= #arrRecord[24];
+      #Data.Parameter.Operating_Status.Warnings.%B0:= #arrRecord[25];
+      #Data.Parameter.Operating_Status.Supported_Warnings.%B3:= #arrRecord[26];
+      #Data.Parameter.Operating_Status.Supported_Warnings.%B2:= #arrRecord[27];
+      #Data.Parameter.Operating_Status.Supported_Warnings.%B1:= #arrRecord[28];
+      #Data.Parameter.Operating_Status.Supported_Warnings.%B0:= #arrRecord[29];
+      #Data.Parameter.Operating_Status.Encoder_Profile_Version.%B3:= #arrRecord[30];
+      #Data.Parameter.Operating_Status.Encoder_Profile_Version.%B2:= #arrRecord[31];
+      #Data.Parameter.Operating_Status.Encoder_Profile_Version.%B1:= #arrRecord[32];
+      #Data.Parameter.Operating_Status.Encoder_Profile_Version.%B0:= #arrRecord[33];
+      #Data.Parameter.Operating_Status.Operating_Time.%B3:= #arrRecord[34];
+      #Data.Parameter.Operating_Status.Operating_Time.%B2:= #arrRecord[35];
+      #Data.Parameter.Operating_Status.Operating_Time.%B1:= #arrRecord[36];
+      #Data.Parameter.Operating_Status.Operating_Time.%B0:= #arrRecord[37];
+      #Data.Parameter.Operating_Status.Offset_Value.%B3:= #arrRecord[38];
+      #Data.Parameter.Operating_Status.Offset_Value.%B2:= #arrRecord[39];
+      #Data.Parameter.Operating_Status.Offset_Value.%B1:= #arrRecord[40];
+      #Data.Parameter.Operating_Status.Offset_Value.%B0:= #arrRecord[41];
+      #Data.Parameter.Operating_Status.CPR.%B3:= #arrRecord[42];
+      #Data.Parameter.Operating_Status.CPR.%B2:= #arrRecord[43];
+      #Data.Parameter.Operating_Status.CPR.%B1:= #arrRecord[44];
+      #Data.Parameter.Operating_Status.CPR.%B0:= #arrRecord[45];
+      #Data.Parameter.Operating_Status.CMR.%B3:= #arrRecord[46];
+      #Data.Parameter.Operating_Status.CMR.%B2:= #arrRecord[47];
+      #Data.Parameter.Operating_Status.CMR.%B1:= #arrRecord[48];
+      #Data.Parameter.Operating_Status.CMR.%B0:= #arrRecord[49];
+      #Data.Parameter.Operating_Status.Velocity_Measuring_Unit.%B3:= #arrRecord[50];
+      #Data.Parameter.Operating_Status.Velocity_Measuring_Unit.%B2:= #arrRecord[51];
+      #Data.Parameter.Operating_Status.Velocity_Measuring_Unit.%B1:= #arrRecord[52];
+      #Data.Parameter.Operating_Status.Velocity_Measuring_Unit.%B0:= #arrRecord[53];
+  ELSE
+    #stTempErrorCode.nBlockError:= 16#0002; (*Error: Internal error*)
+  END_CASE;
+  #iStep:= 9; (*Action permormed / Next command*)
+END_IF;
+
+
+(*======================== ACTION PERFORMED / NEXT COMMAND (STEP 9) =========================*)
+IF #iStep = 9 THEN
+  #iCommandIndex:= #iCommandIndex + 1;
+  
+  (*Job done*)
+  IF (#iCommandIndex > 31) OR (#arrCommandQueue[#iCommandIndex].iPNU <= 0) THEN
+    #Done:= true;
+    #Busy:= false;
+    #bBusyMem:= false;
+    #Error:= false;
+    #iStep:= 0;
+    
+  (*Next command*)
+  ELSE
+    #iStep:= 4; (*Check communication status*)
+  END_IF;
+END_IF;
+END_FUNCTION_BLOCK

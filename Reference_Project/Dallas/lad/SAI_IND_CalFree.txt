@@ -1,0 +1,48 @@
+// FB "SAI_IND_CalFree" 53  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ID : HW_IO;   // The Profinet Device Hardware Identifier under device properties
+END_VAR
+
+VAR_OUTPUT
+   Process : Bool;   // Adjustment is in process
+   Done : Bool;   // Adjustment completed successfully
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   RatedCapacity : Real;   // Scale Capacity
+   Unit : SInt := 1;   // Decimal 0 - gram; 1 - KG; 2 - Lbs
+   RatedOutput : Real;   // The averaged load cells' Rated Output in mV/V
+   Start : Bool;   // Switch ON to start adjustment
+END_VAR
+
+VAR
+   Activate : Bool;
+   Status_RECORD : Int;
+   CalFree_RECORD : Int;
+   AdjustStep : SInt;
+   Check01 : Bool;
+   Check02 : Bool;
+   WRREC_CalFree : WRREC;
+   Static01 : Bool;
+   RDREC_Status : RDREC;
+END_VAR
+
+--- Network 1  Title: Start routine
+   parts: Contact, Gt, Le, Move, O, PBox, RCoil, SCoil
+   operands: #Start, #Static01, #RatedCapacity, #RatedOutput, #Process, #Error, #Done, #Activate, #Status_RECORD, #AdjustStep
+--- Network 2  Comment: CalFree adjustment steps:
+
+1. Switch on Input bit Start
+
+2. Write in (a) Scale Capacity (Index 0x401A), (b) Scale unit (Index 0x401C, Decimal 0 - gram; Decimal 1 - KG; Decimal 2 - Pounds) and (c) Load Cells' averaged Rated Output (Index 0x401D, in mV/V)
+
+3. Start CalFree adjustment (Index 0x401A)
+
+4. Continuously read in adjustment status (Index 0x4007)
+
+5. Output bit Done will be turned ON after completion of the process | Title: Sequence
+   parts: Coil, Contact, Eq, Move, Ne, RCoil, RDREC, SCoil, WRREC
+   operands: #Activate, #AdjustStep, #WRREC_CalFree.DONE, #WRREC_CalFree.REQ, #ID, #RatedCapacity, #WRREC_CalFree.BUSY, #WRREC_CalFree.ERROR, #WRREC_CalFree.STATUS, #Unit, #RatedOutput, #CalFree_RECORD, #RDREC_Status.VALID, #RDREC_Status.REQ, #Status_RECORD, #RDREC_Status.BUSY, #RDREC_Status.ERROR, #RDREC_Status.STATUS, #Process, #Error, #Done, #Start

@@ -1,0 +1,68 @@
+DATA_BLOCK "Order_Table_Buffers_FB_DB_1"   // InstanceDB 18  instance of "Order_Table_Buffers_FB"
+
+VAR_INPUT
+   System_Selected : Bool;
+   AutoMan_Switch : Bool;
+   CurrentTime : String;
+   CurrentDTL : DTL;
+   Watchdog : "Watchdog_Settings_UDT";
+   VTD_CurrentLevel : UInt;
+   OPC_UA_State_VTD : UInt;
+   OPC_UA_State_Main : UInt;
+   OPC_UA_State_L2 : UInt;
+   OPC_UA_State_L3 : UInt;
+   OPC_UA_State_L4 : UInt;
+   OPC_UA_State_L5 : UInt;
+   OPC_UA_State_L6 : UInt;
+   Clear_OrderTable : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Buffer_21 : "Buffer_Cnv_Control";
+   Cnv_Buffer_31 : "Buffer_Cnv_Control";
+   Cnv_Buffer_41 : "Buffer_Cnv_Control";
+   Cnv_Buffer_51 : "Buffer_Cnv_Control";
+   Cnv_Buffer_61 : "Buffer_Cnv_Control";
+   Cnv_Buffer_22 : "Buffer_Cnv_Control";
+   Cnv_Buffer_32 : "Buffer_Cnv_Control";
+   Cnv_Buffer_42 : "Buffer_Cnv_Control";
+   Cnv_Buffer_52 : "Buffer_Cnv_Control";
+   Cnv_Buffer_62 : "Buffer_Cnv_Control";
+   System : "System_UDT";
+   Control_OPC_Ua : "WMS_OPC_UA";
+END_VAR
+
+VAR
+   L2_CurrentOrder : UDInt;
+   L3_CurrentOrder : UDInt;
+   L4_CurrentOrder : UDInt;
+   L5_CurrentOrder : UDInt;
+   L6_CurrentOrder : UDInt;
+   L2DoneRTrig : R_TRIG;
+   L3DoneRTrig : R_TRIG;
+   L4DoneRTrig : R_TRIG;
+   L5DoneRTrig : R_TRIG;
+   L6DoneRTrig : R_TRIG;
+   PalletRefused_RTrig : R_TRIG;
+   ErrorRTrig : R_TRIG;
+   CancelRTrig : R_TRIG;
+   PauseRTrig : R_TRIG;
+   ResumeRTrig : R_TRIG;
+   Clear_Store : R_TRIG;
+   Clear_Retrieve : R_TRIG;
+   Canceling : Bool;
+   L2_WatchdogTimer : TON_TIME;
+   L3_WatchdogTimer : TON_TIME;
+   L4_WatchdogTimer : TON_TIME;
+   L5_WatchdogTimer : TON_TIME;
+   L6_WatchdogTimer : TON_TIME;
+   L2_WatchdogStart : Bool;
+   L3_WatchdogStart : Bool;
+   L4_WatchdogStart : Bool;
+   L5_WatchdogStart : Bool;
+   L6_WatchdogStart : Bool;
+   F_AutoMode : F_TRIG;
+END_VAR
+
+
+// ---- start values (path : type := value)

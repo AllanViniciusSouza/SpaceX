@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Turn_Table_Control_DUT" Id="{91b8132f-c956-4a33-8f63-2f88f20007fb}">
+    <Declaration><![CDATA[// Internal state of the turntable (Control.Turn_Table): rotation axis only, the conveyor on it is Control.TBCnv.
+// Same header as the conveyor DUTs. Drive: SEW MOVIKIT Positioning Drive (8 PD).
+TYPE Turn_Table_Control_DUT :
+STRUCT
+	Mode:	UINT;	// 0 Disabled, 1 Manual, 2 Semi-Auto, 3 Auto, 5 Maintenance
+	Error:	BOOL;
+	Warning:	UINT;
+	Enabled:	BOOL;
+	Stopped:	BOOL;
+	Done:	BOOL;
+	Running:	BOOL;
+	Ready_For_Task:	BOOL;
+	Current_Task_Type:	UINT;
+	Current_Task_ID:	UINT;
+	SM_State:	UINT;	// State machine value
+	Current_Position:	UINT;	// Station 1..4 reached, 0 = between stations / unknown
+	In_Position:	BOOL;	// At Current_Position within Settings.Turn_Table.Position_Tolerance
+	Motor:	Turn_Table_Motor_DUT;
+	Instruction:	Turn_Table_Instruction_DUT;
+	Inputs:	Turn_Table_Inputs_DUT;
+	Cnv_Errors:	Cnv_Errors_DUT;
+
+	// Interlock with Control.TBCnv: turntable rotation and turntable roller never run at the same time
+	Interlock:	Cnv_Interlock_DUT;	// Run_Request / Motor_Stopped by this FB, Run_Allowed by the group FB_Conveyor_MotorInterlock
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

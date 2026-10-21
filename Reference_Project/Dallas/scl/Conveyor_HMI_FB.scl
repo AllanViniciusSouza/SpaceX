@@ -1,0 +1,1163 @@
+FUNCTION_BLOCK "Conveyor_HMI_FB"   // FB 13, author 
+
+VAR_TEMP
+   i : UInt;
+   J : UInt;
+END_VAR
+
+BEGIN
+REGION Assign Conveyor 1
+    REGION Charge DATA
+        IF "CNV_ID_HMI_Tag" = "CNV_ID_HMI_Tag(1)" THEN
+            //CNV 1
+            "Same_Cnv" := TRUE;
+            
+            "Enable_HMI_Tag" := 0;
+            "Mode_Change_HMI_Tag" := 0;
+            "Task_ID_HMI_Tag" := 0;
+            "Transfer_To_ID_HMI_Tag" := 0;
+            "Transfer_From_ID_HMI_Tag" := 0;
+            //Sensors
+            "HMI_CNV_Pallet Detect 1" := 0;
+            "HMI_CNV_Pallet Detect 2" := 0;
+            "HMI_CNV_Pallet Detect 3" := 0;
+            "HMI_CNV_Sdetect1" := 0;
+            "HMI_CNV_Sdetect2" := 0;
+            "HMI_CNV_SftyPinUp" := 0;
+            "HMI_CNV_SftyPinDown" := 0;
+            
+            //Feedback
+            "Mode_HMI_Feedback_Tag" := 0;
+            "Enabled_HMI_Feedback_Tag" := 0;
+            "Error_HMI_Feedback_Tag" := 0;
+            "Warning_HMI_Feedback_Tag" := 0;
+            "Stopped_HMI_Feedback_Tag" := 0;
+            "Running_HMI_Feedback_Tag" := 0;
+            "Ready_For_Task_HMI_Feedback_Tag" := 0;
+            "Cnv_Occupied_HMI_Feedback_Tag" := 0;
+            "Shuttle_in_place_HMI_Feedback_Tag" := 0;
+            "Current_Task_Type_HMI_Feedback_Tag" := 0;
+            "Current_Task_ID_HMI_Feedback_Tag" := 0;
+            "SM_State_HMI_Feedback_Tag" := 0;
+            "Motor_Speed_Requested_HMI_Feedback_Tag" := 0;
+            "Motor_Speed_Actual_HMI_Feedback_Tag" := 0;
+            
+            //CNV 2
+            "Enable_HMI_Tag(1)" := 0;
+            "Mode_Change_HMI_Tag(1)" := 0;
+            "Task_ID_HMI_Tag(1)" := 0;
+            "Transfer_To_ID_HMI_Tag(1)" := 0;
+            "Transfer_From_ID_HMI_Tag(1)" := 0;
+            //Sensors
+            "HMI_CNV_Pallet Detect 1(1)" := 0;
+            "HMI_CNV_Pallet Detect 2(1)" := 0;
+            "HMI_CNV_Pallet Detect 3(1)" := 0;
+            "HMI_CNV_Sdetect1(1)" := 0;
+            "HMI_CNV_Sdetect2(1)" := 0;
+            "HMI_CNV_SftyPinUp(1)" := 0;
+            "HMI_CNV_SftyPinDown(1)" := 0;
+            
+            //Feedback
+            "Mode_HMI_Feedback_Tag(1)" := 0;
+            "Enabled_HMI_Feedback_Tag(1)" := 0;
+            "Error_HMI_Feedback_Tag(1)" := 0;
+            "Warning_HMI_Feedback_Tag(1)" := 0;
+            "Stopped_HMI_Feedback_Tag(1)" := 0;
+            "Running_HMI_Feedback_Tag(1)" := 0;
+            "Ready_For_Task_HMI_Feedback_Tag(1)" := 0;
+            "Cnv_Occupied_HMI_Feedback_Tag(1)" := 0;
+            "Shuttle_in_place_HMI_Feedback_Tag(1)" := 0;
+            "Current_Task_Type_HMI_Feedback_Tag(1)" := 0;
+            "Current_Task_ID_HMI_Feedback_Tag(1)" := 0;
+            "SM_State_HMI_Feedback_Tag(1)" := 0;
+            "Motor_Speed_Requested_HMI_Feedback_Tag(1)" := 0;
+            "Motor_Speed_Actual_HMI_Feedback_Tag(1)" := 0;
+        ELSE
+            "Same_Cnv" := FALSE;
+        END_IF;
+        "R_TRIG_DB_2"(CLK := "Same_Cnv");
+        
+        IF "R_TRIG_DB_2".Q THEN
+            "CNV_ID_HMI_Tag" := 0;
+            "CNV_ID_HMI_Tag(1)" := 0;
+        END_IF;
+        
+        //CHARGE DATA CHANGING CONVEYORS ID
+        IF "CNV_ID_HMI_Tag" <> "CNV_ID_HMI_Tag_Old" THEN
+            "Screen_DB".Charge_Cnv_Commands := TRUE;
+            "CNV_ID_HMI_Tag_Old" := "CNV_ID_HMI_Tag";
+        END_IF;
+        
+        "R_TRIG_DB_1"(CLK := "Screen_DB".Charge_Cnv_Commands);
+        
+        IF "R_TRIG_DB_1".Q THEN
+            IF "CNV_ID_HMI_Tag" >= 120001 AND "CNV_ID_HMI_Tag" <= 120301 THEN //ECONVEYOR
+                "Enable_HMI_Tag" := "Control_DB".ECnv_Control.Instruction.Enable;
+                "Mode_Change_HMI_Tag" := "Control_DB".ECnv_Control.Instruction.Mode_Change;
+                "Task_ID_HMI_Tag" := "Control_DB".ECnv_Control.Instruction.Task_ID;
+                "Transfer_To_ID_HMI_Tag" := "Control_DB".ECnv_Control.Instruction.Transfer_To_ID;
+                "Transfer_From_ID_HMI_Tag" := "Control_DB".ECnv_Control.Instruction.Transfer_From_ID;
+            ELSIF "CNV_ID_HMI_Tag" >= 100101 AND "CNV_ID_HMI_Tag" <= 100301 THEN //BUFFER CONVEYORS
+                FOR #i := 1 TO 3 DO
+                    IF "CNV_ID_HMI_Tag" = "Settings_DB".LCnv_Settings[#i].ID THEN
+                        "Enable_HMI_Tag" := "Control_DB".LCnv_Control[#i].Instruction.Enable;
+                        "Mode_Change_HMI_Tag" := "Control_DB".LCnv_Control[#i].Instruction.Mode_Change;
+                        "Task_ID_HMI_Tag" := "Control_DB".LCnv_Control[#i].Instruction.Task_ID;
+                        "Transfer_To_ID_HMI_Tag" := "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID;
+                        "Transfer_From_ID_HMI_Tag" := "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID;
+                    END_IF;
+                END_FOR;
+            ELSIF "CNV_ID_HMI_Tag" = "Settings_DB".Inbound_Cnv_Settings.ID THEN //INBOUND CONVEYOR
+                "Enable_HMI_Tag" := "Control_DB".Inbound_Cnv.Instruction.Enable;
+                "Mode_Change_HMI_Tag" := "Control_DB".Inbound_Cnv.Instruction.Mode_Change;
+                "Task_ID_HMI_Tag" := "Control_DB".Inbound_Cnv.Instruction.Task_ID;
+                "Transfer_To_ID_HMI_Tag" := "Control_DB".Inbound_Cnv.Instruction.Transfer_To_ID;
+                "Transfer_From_ID_HMI_Tag" := "Control_DB".Inbound_Cnv.Instruction.Transfer_From_ID;
+            ELSIF "CNV_ID_HMI_Tag" = "Settings_DB".Outbound_Cnv_Settings.ID THEN //OUTBOUND CONVEYOR
+                "Enable_HMI_Tag" := "Control_DB".Outbound_Cnv.Instruction.Enable;
+                "Mode_Change_HMI_Tag" := "Control_DB".Outbound_Cnv.Instruction.Mode_Change;
+                "Task_ID_HMI_Tag" := "Control_DB".Outbound_Cnv.Instruction.Task_ID;
+                "Transfer_To_ID_HMI_Tag" := "Control_DB".Outbound_Cnv.Instruction.Transfer_To_ID;
+                "Transfer_From_ID_HMI_Tag" := "Control_DB".Outbound_Cnv.Instruction.Transfer_From_ID;
+            ELSIF "CNV_ID_HMI_Tag" >= 150101 AND "CNV_ID_HMI_Tag" <= 180101 THEN //POPUP CONVEYORS
+                FOR #i := 1 TO 4 DO
+                    "Enable_HMI_Tag" := "Control_DB".PopUp_Cnv[#i].Instruction.Enable;
+                    "Mode_Change_HMI_Tag" := "Control_DB".PopUp_Cnv[#i].Instruction.Mode_Change;
+                    "Task_ID_HMI_Tag" := "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID;
+                    "Transfer_To_ID_HMI_Tag" := "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag" := "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID;
+                END_FOR;
+            END_IF;
+            "Screen_DB".Charge_Cnv_Commands := 0;
+        END_IF;
+    END_REGION
+    
+    REGION CHARGE DATA FROM HMI (AFTER CHARGE DATA)
+        IF NOT "Screen_DB".Charge_Cnv_Commands THEN
+            REGION VTD CONVEYOR
+                IF "CNV_ID_HMI_Tag" >= 120001 AND "CNV_ID_HMI_Tag" <= 120301 THEN
+                    "EConveyor_Visibility" := TRUE;
+                    
+                    //Sensors
+                    "HMI_CNV_Pallet Detect 1" := "Control_DB".ECnv_Control.Inputs."Pallet Detect 1";
+                    "HMI_CNV_Pallet Detect 2" := "Control_DB".ECnv_Control.Inputs."Pallet Detect 2";
+                    "HMI_CNV_Sdetect1" := "Control_DB".ECnv_Control.Inputs.Sdetect1;
+                    "HMI_CNV_Sdetect2" := "Control_DB".ECnv_Control.Inputs.Sdetect2;
+                    
+                    //Feedback
+                    "Mode_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Mode;
+                    "Enabled_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Enabled;
+                    "Error_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Error;
+                    "Warning_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Warning;
+                    "Stopped_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Stopped;
+                    "Running_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Running;
+                    "Ready_For_Task_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Ready_For_Task;
+                    "Cnv_Occupied_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Cnv_Occupied;
+                    "Shuttle_in_place_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Shuttle_In_Place;
+                    "Current_Task_Type_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Current_Task_Type;
+                    "Current_Task_ID_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Current_Task_ID;
+                    "SM_State_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.SM_State;
+                    IF "Control_DB".ECnv_Control.Motor.Forward THEN
+                        "Motor_Direction_HMI_Feedback_Tag" := 1;
+                    ELSIF "Control_DB".ECnv_Control.Motor.Reverse THEN
+                        "Motor_Direction_HMI_Feedback_Tag" := 2;
+                    ELSE
+                        "Motor_Direction_HMI_Feedback_Tag" := 0;
+                    END_IF;
+                    "Motor_Speed_Requested_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Motor.Speed;
+                    "Motor_Speed_Actual_HMI_Feedback_Tag" := "Control_DB".ECnv_Control.Motor.Speed_Actual;
+                    "Transfer_To_ID_HMI_Tag" := "Control_DB".ECnv_Control.Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag" := "Control_DB".ECnv_Control.Instruction.Transfer_From_ID;
+                    
+                    //Instructions
+                    IF "HMI_DB".ScreenNo = 2 THEN
+                        "Control_DB".ECnv_Control.Instruction.Stop := "Stop_HMI_Tag";
+                        "Control_DB".ECnv_Control.Instruction.Execute := "Manual_Fwd_HMI_Tag" OR "Manual_Bwd_HMI_Tag";
+                        "Control_DB".ECnv_Control.Instruction.Mode_Change := "Mode_Change_HMI_Tag";
+                        "Control_DB".ECnv_Control.Instruction.Enable := "Enable_HMI_Tag";
+                        IF "Control_DB".ECnv_Control.Mode <> 3 THEN
+                            "Control_DB".ECnv_Control.Instruction.Foward := "Manual_Fwd_HMI_Tag";
+                            "Control_DB".ECnv_Control.Instruction.Backward := "Manual_Bwd_HMI_Tag";
+                            "Control_DB".ECnv_Control.Instruction.Start_Transfer := "Start_Transfer_HMI_Tag";
+                            IF "Control_DB".ECnv_Control.Mode = 1 THEN
+                                "Control_DB".ECnv_Control.Instruction.Start_Transfer_Backward := "Transfer_Backward";
+                            END_IF;
+                            "Control_DB".ECnv_Control.Instruction.Task_ID := "Task_ID_HMI_Tag";
+                            IF "CNV_In_Out" THEN // 0 = Inbound, 1 = Outbound
+                                "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := "CNV_ID_HMI_Tag(1)";
+                                "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := 0;
+                            ELSE
+                                "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := 0;
+                                "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := "CNV_ID_HMI_Tag(1)";
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                END_IF;
+            END_REGION
+            
+            REGION BUFFER CONVEYORS
+                FOR #i := 1 TO 3 DO
+                    IF "CNV_ID_HMI_Tag" = "Settings_DB".LCnv_Settings[#i].ID THEN
+                        //Sensors
+                        "HMI_CNV_Pallet Detect 1" := "Control_DB".LCnv_Control[#i].Inputs."Pallet Detect 1";
+                        "HMI_CNV_Pallet Detect 2" := "Control_DB".LCnv_Control[#i].Inputs."Pallet Detect 2";
+                        "HMI_CNV_Pallet Detect 3" := "Control_DB".LCnv_Control[#i].Inputs."Pallet Detect 3";
+                        "HMI_CNV_Sdetect1" := "Control_DB".LCnv_Control[#i].Inputs.Sdetect1;
+                        "HMI_CNV_Sdetect2" := "Control_DB".LCnv_Control[#i].Inputs.Sdetect2;
+                        "HMI_CNV_SftyPinUp" := "Control_DB".LCnv_Control[#i].Inputs.SftyPinUp;
+                        "HMI_CNV_SftyPinDown" := "Control_DB".LCnv_Control[#i].Inputs.SftyPinDown;
+                        IF "Control_DB".LCnv_Control[#i].Inputs.SftyPinUp AND NOT "Control_DB".LCnv_Control[#i].Inputs.SftyPinDown THEN
+                            "UP_DOWN" := 1;
+                        ELSIF NOT "Control_DB".LCnv_Control[#i].Inputs.SftyPinUp AND "Control_DB".LCnv_Control[#i].Inputs.SftyPinDown THEN
+                            "UP_DOWN" := 2;
+                        ELSE
+                            "UP_DOWN" := 0;
+                        END_IF;
+                        
+                        //Feedback
+                        "Mode_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Mode;
+                        "Enabled_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Enabled;
+                        "Error_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Error;
+                        "Warning_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Warning;
+                        "Stopped_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Stopped;
+                        "Running_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Running;
+                        "Ready_For_Task_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Ready_For_Task;
+                        "Cnv_Occupied_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Cnv_Occupied;
+                        "Shuttle_in_place_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Shuttle_In_Place;
+                        "Current_Task_Type_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Current_Task_Type;
+                        "Current_Task_ID_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Current_Task_ID;
+                        "SM_State_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].SM_State;
+                        IF "Control_DB".LCnv_Control[#i].Motor.Forward THEN
+                            "Motor_Direction_HMI_Feedback_Tag" := 1;
+                        ELSIF "Control_DB".LCnv_Control[#i].Motor.Reverse THEN
+                            "Motor_Direction_HMI_Feedback_Tag" := 2;
+                        ELSE
+                            "Motor_Direction_HMI_Feedback_Tag" := 0;
+                        END_IF;
+                        "Motor_Speed_Requested_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Motor.Speed;
+                        "Motor_Speed_Actual_HMI_Feedback_Tag" := "Control_DB".LCnv_Control[#i].Motor.Speed_Actual;
+                        "Transfer_To_ID_HMI_Tag" := "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID;
+                        "Transfer_From_ID_HMI_Tag" := "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID;
+                        
+                        //Instructions
+                        IF "HMI_DB".ScreenNo = 2 THEN
+                            "Control_DB".LCnv_Control[#i].Instruction.Stop := "Stop_HMI_Tag";
+                            "Control_DB".LCnv_Control[#i].Instruction.Execute := "Manual_Fwd_HMI_Tag" OR "Manual_Bwd_HMI_Tag";
+                            "Control_DB".LCnv_Control[#i].Instruction.Mode_Change := "Mode_Change_HMI_Tag";
+                            "Control_DB".LCnv_Control[#i].Instruction.Enable := "Enable_HMI_Tag";
+                            IF "Control_DB".LCnv_Control[#i].Mode <> 3 THEN
+                                "Control_DB".LCnv_Control[#i].Instruction.Foward := "Manual_Fwd_HMI_Tag";
+                                "Control_DB".LCnv_Control[#i].Instruction.Backward := "Manual_Bwd_HMI_Tag";
+                                "Control_DB".LCnv_Control[#i].Instruction.Start_Transfer := "Start_Transfer_HMI_Tag";
+                                IF "Control_DB".LCnv_Control[#i].Mode = 1 THEN
+                                    "Control_DB".LCnv_Control[#i].Instruction.Start_Transfer_Backward := "Transfer_Backward";
+                                END_IF;
+                                "Control_DB".LCnv_Control[#i].Safety_Stop_Cnrl.Instruction.Manual_Extend := "Manual_Sfty_Stopper_Up";
+                                "Control_DB".LCnv_Control[#i].Safety_Stop_Cnrl.Instruction.Manual_Retract := "Manual_Sfty_Stopper_Down";
+                                "Control_DB".LCnv_Control[#i].Instruction.Task_ID := "Task_ID_HMI_Tag";
+                                // "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := "Transfer_To_ID_HMI_Tag";
+                                // "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := "Transfer_From_ID_HMI_Tag";
+                                IF "CNV_In_Out" THEN // 0 = Inbound, 1 = Outbound
+                                    "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := DINT#120001 + (#i * 100);
+                                    "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := 0;
+                                ELSE
+                                    "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := 0;
+                                    "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := DINT#120001 + (#i * 100);
+                                END_IF;
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                END_FOR;
+            END_REGION
+            
+            REGION INBOUND CONVEYOR
+                IF "CNV_ID_HMI_Tag" = "Settings_DB".Inbound_Cnv_Settings.ID THEN
+                    //Sensors
+                    "HMI_CNV_Pallet Detect 1" := "Control_DB".Inbound_Cnv."Inputs"."Pallet Detect 1";
+                    "HMI_CNV_Pallet Detect 2" := "Control_DB".Inbound_Cnv.Inputs."Pallet Detect 2";
+                    
+                    //Feedback
+                    "Mode_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Mode;
+                    "Enabled_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Enabled;
+                    "Error_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Error;
+                    "Warning_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Warning;
+                    "Stopped_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Stopped;
+                    "Running_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Running;
+                    "Ready_For_Task_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Ready_For_Task;
+                    "Cnv_Occupied_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Cnv_Occupied;
+                    "Current_Task_Type_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Current_Task_Type;
+                    "Current_Task_ID_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Current_Task_ID;
+                    "SM_State_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.SM_State;
+                    IF "Control_DB".Inbound_Cnv.Motor.Forward THEN
+                        "Motor_Direction_HMI_Feedback_Tag" := 1;
+                    ELSIF "Control_DB".Inbound_Cnv.Motor.Reverse THEN
+                        "Motor_Direction_HMI_Feedback_Tag" := 2;
+                    ELSE
+                        "Motor_Direction_HMI_Feedback_Tag" := 0;
+                    END_IF;
+                    "Motor_Speed_Requested_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Motor.Speed;
+                    "Motor_Speed_Actual_HMI_Feedback_Tag" := "Control_DB".Inbound_Cnv.Motor.Speed_Actual;
+                    "Transfer_To_ID_HMI_Tag" := "Control_DB".Inbound_Cnv.Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag" := "Control_DB".Inbound_Cnv.Instruction.Transfer_From_ID;
+                    
+                    //Instructions
+                    IF "HMI_DB".ScreenNo = 2 THEN
+                        "Control_DB".Inbound_Cnv.Instruction.Stop := "Stop_HMI_Tag";
+                        "Control_DB".Inbound_Cnv.Instruction.Execute := "Manual_Fwd_HMI_Tag" OR "Manual_Bwd_HMI_Tag";
+                        "Control_DB".Inbound_Cnv.Instruction.Mode_Change := "Mode_Change_HMI_Tag";
+                        "Control_DB".Inbound_Cnv.Instruction.Enable := "Enable_HMI_Tag";
+                        IF "Control_DB".Inbound_Cnv.Mode <> 3 THEN
+                            "Control_DB".Inbound_Cnv.Instruction.Foward := "Manual_Fwd_HMI_Tag";
+                            "Control_DB".Inbound_Cnv.Instruction.Backward := "Manual_Bwd_HMI_Tag";
+                            "Control_DB".Inbound_Cnv.Instruction.Start_Transfer := "Start_Transfer_HMI_Tag";
+                            IF "Control_DB".Inbound_Cnv.Mode = 1  THEN
+                                "Control_DB".Inbound_Cnv.Instruction.Start_Transfer_Backward := "Transfer_Backward";
+                            END_IF;
+                            "Control_DB".Inbound_Cnv.Instruction.Task_ID := "Task_ID_HMI_Tag";
+                            "Control_DB".Inbound_Cnv.Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[1].ID;
+                        END_IF;
+                    END_IF;
+                END_IF;
+            END_REGION
+            
+            REGION OUTBOUND CONVEYOR
+                IF "CNV_ID_HMI_Tag" = "Settings_DB".Outbound_Cnv_Settings.ID THEN
+                    //Sensors
+                    "HMI_CNV_Pallet Detect 1" := "Control_DB".Outbound_Cnv.Inputs."Pallet Detect";
+                    
+                    //Feedback
+                    "Mode_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Mode;
+                    "Enabled_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Enabled;
+                    "Error_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Error;
+                    "Warning_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Warning;
+                    "Stopped_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Stopped;
+                    "Running_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Running;
+                    "Ready_For_Task_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Ready_For_Task;
+                    "Cnv_Occupied_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Cnv_Occupied;
+                    "Shuttle_in_place_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Shuttle_In_Place;
+                    "Current_Task_Type_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Current_Task_Type;
+                    "Current_Task_ID_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Current_Task_ID;
+                    "SM_State_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.SM_State;
+                    IF "Control_DB".Outbound_Cnv.Motor.Forward THEN
+                        "Motor_Direction_HMI_Feedback_Tag" := 1;
+                    ELSIF "Control_DB".Outbound_Cnv.Motor.Reverse THEN
+                        "Motor_Direction_HMI_Feedback_Tag" := 2;
+                    ELSE
+                        "Motor_Direction_HMI_Feedback_Tag" := 0;
+                    END_IF;
+                    "Motor_Speed_Requested_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Motor.Speed;
+                    "Motor_Speed_Actual_HMI_Feedback_Tag" := "Control_DB".Outbound_Cnv.Motor.Speed_Actual;
+                    "Transfer_To_ID_HMI_Tag" := "Control_DB".Outbound_Cnv.Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag" := "Control_DB".Outbound_Cnv.Instruction.Transfer_From_ID;
+                    
+                    //Instructions
+                    IF "HMI_DB".ScreenNo = 2 THEN
+                        "Control_DB".Outbound_Cnv.Instruction.Stop := "Stop_HMI_Tag";
+                        "Control_DB".Outbound_Cnv.Instruction.Execute := "Manual_Fwd_HMI_Tag" OR "Manual_Bwd_HMI_Tag";
+                        "Control_DB".Outbound_Cnv.Instruction.Mode_Change := "Mode_Change_HMI_Tag";
+                        "Control_DB".Outbound_Cnv.Instruction.Enable := "Enable_HMI_Tag";
+                        IF "Control_DB".Outbound_Cnv.Mode <> 3 THEN
+                            "Control_DB".Outbound_Cnv.Instruction.Foward := "Manual_Fwd_HMI_Tag";
+                            "Control_DB".Outbound_Cnv.Instruction.Backward := "Manual_Bwd_HMI_Tag";
+                            "Control_DB".Outbound_Cnv.Instruction.Start_Transfer := "Start_Transfer_HMI_Tag";
+                            IF "Control_DB".Outbound_Cnv.Mode = 1 THEN
+                                "Control_DB".Outbound_Cnv.Instruction.Start_Transfer_Backward := "Transfer_Backward";
+                            END_IF;
+                            "Control_DB".Outbound_Cnv.Instruction.Task_ID := "Task_ID_HMI_Tag";
+                            "Control_DB".Outbound_Cnv.Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[4].ID;
+                        END_IF;
+                    END_IF;
+                END_IF;
+            END_REGION
+            
+            REGION POPUP CONVEYORS
+                IF "CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[1].ID THEN
+                    "HMI_CNV_Pallet Detect 1" := "PopUp Conveyor 1 - Pallet sensor";
+                    "HMI_CNV_Pallet Detect 2" := "Pick Station";
+                ELSIF "CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[2].ID THEN
+                    "HMI_CNV_Pallet Detect 1" := "PopUp Conveyor 2 - Pallet Present 1";
+                    "HMI_CNV_Pallet Detect 2" := "PopUp Conveyor 2 - Pallet present 2";
+                    "HMI_CNV_Pallet Detect 3" := "PopUp Conveyor 2 - Pallet present 3";
+                    "HMI_CNV_Pallet Detect 4" := "PopUp Conveyor 2 - Pallet present 4";
+                    "HMI_CNV_Pallet Detect 5" := "PopUp Conveyor 2 - Pallet present 5";
+                ELSIF "CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[3].ID THEN
+                    "HMI_CNV_Pallet Detect 1" := "PopUp Conveyor 3 - Pallet present 1";
+                ELSIF "CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[4].ID THEN
+                    "HMI_CNV_Pallet Detect 1" := "PopUp Conveyor 4 - Pallet present 1";
+                    "HMI_CNV_Pallet Detect 2" := "Pick Station";
+                END_IF;
+                FOR #i := 1 TO 4 DO
+                    IF "CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[#i].ID THEN
+                        //Sensors
+                        IF "Control_DB".PopUp_Cnv[#i].Inputs."Lift Up" AND NOT "Control_DB".PopUp_Cnv[#i].Inputs."Lift Down" THEN
+                            "UP_DOWN" := 1;
+                        ELSIF NOT "Control_DB".PopUp_Cnv[#i].Inputs."Lift Up" AND "Control_DB".PopUp_Cnv[#i].Inputs."Lift Down" THEN
+                            "UP_DOWN" := 2;
+                        ELSE
+                            "UP_DOWN" := 0;
+                        END_IF;
+                        IF "CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[#i].ID THEN
+                            //Feedback
+                            "Mode_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Mode;
+                            "Enabled_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Enabled;
+                            "Error_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Error;
+                            "Warning_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Warning;
+                            "Stopped_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Stopped;
+                            "Running_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Running;
+                            "Ready_For_Task_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Ready_For_Task;
+                            "Cnv_Occupied_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Cnv_Occupied;
+                            "Current_Task_Type_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Current_Task_Type;
+                            "Current_Task_ID_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].Current_Task_ID;
+                            "SM_State_HMI_Feedback_Tag" := "Control_DB".PopUp_Cnv[#i].SM_State;
+                            "Transfer_To_ID_HMI_Tag" := "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID;
+                            "Transfer_From_ID_HMI_Tag" := "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID;
+                            IF "Control_DB".PopUp_Cnv[#i].Roller_Motor.Status.%X0 THEN
+                                IF "Control_DB".PopUp_Cnv[#i].Roller_Motor.Forward THEN
+                                    "Motor_Direction_HMI_Feedback_Tag" := 1;
+                                ELSIF "Control_DB".PopUp_Cnv[#i].Roller_Motor.Reverse THEN
+                                    "Motor_Direction_HMI_Feedback_Tag" := 2;
+                                ELSE
+                                    "Motor_Direction_HMI_Feedback_Tag" := 0;
+                                END_IF;
+                                "Motor_Speed_Requested_HMI_Feedback_Tag" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Roller_Motor.Speed);
+                                "Motor_Speed_Actual_HMI_Feedback_Tag" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Roller_Motor.Speed_Actual);
+                            ELSIF "Control_DB".PopUp_Cnv[#i].Chain_Motor.Status.%X0 = 1 THEN
+                                IF "Control_DB".PopUp_Cnv[#i].Chain_Motor.Forward THEN
+                                    "Motor_Direction_HMI_Feedback_Tag" := 1;
+                                ELSIF "Control_DB".PopUp_Cnv[#i].Chain_Motor.Reverse THEN
+                                    "Motor_Direction_HMI_Feedback_Tag" := 2;
+                                ELSE
+                                    "Motor_Direction_HMI_Feedback_Tag" := 0;
+                                END_IF;
+                                "Motor_Speed_Requested_HMI_Feedback_Tag" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Chain_Motor.Speed);
+                                "Motor_Speed_Actual_HMI_Feedback_Tag" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Chain_Motor.Speed_Actual);
+                            ELSIF "Control_DB".PopUp_Cnv[#i].Lift_Motor.Status.%X0 = 1 THEN
+                                IF "Control_DB".PopUp_Cnv[#i].Lift_Motor.Forward THEN
+                                    "Motor_Direction_HMI_Feedback_Tag" := 1;
+                                ELSIF "Control_DB".PopUp_Cnv[#i].Lift_Motor.Reverse THEN
+                                    "Motor_Direction_HMI_Feedback_Tag" := 2;
+                                ELSE
+                                    "Motor_Direction_HMI_Feedback_Tag" := 0;
+                                END_IF;
+                                "Motor_Speed_Requested_HMI_Feedback_Tag" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Lift_Motor.Speed);
+                                "Motor_Speed_Actual_HMI_Feedback_Tag" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Lift_Motor.Speed_Actual);
+                            END_IF;
+                            
+                            //Instructions
+                            IF "HMI_DB".ScreenNo = 2 THEN
+                                "Control_DB".PopUp_Cnv[#i].Instruction.Stop := "Stop_HMI_Tag";
+                                "Control_DB".PopUp_Cnv[#i].Instruction.Execute := "Manual_Fwd_HMI_Tag" OR "Manual_Bwd_HMI_Tag";
+                                "Control_DB".PopUp_Cnv[#i].Instruction.Mode_Change := "Mode_Change_HMI_Tag";
+                                "Control_DB".PopUp_Cnv[#i].Instruction.Enable := "Enable_HMI_Tag";
+                                IF "Control_DB".PopUp_Cnv[#i].Mode <> 3 THEN
+                                    IF "Control_DB".PopUp_Cnv[#i].Inputs."Lift Up" THEN
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Roller_Fwd := "Manual_Fwd_HMI_Tag";
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Roller_Bwd := "Manual_Bwd_HMI_Tag";
+                                    ELSIF "Control_DB".PopUp_Cnv[#i].Inputs."Lift Down" THEN
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Chain_Fwd := "Manual_Fwd_HMI_Tag";
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Chain_Bwd := "Manual_Bwd_HMI_Tag";
+                                    END_IF;
+                                    "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer := "Start_Transfer_HMI_Tag";
+                                    IF "Control_DB".PopUp_Cnv[#i].Mode = 1 THEN
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer_Backward := "Transfer_Backward";
+                                    END_IF;
+                                    "Control_DB".PopUp_Cnv[#i].Instruction.Lift_Up := "Manual_Sfty_Stopper_Up";
+                                    "Control_DB".PopUp_Cnv[#i].Instruction.Lift_Down := "Manual_Sfty_Stopper_Down";
+                                    "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID := "Task_ID_HMI_Tag";
+                                    CASE #i OF
+                                        1:
+                                            IF "CNV_In_Out" AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[2].ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSIF NOT "CNV_In_Out" AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Down" AND NOT "Pick Station" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".Pick_Cnv_Settings.ID;
+                                            ELSIF NOT "CNV_In_Out" AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".Inbound_Cnv_Settings.ID;
+                                            ELSE
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            END_IF;
+                                            
+                                        2:
+                                            IF NOT "CNV_In_Out" AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Up" THEN // UP
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[1].ID;
+                                            ELSIF NOT "CNV_In_Out" AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" THEN //DOWN
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".ECnv_Settings.ID;
+                                            ELSIF "CNV_In_Out" AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" AND NOT "VTD_POPUP2" THEN //DOWN
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".ECnv_Settings.ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSIF "CNV_In_Out" AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" AND "VTD_POPUP2" THEN //DOWN
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[3].ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSE
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            END_IF;
+                                            
+                                        3:
+                                            IF NOT "CNV_In_Out" AND "Control_DB".PopUp_Cnv[3].Inputs."Lift Down" THEN //inbound chain
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[2].ID;
+                                            ELSIF "CNV_In_Out" AND "Control_DB".PopUp_Cnv[3].Inputs."Lift Up" THEN 
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[4].ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSE
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            END_IF;
+                                            
+                                        4:
+                                            IF "CNV_In_Out" AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Up" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".Outbound_Cnv_Settings.ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSIF "CNV_In_Out" AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Down" AND "Pick Station" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".Pick_Cnv_Settings.ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSIF NOT "CNV_In_Out" AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Up" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[3].ID;
+                                            ELSE
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            END_IF;
+                                    END_CASE;
+                                END_IF;
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                END_FOR;
+            END_REGION
+            
+            REGION PICK CONVEYOR
+                IF "CNV_ID_HMI_Tag" = "Settings_DB".Pick_Cnv_Settings.ID THEN
+                    //Sensors
+                    "HMI_CNV_Pallet Detect 1" := "Control_DB".Pick_Station.Cnv_Occupied;
+                    
+                    //Feedback
+                    "Mode_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Mode;
+                    "Enabled_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Enabled;
+                    "Error_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Error;
+                    "Warning_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Warning;
+                    "Stopped_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Stopped;
+                    "Running_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Running;
+                    "Ready_For_Task_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Ready_For_Task;
+                    "Cnv_Occupied_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Cnv_Occupied;
+                    // "Shuttle_in_place_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Shuttle_In_Place;
+                    "Current_Task_Type_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Current_Task_Type;
+                    "Current_Task_ID_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Current_Task_ID;
+                    "SM_State_HMI_Feedback_Tag" := "Control_DB".Pick_Station.SM_State;
+                    IF "Control_DB".Pick_Station.Motor.Forward THEN
+                        "Motor_Direction_HMI_Feedback_Tag" := 1;
+                    ELSIF "Control_DB".Pick_Station.Motor.Reverse THEN
+                        "Motor_Direction_HMI_Feedback_Tag" := 2;
+                    ELSE
+                        "Motor_Direction_HMI_Feedback_Tag" := 0;
+                    END_IF;
+                    "Motor_Speed_Requested_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Motor.Speed;
+                    "Motor_Speed_Actual_HMI_Feedback_Tag" := "Control_DB".Pick_Station.Motor.Speed_Actual;
+                    "Transfer_To_ID_HMI_Tag" := "Control_DB".Pick_Station.Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag" := "Control_DB".Pick_Station.Instruction.Transfer_From_ID;
+                    
+                    //Instructions
+                    IF "HMI_DB".ScreenNo = 2 THEN
+                        "Control_DB".Pick_Station.Instruction.Stop := "Stop_HMI_Tag";
+                        "Control_DB".Pick_Station.Instruction.Execute := "Manual_Fwd_HMI_Tag" OR "Manual_Bwd_HMI_Tag";
+                        "Control_DB".Pick_Station.Instruction.Mode_Change := "Mode_Change_HMI_Tag";
+                        "Control_DB".Pick_Station.Instruction.Enable := "Enable_HMI_Tag";
+                        IF "Control_DB".Pick_Station.Mode <> 3 THEN
+                            "Control_DB".Pick_Station.Instruction.Foward := "Manual_Fwd_HMI_Tag";
+                            "Control_DB".Pick_Station.Instruction.Backward := "Manual_Bwd_HMI_Tag";
+                            "Control_DB".Pick_Station.Instruction.Start_Transfer := "Start_Transfer_HMI_Tag";
+                            IF "Control_DB".Pick_Station.Mode = 1 THEN
+                                "Control_DB".Pick_Station.Instruction.Start_Transfer_Backward := "Transfer_Backward";
+                            END_IF;
+                            "Control_DB".Pick_Station.Instruction.Task_ID := "Task_ID_HMI_Tag";
+                            "Control_DB".Pick_Station.Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[4].ID;
+                            "Control_DB".Pick_Station.Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[1].ID;
+                        END_IF;
+                    END_IF;
+                END_IF;
+            END_REGION
+        END_IF;
+    END_REGION
+END_REGION
+
+
+REGION Assign Conveyor 2
+    REGION Charge DATA to HMI
+        //CHARGE DATA CHANGING CONVEYORS ID
+        IF "CNV_ID_HMI_Tag(1)" <> "CNV_ID_HMI_Tag(1)_Old" THEN
+            "Screen_DB".Charge_Cnv_Commands := TRUE;
+            "CNV_ID_HMI_Tag(1)_Old" := "CNV_ID_HMI_Tag(1)";
+        END_IF;
+        
+        "R_TRIG_DB_7"(CLK := "Screen_DB".Charge_Cnv_Commands);
+        
+        IF "R_TRIG_DB_7".Q THEN
+            IF "CNV_ID_HMI_Tag(1)" >= 120001 AND "CNV_ID_HMI_Tag(1)" <= 120301 THEN //ECONVEYOR
+                "Enable_HMI_Tag(1)" := "Control_DB".ECnv_Control.Instruction.Enable;
+                "Mode_Change_HMI_Tag(1)" := "Control_DB".ECnv_Control.Instruction.Mode_Change;
+                "Task_ID_HMI_Tag(1)" := "Control_DB".ECnv_Control.Instruction.Task_ID;
+                "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".ECnv_Control.Instruction.Transfer_To_ID;
+                "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".ECnv_Control.Instruction.Transfer_From_ID;
+            ELSIF "CNV_ID_HMI_Tag" >= 100101 AND "CNV_ID_HMI_Tag" <= 100301 THEN //BUFFER CONVEYORS
+                FOR #i := 1 TO 3 DO
+                    IF "CNV_ID_HMI_Tag(1)" = "Settings_DB".LCnv_Settings[#i].ID THEN
+                        "Enable_HMI_Tag(1)" := "Control_DB".LCnv_Control[#i].Instruction.Enable;
+                        "Mode_Change_HMI_Tag(1)" := "Control_DB".LCnv_Control[#i].Instruction.Mode_Change;
+                        "Task_ID_HMI_Tag(1)" := "Control_DB".LCnv_Control[#i].Instruction.Task_ID;
+                        "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID;
+                        "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID;
+                    END_IF;
+                END_FOR;
+            ELSIF "CNV_ID_HMI_Tag(1)" = "Settings_DB".Inbound_Cnv_Settings.ID THEN //INBOUND CONVEYOR
+                "Enable_HMI_Tag(1)" := "Control_DB".Inbound_Cnv.Instruction.Enable;
+                "Mode_Change_HMI_Tag(1)" := "Control_DB".Inbound_Cnv.Instruction.Mode_Change;
+                "Task_ID_HMI_Tag(1)" := "Control_DB".Inbound_Cnv.Instruction.Task_ID;
+                "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".Inbound_Cnv.Instruction.Transfer_To_ID;
+                "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".Inbound_Cnv.Instruction.Transfer_From_ID;
+            ELSIF "CNV_ID_HMI_Tag(1)" = "Settings_DB".Outbound_Cnv_Settings.ID THEN //OUTBOUND CONVEYOR
+                "Enable_HMI_Tag(1)" := "Control_DB".Outbound_Cnv.Instruction.Enable;
+                "Mode_Change_HMI_Tag(1)" := "Control_DB".Outbound_Cnv.Instruction.Mode_Change;
+                "Task_ID_HMI_Tag(1)" := "Control_DB".Outbound_Cnv.Instruction.Task_ID;
+                "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".Outbound_Cnv.Instruction.Transfer_To_ID;
+                "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".Outbound_Cnv.Instruction.Transfer_From_ID;
+            ELSIF "CNV_ID_HMI_Tag(1)" >= 150101 AND "CNV_ID_HMI_Tag(1)" <= 180101 THEN //POPUP CONVEYORS
+                FOR #i := 1 TO 4 DO
+                    "Enable_HMI_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Instruction.Enable;
+                    "Mode_Change_HMI_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Instruction.Mode_Change;
+                    "Task_ID_HMI_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID;
+                    "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID;
+                END_FOR;
+            END_IF;
+            "Screen_DB".Charge_Cnv_Commands := 0;
+        END_IF;
+    END_REGION
+    
+    REGION CHARGE DATA FROM HMI (AFTER CHARGE DATA)
+        IF NOT "Screen_DB".Charge_Cnv_Commands THEN
+            REGION VTD CONVEYOR
+                IF "CNV_ID_HMI_Tag(1)" >= 120001 AND "CNV_ID_HMI_Tag(1)" <= 120301 THEN
+                    "BConveyor_Visibility" := TRUE;
+                    
+                    //Sensors
+                    "HMI_CNV_Pallet Detect 1(1)" := "Control_DB".ECnv_Control.Inputs."Pallet Detect 1";
+                    "HMI_CNV_Pallet Detect 2(1)" := "Control_DB".ECnv_Control.Inputs."Pallet Detect 2";
+                    "HMI_CNV_Sdetect1(1)" := "Control_DB".ECnv_Control.Inputs.Sdetect1;
+                    "HMI_CNV_Sdetect2(1)" := "Control_DB".ECnv_Control.Inputs.Sdetect2;
+                    
+                    //Feedback
+                    "Mode_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Mode;
+                    "Enabled_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Enabled;
+                    "Error_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Error;
+                    "Warning_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Warning;
+                    "Stopped_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Stopped;
+                    "Running_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Running;
+                    "Ready_For_Task_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Ready_For_Task;
+                    "Cnv_Occupied_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Cnv_Occupied;
+                    "Shuttle_in_place_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Shuttle_In_Place;
+                    "Current_Task_Type_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Current_Task_Type;
+                    "Current_Task_ID_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Current_Task_ID;
+                    "SM_State_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.SM_State;
+                    IF "Control_DB".ECnv_Control.Motor.Forward THEN
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 1;
+                    ELSIF "Control_DB".ECnv_Control.Motor.Reverse THEN
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 2;
+                    ELSE
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 0;
+                    END_IF;
+                    "Motor_Speed_Requested_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Motor.Speed;
+                    "Motor_Speed_Actual_HMI_Feedback_Tag(1)" := "Control_DB".ECnv_Control.Motor.Speed_Actual;
+                    "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".ECnv_Control.Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".ECnv_Control.Instruction.Transfer_From_ID;
+                    
+                    //Instructions
+                    IF "HMI_DB".ScreenNo = 2 THEN
+                        "Control_DB".ECnv_Control.Instruction.Stop := "Stop_HMI_Tag(1)";
+                        "Control_DB".ECnv_Control.Instruction.Mode_Change := "Mode_Change_HMI_Tag(1)";
+                        "Control_DB".ECnv_Control.Instruction.Enable := "Enable_HMI_Tag(1)";
+                        IF "Control_DB".ECnv_Control.Mode <> 3 THEN
+                            "Control_DB".ECnv_Control.Instruction.Task_ID := "Task_ID_HMI_Tag(1)";
+                            IF "CNV_In_Out(1)" THEN // 0 = Inbound, 1 = Outbound
+                                "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := "CNV_ID_HMI_Tag";
+                                "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := 0;
+                            ELSE
+                                "Control_DB".ECnv_Control.Instruction.Transfer_To_ID := 0;
+                                "Control_DB".ECnv_Control.Instruction.Transfer_From_ID := "CNV_ID_HMI_Tag";
+                            END_IF;
+                            "Control_DB".ECnv_Control.Instruction.Foward := "Manual_Fwd_HMI_Tag(1)";
+                            "Control_DB".ECnv_Control.Instruction.Backward := "Manual_Bwd_HMI_Tag(1)";
+                            "Control_DB".ECnv_Control.Instruction.Start_Transfer := "Start_Transfer_HMI_Tag(1)";
+                            IF "Control_DB".ECnv_Control.Mode = 1 THEN
+                                "Control_DB".ECnv_Control.Instruction.Start_Transfer_Backward := "Transfer_Backward(1)";
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                END_IF;
+            END_REGION
+            
+            REGION BUFFER CONVEYORS
+                FOR #i := 1 TO 3 DO
+                    IF "CNV_ID_HMI_Tag(1)" = "Settings_DB".LCnv_Settings[#i].ID THEN
+                        //Sensors
+                        "HMI_CNV_Pallet Detect 1(1)" := "Control_DB".LCnv_Control[#i].Inputs."Pallet Detect 1";
+                        "HMI_CNV_Pallet Detect 2(1)" := "Control_DB".LCnv_Control[#i].Inputs."Pallet Detect 2";
+                        "HMI_CNV_Pallet Detect 3(1)" := "Control_DB".LCnv_Control[#i].Inputs."Pallet Detect 3";
+                        "HMI_CNV_Sdetect1(1)" := "Control_DB".LCnv_Control[#i].Inputs.Sdetect1;
+                        "HMI_CNV_Sdetect2(1)" := "Control_DB".LCnv_Control[#i].Inputs.Sdetect2;
+                        "HMI_CNV_SftyPinUp(1)" := "Control_DB".LCnv_Control[#i].Inputs.SftyPinUp;
+                        "HMI_CNV_SftyPinDown(1)" := "Control_DB".LCnv_Control[#i].Inputs.SftyPinDown;
+                        IF "Control_DB".LCnv_Control[#i].Inputs.SftyPinUp AND NOT "Control_DB".LCnv_Control[#i].Inputs.SftyPinDown THEN
+                            "UP_DOWN(1)" := 1;
+                        ELSIF NOT "Control_DB".LCnv_Control[#i].Inputs.SftyPinUp AND "Control_DB".LCnv_Control[#i].Inputs.SftyPinDown THEN
+                            "UP_DOWN(1)" := 2;
+                        ELSE
+                            "UP_DOWN(1)" := 0;
+                        END_IF;
+                        
+                        //Feedback
+                        "Mode_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Mode;
+                        "Enabled_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Enabled;
+                        "Error_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Error;
+                        "Warning_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Warning;
+                        "Stopped_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Stopped;
+                        "Running_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Running;
+                        "Ready_For_Task_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Ready_For_Task;
+                        "Cnv_Occupied_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Cnv_Occupied;
+                        "Shuttle_in_place_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Shuttle_In_Place;
+                        "Current_Task_Type_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Current_Task_Type;
+                        "Current_Task_ID_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Current_Task_ID;
+                        "SM_State_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].SM_State;
+                        IF "Control_DB".LCnv_Control[#i].Motor.Forward THEN
+                            "Motor_Direction_HMI_Feedback_Tag(1)" := 1;
+                        ELSIF "Control_DB".LCnv_Control[#i].Motor.Reverse THEN
+                            "Motor_Direction_HMI_Feedback_Tag(1)" := 2;
+                        ELSE
+                            "Motor_Direction_HMI_Feedback_Tag(1)" := 0;
+                        END_IF;
+                        "Motor_Speed_Requested_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Motor.Speed;
+                        "Motor_Speed_Actual_HMI_Feedback_Tag(1)" := "Control_DB".LCnv_Control[#i].Motor.Speed_Actual;
+                        "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID;
+                        "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID;
+                        
+                        //Instructions
+                        IF "HMI_DB".ScreenNo = 2 THEN
+                            "Control_DB".LCnv_Control[#i].Instruction.Stop := "Stop_HMI_Tag(1)";
+                            "Control_DB".LCnv_Control[#i].Instruction.Execute := "Manual_Fwd_HMI_Tag(1)" OR "Manual_Bwd_HMI_Tag(1)";
+                            "Control_DB".LCnv_Control[#i].Instruction.Mode_Change := "Mode_Change_HMI_Tag(1)";
+                            "Control_DB".LCnv_Control[#i].Instruction.Enable := "Enable_HMI_Tag(1)";
+                            IF "Control_DB".LCnv_Control[#i].Mode <> 3 THEN
+                                "Control_DB".LCnv_Control[#i].Instruction.Foward := "Manual_Fwd_HMI_Tag(1)";
+                                "Control_DB".LCnv_Control[#i].Instruction.Backward := "Manual_Bwd_HMI_Tag(1)";
+                                "Control_DB".LCnv_Control[#i].Instruction.Start_Transfer := "Start_Transfer_HMI_Tag(1)";
+                                IF "Control_DB".LCnv_Control[#i].Mode = 1 THEN
+                                    "Control_DB".LCnv_Control[#i].Instruction.Start_Transfer_Backward := "Transfer_Backward(1)";
+                                END_IF;
+                                "Control_DB".LCnv_Control[#i].Safety_Stop_Cnrl.Instruction.Manual_Extend := "Manual_Sfty_Stopper_Up(1)";
+                                "Control_DB".LCnv_Control[#i].Safety_Stop_Cnrl.Instruction.Manual_Retract := "Manual_Sfty_Stopper_Down(1)";
+                                
+                                "Control_DB".LCnv_Control[#i].Instruction.Task_ID := "Task_ID_HMI_Tag(1)";
+                                // "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := "Transfer_To_ID_HMI_Tag(1)";
+                                // "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := "Transfer_From_ID_HMI_Tag(1)";
+                                IF "CNV_In_Out(1)" THEN // 0 = Inbound, 1 = Outbound
+                                    "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := DINT#120001 + (#i * 100);
+                                    "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := 0;
+                                ELSE
+                                    "Control_DB".LCnv_Control[#i].Instruction.Transfer_To_ID := 0;
+                                    "Control_DB".LCnv_Control[#i].Instruction.Transfer_From_ID := DINT#120001 + (#i * 100);
+                                END_IF;
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                END_FOR;
+            END_REGION
+            
+            REGION INBOUND CONVEYOR
+                IF "CNV_ID_HMI_Tag(1)" = "Settings_DB".Inbound_Cnv_Settings.ID THEN
+                    //Sensors
+                    "HMI_CNV_Pallet Detect 1(1)" := "Control_DB".Inbound_Cnv."Inputs"."Pallet Detect 1";
+                    "HMI_CNV_Pallet Detect 2(1)" := "Control_DB".Inbound_Cnv.Inputs."Pallet Detect 2";
+                    
+                    //Feedback
+                    "Mode_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Mode;
+                    "Enabled_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Enabled;
+                    "Error_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Error;
+                    "Warning_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Warning;
+                    "Stopped_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Stopped;
+                    "Running_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Running;
+                    "Ready_For_Task_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Ready_For_Task;
+                    "Cnv_Occupied_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Cnv_Occupied;
+                    "Current_Task_Type_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Current_Task_Type;
+                    "Current_Task_ID_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Current_Task_ID;
+                    "SM_State_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.SM_State;
+                    IF "Control_DB".Inbound_Cnv.Motor.Forward THEN
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 1;
+                    ELSIF "Control_DB".Inbound_Cnv.Motor.Reverse THEN
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 2;
+                    ELSE
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 0;
+                    END_IF;
+                    "Motor_Speed_Requested_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Motor.Speed;
+                    "Motor_Speed_Actual_HMI_Feedback_Tag(1)" := "Control_DB".Inbound_Cnv.Motor.Speed_Actual;
+                    "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".Inbound_Cnv.Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".Inbound_Cnv.Instruction.Transfer_From_ID;
+                    
+                    //Instructions
+                    IF "HMI_DB".ScreenNo = 2 THEN
+                        "Control_DB".Inbound_Cnv.Instruction.Stop := "Stop_HMI_Tag(1)";
+                        "Control_DB".Inbound_Cnv.Instruction.Execute := "Manual_Fwd_HMI_Tag(1)" OR "Manual_Bwd_HMI_Tag(1)";
+                        "Control_DB".Inbound_Cnv.Instruction.Mode_Change := "Mode_Change_HMI_Tag(1)";
+                        "Control_DB".Inbound_Cnv.Instruction.Enable := "Enable_HMI_Tag(1)";
+                        IF "Control_DB".Inbound_Cnv.Mode <> 3 THEN
+                            "Control_DB".Inbound_Cnv.Instruction.Foward := "Manual_Fwd_HMI_Tag(1)";
+                            "Control_DB".Inbound_Cnv.Instruction.Backward := "Manual_Bwd_HMI_Tag(1)";
+                            "Control_DB".Inbound_Cnv.Instruction.Start_Transfer := "Start_Transfer_HMI_Tag(1)";
+                            IF "Control_DB".Inbound_Cnv.Mode = 1 THEN
+                                "Control_DB".Inbound_Cnv.Instruction.Start_Transfer_Backward := "Transfer_Backward(1)";
+                            END_IF;
+                            "Control_DB".Inbound_Cnv.Instruction.Task_ID := "Task_ID_HMI_Tag(1)";
+                            "Control_DB".Inbound_Cnv.Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[1].ID;
+                        END_IF;
+                    END_IF;
+                END_IF;
+            END_REGION
+            
+            REGION OUTBOUND CONVEYOR
+                IF "CNV_ID_HMI_Tag(1)" = "Settings_DB".Outbound_Cnv_Settings.ID THEN
+                    //Sensors
+                    "HMI_CNV_Pallet Detect 1(1)" := "Control_DB".Outbound_Cnv.Inputs."Pallet Detect";
+                    
+                    //Feedback
+                    "Mode_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Mode;
+                    "Enabled_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Enabled;
+                    "Error_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Error;
+                    "Warning_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Warning;
+                    "Stopped_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Stopped;
+                    "Running_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Running;
+                    "Ready_For_Task_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Ready_For_Task;
+                    "Cnv_Occupied_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Cnv_Occupied;
+                    "Shuttle_in_place_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Shuttle_In_Place;
+                    "Current_Task_Type_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Current_Task_Type;
+                    "Current_Task_ID_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Current_Task_ID;
+                    "SM_State_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.SM_State;
+                    IF "Control_DB".Outbound_Cnv.Motor.Forward THEN
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 1;
+                    ELSIF "Control_DB".Outbound_Cnv.Motor.Reverse THEN
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 2;
+                    ELSE
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 0;
+                    END_IF;
+                    "Motor_Speed_Requested_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Motor.Speed;
+                    "Motor_Speed_Actual_HMI_Feedback_Tag(1)" := "Control_DB".Outbound_Cnv.Motor.Speed_Actual;
+                    "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".Outbound_Cnv.Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".Outbound_Cnv.Instruction.Transfer_From_ID;
+                    
+                    //Instructions
+                    IF "HMI_DB".ScreenNo = 2 THEN
+                        "Control_DB".Outbound_Cnv.Instruction.Stop := "Stop_HMI_Tag(1)";
+                        "Control_DB".Outbound_Cnv.Instruction.Execute := "Manual_Fwd_HMI_Tag(1)" OR "Manual_Bwd_HMI_Tag(1)";
+                        "Control_DB".Outbound_Cnv.Instruction.Mode_Change := "Mode_Change_HMI_Tag(1)";
+                        "Control_DB".Outbound_Cnv.Instruction.Enable := "Enable_HMI_Tag(1)";
+                        IF "Control_DB".Outbound_Cnv.Mode <> 3 THEN
+                            "Control_DB".Outbound_Cnv.Instruction.Foward := "Manual_Fwd_HMI_Tag(1)";
+                            "Control_DB".Outbound_Cnv.Instruction.Backward := "Manual_Bwd_HMI_Tag(1)";
+                            "Control_DB".Outbound_Cnv.Instruction.Start_Transfer := "Start_Transfer_HMI_Tag(1)";
+                            IF "Control_DB".Outbound_Cnv.Mode = 1 THEN
+                                "Control_DB".Outbound_Cnv.Instruction.Start_Transfer_Backward := "Transfer_Backward(1)";
+                            END_IF;
+                            "Control_DB".Outbound_Cnv.Instruction.Task_ID := "Task_ID_HMI_Tag(1)";
+                            "Control_DB".Outbound_Cnv.Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[4].ID;
+                        END_IF;
+                    END_IF;
+                END_IF;
+            END_REGION
+            
+            REGION POPUP CONVEYORS
+                IF "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[1].ID THEN
+                    "HMI_CNV_Pallet Detect 1(1)" := "PopUp Conveyor 1 - Pallet sensor";
+                    "HMI_CNV_Pallet Detect 2(1)" := "Pick Station";
+                ELSIF "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[2].ID THEN
+                    "HMI_CNV_Pallet Detect 1(1)" := "PopUp Conveyor 2 - Pallet Present 1";
+                    "HMI_CNV_Pallet Detect 2(1)" := "PopUp Conveyor 2 - Pallet present 2";
+                    "HMI_CNV_Pallet Detect 3(1)" := "PopUp Conveyor 2 - Pallet present 3";
+                    "HMI_CNV_Pallet Detect 4(1)" := "PopUp Conveyor 2 - Pallet present 4";
+                    "HMI_CNV_Pallet Detect 5(1)" := "PopUp Conveyor 2 - Pallet present 5";
+                ELSIF "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[3].ID THEN
+                    "HMI_CNV_Pallet Detect 1(1)" := "PopUp Conveyor 3 - Pallet present 1";
+                ELSIF "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[4].ID THEN
+                    "HMI_CNV_Pallet Detect 1(1)" := "PopUp Conveyor 4 - Pallet present 1";
+                    "HMI_CNV_Pallet Detect 2(1)" := "Pick Station";
+                END_IF;
+                
+                FOR #i := 1 TO 4 DO
+                    IF "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[#i].ID THEN
+                        //Sensors
+                        IF "Control_DB".PopUp_Cnv[#i].Inputs."Lift Up" AND NOT "Control_DB".PopUp_Cnv[#i].Inputs."Lift Down" THEN
+                            "UP_DOWN(1)" := 1;
+                        ELSIF NOT "Control_DB".PopUp_Cnv[#i].Inputs."Lift Up" AND "Control_DB".PopUp_Cnv[#i].Inputs."Lift Down" THEN
+                            "UP_DOWN(1)" := 2;
+                        ELSE
+                            "UP_DOWN(1)" := 0;
+                        END_IF;
+                        IF "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[#i].ID THEN
+                            //Feedback
+                            "Mode_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Mode;
+                            "Enabled_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Enabled;
+                            "Error_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Error;
+                            "Warning_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Warning;
+                            "Stopped_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Stopped;
+                            "Running_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Running;
+                            "Ready_For_Task_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Ready_For_Task;
+                            "Cnv_Occupied_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Cnv_Occupied;
+                            "Current_Task_Type_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Current_Task_Type;
+                            "Current_Task_ID_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Current_Task_ID;
+                            "SM_State_HMI_Feedback_Tag(1)" := "Control_DB".PopUp_Cnv[#i].SM_State;
+                            "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID;
+                            "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID;
+                            IF "Control_DB".PopUp_Cnv[#i].Roller_Motor.Status.%X0 THEN
+                                IF "Control_DB".PopUp_Cnv[#i].Roller_Motor.Forward THEN
+                                    "Motor_Direction_HMI_Feedback_Tag(1)" := 1;
+                                ELSIF "Control_DB".PopUp_Cnv[#i].Roller_Motor.Reverse THEN
+                                    "Motor_Direction_HMI_Feedback_Tag(1)" := 2;
+                                ELSE
+                                    "Motor_Direction_HMI_Feedback_Tag(1)" := 0;
+                                END_IF;
+                                "Motor_Speed_Requested_HMI_Feedback_Tag(1)" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Roller_Motor.Speed);
+                                "Motor_Speed_Actual_HMI_Feedback_Tag(1)" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Roller_Motor.Speed_Actual);
+                            ELSIF "Control_DB".PopUp_Cnv[#i].Chain_Motor.Status.%X0 = 1 THEN
+                                IF "Control_DB".PopUp_Cnv[#i].Chain_Motor.Forward THEN
+                                    "Motor_Direction_HMI_Feedback_Tag(1)" := 1;
+                                ELSIF "Control_DB".PopUp_Cnv[#i].Chain_Motor.Reverse THEN
+                                    "Motor_Direction_HMI_Feedback_Tag(1)" := 2;
+                                ELSE
+                                    "Motor_Direction_HMI_Feedback_Tag(1)" := 0;
+                                END_IF;
+                                "Motor_Speed_Requested_HMI_Feedback_Tag(1)" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Chain_Motor.Speed);
+                                "Motor_Speed_Actual_HMI_Feedback_Tag(1)" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Chain_Motor.Speed_Actual);
+                            ELSIF "Control_DB".PopUp_Cnv[#i].Lift_Motor.Status.%X0 = 1 THEN
+                                IF "Control_DB".PopUp_Cnv[#i].Lift_Motor.Forward THEN
+                                    "Motor_Direction_HMI_Feedback_Tag(1)" := 1;
+                                ELSIF "Control_DB".PopUp_Cnv[#i].Lift_Motor.Reverse THEN
+                                    "Motor_Direction_HMI_Feedback_Tag(1)" := 2;
+                                ELSE
+                                    "Motor_Direction_HMI_Feedback_Tag(1)" := 0;
+                                END_IF;
+                                "Motor_Speed_Requested_HMI_Feedback_Tag(1)" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Lift_Motor.Speed);
+                                "Motor_Speed_Actual_HMI_Feedback_Tag(1)" := REAL_TO_UINT("Control_DB".PopUp_Cnv[#i].Lift_Motor.Speed_Actual);
+                            END_IF;
+                            
+                            //Instructions
+                            IF "HMI_DB".ScreenNo = 2 THEN
+                                "Control_DB".PopUp_Cnv[#i].Instruction.Stop := "Stop_HMI_Tag(1)";
+                                "Control_DB".PopUp_Cnv[#i].Instruction.Execute := "Manual_Fwd_HMI_Tag(1)" OR "Manual_Bwd_HMI_Tag(1)";
+                                "Control_DB".PopUp_Cnv[#i].Instruction.Mode_Change := "Mode_Change_HMI_Tag(1)";
+                                "Control_DB".PopUp_Cnv[#i].Instruction.Enable := "Enable_HMI_Tag(1)";
+                                IF "Control_DB".PopUp_Cnv[#i].Mode <> 3 THEN
+                                    IF "Control_DB".PopUp_Cnv[#i].Inputs."Lift Up" THEN
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Roller_Fwd := "Manual_Fwd_HMI_Tag(1)";
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Roller_Bwd := "Manual_Bwd_HMI_Tag(1)";
+                                    ELSIF "Control_DB".PopUp_Cnv[#i].Inputs."Lift Down" THEN
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Chain_Fwd := "Manual_Fwd_HMI_Tag(1)";
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Chain_Bwd := "Manual_Bwd_HMI_Tag(1)";
+                                    END_IF;
+                                    "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer := "Start_Transfer_HMI_Tag(1)";
+                                    IF "Control_DB".PopUp_Cnv[#i].Mode = 1 THEN
+                                        "Control_DB".PopUp_Cnv[#i].Instruction.Start_Transfer_Backward := "Transfer_Backward(1)";
+                                    END_IF;
+                                    "Control_DB".PopUp_Cnv[#i].Instruction.Lift_Up := "Manual_Sfty_Stopper_Up(1)";
+                                    "Control_DB".PopUp_Cnv[#i].Instruction.Lift_Down := "Manual_Sfty_Stopper_Down(1)";
+                                    "Control_DB".PopUp_Cnv[#i].Instruction.Task_ID := "Task_ID_HMI_Tag(1)";
+                                    CASE #i OF
+                                        1:
+                                            IF "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[2].ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSIF NOT "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Down" AND "Pick Station" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".Pick_Cnv_Settings.ID;
+                                            ELSIF NOT "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".Inbound_Cnv_Settings.ID;
+                                            ELSE
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            END_IF;
+                                            
+                                        2:
+                                            IF NOT "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Up" THEN // UP
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[1].ID;
+                                            ELSIF NOT "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" THEN //DOWN
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".ECnv_Settings.ID;
+                                            ELSIF "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" AND NOT "VTD_POPUP2(1)" THEN //DOWN
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".ECnv_Settings.ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSIF "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" AND "VTD_POPUP2(1)" THEN //DOWN
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[3].ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSE
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            END_IF;
+                                            
+                                        3:
+                                            IF NOT "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[3].Inputs."Lift Down" THEN //inbound chain
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[2].ID;
+                                            ELSIF "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[3].Inputs."Lift Up" THEN //DOWN
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[4].ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSE
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            END_IF;
+                                            
+                                        4:
+                                            IF "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Up" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".Outbound_Cnv_Settings.ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSIF "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Down" AND "Pick Station" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := "Settings_DB".Pick_Cnv_Settings.ID;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            ELSIF NOT "CNV_In_Out(1)" AND "Control_DB".PopUp_Cnv[4].Inputs."Lift Up" THEN // 0 = Inbound, 1 = Outbound
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[3].ID;
+                                            ELSE
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_To_ID := 0;
+                                                "Control_DB".PopUp_Cnv[#i].Instruction.Transfer_From_ID := 0;
+                                            END_IF;
+                                    END_CASE;
+                                END_IF;
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                END_FOR;
+            END_REGION
+            
+            REGION PICK CONVEYOR
+                IF "CNV_ID_HMI_Tag(1)" = "Settings_DB".Pick_Cnv_Settings.ID THEN
+                    //Sensors
+                    "HMI_CNV_Pallet Detect 1(1)" := "Control_DB".Pick_Station.Cnv_Occupied;
+                    
+                    //Feedback
+                    "Mode_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Mode;
+                    "Enabled_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Enabled;
+                    "Error_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Error;
+                    "Warning_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Warning;
+                    "Stopped_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Stopped;
+                    "Running_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Running;
+                    "Ready_For_Task_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Ready_For_Task;
+                    "Cnv_Occupied_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Cnv_Occupied;
+                    // "Shuttle_in_place_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Shuttle_In_Place;
+                    "Current_Task_Type_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Current_Task_Type;
+                    "Current_Task_ID_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Current_Task_ID;
+                    "SM_State_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.SM_State;
+                    IF "Control_DB".Pick_Station.Motor.Forward THEN
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 1;
+                    ELSIF "Control_DB".Pick_Station.Motor.Reverse THEN
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 2;
+                    ELSE
+                        "Motor_Direction_HMI_Feedback_Tag(1)" := 0;
+                    END_IF;
+                    "Motor_Speed_Requested_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Motor.Speed;
+                    "Motor_Speed_Actual_HMI_Feedback_Tag(1)" := "Control_DB".Pick_Station.Motor.Speed_Actual;
+                    "Transfer_To_ID_HMI_Tag(1)" := "Control_DB".Pick_Station.Instruction.Transfer_To_ID;
+                    "Transfer_From_ID_HMI_Tag(1)" := "Control_DB".Pick_Station.Instruction.Transfer_From_ID;
+                    
+                    //Instructions
+                    IF "HMI_DB".ScreenNo = 2 THEN
+                        "Control_DB".Pick_Station.Instruction.Stop := "Stop_HMI_Tag(1)";
+                        "Control_DB".Pick_Station.Instruction.Execute := "Manual_Fwd_HMI_Tag(1)" OR "Manual_Bwd_HMI_Tag(1)";
+                        "Control_DB".Pick_Station.Instruction.Mode_Change := "Mode_Change_HMI_Tag(1)";
+                        "Control_DB".Pick_Station.Instruction.Enable := "Enable_HMI_Tag(1)";
+                        IF "Control_DB".Pick_Station.Mode <> 3 THEN
+                            "Control_DB".Pick_Station.Instruction.Foward := "Manual_Fwd_HMI_Tag(1)";
+                            "Control_DB".Pick_Station.Instruction.Backward := "Manual_Bwd_HMI_Tag(1)";
+                            "Control_DB".Pick_Station.Instruction.Start_Transfer := "Start_Transfer_HMI_Tag(1)";
+                            IF "Control_DB".Pick_Station.Mode = 1 THEN
+                                "Control_DB".Pick_Station.Instruction.Start_Transfer_Backward := "Transfer_Backward(1)";
+                            END_IF;
+                            "Control_DB".Pick_Station.Instruction.Task_ID := "Task_ID_HMI_Tag(1)";
+                            "Control_DB".Pick_Station.Instruction.Transfer_From_ID := "Settings_DB".PopUp_Cnv_Settings[4].ID;
+                            "Control_DB".Pick_Station.Instruction.Transfer_To_ID := "Settings_DB".PopUp_Cnv_Settings[1].ID;
+                        END_IF;
+                    END_IF;
+                END_IF;
+            END_REGION
+        END_IF;
+    END_REGION
+END_REGION
+
+"IEC_Timer_0_DB_4".TON(IN := "Screen_DB".Charge_VTD OR "Screen_DB".Charge_Cnv OR "Screen_DB".Charge_VTD_Commands OR "Screen_DB".Charge_Cnv_Commands,
+                       PT := T#1S);
+
+IF "IEC_Timer_0_DB_4".Q THEN
+    "Screen_DB".Charge_VTD := FALSE;
+    "Screen_DB".Charge_Cnv := FALSE;
+    "Screen_DB".Charge_VTD_Commands := FALSE;
+    "Screen_DB".Charge_Cnv_Commands := FALSE;
+END_IF;
+
+"Control_DB".ECnv_Control.Instruction.Reset := "Reset_HMI_Tag" OR "Reset_All" OR "Reset_HMI_Tag(1)";
+"Control_DB".LCnv_Control[1].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".LCnv_Control[1].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".LCnv_Control[2].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".LCnv_Control[2].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".LCnv_Control[3].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".LCnv_Control[3].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".Inbound_Cnv.Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".Outbound_Cnv.Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".Pick_Station.Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".Pick_Station.Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".PopUp_Cnv[1].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".PopUp_Cnv[2].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".PopUp_Cnv[3].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+"Control_DB".PopUp_Cnv[4].Instruction.Reset := "Reset_HMI_Tag" OR "Reset_HMI_Tag(1)" OR "Reset_All";
+
+
+//START TRANSFER BACKWARD VISIBILITY
+IF "Mode_Change_HMI_Tag" = 1 AND "Mode_Change_HMI_Tag(1)" = 1 THEN
+    "Transfer_Backward_Visibility" :=
+    //inbound - popup 1
+    ("CNV_ID_HMI_Tag" = "Settings_DB".Inbound_Cnv_Settings.ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[1].ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[1].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".Inbound_Cnv_Settings.ID) OR
+    //POPUP1 - popup 2
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[1].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[2].ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[2].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[1].ID) OR
+    //POPUP2 - popup 3
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[2].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[3].ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[3].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[2].ID) OR
+    //POPUP3 - popup 4
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[3].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[4].ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[4].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[3].ID) OR
+    //POPUP4 - POPUP 1
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[4].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[1].ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[1].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[4].ID) OR
+    //POPUP4 - OUTBOUND
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[4].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".Outbound_Cnv_Settings.ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".Outbound_Cnv_Settings.ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[4].ID) OR
+    //POPUP2 - EConveyor
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[2].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".ECnv_Settings.ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".ECnv_Settings.ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[2].ID) OR
+    //EConveyor - Buffer 1
+    ("CNV_ID_HMI_Tag" = "Settings_DB".ECnv_Settings.ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".LCnv_Settings[1].ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".LCnv_Settings[1].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".ECnv_Settings.ID) OR
+    //EConveyor - Buffer 2
+    ("CNV_ID_HMI_Tag" = "Settings_DB".ECnv_Settings.ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".LCnv_Settings[2].ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".LCnv_Settings[2].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".ECnv_Settings.ID) OR
+    //EConveyor - Buffer 3
+    ("CNV_ID_HMI_Tag" = "Settings_DB".ECnv_Settings.ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".LCnv_Settings[3].ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".LCnv_Settings[3].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".ECnv_Settings.ID) OR
+    //PICK - POPUP4
+    ("CNV_ID_HMI_Tag" = "Settings_DB".Pick_Cnv_Settings.ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".PopUp_Cnv_Settings[4].ID) OR
+    ("CNV_ID_HMI_Tag" = "Settings_DB".PopUp_Cnv_Settings[4].ID AND "CNV_ID_HMI_Tag(1)" = "Settings_DB".Pick_Cnv_Settings.ID);
+ELSE
+    "Transfer_Backward_Visibility" := FALSE;
+END_IF;
+END_FUNCTION_BLOCK

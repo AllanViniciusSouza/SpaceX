@@ -1,0 +1,41 @@
+// FB "SAI_IND_ZeroAdjust" 52  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ID : HW_IO;   // The Profinet Device Hardware Identifier under device properties
+END_VAR
+
+VAR_OUTPUT
+   Process : Bool;   // Adjustment is in process
+   Done : Bool;   // Adjustment completed successfully
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Start : Bool;   // Switch ON to start adjustment
+END_VAR
+
+VAR
+   Activate : Bool;
+   Status_RECORD : Int;
+   Zero_RECORD : Int;
+   WRREC_Zero : WRREC;
+   RDREC_Status : RDREC;
+   AdjustStep : SInt;
+   Static01 : Bool;
+   Static02 : Bool;
+   Static03 : Bool;
+END_VAR
+
+--- Network 1  Comment: Initializes DONE and ERROR bits | Title: Initialization
+   parts: Contact, Move, PBox, RCoil, SCoil
+   operands: #Start, #Static01, #Error, #Done, #Activate, #AdjustStep
+--- Network 2  Comment: AdjustStep:
+
+10. Trigger the zero adjustment acyclic command (1-Byte; Index = 16#400B). 
+
+20: Read the adjustment status (2-Byte; Index = 16#4007). Status "2047" is in process; Status "0" means adjustment is completed.
+Upon completion of adjustment, the input bit START will be turned off by the Function Block.
+Output bit DONE will be turned ON. If there is an error during the adjustment, ERROR bit will be turned ON. | Title: Sequence
+   parts: Coil, Contact, Eq, Move, Ne, PContact, RCoil, RDREC, SCoil, WRREC
+   operands: #Activate, #AdjustStep, #Zero_RECORD, #WRREC_Zero.DONE, #WRREC_Zero.REQ, #ID, #WRREC_Zero.BUSY, #WRREC_Zero.ERROR, #WRREC_Zero.STATUS, #Static02, #RDREC_Status.BUSY, #RDREC_Status.REQ, #Status_RECORD, #RDREC_Status.VALID, #RDREC_Status.ERROR, #RDREC_Status.STATUS, #Process, #Done, #Error, #Start

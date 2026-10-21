@@ -1,0 +1,99 @@
+FUNCTION "SICK_SetValue"   // FC 11, author SICKAG
+
+VAR_INPUT
+   bAddBlank : Bool;   // Add blank after value
+   nValue : DWord;   // Value that should be written
+END_VAR
+
+VAR_OUTPUT
+   arrData : Array[0..499] of Byte;   // Destination telegram
+   nErrorCode : Word;   // Error code
+END_VAR
+
+VAR_IN_OUT
+   iPosition : UInt;   // Position offset of the value before and after (starting from 0)
+END_VAR
+
+VAR_TEMP
+   iValueLength : USInt;   // Byte length of the value that shuld be written
+   nReturnValue : Word;   // Return value of the convert function
+   sValue : String[8];   // Converted value
+   nTempValue : DWord;   // Temporarily variable
+   iTemp : UInt;   // Temporarily variable
+END_VAR
+
+   // RETURN : Void
+BEGIN
+(*===========================================================================================
+Name:   SICK_SetValue
+Author: SICK AG
+=============================================================================================
+Description: 
+This function is for internal use only.
+The function converts a hexadecimal value into a hexadecimal string and add it 
+automatically to the command array.     
+
+=============================================================================================
+Error codes:
+16#0000 = No error
+16#0001 = Invalid position index   
+16#8xxx = Conversion error (HTA-Function) see help system for more information
+                    
+=============================================================================================
+Version history:
+Date       | Version | created under               | Author  | Remark
+---------------------------------------------------------------------------------------------
+30/01/2014 | V1.0    | TIA Portal V12 SP1 Update 2 | SICK AG | Initial version
+22/04/2014 | V1.1    | TIA Portal V12 SP1 Update 4 | SICK AG | Avoid warnings that occur with 
+                                                               TIA V13
+============================================================================================*)
+
+(*===================================== INITIALISATION =====================================*)
+#iValueLength:= 0;
+#nErrorCode:= 16#0000;
+
+(*======================================= WRITE VALUE ======================================*)
+(*Check current position of the value*)
+IF #iPosition > 499 THEN 
+  #nErrorCode:= 16#0001; (*Error: Invalid position index*)
+  RETURN;
+END_IF;
+
+
+
+(*Get byte length of the value that should be written*)
+IF #nValue <= 16#FF THEN
+  #nTempValue:= SHL(IN:= #nValue, N:=24);
+  #iValueLength:= 1;
+ELSIF #nValue <= 16#FFFF THEN
+  #nTempValue:= SHL(IN:= #nValue, N:=16);
+  #iValueLength:= 2;
+ELSIF #nValue <= 16#00FF_FFFF THEN
+  #nTempValue:= SHL(IN:= #nValue, N:=8);
+  #iValueLength:= 3;
+ELSIF #nValue <= 16#FFFF_FFFF THEN
+  #nTempValue:= #nValue;
+  #iValueLength:= 4;
+END_IF;
+
+(*Convert hexadecimal number into a ASCII string*)
+#nReturnValue:= HTA(IN:= #nTempValue, N:= #iValueLength, OUT=>#sValue);
+IF #nReturnValue <> 16#0000 THEN
+  #nErrorCode:= #nReturnValue; (*Error: Conversion error (HTA-Function)*)
+  RETURN;
+END_IF;
+
+(*Add the string value to the destination telegram*)
+#arrData[#iPosition]:= 0; // Avoid warnings under TIA V13
+Strg_TO_Chars(Strg:=#sValue, pChars:= #iPosition, Cnt=> #iTemp, Chars:= #arrData);
+
+(*Add blank to the destination telegram and calculate the position of the next element*)
+IF #bAddBlank THEN
+  #arrData[#iPosition+#iTemp]:= ' ';
+  #iPosition:= #iPosition+#iTemp+1;
+  
+(*Calculate the position of the next element*)
+ELSE
+  #iPosition:= #iPosition+#iTemp;
+END_IF;
+END_FUNCTION

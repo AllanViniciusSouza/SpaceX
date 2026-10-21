@@ -1,0 +1,63 @@
+DATA_BLOCK "VTD_FB_DB_1"   // InstanceDB 164  instance of "VTD_FB"
+
+VAR_INPUT
+   System_no : UInt;
+   Safety_OK : Bool;
+   Cnv_Sensors : "Cnv_Inputs";
+   VTD_Settings : "VTD_Settings";
+   Bypass_LP : Bool;
+   Bypass : "Safety_Bypass_RemotePanel";
+END_VAR
+
+VAR_IN_OUT
+   VTD_Control : "VTD_Control";
+   SinaSpeed : SinaSpeed;
+   LE_Bypass_HMI : Bool;
+END_VAR
+
+VAR
+   State : UInt;
+   Last_State : UInt;
+   I_State : UInt;
+   LD_Timer_1 : TON_TIME;
+   LD_Timer : TON_TIME;
+   DP_Timer : TON_TIME;
+   Watchdog : TON_TIME;
+   CS_TImer : TON_TIME;
+   Interlock_Timer : TON_TIME;
+   MainSetpoint : Int;
+   Position_Offset : Real;
+   ChangeToLow : Array[1..4] of DInt;
+   DestPosition : Real;
+   SetUpSpeed : UInt;
+   LevelBelowExtractor : UInt;
+   IEC_Timer_0_Instance : TON_TIME;
+   DestinationLevel : UInt;
+   CurrentlLevel : UInt;
+   VTD_ID_Decoded : "ID_Decoded";
+   Cnv_ID_Decoded : Array[1..2] of "ID_Decoded";
+   IEC_Timer_0_Instance_1 : TON_TIME;
+   IEC_Timer_0_Instance_2 : TON_TIME;
+   VTD_ControlInstructionTask_ID_Old : Int;
+   R_Execulte : R_TRIG;
+   R_AutomatcMode : R_TRIG;
+   T_Encoders_Difference : TON_TIME;
+   T_LE_Error : TON_TIME;
+   T_Setpoint_Delay : TON_TIME;
+   Distance_mm : Real;
+   TravelTime_s : UInt;
+   LE_Prev_mm : Real;
+   DeltaPos_mm : Real;
+   SampleTime_s : Real;
+   VTDSpeed_mm_s : Real;
+   T_Speed : TON_TIME;
+   Speed_mm_per_percent : Real;
+   Speed_mm_s : Real;
+   TravelTime_ms : UInt;
+   Watchdog_PT : Time;
+   Position_OLD : Real;
+   R_Position_OLD : R_TRIG;
+END_VAR
+
+
+// ---- start values (path : type := value)

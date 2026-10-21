@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Barcode_Station_FB" Id="{faf8519a-72e0-46e3-961b-0e6790fea8d6}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Barcode_Station_FB
+VAR_INPUT
+    Sick_Result : STRING(254); // Complete received payload, not a physical input address.
+    Reset : BOOL; // Abort the current read; does not reset the lifetime counter.
+END_VAR
+VAR_OUTPUT
+    Counter : UINT;
+END_VAR
+VAR_IN_OUT
+    Station_Control : Barcode_Station_DUT;
+    Auto_Start_Lector : BOOL; // Request only; caller owns transport to the scanner.
+    Auto_Stop_Lector : BOOL; // One-cycle stop request, not a scanner acknowledgement.
+END_VAR
+VAR
+    State : E_BarcodeState := E_BarcodeState.Idle;
+    startEdge : R_TRIG;
+    readTimer : TON;
+    gateNumber : STRING(254);
+    readingGateCount : STRING(254);
+    code : STRING(254);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Adapted from Reference_Project/Barcode_Station_FB.scl.
+// No device or network mapping is performed by this block.
+startEdge(CLK := Station_Control.Start);
+readTimer(IN := (State = E_BarcodeState.Reading) AND NOT Reset, PT := T#15S);
+Auto_Start_Lector := FALSE;
+Auto_Stop_Lector := FALSE;
+
+IF Reset THEN
+    Auto_Stop_Lector := State <> E_BarcodeState.Idle;
+    State := E_BarcodeState.Idle;
+    Station_Control.Start := FALSE;
+    Station_Control.Ready := TRUE;
+    Station_Control.Running := FALSE;
+    Station_Control.Done := FALSE;
+    Station_Control.Valid := FALSE;
+    Station_Control.Barcode := '';
+    RETURN;
+END_IF;
+
+CASE State OF
+    E_BarcodeState.Idle:
+        Station_Control.Ready := TRUE;
+        Station_Control.Running := FALSE;
+        IF startEdge.Q THEN
+            Station_Control.Start := FALSE;
+            Station_Control.Ready := FALSE;
+            Station_Control.Running := TRUE;
+            Station_Control.Done := FALSE;
+            Station_Control.Valid := FALSE;
+            Station_Control.Barcode := '';
+            // Ignore an already-present result from the preceding scan transaction.
+            Station_Control.Reading_Gate_number_OLD := FindStringField(
+                FieldName := 'Number', JsonStr := Sick_Result);
+            State := E_BarcodeState.Reading;
+        END_IF;
+
+    E_BarcodeState.Reading:
+        Station_Control.Start := FALSE;
+        Station_Control.Ready := FALSE;
+        Station_Control.Running := TRUE;
+        Auto_Start_Lector := TRUE;
+        gateNumber := FindStringField(FieldName := 'Number', JsonStr := Sick_Result);
+        readingGateCount := FindStringField(FieldName := 'NRG', JsonStr := Sick_Result);
+        code := FindStringField(FieldName := 'Code', JsonStr := Sick_Result);
+        Station_Control.Reading_Gate_number := gateNumber;
+        Station_Control.Number_OF_Reading_Gates := readingGateCount;
+        Station_Control.Number_OF_Reading_Gates_OLD := readingGateCount;
+
+        IF ((gateNumber <> '') AND
+            (gateNumber <> Station_Control.Reading_Gate_number_OLD)) OR readTimer.Q THEN
+            Auto_Start_Lector := FALSE;
+            Station_Control.Valid := (gateNumber <> '') AND
+                (gateNumber <> Station_Control.Reading_Gate_number_OLD) AND (code <> '');
+            IF Station_Control.Valid THEN
+                Station_Control.Barcode := code;
+                Station_Control.Barcode_Old := code;
+            ELSE
+                Station_Control.Barcode := '';
+            END_IF;
+            IF gateNumber <> '' THEN
+                Station_Control.Reading_Gate_number_OLD := gateNumber;
+            END_IF;
+            State := E_BarcodeState.Complete;
+        END_IF;
+
+    E_BarcodeState.Complete:
+        Auto_Stop_Lector := TRUE;
+        IF Counter = UINT#65535 THEN
+            Counter := 0;
+        ELSE
+            Counter := Counter + 1;
+        END_IF;
+        Station_Control.Running := FALSE;
+        Station_Control.Done := TRUE;
+        Station_Control.Ready := FALSE;
+        State := E_BarcodeState.Idle;
+
+ELSE
+    // Recover deterministically from an invalid state without accepting a result.
+    Auto_Stop_Lector := TRUE;
+    Station_Control.Start := FALSE;
+    Station_Control.Running := FALSE;
+    Station_Control.Ready := FALSE;
+    Station_Control.Done := FALSE;
+    Station_Control.Valid := FALSE;
+    Station_Control.Barcode := '';
+    State := E_BarcodeState.Idle;
+END_CASE;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

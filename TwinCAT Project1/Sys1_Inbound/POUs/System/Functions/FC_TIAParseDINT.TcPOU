@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FC_TIAParseDINT" Id="{4e55f444-3aad-40ad-a480-c8a886e41b4d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FC_TIAParseDINT : BOOL
+VAR_INPUT
+    Token : STRING(32);
+END_VAR
+VAR_OUTPUT
+    Value : DINT;
+END_VAR
+VAR
+    magnitude : LINT;
+    negative : BOOL;
+    cursor : INT;
+    scan : INT;
+    digit : INT;
+    length : INT;
+END_VAR
+]]></Declaration>
+    <Implementation><ST><![CDATA[// Checked decimal conversion. Reject whitespace, fractions and overflow.
+FC_TIAParseDINT := FALSE;
+Value := 0;
+magnitude := 0;
+negative := FALSE;
+cursor := 1;
+length := LEN(Token);
+IF length = 0 THEN RETURN; END_IF;
+IF LEFT(Token, 1) = '-' THEN
+    negative := TRUE;
+    cursor := 2;
+END_IF;
+IF cursor > length THEN RETURN; END_IF;
+IF (length - cursor + 1 > 1) AND (MID(Token, 1, cursor) = '0') THEN RETURN; END_IF;
+FOR scan := cursor TO length DO
+    digit := BYTE_TO_INT(Token[scan - 1]) - 48;
+    IF (digit < 0) OR (digit > 9) THEN RETURN; END_IF;
+    magnitude := magnitude * 10 + INT_TO_LINT(digit);
+    // Early limit also bounds the next multiplication below LINT overflow.
+    IF magnitude > LINT#2147483648 THEN RETURN; END_IF;
+END_FOR;
+IF negative THEN magnitude := -magnitude; END_IF;
+IF magnitude > LINT#2147483647 THEN RETURN; END_IF;
+Value := LINT_TO_DINT(magnitude);
+FC_TIAParseDINT := TRUE;
+]]></ST></Implementation>
+  </POU>
+</TcPlcObject>

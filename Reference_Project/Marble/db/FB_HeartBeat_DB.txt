@@ -1,0 +1,28 @@
+DATA_BLOCK "FB_HeartBeat_DB"   // InstanceDB 136  instance of "FB_HeartBeat"
+
+VAR_INPUT
+   PC_HeartBeat : Word := 16#6E87;
+END_VAR
+
+VAR_OUTPUT
+   PLC_HeartBeat : Word := 16#B1B0;
+   PC_Disconnected : Bool := TRUE;
+END_VAR
+
+VAR
+   TimeOut : TON_TIME;
+   Timer : TON_TIME;
+   PC_Heartbeat_old : Word := 16#6E87;
+   StartTimerBit : Bool;
+END_VAR
+
+
+// ---- start values (path : type := value)
+PC_HeartBeat : Word := 16#6E87
+PLC_HeartBeat : Word := 16#B1B0
+PC_Disconnected : Bool := TRUE
+TimeOut.PT : Time := T#10S
+TimeOut.IN : Bool := TRUE
+Timer.PT : Time := T#500MS
+Timer.IN : Bool := TRUE
+PC_Heartbeat_old : Word := 16#6E87

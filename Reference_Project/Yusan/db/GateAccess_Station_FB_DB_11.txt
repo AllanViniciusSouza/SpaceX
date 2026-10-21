@@ -1,0 +1,42 @@
+DATA_BLOCK "GateAccess_Station_FB_DB_11"   // InstanceDB 433  instance of "GateAccess_Station_FB"
+
+VAR_INPUT
+   Sys_No : UInt;
+   Right_True : Bool;
+   Switches : Byte;
+   GateLockedFeedback : Bool;
+   NoEStop : Bool;
+   I_G1_GuardOpen : Bool;
+   I_L1_Unlocked : Bool;
+   FaultResetCmd : Bool;
+   AllDrivesHealthy : Bool;
+   SafetyResetDone : Bool;
+   NoVTDLocalMode : Bool;
+   NoCrossoverPaused : Bool;
+   Safe_Bypassed : Bool;
+   LGX_Secure_Access : Bool;
+   AllDevicesStopped : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Lamps : Byte;
+   O_S1_SolenoidEnergise : Bool;
+   Lock Reset : Bool;
+   CurrentState : UInt;
+   GateFault : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Gate_Station : "Gate_Station_UDT";
+END_VAR
+
+VAR
+   RTE_PB : Bool;
+   Reset_PB : Bool;
+   Restart_PB : Bool;
+   GateAccessControl : "GateAccessControl_FB";
+   ModeManager : "ModeManager_FB";
+END_VAR
+
+
+// ---- start values (path : type := value)

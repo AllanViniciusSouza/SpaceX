@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ModeManager_FB" Id="{6315ecf4-44e8-53d6-b20a-b5f98950ba42}" SpecialFunc="None">
+    <Declaration><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/ModeManager_FB.scl, object ModeManager_FB.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+// // SAFETY REVIEW REQUIRED: not a TwinSAFE implementation.
+FUNCTION_BLOCK ModeManager_FB
+// 
+//    VAR_INPUT
+//       RTE_PB : Bool;
+//       Reset_PB : Bool;
+//       Restart_PB : Bool;
+//       ForceRTE : Bool;
+//       GateClosed : Bool;
+//       GateLockedFeedback : Bool;
+//       GateFault : Bool;
+//       NoEStop : Bool;
+//       AllDrivesHealthy : Bool;
+//       SafetyResetDone : Bool;
+//       NoVTDLocalMode : Bool;
+//       NoCrossoverPaused : Bool;
+//       AllDevicesStopped : Bool;
+//       Safe_Bypassed : Bool;
+//       Reset : Bool;
+//    END_VAR
+// 
+//    VAR_OUTPUT
+//       CurrentState : UInt;
+//       GateUnlockPermissive : Bool;
+//       StopNewAutoCycles : Bool;
+//       AutoModeAllowed : Bool;
+//       ManualModeActive : Bool;
+//       ReqFlash_RTE_Lamp : Bool;
+//       ReqFlash_ResetLamp : Bool;
+//       ReqFlash_RestartLamp : Bool;
+//       RestartLampSteadyOn : Bool;
+//       RTE_LampSteadyOn : Bool;
+//    END_VAR
+// 
+//    VAR
+//       RTE_PB_Rising : Bool;
+//       Reset_PB_Rising : Bool;
+//       Restart_PB_Rising : Bool;
+//       T_Delay_DB   : TON;
+//       EStop_Pressed : Bool;
+//       PLCInitialization : Bool;
+//    END_VAR
+// 
+//    VAR_TEMP
+//       RTE_PB_Edge_M : Bool;
+//       Reset_PB_Edge_M : Bool;
+//       Restart_PB_Edge_M : Bool;
+//    END_VAR
+// 
+//    VAR CONSTANT
+//       AUTO_RUNNING : UInt := 0;
+//       RTE_REQUESTED : UInt := 1;
+//       SAFE_BYPASS : UInt := 2;
+//       SAFE_TO_UNLOCK : UInt := 3;
+//       ACCESS_MANUAL_MODE : UInt := 4;
+//       READY_TO_RESET : UInt := 5;
+//       RESETTING : UInt := 6;
+//       READY_TO_RESTART : UInt := 7;
+//    END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/ModeManager_FB.scl, object ModeManager_FB.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+// // SAFETY REVIEW REQUIRED: not a TwinSAFE implementation.
+// RTE_PB_Rising := RTE_PB AND NOT RTE_PB_Edge_M;
+// 	Reset_PB_Rising := Reset_PB AND NOT Reset_PB_Edge_M;
+// 	Restart_PB_Rising := Restart_PB AND NOT Restart_PB_Edge_M;
+// 
+// 	RTE_PB_Edge_M := RTE_PB;
+// 	Reset_PB_Edge_M := Reset_PB;
+// 	Restart_PB_Edge_M := Restart_PB;
+// 
+// 	IF Reset THEN
+// 	    CurrentState := AUTO_RUNNING;
+// 	END_IF;
+// 
+// 
+// 
+// 	IF FirstScan THEN
+// 	    PLCInitialization := TRUE;
+// 	ELSIF Reset_All AND NoEStop THEN
+// 	    PLCInitialization := FALSE;
+// 	END_IF;
+// 
+// 	IF NOT PLCInitialization THEN
+// 	    IF NOT NoEStop AND NOT EStop_Pressed THEN
+// 	        CurrentState := SAFE_TO_UNLOCK;
+// 	        EStop_Pressed := TRUE;
+// 	    ELSIF NoEStop THEN
+// 	        EStop_Pressed := FALSE;
+// 	    END_IF;
+// 	END_IF;
+// 
+// 	CASE CurrentState OF
+// 
+// 	    AUTO_RUNNING:
+// 	        IF RTE_PB_Rising THEN
+// 	            CurrentState := RTE_REQUESTED;
+// 	        END_IF;
+// 
+// 	    RTE_REQUESTED:
+// 	        IF AllDevicesStopped THEN
+// 	            CurrentState := SAFE_BYPASS;
+// 	        END_IF;
+// 
+// 	    SAFE_BYPASS:
+// 	        IF Safe_Bypassed THEN
+// 	            T_Delay_DB(IN:=TRUE,
+// 	                        PT:=T#500MS);
+// 	            IF T_Delay_DB.Q THEN
+// 	                T_Delay_DB(IN := FALSE,
+// 	                            PT := T#0MS);
+// 	                CurrentState := SAFE_TO_UNLOCK;
+// 	            END_IF;
+// 	        END_IF;
+// 
+// 	    SAFE_TO_UNLOCK:
+// 
+// 
+// 
+// 
+// 	        IF NOT GateClosed THEN
+// 	            CurrentState := ACCESS_MANUAL_MODE;
+// 	        END_IF;
+// 
+// 	    ACCESS_MANUAL_MODE:
+// 
+// 
+// 
+// 	        IF GateClosed THEN
+// 	            CurrentState := READY_TO_RESET;
+// 	        END_IF;
+// 
+// 	    READY_TO_RESET:
+// 	        IF Reset_PB_Rising THEN
+// 	            CurrentState := RESETTING;
+// 	        END_IF;
+// 
+// 	    RESETTING:
+// 
+// 
+// 
+// 	        IF GateLockedFeedback AND SafetyResetDone AND NoVTDLocalMode AND NOT GateFault AND AllDrivesHealthy THEN
+// 	            CurrentState := READY_TO_RESTART;
+// 	        END_IF;
+// 
+// 	    READY_TO_RESTART:
+// 	        IF Restart_PB_Rising
+// 	            AND NoEStop
+// 	            AND NOT GateFault
+// 	            AND AllDrivesHealthy
+// 	            AND NoVTDLocalMode
+// 	            AND NoCrossoverPaused THEN
+// 	            CurrentState := AUTO_RUNNING;
+// 	        END_IF;
+// 
+// 	END_CASE;
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 	GateUnlockPermissive := (CurrentState = SAFE_TO_UNLOCK)
+// 	OR (CurrentState = ACCESS_MANUAL_MODE)
+// 
+// 	;
+// 
+// 	StopNewAutoCycles := NOT (CurrentState = AUTO_RUNNING);
+// 	ManualModeActive := (CurrentState = ACCESS_MANUAL_MODE);
+// 
+// 	AutoModeAllowed := (CurrentState = AUTO_RUNNING)
+// 	AND GateClosed
+// 	AND GateLockedFeedback
+// 	AND NoEStop
+// 	AND NOT GateFault
+// 
+// 	AND NoCrossoverPaused
+// 	AND AllDrivesHealthy
+// 	AND SafetyResetDone;
+// 
+// 	RestartLampSteadyOn := (CurrentState = AUTO_RUNNING);
+// 	RTE_LampSteadyOn := (CurrentState = SAFE_TO_UNLOCK);
+// 	ReqFlash_RTE_Lamp := (CurrentState = RTE_REQUESTED) AND Clock_1Hz;
+// 	ReqFlash_ResetLamp := (CurrentState = READY_TO_RESET);
+// 	ReqFlash_RestartLamp := (CurrentState = READY_TO_RESTART);
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

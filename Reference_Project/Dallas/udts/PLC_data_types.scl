@@ -1,0 +1,1185 @@
+TYPE / PLC data types (layout from block interfaces; member comments are not exported there)
+
+TYPE "Buffer_Cnv_Control"
+   STRUCT
+      Mode : UInt;
+      Error : Bool;
+      Warning : UInt;
+      Enabled : Bool;
+      Stopped : Bool;
+      Done : Bool;
+      Running : Bool;
+      Ready_For_Task : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID : UInt;
+      Cnv_Occupied : Bool;
+      Pallet_Type : UInt;
+      SM_State : UInt;
+      Shuttle_In_Place : Bool;
+      Motor : "Cnv_Motor";
+      Instruction : "Cnv_Instruction";
+      Inputs : "Buffer_Cnv_Inputs";
+      Safety_Stop_Cnrl : "Sfts_Control";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+END_TYPE
+
+TYPE "Buffer_Cnv_Inputs"
+   STRUCT
+      "Pallet Detect 1" : Bool;
+      "Pallet Detect 3" : Bool;
+      "Pallet Detect 2" : Bool;
+      Sdetect1 : Bool;
+      Sdetect2 : Bool;
+      SftyPinUp : Bool;
+      SftyPinDown : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Buffer_Cnv_Settings"
+   STRUCT
+      ID : DInt;
+      Barcode_ID : UInt;
+      Cnv_Level : UInt;
+      TC_Time : UInt;
+      Transfer_Time : UInt;
+      Pallet_Align_Time : UInt;
+      Slow_Speed : UInt;
+      Full_Speed : UInt;
+      Manual_Speed : UInt;
+      Safety_stop_Timeout : UInt;
+      G120_Hardware_ID : HW_IO;
+   END_STRUCT;
+END_TYPE
+
+TYPE "CarMeasurement_DB_UDT"
+   STRUCT
+      Enable : Bool;
+      Execute : Bool;
+      Mode : UInt;
+      Cancel : Bool;
+      Enabled : Bool;
+      Done : Bool;
+      Running : Bool;
+      CarSize : DInt;
+      strState : String;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Cnv_Errors"
+   STRUCT
+      Error_Word_1 : UInt;
+      Error_Word_2 : UInt;
+      Error_Word_3 : UInt;
+      Error_Word_4 : UInt;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Cnv_Instruction"
+   STRUCT
+      Mode_Change : UInt;
+      Stop : Bool;
+      Enable : Bool;
+      Reset : Bool;
+      Execute : Bool;
+      Task_ID : UInt;
+      Task_Metadata : String;
+      Transfer_To_ID : DInt;
+      Transfer_From_ID : DInt;
+      Transfer_in_Progress : Bool;
+      Inbound_Ready : Bool;
+      Transfer_Complete : Bool;
+      Outbound_Ready : Bool;
+      Start_Transfer : Bool;
+      Start_Transfer_Backward : Bool;
+      Foward : Bool;
+      Backward : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Cnv_Motor"
+   STRUCT
+      Enable : Bool;
+      Enabled : Bool;
+      Ready : Bool;
+      Forward : Bool;
+      Reverse : Bool;
+      Speed : Real;
+      Speed_Actual : Real;
+      Actual_Current : Real;
+      Config_Axis : Word;
+      Error : Bool;
+      Status : Word;
+      Communication_Error : Word;
+      Lockout : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "ECnv_Control"
+   STRUCT
+      Mode : UInt;
+      Error : Bool;
+      Warning : UInt;
+      Enabled : Bool;
+      Stopped : Bool;
+      Done : Bool;
+      Running : Bool;
+      Ready_For_Task : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID : UInt;
+      Cnv_Occupied : Bool;
+      Pallet_Type : UInt;
+      SM_State : UInt;
+      Shuttle_In_Place : Bool;
+      Motor : "Cnv_Motor";
+      Instruction : "Cnv_Instruction";
+      Inputs : "ECnv_Inputs";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+END_TYPE
+
+TYPE "ECnv_Inputs"
+   STRUCT
+      "Pallet Detect 1" : Bool;
+      Sdetect2 : Bool;
+      "Pallet Detect 2" : Bool;
+      Sdetect1 : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "ECnv_Settings"
+   STRUCT
+      ID : DInt;
+      Barcode_ID : UInt;
+      Cnv_Level : UInt;
+      TC_Time : UInt;
+      Transfer_Time : UInt;
+      Pallet_Align_Time : UInt;
+      Slow_Speed : UInt;
+      Full_Speed : UInt;
+      Manual_Speed : UInt;
+      G120_Hardware_ID : HW_IO;
+   END_STRUCT;
+END_TYPE
+
+TYPE "FacePlate_LP_UDT"
+   STRUCT
+      Level : Int;
+      PalletDetected : Bool;
+      ShuttleDetected : Bool;
+      LevelDetected : Bool;
+      StateLeft : Int;
+      StateBack : Int;
+   END_STRUCT;
+END_TYPE
+
+TYPE "ID_Decoded"
+   STRUCT
+      Device_Type : Int;
+      Level : Int;
+      VTD : Int;
+   END_STRUCT;
+END_TYPE
+
+TYPE "InCnv_Instruction"
+   STRUCT
+      Mode_Change : UInt;
+      Stop : Bool;
+      Enable : Bool;
+      Reset : Bool;
+      Automatic_Start : Bool;
+      Execute : Bool;
+      Task_ID : UInt;
+      Task_Metadata : String;
+      Transfer_To_ID : DInt;
+      Transfer_From_ID : DInt;
+      Transfer_in_Progress : Bool;
+      Inbound_Ready : Bool;
+      Transfer_Complete : Bool;
+      Outbound_Ready : Bool;
+      Start_Transfer : Bool;
+      Start_Transfer_Backward : Bool;
+      Foward : Bool;
+      Backward : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Inbound_Cnv_Control_UDT"
+   STRUCT
+      Mode : UInt;
+      Error : Bool;
+      Warning : UInt;
+      Enabled : Bool;
+      Stopped : Bool;
+      Done : Bool;
+      Running : Bool;
+      Ready_For_Task : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID : UInt;
+      Cnv_Occupied : Bool;
+      Pallet_Type : UInt;
+      SM_State : UInt;
+      Motor : "Cnv_Motor";
+      Instruction : "InCnv_Instruction";
+      Inputs : "Inbound_Cnv_Inputs";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+END_TYPE
+
+TYPE "Inbound_Cnv_Inputs"
+   STRUCT
+      "Pallet Detect 1" : Bool;
+      "Pallet Detect 2" : Bool;
+      Barcode : String;
+      "Fork Lift Detect" : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Inbound_Cnv_Settings"
+   STRUCT
+      ID : DInt;
+      TC_Time : UInt;
+      Transfer_Time : UInt;
+      Slow_Speed : UInt;
+      Full_Speed : UInt;
+      Manual_Speed : UInt;
+      No_Forklift_Detect_Timer : UInt;
+      G120_Hardware_ID : HW_IO;
+   END_STRUCT;
+END_TYPE
+
+TYPE "LCom_typeConfig"
+   STRUCT
+      connection : Struct
+         interfaceID : HW_ANY;
+         connectionID : CONN_ANY;
+         comService : USInt;
+         isClient : Bool;
+         connectType : USInt;
+         localPort : UInt;
+         partnerPort : UInt;
+         partnerIP : IP_V4;
+         partnerQDN : String [254];
+         acceptUnknownPartner : Bool;
+         lifeSignCycleTime : Time;
+      END_STRUCT;
+      sender : Struct
+         cycleTime : Time;
+         ackTimeout : Time;
+      END_STRUCT;
+      timeSync : Struct
+         usePartnerTimestamps : Bool;
+         sendMode : USInt;
+         cycleTime : Time;
+         sendAtTimeOfDay : Time_Of_Day;
+      END_STRUCT;
+   END_STRUCT;
+END_TYPE
+
+TYPE "LCom_typeDiagnostics"
+   STRUCT
+      localConfig : Struct
+         connection : Struct
+            interfaceID : HW_ANY;
+            connectionID : CONN_ANY;
+            comService : USInt;
+            isClient : Bool;
+            connectType : USInt;
+            localPort : UInt;
+            localIP : IP_V4;
+            partnerPort : UInt;
+            partnerIP : IP_V4;
+            partnerQDN : String [254];
+            acceptUnknownPartner : Bool;
+            useLComProtocol : Bool;
+            lifeSignCycleTime : Time;
+         END_STRUCT;
+         sender : Struct
+            cycleTime : Time;
+            ackTimeout : Time;
+         END_STRUCT;
+         timeSync : Struct
+            usePartnerTimestamps : Bool;
+            sendMode : USInt;
+            cycleTime : Time;
+            sendAtTimeOfDay : Time_Of_Day;
+         END_STRUCT;
+         sizeOfSendBuffer : UDInt;
+         sizeOfReceiveBuffer : UDInt;
+      END_STRUCT;
+      partnerConfig : Struct
+         connnection : Struct
+            lifeSignCycleTime : Time;
+         END_STRUCT;
+         sender : Struct
+            cycleTime : Time;
+            ackTimeout : Time;
+         END_STRUCT;
+         timeSync : Struct
+            usePartnerTimestamps : Bool;
+            sendMode : USInt;
+         END_STRUCT;
+         sizeOfSendBuffer : UDInt;
+         sizeOfReceiveBuffer : UDInt;
+      END_STRUCT;
+      statistics : Struct
+         avgCallCycle : Real;
+         avgReceiveMsgCycle : Real;
+         maxReceiveMsgCycle : Time;
+         LComProtocolUsed : Bool;
+         activeLComVersion : USInt;
+         avgMsgSendingTime : Real;
+         maxMsgSendingTime : Time;
+         avgMsgReceivingTime : Real;
+         maxMsgReceivingTime : Time;
+         numberOfSentMessages : UDInt;
+         numberOfReceivedMessages : UDInt;
+         totalAckTimeouts : UInt;
+         totalSendCycleViolations : UInt;
+         totalReceiveCycleViolations : UInt;
+         totalReconnects : UInt;
+         lastConnect : DTL;
+         lastTimeSync : DTL;
+      END_STRUCT;
+      bufferIndex : USInt;
+      buffer : Array[0..63] of Struct;
+   END_STRUCT;
+END_TYPE
+
+TYPE "LMQTT_DB_UDT"
+   STRUCT
+      enable : Bool;
+      publish : Bool;
+      subscribe : Bool;
+      unsubscribe : Bool;
+      qos : USInt;
+      retain : Bool;
+      publishMsgLen : UDInt;
+      willMsgLen : UInt;
+      connParam : "LMQTT_typeConnParam";
+      clientIdentifier : WString;
+      username : WString;
+      password : WString;
+      willtopic : WString;
+      willMsgPayload : Array[1..128] of Byte;
+      mqttTopic : WString;
+      publishMsgPayload : Array[0..511] of Byte;
+      receivedTopic : WString;
+      receivedMsgPayload : Array[0..1024] of Byte;
+      valid : Bool;
+      done : Bool;
+      busy : Bool;
+      error : Bool;
+      status : Word;
+      diagnostics : "typeDiagnostics";
+      receivedMsgStatus : USInt;
+      receivedMsgDataLen : UDInt;
+   END_STRUCT;
+END_TYPE
+
+TYPE "LMQTT_typeConnParam"
+   STRUCT
+      hwId : HW_ANY;
+      connId : CONN_OUC;
+      broker : String;
+      port : UInt;
+      tls : Struct
+         enableTls : Bool;
+         validateServerIdentity : Bool;
+         brokerCert : UDInt;
+         clientCert : UDInt;
+      END_STRUCT;
+      keepAlive : UInt;
+   END_STRUCT;
+END_TYPE
+
+TYPE "LStream_typeElement"
+   STRUCT
+      type : SInt;
+      key : String;
+      value : String;
+      depth : SInt;
+      closingElement : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "MQTT_Interface"
+   STRUCT
+      Enable : Bool;
+      Message : "MQTT_Message";
+      Status : "MQTT_Status";
+   END_STRUCT;
+END_TYPE
+
+TYPE "MQTT_Message"
+   STRUCT
+      Topic : WString;
+      Publish : Bool;
+      Subscribe : Bool;
+      Unsubscribe : Bool;
+      Received_Msg_Status : USInt;
+      Received_Msg_Length : UDInt;
+      Received_Topic : WString;
+      Received_Msg_Payload : Array[0..1024] of Byte;
+      Publish_Msg_Length : UDInt;
+      Publish_Msg_Payload : Array[1..1] of Byte;
+      Shuttle_Status : "Shuttle_MQTT_Status_Msg";
+   END_STRUCT;
+END_TYPE
+
+TYPE "MQTT_Settings"
+   STRUCT
+      MQTT_Con_Params : "LMQTT_typeConnParam";
+      Client_ID : WString;
+      Username : WString;
+      Password : WString;
+      Timeout : DInt;
+      QoS : USInt;
+      Retain : Bool;
+      Will_Topic : WString;
+      Will_Msg_Length : UInt;
+      Will_Msg_Payload : Array[1..128] of Byte;
+   END_STRUCT;
+END_TYPE
+
+TYPE "MQTT_Status"
+   STRUCT
+      Valid : Bool;
+      Done : Bool;
+      Busy : Bool;
+      Error : Bool;
+      Status : Word;
+      Diagnostics : "typeDiagnostics";
+   END_STRUCT;
+END_TYPE
+
+TYPE "OrderTable_UDT"
+   STRUCT
+      OrderNo : Int;
+      StepNo : Int;
+      PlaceTime : String[20];
+      Device : String;
+      Sequence : UInt;
+      Status : String[12];
+      CompleteTime : String[20];
+      ErrorID : UInt;
+      OPC_Control : "WMS_OPC_UA";
+   END_STRUCT;
+END_TYPE
+
+TYPE "OutCnv_Instruction"
+   STRUCT
+      Mode_Change : UInt;
+      Stop : Bool;
+      Enable : Bool;
+      Reset : Bool;
+      Empty : Bool;
+      Execute : Bool;
+      Task_ID : UInt;
+      Task_Metadata : String;
+      Transfer_To_ID : DInt;
+      Transfer_From_ID : DInt;
+      Transfer_in_Progress : Bool;
+      Inbound_Ready : Bool;
+      Transfer_Complete : Bool;
+      Outbound_Ready : Bool;
+      Start_Transfer : Bool;
+      Start_Transfer_Backward : Bool;
+      Foward : Bool;
+      Backward : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Outbound_Cnv_Control"
+   STRUCT
+      Mode : UInt;
+      Error : Bool;
+      Warning : UInt;
+      Enabled : Bool;
+      Stopped : Bool;
+      Done : Bool;
+      Running : Bool;
+      Ready_For_Task : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID : UInt;
+      Cnv_Occupied : Bool;
+      Pallet_Type : UInt;
+      SM_State : UInt;
+      Shuttle_In_Place : Bool;
+      Motor : "Cnv_Motor";
+      Instruction : "OutCnv_Instruction";
+      Inputs : "Outbound_Cnv_Inputs";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+END_TYPE
+
+TYPE "Outbound_Cnv_Inputs"
+   STRUCT
+      "Pallet Detect" : Bool;
+      Barcode : String;
+      "Fork Lift Detect" : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Outbound_Cnv_Settings"
+   STRUCT
+      ID : DInt;
+      TC_Time : UInt;
+      Transfer_Time : UInt;
+      Slow_Speed : UInt;
+      Full_Speed : UInt;
+      Manual_Speed : UInt;
+      No_Forklift_Detect_Timer : UInt;
+      G120_Hardware_ID : HW_IO;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Pick_Cnv_Settings"
+   STRUCT
+      ID : DInt;
+      TC_Time : UInt;
+      Transfer_Time : UInt;
+      Slow_Speed : UInt;
+      Full_Speed : UInt;
+      Manual_Speed : UInt;
+      No_Forklift_Detect_Timer : UInt;
+      G120_Hardware_ID : HW_IO;
+   END_STRUCT;
+END_TYPE
+
+TYPE "PopUp_Cnv_Control"
+   STRUCT
+      Mode : UInt;
+      Error : Bool;
+      Warning : UInt;
+      Enabled : Bool;
+      Stopped : Bool;
+      Done : Bool;
+      Running : Bool;
+      Ready_For_Task : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID : UInt;
+      Cnv_Occupied : Bool;
+      SM_State : UInt;
+      Inputs : "PopUp_Cnv_Inputs";
+      Roller_Motor : "Cnv_Motor";
+      Chain_Motor : "Cnv_Motor";
+      Lift_Motor : "Cnv_Motor";
+      Instruction : "PopUp_Cnv_Instruction";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+END_TYPE
+
+TYPE "PopUp_Cnv_Inputs"
+   STRUCT
+      "Lift Up" : Bool;
+      "Lift Down" : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "PopUp_Cnv_Instruction"
+   STRUCT
+      Mode_Change : UInt;
+      Stop : Bool;
+      Enable : Bool;
+      Reset : Bool;
+      Execute : Bool;
+      Task_ID : UInt;
+      Task_Metadata : String;
+      Transfer_To_ID : DInt;
+      Transfer_From_ID : DInt;
+      Transfer_in_Progress : Bool;
+      Inbound_Ready : Bool;
+      Transfer_Complete : Bool;
+      Outbound_Ready : Bool;
+      Start_Transfer : Bool;
+      Start_Transfer_Backward : Bool;
+      Roller_Fwd : Bool;
+      Roller_Bwd : Bool;
+      Chain_Fwd : Bool;
+      Chain_Bwd : Bool;
+      Lift_Up : Bool;
+      Lift_Down : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "PopUp_Cnv_Settings"
+   STRUCT
+      ID : DInt;
+      Roller_TC_Time : UInt;
+      Roller_Transfer_Time : UInt;
+      Roller_Slow_Speed : UInt;
+      Roller_Full_Speed : UInt;
+      Roller_Manual_Speed : UInt;
+      Chain_TC_Time : UInt;
+      Chain_Transfer_Time : UInt;
+      Chain_Slow_Speed : UInt;
+      Chain_Full_Speed : UInt;
+      Chain_Manual_Speed : UInt;
+      Lift_TC_Time : UInt;
+      Lift_Transfer_Time : UInt;
+      Lift_Slow_Speed : UInt;
+      Lift_Full_Speed : UInt;
+      Lift_Manual_Speed : UInt;
+      Roller_G120_Hardware_ID : HW_IO;
+      Chain_G120_Hardware_ID : HW_IO;
+      Lift_G120_Hardware_ID : HW_IO;
+   END_STRUCT;
+END_TYPE
+
+TYPE "SAI_MB_DeviceStatus"
+   STRUCT
+      "Alternate weight unit" : Bool;
+      "Run flat" : Bool;
+      "Device specific bit 2" : Bool;
+      "Device specific bit 3" : Bool;
+      "Device specific bit 4" : Bool;
+      "Device specific bit 5" : Bool;
+      "Device specific bit 6" : Bool;
+      "Device specific bit 7" : Bool;
+      "Sequence bit 0" : Bool;
+      "Sequence bit 1" : Bool;
+      "Heart Beat" : Bool;
+      "Data OK" : Bool;
+      "Alarm Condition" : Bool;
+      "Center of Zero" : Bool;
+      Motion : Bool;
+      "Net Mode" : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "ST_SICK_AFx60"
+   STRUCT
+      ParameterSelection : Struct
+         Telegram_Number : Bool;
+         Device_Identification : Bool;
+         Enc_Profile_Number : Bool;
+         Eeprom_Storage : Bool;
+         Object_Identification : Bool;
+         Sensor_Format : Bool;
+         Parameter_List : Bool;
+         Encoder_Status_Flag : Bool;
+         Device_Status_Flag : Bool;
+         Diag_History_Absolute : Bool;
+         Diag_History_Relative : Bool;
+         Diag_Hist_Err_Counter : Bool;
+         Speed_Calculation : Bool;
+         Temperature_Limits : Bool;
+         Voltage_Limits : Bool;
+         Scaling_Parameters : Bool;
+         Operation_Test_1 : Bool;
+         MAC_ID_Port_1 : Bool;
+         MAC_ID_Port_2 : Bool;
+         Version_FW_FPGA : Bool;
+         Temperature : Bool;
+         Station_Name : Bool;
+         Station_IP : Bool;
+         Station_MAC_ID : Bool;
+         Station_Gateway : Bool;
+         Station_Subnet : Bool;
+         Preset_Value : Bool;
+         Operating_Status : Bool;
+      END_STRUCT;
+      Parameter : Struct
+         Telegram_Number : UInt;
+         Device_Identification : Struct
+            Manufacturer : Word;
+            Encoder_Unit_Type : Word;
+            FW_Version : UInt;
+            FW_Date_Year : UInt;
+            FW_Date_Day_Month : UInt;
+            Number_Of_Objects : Word;
+         END_STRUCT;
+         Enc_Profile_Number : Struct
+            Profile_Number : Byte;
+            Profile_Version : USInt;
+         END_STRUCT;
+         Eeprom_Storage : Word;
+         Object_Identification : Struct
+            Manufacturer : Word;
+            Encoder_Unit_Type : Word;
+            FW_Version : UInt;
+            FW_Date_Year : UInt;
+            FW_Date_Day_Month : UInt;
+            EO_Type_Class : Word;
+            EO_Sub_Class : Word;
+         END_STRUCT;
+         Sensor_Format : Struct
+            Header : DWord;
+            Sensor_Type : DWord;
+            Sensor_Resolution : UDInt;
+            Shift_Factor_Left : UDInt;
+            Shift_Factor_Right : UDInt;
+            Revolutions : UDInt;
+         END_STRUCT;
+         Parameter_List : Array[0..26] of UInt;
+         Encoder_Status_Flag : Word;
+         Device_Status_Flag : Struct
+            S_STAT_A : Word;
+            S_STAT_B : Word;
+            S_STAT_C : Word;
+         END_STRUCT;
+         Diag_History_Absolute : Struct
+            Power_Up_Counter : UDInt;
+            Operating_Time : UDInt;
+            Maximum_Speed : UDInt;
+            Counter_Rotation_fw : UDInt;
+            Counter_Rotation_bw : UDInt;
+            Counter_Rotation_alt : UDInt;
+            Counter_Motion : UDInt;
+            Reserved : UDInt;
+            LED_Current_Maximum : UDInt;
+            LED_Current_Minimum : UDInt;
+            Voltage_Maximum : UDInt;
+            Temperatur_Maximum : DInt;
+            Temperature_Minimum : DInt;
+         END_STRUCT;
+         Diag_History_Relative : Struct
+            Power_Up_Counter : UDInt;
+            Operating_Time : UDInt;
+            Maximum_Speed : UDInt;
+            Counter_Rotation_fw : UDInt;
+            Counter_Rotation_bw : UDInt;
+            Counter_Rotation_alt : UDInt;
+            Counter_Motion : UDInt;
+            Reserved : UDInt;
+            LED_Current_Maximum : UDInt;
+            LED_Current_Minimum : UDInt;
+            Voltage_Maximum : UDInt;
+            Temperatur_Maximum : DInt;
+            Temperature_Minimum : DInt;
+         END_STRUCT;
+         Diag_Hist_Err_Counter : Array[0..15] of UInt;
+         Speed_Calculation : Struct
+            Control : UInt;
+            Velocity_Measuring_Unit : UInt;
+            Update_Time_Tu : UInt;
+            Update_Time_Ti : UInt;
+            Upper_Limit : UInt;
+            Lower_Limit : UInt;
+         END_STRUCT;
+         Temperature_Limits : Struct
+            Lower_Limit : Int;
+            Upper_Limit : Int;
+         END_STRUCT;
+         Voltage_Limits : Struct
+            Lower_Limit : UInt;
+            Upper_Limit : UInt;
+         END_STRUCT;
+         Scaling_Parameters : Struct
+            ES_Functionality : UDInt;
+            Input_CNR_N : UDInt;
+            Input_CNR_D : UDInt;
+            Input_CMR : DWord;
+            Range_Offset : DWord;
+            PMR_Shift : DWord;
+            Output_CNR_N : UDInt;
+            Output_CNR_D : UDInt;
+            Output_CMR : DWord;
+            Out_CPR_Integer : DWord;
+            Out_CPR_Fract : UDInt;
+         END_STRUCT;
+         Operation_Test_1 : UInt;
+         MAC_ID_Port_1 : Array[0..5] of Byte;
+         MAC_ID_Port_2 : Array[0..5] of Byte;
+         Version_FW_FPGA : DWord;
+         Temperature : Int;
+         Station_Name : String[240];
+         Station_IP : Array[0..3] of USInt;
+         Station_MAC_ID : Array[0..5] of Byte;
+         Station_Gateway : Array[0..3] of USInt;
+         Station_Subnet : Array[0..3] of USInt;
+         Preset_Value : UDInt;
+         Operating_Status : Struct
+            Header : DWord;
+            Operating_Status : DWord;
+            Faults : DWord;
+            Supported_Faults : DWord;
+            Warnings : DWord;
+            Supported_Warnings : DWord;
+            Encoder_Profile_Version : DWord;
+            Operating_Time : UDInt;
+            Offset_Value : UDInt;
+            CPR : UDInt;
+            CMR : UDInt;
+            Velocity_Measuring_Unit : UDInt;
+         END_STRUCT;
+      END_STRUCT;
+   END_STRUCT;
+END_TYPE
+
+TYPE "ST_SICK_AFx60_Error"
+   STRUCT
+      nCommunicationError : DWord;
+      nBlockError : Word;
+      nEncoderError : Word;
+   END_STRUCT;
+END_TYPE
+
+TYPE "ST_SICK_Lector_CLV6xx"
+   STRUCT
+      Matchcode : Struct
+         sName : String[10];
+         nCodeType : Char;
+         iMinMaxLength : USInt;
+         sContent : String[75];
+      END_STRUCT;
+      FreeCommand : Struct
+         sCommand : String[100];
+         sResult : String[100];
+      END_STRUCT;
+      ReadingResult : Struct
+         iCounter : USInt;
+         iLength : Int;
+         arrResult : Array[1..200] of Byte;
+      END_STRUCT;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Sfts_Control"
+   STRUCT
+      Mode : UInt;
+      Error : Bool;
+      Enabled : Bool;
+      Running : Bool;
+      LP_State : USInt;
+      Motor_Extend : Bool;
+      Motor_Retract : Bool;
+      SM_State : UInt;
+      Instruction : "Sfts_Instruction";
+      Inputs : "Sfts_Inputs";
+   END_STRUCT;
+END_TYPE
+
+TYPE "Sfts_Inputs"
+   STRUCT
+      LP_Extended : Bool;
+      LP_Retracted : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Sfts_Instruction"
+   STRUCT
+      Mode_Change : UInt;
+      Enable : Bool;
+      LP_Extend : Bool;
+      LP_Retract : Bool;
+      Manual_Extend : Bool;
+      Manual_Retract : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Shuttle_MQTT_Status_Msg"
+   STRUCT
+      Request_ID : DInt;
+      Position_ID : DInt;
+      Destination_ID : DInt;
+      Distance_Remaining : DInt;
+      Position_X : DInt;
+      Position_Y : DInt;
+      Floor : Int;
+      Operation_Mode : String;
+      Operational_State : String;
+      Load_State : String;
+      Error_Vehicle_1 : UInt;
+      Error_Vehicle_2 : UInt;
+      Error_Vehicle_3 : UInt;
+      Error_Vehicle_4 : UInt;
+      Error_Vehicle_5 : UInt;
+      Error_Vehicle_6 : UInt;
+      Sensor_Inputs : UInt;
+      Sensor_Outputs : UInt;
+      Reader_Value : DInt;
+      Pallet_Type : String;
+      Energy_Level : UInt;
+      Battery_Voltage : UInt;
+      Paused : Bool;
+      Last_Received_Order_ID : Int;
+      Current_Order_ID : Int;
+      Last_Finished_Order_ID : Int;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Stations_DB_UDT"
+   STRUCT
+      Enable : Bool;
+      Execute : Bool;
+      Mode : UInt;
+      Cancel : Bool;
+      Enabled : Bool;
+      Done : Bool;
+      Running : Bool;
+      CarSize : DInt;
+      strState : String;
+   END_STRUCT;
+END_TYPE
+
+TYPE "System_Settings"
+   STRUCT
+      VTD_Count : UInt;
+      Level_Count : UInt;
+      Cnv_Count : UInt;
+      Shuttle_Count : UInt;
+      Shuttle_Interlock_Timeout : UInt;
+   END_STRUCT;
+END_TYPE
+
+TYPE "System_UDT"
+   STRUCT
+      CancelOrders : Bool;
+      PauseOrders : Bool;
+      ResumeOrders : Bool;
+      OrderSent : Bool;
+      CurrentOrder : UInt;
+      NextOrder : UInt;
+      OrderTable : Array[0..99] of "OrderTable_UDT";
+      StepTable : Array[0..20] of "OrderTable_UDT";
+      CarParked_Confirm : Bool;
+      Running : Bool;
+      IDLE : Bool;
+      Error : Bool;
+      State : USInt;
+      ResetError : Bool;
+      Ready : Bool;
+      Selected : Bool;
+      Auto_Man : Bool;
+      Paused : Bool;
+      Watchdog_TimeOut : Struct
+         Cnv_Entry : Bool;
+         Cnv_PopUp : Array[1..4] of Bool;
+         Cnv_Exit : Bool;
+         EConveyor : Bool;
+         VTD : Bool;
+         Cnv_Buffer : Array[1..3] of Bool;
+         Roller_TO_Roller : Bool;
+         Chain_TO_Chain : Bool;
+         Pop4_TO_Pick : Bool;
+         Pick_TO_Pop1 : Bool;
+         Weigh_Station : Bool;
+         Profile_Station : Bool;
+         Pallet_InOut : Bool;
+         Shuttle_InOut : Bool;
+      END_STRUCT;
+   END_STRUCT;
+END_TYPE
+
+TYPE "VTD_Control"
+   STRUCT
+      Mode : UInt;
+      Error : Bool;
+      Warning : UInt;
+      Enabled : Bool;
+      Stopped : Bool;
+      Running : Bool;
+      Done : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID : UInt;
+      AE : Real;
+      LE : Real;
+      Current_Level : UInt;
+      Docked : Bool;
+      LP_State : UInt;
+      Pallet_Loaded : UInt;
+      Shuttle_Loaded : UInt;
+      SM_State : UInt;
+      Motor_UP : Bool;
+      Motor_Down : Bool;
+      Motor_Speed : UInt;
+      VFD_Error : UInt;
+      LE_Error : UInt;
+      AE_Error : UInt;
+      Encoder_Delta : Int;
+      Instruction : "VTD_Instruction";
+      Shuttle_Interlock : "VTD_Shuttle_Interlock";
+      Inputs : "VTD_Inputs";
+      Outputs : "VTD_Outputs";
+      Motor : "VTD_Motor";
+      VTD_Errors : "VTD_Errors";
+   END_STRUCT;
+END_TYPE
+
+TYPE "VTD_Errors"
+   STRUCT
+      Error_Word_1 : UInt;
+      Error_Word_2 : UInt;
+      Error_Word_3 : UInt;
+      Error_Word_4 : UInt;
+      Error_Word_5 : UInt;
+   END_STRUCT;
+END_TYPE
+
+TYPE "VTD_Inputs"
+   STRUCT
+      Upper_limit : Bool;
+      Lower_Limit : Bool;
+      Level_Detect2 : Bool;
+      Level_Detect1 : Bool;
+      Ultimate_Slow : Bool;
+      Ultimate_Creep : Bool;
+      LPL_Extended : Bool;
+      LPR_Extended : Bool;
+      LPL_Retracted : Bool;
+      LPR_Retracted : Bool;
+      "Barcode 1" : String;
+      "Barcode 2'" : String;
+   END_STRUCT;
+END_TYPE
+
+TYPE "VTD_Instruction"
+   STRUCT
+      Mode_Change : UInt;
+      Stop : Bool;
+      Enable : Bool;
+      Execulte : Bool;
+      Reset : Bool;
+      Pallet_Type : UInt;
+      Task_ID : UInt;
+      Task_Metadata : String;
+      Move_To_Level : UInt;
+      Manual_Up : Bool;
+      Manual_Down : Bool;
+      Manual_LP_Retract : Bool;
+      Manual_LP_Extend : Bool;
+      Start_Teach : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "VTD_Levels"
+   STRUCT
+      Levels_LE : Array[0..3] of Real;
+      Levels_AE : Array[0..3] of DInt;
+   END_STRUCT;
+END_TYPE
+
+TYPE "VTD_Motor"
+   STRUCT
+      Enable : Bool;
+      Enabled : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Forward : Bool;
+      Reverse : Bool;
+      Brake_Opened : Bool;
+      Speed : Int;
+      Speed_Actual : Int;
+      Actual_Current : Int;
+      Config_Axis : Word;
+      Error : Bool;
+      Status : Word;
+      Communication_Error : Word;
+      Lockout : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "VTD_Outputs"
+   STRUCT
+      LPL_Retract : Bool;
+      LPL_Extend : Bool;
+      LPR_Retract : Bool;
+      LPR_Extend : Bool;
+   END_STRUCT;
+END_TYPE
+
+TYPE "VTD_Settings"
+   STRUCT
+      ID : UInt;
+      Lowest_Level : UInt;
+      Highest_Level : UInt;
+      VTD_Max_Heigh : UInt;
+      VTD_Min_Height : UInt;
+      VTD_Level_Granularity : Int;
+      Dft_Level_Offset_LE : Int;
+      Dft_Level_Offset_AE : Int;
+      Teach_Speed : UInt;
+      Creep_Speed : UInt;
+      Slow_Speed : UInt;
+      Slow_Calib_Speed : UInt;
+      Loaded_Speed : UInt;
+      Shuttle_Speed : UInt;
+      Pallet_Speed : UInt;
+      Empty_Speed : UInt;
+      Dock_speed : UInt;
+      Manual_Speed : UInt;
+      Slowdown_Count_LE : UInt;
+      Creep_Count_LE : UInt;
+      Slowdown_Count_AE : UInt;
+      Creep_Count_AE : UInt;
+      Encoder_Delta_W1 : Real;
+      Encoder_Delta_W2 : Real;
+      AE_Ratio : Real;
+      Encoder_Delta_Warning : Real;
+      Encoder_Delta_Error : Real;
+      Transfer_Timeout_Up : UInt;
+      Transfer_Timeout_Down : UInt;
+      Lockpins_Timeout_Extend : UInt;
+      Lockpins_Timeout_Retract : UInt;
+      Level_Detect_Timeout : UInt;
+      Teach_Timeout : UInt;
+      Chain_Slack_Timeout : UInt;
+      Level_Detect_LE : Real;
+      G120_Hardware_ID : HW_IO;
+      Teach_Values : "VTD_Levels";
+   END_STRUCT;
+END_TYPE
+
+TYPE "VTD_Shuttle_Interlock"
+   STRUCT
+      Interlock_Complete : Bool;
+      Interlock_Complete_Ack : Bool;
+      Ready_To_Interlock : Bool;
+      Interlock_Request : Bool;
+      Shuttle_ID : UInt;
+      Shuttle_Target_Location : DInt;
+      Shuttle_Start_Location : DInt;
+      Shuttle_Loaded : Bool;
+      Shuttle_Interlock_Task_ID : UInt;
+      Shuttle_Interlock_Task_Metadata : String;
+   END_STRUCT;
+END_TYPE
+
+TYPE "WMS_OPC_UA"
+   STRUCT
+      Task_ID : Int;
+      Task_Metadata : String[250];
+      Task_Type : Int;
+      Source_Location : DInt;
+      Destination_Location : DInt;
+      Task_Data_Available : Bool;
+      SM_State : UInt;
+      Movement_Ready : Bool;
+      Movement_Request_Complete : Bool;
+      Movement_Request_Complete_Ack : Bool;
+      Shuttle_ID : Int;
+      Shuttle_Loaded : Bool;
+      Pallet_Type : Char;
+      Pallet_Alignment : Char;
+      SM_State_Maestro : UInt;
+   END_STRUCT;
+END_TYPE
+
+TYPE "Watchdog_Settings_UDT"
+   STRUCT
+      Cnv_Entry : UDInt;
+      Cnv_PopUp : Array[1..4] of UDInt;
+      Cnv_Exit : UDInt;
+      VTD : UDInt;
+      EConveyor : UDInt;
+      Cnv_Buffer : Array[1..3] of UDInt;
+      Roller_TO_Roller : UDInt;
+      Chain_TO_Chain : UDInt;
+      Pop4_TO_Pick : UDInt;
+      Pick_TO_Pop1 : UDInt;
+      Weigh_Station : UDInt;
+      Profile_Station : UDInt;
+      Pallet_INOut : UDInt;
+      Shuttle_INOut : UDInt;
+   END_STRUCT;
+END_TYPE
+
+TYPE "typeDiagnostics"
+   STRUCT
+      status : Word;
+      subfunctionStatus : DWord;
+      stateNumber : DInt;
+   END_STRUCT;
+END_TYPE

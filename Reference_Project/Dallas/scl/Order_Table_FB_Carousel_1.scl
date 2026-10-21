@@ -1,0 +1,1460 @@
+FUNCTION_BLOCK "Order_Table_FB_Carousel_1"   // FB 34, author 
+
+VAR_INPUT
+   System_Selected : Bool;
+   AutoMan_Switch : Bool;   // Auto/Man Switch on CPU Panel - 1 = Auto, 0 = Manual
+   CurrentTime : String;
+   CurrentDTL : DTL;
+   Watchdog : "Watchdog_Settings_UDT";
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Entry : "Inbound_Cnv_Control_UDT";
+   Cnv_PopUp_1 : "PopUp_Cnv_Control";
+   WeighingStation : "Stations_DB_UDT";
+   ProfileStation : "Stations_DB_UDT";
+   Cnv_PopUp_2 : "PopUp_Cnv_Control";
+   Cnv_PopUp_3 : "PopUp_Cnv_Control";
+   Cnv_PopUp_4 : "PopUp_Cnv_Control";
+   Cnv_Exit : "Outbound_Cnv_Control";
+   System : "System_UDT";
+   Control_OPC_Ua : "WMS_OPC_UA";
+END_VAR
+
+VAR
+   RTR_ITP1_CurrentOrder : UDInt;
+   RTR_P1P2_CurrentOrder : UDInt;
+   RTR_P3P4_CurrentOrder : UDInt;
+   RTR_P4TO_CurrentOrder : UDInt;
+   Roller_To_Roller_CurrentOrder : UDInt;
+   Chain_To_Chain_CurrentOrder : UDInt;
+   Pop4_To_PickSt_CurrentOrder : UDInt;
+   PickSt_To_Pop1_CurrentOrder : UDInt;
+   WeighingStation_CurrentOrder : UDInt := 0;
+   ProfileStation_CurrentOrder : UDInt := 0;
+   Roller_To_RollerDoneRTrig : R_TRIG;
+   RTR_ITP1DoneRTrig : R_TRIG;
+   RTR_P1P2DoneRTrig : R_TRIG;
+   RTR_P3P4DoneRTrig : R_TRIG;
+   RTR_P4TODoneRTrig : R_TRIG;
+   Chain_To_ChainDoneRTrig : R_TRIG;
+   Pop4_To_PickSt_DoneRTrig : R_TRIG;
+   PickSt_To_Pop1_DoneRTrig : R_TRIG;
+   WeighingStationDoneRTrig : R_TRIG;
+   ProfileStationDoneRTrig : R_TRIG;
+   PalletRefused_1_RTig : R_TRIG;
+   ErrorRTrig : R_TRIG;
+   CancelRTrig : R_TRIG;
+   PauseRTrig : R_TRIG;
+   ResumeRTrig : R_TRIG;
+   Clear_Store : R_TRIG;
+   Clear_Retrieve : R_TRIG;
+   Canceling : Bool;
+   RTR_ITP1_WatchdogTimer : TON_TIME;
+   RTR_P1P2_WatchdogTimer : TON_TIME;
+   RTR_P3P4_WatchdogTimer : TON_TIME;
+   RTR_P4TO_WatchdogTimer : TON_TIME;
+   Roller_To_Roller_WatchdogTimer : TON_TIME;
+   Chain_To_Chain_WatchdogTimer : TON_TIME;
+   Pop4_To_PickWatchdogTimer : TON_TIME;
+   PickSt_To_Pop1WatchdogTimer : TON_TIME;
+   WeighingStation_WatchdogTimer : TON_TIME;
+   ProfileStation_WatchdogTimer : TON_TIME;
+   Roller_To_Roller_WatchdogStart : Bool;
+   RTR_ITP1_WatchdogStart : Bool;
+   RTR_P1P2_WatchdogStart : Bool;
+   RTR_P3P4_WatchdogStart : Bool;
+   RTR_P4TO_WatchdogStart : Bool;
+   Chain_To_Chain_WatchdogStart : Bool;
+   Pop4_To_PickWatchdogStart : Bool;
+   PickSt_To_Pop1WatchdogStart : Bool;
+   WeighingStation_WatchdogStart : Bool;
+   ProfileStation_WatchdogStart : Bool;
+   dummy : Int;
+   dummy_1 : Bool;
+   dummy_3 : Bool;
+END_VAR
+
+VAR_TEMP
+   i : DInt;
+   n : DInt;
+   EmptyOrder : "OrderTable_UDT";
+   MaxRunningOrderNo : UInt;
+END_VAR
+
+VAR CONSTANT
+   ROLLER_TO_ROLLER_DEVICE : String := 'Roller to Roller';
+   CHAIN_TO_CHAIN_DEVICE : String := 'Chain to Chain';
+   POP4_TO_PICK_DEVICE : String := 'Pop4 to Pick';
+   PICK_TO_POP1_DEVICE : String := 'Pick to Pop1';
+   WEIGH_STATION_DEVICE : String := 'Weigh Station';
+   PROFILE_STATION_DEVICE : String := 'Profile Station';
+   RUNNING_STATUS : String := 'Running';
+   COMPLETED_STATUS : String := 'Completed';
+   QUEUED_STATUS : String := 'Queued';
+   PALLET_REFUSED_STATUS : String := 'Pallet Refused';
+   ERROR_STATUS : String := 'Error';
+   CANCELED_STATUS : String := 'Canceled';
+   PAUSED_STATUS : String := 'Paused';
+   ORDER_REFUSED : String := 'Refused';
+   ERROR_CANCELED_STATUS : String := 'Error\Cancel';
+END_VAR
+
+BEGIN
+
+// Converts the task type for strings 
+IF #System.OrderTable[1].OPC_Control.Task_Type = 6
+    OR #System.OrderTable[1].OPC_Control.Task_Type =16
+        OR #System.OrderTable[1].OPC_Control.Task_Type = 14 THEN // Roller to Roller OR Roller to Roller + Barcode scanner OR Roller To Roller + Profile Station 
+    #System.OrderTable[1].Device := 'Roller to Roller';
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 7 THEN
+    #System.OrderTable[1].Device := 'Chain to Chain';
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 8 THEN
+    #System.OrderTable[1].Device := 'Pop4 to Pick';
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 9 THEN
+    #System.OrderTable[1].Device := 'Pick to Pop1' ;
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 10 THEN
+    #System.OrderTable[1].Device := 'Weigh Station';
+// ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 14 THEN
+//     #System.OrderTable[1].Device := 'Profile Station';
+ELSE
+    #System.OrderTable[1].Device := '';
+END_IF;
+
+
+REGION #New Order was Sent
+    IF #System.OrderSent THEN
+        //Count orders in Step Table
+        FOR #i := 0 TO 20 DO
+            IF #System.StepTable[#i].OrderNo <> 0
+                AND #System.StepTable[#i].StepNo <> 0
+                AND #System.StepTable[#i].PlaceTime <> ''
+                //AND #System.StepTable[#i].Device <> ''
+                AND #System.StepTable[#i].Status = 
+            THEN
+                #n += 1;
+            ELSE
+                EXIT;
+            END_IF;
+        END_FOR;
+        
+        IF #n > 0 THEN
+            //shift order table down by Order number rows
+            FOR #i := 99 TO (#n + 1) BY -1 DO
+                #System.OrderTable[#i] := #System.OrderTable[#i - #n];
+            END_FOR;
+            //copy data from step table to order table
+            FOR #i := 0 TO #n DO
+                #System.OrderTable[#n - #i (*+ 1*)] := #System.StepTable[#i];
+            END_FOR;
+            //clean step table
+            FOR #i := 0(*1*) TO 20 DO
+                #System.StepTable[#i] := #EmptyOrder;
+            END_FOR;
+            #System.CurrentOrder += #n;
+        
+            
+            // Transfer Pallet Roller to Roller - 
+      
+            IF #Roller_To_Roller_CurrentOrder <> 0 THEN
+                #Roller_To_Roller_CurrentOrder += #n;
+            END_IF;
+            
+            
+            // Transfer Pallet Roller to Roller - Inbound to PP1
+            
+            IF #RTR_ITP1_CurrentOrder <> 0 THEN
+                #RTR_ITP1_CurrentOrder += #n;
+            END_IF;
+            
+            // Transfer Pallet Roller to Roller - PP1 to PP2
+            
+            IF #RTR_P1P2_CurrentOrder <> 0 THEN
+                #RTR_P1P2_CurrentOrder += #n;
+            END_IF;
+            
+            // Transfer Pallet Roller TO Roller - PP3 TO PP4
+            
+            IF #RTR_P3P4_CurrentOrder <> 0 THEN
+                #RTR_P3P4_CurrentOrder += #n;
+            END_IF;
+            
+            
+            // Transfer Pallet Roller TO Roller - PP4 TO OUTBOUND
+            
+            IF #RTR_P4TO_CurrentOrder <> 0 THEN
+                #RTR_P4TO_CurrentOrder += #n;
+            END_IF;
+            
+            
+            // Transfer Pallet Chain to Chain
+            IF #Chain_To_Chain_CurrentOrder <> 0 THEN
+                #Chain_To_Chain_CurrentOrder += #n;
+            END_IF;
+            
+            // Transfer TO pick station (From Pop Conveyor 4)
+            IF #Pop4_To_PickSt_CurrentOrder <> 0 THEN
+                #Pop4_To_PickSt_CurrentOrder += #n;
+            END_IF;
+            
+            // Transfer from Pick station (To Pop Conveyor 1)
+            IF #PickSt_To_Pop1_CurrentOrder <> 0 THEN
+                #PickSt_To_Pop1_CurrentOrder += #n;
+            END_IF;
+            
+            
+            //Weigh Station
+            IF #WeighingStation_CurrentOrder <> 0 THEN
+                #WeighingStation_CurrentOrder += #n;
+            END_IF;
+            
+            //Profile Station
+            IF #ProfileStation_CurrentOrder <> 0 THEN
+                #ProfileStation_CurrentOrder += #n;
+            END_IF;
+       
+       
+        END_IF;
+         #System.OrderSent := FALSE;
+    END_IF;
+END_REGION
+
+REGION Auto/Man Mode
+    //Enable Devices in Auto/Man Mode
+    IF #System.Auto_Man THEN
+      //  #Cnv_Entry.Mode := #Cnv_PopUp_1.Mode:= #WeighingStation.Mode := #ProfileStation.Mode :=
+       // #Cnv_PopUp_2.Mode := #Cnv_PopUp_3.Mode := #Cnv_PopUp_4.Mode := #Cnv_Exit.Mode := 3;// Auto Mode
+        
+        #Cnv_Entry.Instruction.Enable := #Cnv_PopUp_1.Instruction.Enable := #WeighingStation.Enable :=
+        #ProfileStation.Enable := #Cnv_PopUp_2.Instruction.Enable := #Cnv_PopUp_3.Enabled := #Cnv_PopUp_4.Instruction.Enable :=
+        #Cnv_Exit.Instruction.Enable := TRUE; // := Not System.Error
+        
+    ELSE //Disable Devices in Auto/Man Mode
+       // #Cnv_Entry.Mode := #Cnv_PopUp_1.Mode := #WeighingStation.Mode := #ProfileStation.Mode :=
+      //  #Cnv_PopUp_2.Mode := #Cnv_PopUp_3.Mode := #Cnv_PopUp_4.Mode := #Cnv_Exit.Mode:= 0;
+        #Cnv_Entry.Instruction.Enable := #Cnv_PopUp_1.Instruction.Enable := #WeighingStation.Enable :=
+        #ProfileStation.Enable := #Cnv_PopUp_2.Instruction.Enable := #Cnv_PopUp_3.Enabled := #Cnv_PopUp_4.Instruction.Enable :=
+        #Cnv_Exit.Instruction.Enable := FALSE;
+    END_IF;
+END_REGION
+
+REGION Roller to Roller - Carousel Conveyors - Original
+    //Roller conveyors
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = 
+        AND #System.OrderTable[1].Status = 
+       // AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+      //  AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+        //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+       // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+       // 
+       // AND "OPC_UA_Control_FB_DB".State_Carrousel = 10 // OPC UA ready to receive next transaction
+    THEN
+        #Roller_To_Roller_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#Roller_To_Roller_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Device = 
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status = 
+        //AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+       // AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+       //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+       // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+    THEN
+        //OPC Commands to Move Pallets - Carousel Conveyors
+        // WCS => Order Table => OPC Ua Control Table
+        // 
+        IF #System.OrderTable[1].OPC_Control.Task_Type = 14 THEN // Profile Station - P1 TO P2
+            "Control_DB"."Profiling Station".Start := TRUE;
+        ELSE
+            "Control_DB"."Profiling Station".Start :=FALSE;
+        END_IF;
+            
+        IF #System.OrderTable[1].OPC_Control.Task_Type = 16 THEN // Barcode Scanner - INB TO P1
+            "Control_DB"."InBarcode_Station".Start := TRUE;
+        ELSE
+            "Control_DB"."InBarcode_Station".Start := FALSE;
+        END_IF;
+        
+        //"Control_DB".InBarcode_Station.Start := TRUE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location:=#System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        #Roller_To_Roller_WatchdogStart := true;
+      
+        
+    END_IF;
+    
+    //RUNNING
+    IF (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running
+        OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)AND #System.Auto_Man THEN
+        // "Control_DB"."Profiling Station".Start := FALSE;
+        // "Control_DB".InBarcode_Station.Start := FALSE;
+        // "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        // "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        // "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        // "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        // "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        // "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR
+        #Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running) AND #Roller_To_Roller_CurrentOrder <> 0
+    THEN
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+        #Roller_To_Roller_CurrentOrder := 0;
+        
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+    END_IF;
+    
+    //Error
+    IF (#Cnv_Entry.Error OR #Cnv_Exit.Error OR #Cnv_PopUp_1.Error OR #Cnv_PopUp_2.Error OR #Cnv_PopUp_3.Error OR #Cnv_PopUp_4.Error) THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].ErrorID := (#Cnv_Entry.Cnv_Errors.Error_Word_4
+        OR #Cnv_Exit.Cnv_Errors.Error_Word_4
+        OR #Cnv_PopUp_1.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_2.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_3.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_4.Cnv_Errors.Error_Word_1);
+        
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #Roller_To_RollerDoneRTrig(CLK :="Control_DB"."Carrousel_Order Table".Movement_Request_Complete);
+    IF #Roller_To_RollerDoneRTrig.Q THEN
+        
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        #Roller_To_Roller_WatchdogStart := FALSE;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+        #Roller_To_Roller_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Roller TO Roller - Carousel Conveyors - Inbound to PP1 - With Barcode
+//Roller conveyors
+IF #System.OrderTable[1].StepNo <> 0
+    AND #System.OrderTable[1].Device = 
+    AND #System.OrderTable[1].Status = 
+    // AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+    AND NOT #System.Error
+    AND NOT #Canceling
+    //  AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+    //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+    // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+    // 
+    // AND "OPC_UA_Control_FB_DB".State_Carrousel = 10 // OPC UA ready to receive next transaction
+THEN
+    #Roller_To_Roller_CurrentOrder := 1;
+END_IF;
+IF #System.OrderTable[#Roller_To_Roller_CurrentOrder].StepNo <> 0
+    AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Device = 
+    AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status = 
+    //AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+    AND NOT #System.Error
+    AND NOT #Canceling
+    // AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+    //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+    // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+THEN
+    //OPC Commands to Move Pallets - Carousel Conveyors
+    // WCS => Order Table => OPC Ua Control Table
+    // 
+    IF #System.OrderTable[1].OPC_Control.Task_Type = 14 THEN // Profile Station - P1 TO P2
+        "Control_DB"."Profiling Station".Start := TRUE;
+    ELSE
+        "Control_DB"."Profiling Station".Start := FALSE;
+    END_IF;
+    
+    IF #System.OrderTable[1].OPC_Control.Task_Type = 16 THEN // Barcode Scanner - INB TO P1
+        "Control_DB"."InBarcode_Station".Start := TRUE;
+    ELSE
+        "Control_DB"."InBarcode_Station".Start := FALSE;
+    END_IF;
+    
+    //"Control_DB".InBarcode_Station.Start := TRUE;
+    "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+    "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+    "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+    "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+    "Control_DB"."Carrousel_Order Table".Source_Location := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+    "Control_DB"."Carrousel_Order Table".Destination_Location := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+    #Roller_To_Roller_WatchdogStart := true;
+    
+    
+END_IF;
+
+//RUNNING
+IF (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running
+    OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running) AND #System.Auto_Man THEN
+    // "Control_DB"."Profiling Station".Start := FALSE;
+    // "Control_DB".InBarcode_Station.Start := FALSE;
+    // "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+    // "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+    // "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+    // "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+    // "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+    // "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+    
+    //#Cnv_Entry.Instruction.Execute := FALSE;
+    #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+END_IF;
+
+//Cancel order
+IF #Canceling AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR
+    #Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running) AND #Roller_To_Roller_CurrentOrder <> 0
+THEN
+    #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+    #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+    #Roller_To_Roller_CurrentOrder := 0;
+    
+    "Control_DB"."Profiling Station".Start := FALSE;
+    "Control_DB".InBarcode_Station.Start := FALSE;
+    "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+    "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+    "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+    "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+    "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+    "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+    //#Cnv_Entry.Instruction.Execute := FALSE;
+END_IF;
+
+//Error
+IF (#Cnv_Entry.Error OR #Cnv_Exit.Error OR #Cnv_PopUp_1.Error OR #Cnv_PopUp_2.Error OR #Cnv_PopUp_3.Error OR #Cnv_PopUp_4.Error) THEN
+    //#Cnv_Entry.Instruction.Execute := FALSE;
+    "Control_DB"."Profiling Station".Start := FALSE;
+    "Control_DB".InBarcode_Station.Start := FALSE;
+    "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+    "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+    "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+    "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+    "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+    "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+    #System.OrderTable[#Roller_To_Roller_CurrentOrder].ErrorID := (#Cnv_Entry.Cnv_Errors.Error_Word_4
+    OR #Cnv_Exit.Cnv_Errors.Error_Word_4
+    OR #Cnv_PopUp_1.Cnv_Errors.Error_Word_1
+    OR #Cnv_PopUp_2.Cnv_Errors.Error_Word_1
+    OR #Cnv_PopUp_3.Cnv_Errors.Error_Word_1
+    OR #Cnv_PopUp_4.Cnv_Errors.Error_Word_1);
+    
+END_IF;
+
+//MOVEMENT FINALIZED
+#Roller_To_RollerDoneRTrig(CLK := "Control_DB"."Carrousel_Order Table".Movement_Request_Complete);
+IF #Roller_To_RollerDoneRTrig.Q THEN
+    
+    "Control_DB"."Profiling Station".Start := FALSE;
+    "Control_DB".InBarcode_Station.Start := FALSE;
+    "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+    "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+    "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+    "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+    "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+    "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+    
+    #Roller_To_Roller_WatchdogStart := FALSE;
+    #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+    #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+    #Roller_To_Roller_CurrentOrder := 0;
+END_IF;
+END_REGION
+
+REGION Roller TO Roller - Carousel Conveyors - PP1 to PP2 - With Profile Station
+    //Roller conveyors
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = 
+        AND #System.OrderTable[1].Status = 
+        // AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        //  AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+        //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+        // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+        // 
+        // AND "OPC_UA_Control_FB_DB".State_Carrousel = 10 // OPC UA ready to receive next transaction
+    THEN
+        #Roller_To_Roller_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#Roller_To_Roller_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Device = 
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status = 
+        //AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        // AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+        //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+        // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+    THEN
+        //OPC Commands to Move Pallets - Carousel Conveyors
+        // WCS => Order Table => OPC Ua Control Table
+        // 
+        IF #System.OrderTable[1].OPC_Control.Task_Type = 14 THEN // Profile Station - P1 TO P2
+            "Control_DB"."Profiling Station".Start := TRUE;
+        ELSE
+            "Control_DB"."Profiling Station".Start := FALSE;
+        END_IF;
+        
+        IF #System.OrderTable[1].OPC_Control.Task_Type = 16 THEN // Barcode Scanner - INB TO P1
+            "Control_DB"."InBarcode_Station".Start := TRUE;
+        ELSE
+            "Control_DB"."InBarcode_Station".Start := FALSE;
+        END_IF;
+        
+        //"Control_DB".InBarcode_Station.Start := TRUE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        #Roller_To_Roller_WatchdogStart := true;
+        
+        
+    END_IF;
+    
+    //RUNNING
+    IF (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running
+        OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running) AND #System.Auto_Man THEN
+        // "Control_DB"."Profiling Station".Start := FALSE;
+        // "Control_DB".InBarcode_Station.Start := FALSE;
+        // "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        // "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        // "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        // "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        // "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        // "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR
+        #Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running) AND #Roller_To_Roller_CurrentOrder <> 0
+    THEN
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+        #Roller_To_Roller_CurrentOrder := 0;
+        
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+    END_IF;
+    
+    //Error
+    IF (#Cnv_Entry.Error OR #Cnv_Exit.Error OR #Cnv_PopUp_1.Error OR #Cnv_PopUp_2.Error OR #Cnv_PopUp_3.Error OR #Cnv_PopUp_4.Error) THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].ErrorID := (#Cnv_Entry.Cnv_Errors.Error_Word_4
+        OR #Cnv_Exit.Cnv_Errors.Error_Word_4
+        OR #Cnv_PopUp_1.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_2.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_3.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_4.Cnv_Errors.Error_Word_1);
+        
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #Roller_To_RollerDoneRTrig(CLK := "Control_DB"."Carrousel_Order Table".Movement_Request_Complete);
+    IF #Roller_To_RollerDoneRTrig.Q THEN
+        
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        #Roller_To_Roller_WatchdogStart := FALSE;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+        #Roller_To_Roller_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Roller TO Roller - Carousel Conveyors - PP3 to PP4
+    //Roller conveyors
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = 
+        AND #System.OrderTable[1].Status = 
+        // AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        //  AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+        //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+        // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+        // 
+        // AND "OPC_UA_Control_FB_DB".State_Carrousel = 10 // OPC UA ready to receive next transaction
+    THEN
+        #Roller_To_Roller_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#Roller_To_Roller_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Device = 
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status = 
+        //AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        // AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+        //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+        // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+    THEN
+        //OPC Commands to Move Pallets - Carousel Conveyors
+        // WCS => Order Table => OPC Ua Control Table
+        // 
+        IF #System.OrderTable[1].OPC_Control.Task_Type = 14 THEN // Profile Station - P1 TO P2
+            "Control_DB"."Profiling Station".Start := TRUE;
+        ELSE
+            "Control_DB"."Profiling Station".Start := FALSE;
+        END_IF;
+        
+        IF #System.OrderTable[1].OPC_Control.Task_Type = 16 THEN // Barcode Scanner - INB TO P1
+            "Control_DB"."InBarcode_Station".Start := TRUE;
+        ELSE
+            "Control_DB"."InBarcode_Station".Start := FALSE;
+        END_IF;
+        
+        //"Control_DB".InBarcode_Station.Start := TRUE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        #Roller_To_Roller_WatchdogStart := true;
+        
+        
+    END_IF;
+    
+    //RUNNING
+    IF (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running
+        OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running) AND #System.Auto_Man THEN
+        // "Control_DB"."Profiling Station".Start := FALSE;
+        // "Control_DB".InBarcode_Station.Start := FALSE;
+        // "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        // "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        // "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        // "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        // "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        // "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR
+        #Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running) AND #Roller_To_Roller_CurrentOrder <> 0
+    THEN
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+        #Roller_To_Roller_CurrentOrder := 0;
+        
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+    END_IF;
+    
+    //Error
+    IF (#Cnv_Entry.Error OR #Cnv_Exit.Error OR #Cnv_PopUp_1.Error OR #Cnv_PopUp_2.Error OR #Cnv_PopUp_3.Error OR #Cnv_PopUp_4.Error) THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].ErrorID := (#Cnv_Entry.Cnv_Errors.Error_Word_4
+        OR #Cnv_Exit.Cnv_Errors.Error_Word_4
+        OR #Cnv_PopUp_1.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_2.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_3.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_4.Cnv_Errors.Error_Word_1);
+        
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #Roller_To_RollerDoneRTrig(CLK := "Control_DB"."Carrousel_Order Table".Movement_Request_Complete);
+    IF #Roller_To_RollerDoneRTrig.Q THEN
+        
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        #Roller_To_Roller_WatchdogStart := FALSE;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+        #Roller_To_Roller_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Roller TO Roller - Carousel Conveyors - PP4 to Outbound
+    //Roller conveyors
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = 
+        AND #System.OrderTable[1].Status = 
+        // AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        //  AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+        //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+        // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+        // 
+        // AND "OPC_UA_Control_FB_DB".State_Carrousel = 10 // OPC UA ready to receive next transaction
+    THEN
+        #Roller_To_Roller_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#Roller_To_Roller_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Device = 
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status = 
+        //AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running  OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        // AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> #RUNNING_STATUS
+        //AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> #RUNNING_STATUS
+        // AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status <> #RUNNING_STATUS
+    THEN
+        //OPC Commands to Move Pallets - Carousel Conveyors
+        // WCS => Order Table => OPC Ua Control Table
+        // 
+        IF #System.OrderTable[1].OPC_Control.Task_Type = 14 THEN // Profile Station - P1 TO P2
+            "Control_DB"."Profiling Station".Start := TRUE;
+        ELSE
+            "Control_DB"."Profiling Station".Start := FALSE;
+        END_IF;
+        
+        IF #System.OrderTable[1].OPC_Control.Task_Type = 16 THEN // Barcode Scanner - INB TO P1
+            "Control_DB"."InBarcode_Station".Start := TRUE;
+        ELSE
+            "Control_DB"."InBarcode_Station".Start := FALSE;
+        END_IF;
+        
+        //"Control_DB".InBarcode_Station.Start := TRUE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := #System.OrderTable[#Roller_To_Roller_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        #Roller_To_Roller_WatchdogStart := true;
+        
+        
+    END_IF;
+    
+    //RUNNING
+    IF (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR #Cnv_PopUp_2.Running
+        OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running) AND #System.Auto_Man THEN
+        // "Control_DB"."Profiling Station".Start := FALSE;
+        // "Control_DB".InBarcode_Station.Start := FALSE;
+        // "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        // "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        // "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        // "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        // "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        // "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#Cnv_Entry.Running OR #Cnv_Exit.Running OR #Cnv_PopUp_1.Running OR
+        #Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running) AND #Roller_To_Roller_CurrentOrder <> 0
+    THEN
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+        #Roller_To_Roller_CurrentOrder := 0;
+        
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+    END_IF;
+    
+    //Error
+    IF (#Cnv_Entry.Error OR #Cnv_Exit.Error OR #Cnv_PopUp_1.Error OR #Cnv_PopUp_2.Error OR #Cnv_PopUp_3.Error OR #Cnv_PopUp_4.Error) THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].ErrorID := (#Cnv_Entry.Cnv_Errors.Error_Word_4
+        OR #Cnv_Exit.Cnv_Errors.Error_Word_4
+        OR #Cnv_PopUp_1.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_2.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_3.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_4.Cnv_Errors.Error_Word_1);
+        
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #Roller_To_RollerDoneRTrig(CLK := "Control_DB"."Carrousel_Order Table".Movement_Request_Complete);
+    IF #Roller_To_RollerDoneRTrig.Q THEN
+        
+        "Control_DB"."Profiling Station".Start := FALSE;
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        #Roller_To_Roller_WatchdogStart := FALSE;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status := ;
+        #System.OrderTable[#Roller_To_Roller_CurrentOrder].CompleteTime := #CurrentTime;
+        #Roller_To_Roller_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Chain to Chain - Carousel Conveyors - Pop 2 to Pop 3
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = 
+        AND #System.OrderTable[1].Status = 
+        AND NOT (#Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> 
+      
+    THEN
+        #Chain_To_Chain_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#Chain_To_Chain_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Device = 
+        AND #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status = 
+        AND NOT (#Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> 
+    THEN
+        //OPC Commands to Move Pallets - Carousel Conveyors
+        // WCS => Order Table => OPC Ua Control Table
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := #System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := #System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        #Chain_To_Chain_WatchdogStart := true;
+        
+        
+    END_IF;
+    
+    //RUNNING
+    IF (#Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running)AND #System.Auto_Man THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status := ;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running) AND #Chain_To_Chain_CurrentOrder <> 0 THEN
+        
+       
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status := ;
+        #System.OrderTable[#Chain_To_Chain_CurrentOrder].CompleteTime := #CurrentTime;
+        #Chain_To_Chain_CurrentOrder := 0;
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+    END_IF;
+    
+    //Error
+    IF (#Cnv_PopUp_2.Error OR #Cnv_PopUp_3.Error) THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        //
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        #System.OrderTable[#Chain_To_Chain_CurrentOrder].ErrorID := (#Cnv_PopUp_2.Cnv_Errors.Error_Word_1
+                                                                     OR #Cnv_PopUp_3.Cnv_Errors.Error_Word_1);
+        
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #Chain_To_ChainDoneRTrig(CLK := "Control_DB"."Carrousel_Order Table".Movement_Request_Complete);
+    IF #Chain_To_ChainDoneRTrig.Q THEN
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        
+        #Chain_To_Chain_WatchdogStart := FALSE;
+        #System.OrderTable[#Chain_To_Chain_CurrentOrder].Status := ;
+        #System.OrderTable[#Chain_To_Chain_CurrentOrder].CompleteTime := #CurrentTime;
+        #Chain_To_Chain_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Pop4 to Pick Station - Carousel Conveyors - Pop 4 to Pick Station
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = 
+        AND #System.OrderTable[1].Status = 
+        AND NOT (#Cnv_PopUp_4.Running OR #Cnv_PopUp_1.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> 
+        AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> 
+        
+    THEN
+        #Pop4_To_PickSt_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].Device = 
+        AND #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].Status = 
+        AND NOT (#Cnv_PopUp_4.Running OR #Cnv_PopUp_1.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> 
+        AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status <> 
+    THEN
+        //OPC Commands to Move Pallets - Carousel Conveyors
+        // WCS => Order Table => OPC Ua Control Table
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#Pop4_To_PickSt_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Pop4 to Pick Station Conveyor = Task Type = 8
+        "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        #Pop4_To_PickWatchdogStart := TRUE;
+        
+     
+        
+    END_IF;
+    
+    //RUNNING
+    IF (#Cnv_PopUp_4.Running OR #Cnv_PopUp_1.Running) AND #System.Auto_Man THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].Status := ;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#Cnv_PopUp_4.Running OR #Cnv_PopUp_1.Running) AND #Pop4_To_PickSt_CurrentOrder <> 0 THEN
+        #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].Status := ;
+        #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].CompleteTime := #CurrentTime;
+        #Pop4_To_PickSt_CurrentOrder := 0;
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+    END_IF;
+    
+    //Error
+    IF (#Cnv_PopUp_4.Error OR #Cnv_PopUp_1.Error) THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].ErrorID := (#Cnv_PopUp_4.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_1.Cnv_Errors.Error_Word_1);
+        
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #Pop4_To_PickSt_DoneRTrig(CLK := "Control_DB"."Carrousel_Order Table".Movement_Request_Complete);
+    IF #Pop4_To_PickSt_DoneRTrig.Q THEN
+        #Pop4_To_PickWatchdogStart := FALSE;
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].Status := ;
+        #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].CompleteTime := #CurrentTime;
+        #Pop4_To_PickSt_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Pick Station to Pop1 - Carousel Conveyors - Pick Station To Pop 1 
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = 
+        AND #System.OrderTable[1].Status = 
+        AND NOT (#Cnv_PopUp_1.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> 
+        AND #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].Status <> 
+    THEN
+        #PickSt_To_Pop1_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Device = 
+        AND #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status = 
+        AND NOT (#Cnv_PopUp_1.Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+        AND #System.OrderTable[#Roller_To_Roller_CurrentOrder].Status <> 
+        AND #System.OrderTable[#Pop4_To_PickSt_CurrentOrder].Status <> 
+    THEN
+        //OPC Commands to Move Pallets - Carousel Conveyors
+        // WCS => Order Table => OPC Ua Control Table
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#PickSt_To_Pop1_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Roller to Roller Conveyor = Task Type = 6
+        "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        #PickSt_To_Pop1WatchdogStart := true;
+        
+        
+    END_IF;
+    
+    //RUNNING
+    IF (#Cnv_PopUp_1.Running) AND #System.Auto_Man THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status := ;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#Cnv_PopUp_1.Running) AND #PickSt_To_Pop1_CurrentOrder <> 0 THEN
+        #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status := ;
+        #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].CompleteTime := #CurrentTime;
+        #PickSt_To_Pop1_CurrentOrder := 0;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+    END_IF;
+    
+    //Error
+    IF (#Cnv_PopUp_2.Error OR #Cnv_PopUp_3.Error) THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].ErrorID := (#Cnv_PopUp_2.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_3.Cnv_Errors.Error_Word_1);
+        
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #PickSt_To_Pop1_DoneRTrig(CLK := "Control_DB"."Carrousel_Order Table".Movement_Request_Complete);
+    IF #PickSt_To_Pop1_DoneRTrig.Q THEN
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#Chain_To_Chain_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Chain to Chain Conveyor = Task Type = 7
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."Carrousel_Order Table".Source_Location := 0; // Send the Source Location from the Conveyor
+        "Control_DB"."Carrousel_Order Table".Destination_Location := 0; // Send the Destination Location to the Conveyor;
+        
+        #PickSt_To_Pop1WatchdogStart := FALSE;
+        #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].Status := ;
+        #System.OrderTable[#PickSt_To_Pop1_CurrentOrder].CompleteTime := #CurrentTime;
+        #PickSt_To_Pop1_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Weigh Station - Carousel Conveyors 
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = 
+        AND #System.OrderTable[1].Status = 
+        AND NOT ("Control_DB"."Weighing Station".Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        #WeighingStation_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#WeighingStation_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#WeighingStation_CurrentOrder].Device = 
+        AND #System.OrderTable[#WeighingStation_CurrentOrder].Status = 
+        AND NOT ("Control_DB"."Weighing Station".Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        //OPC Commands to Move Pallets - Carousel Conveyors
+        // WCS => Order Table => OPC Ua Control Table
+        
+       
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#WeighingStation_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#WeighingStation_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Start Weigh Station = Task Type = 10
+        "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#WeighingStation_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#WeighingStation_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        #WeighingStation_WatchdogStart := true;
+        
+        
+    END_IF;
+    
+    //RUNNING
+    IF ("Control_DB"."Weighing Station".Running) AND #System.Auto_Man THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        #System.OrderTable[#WeighingStation_CurrentOrder].Status := ;
+       
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT ("Control_DB"."Weighing Station".Running) AND #WeighingStation_CurrentOrder <> 0 THEN
+        #System.OrderTable[#WeighingStation_CurrentOrder].Status := ;
+        #System.OrderTable[#WeighingStation_CurrentOrder].CompleteTime := #CurrentTime;
+        #WeighingStation_CurrentOrder := 0;
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#WeighingStation_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Start Weigh Station = Task Type = 10
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+    END_IF;
+  (*  
+    //Error
+    IF (#WeighingStation. OR #Cnv_PopUp_3.Error) THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        
+        #System.OrderTable[#WeighingStation_CurrentOrder].ErrorID := (#Cnv_PopUp_2.Cnv_Errors.Error_Word_1
+      OR #Cnv_PopUp_3.Cnv_Errors.Error_Word_1);
+        
+    END_IF;
+   *) 
+    //MOVEMENT FINALIZED
+    #WeighingStationDoneRTrig(CLK := "Control_DB"."Weighing Station".Done);
+    IF #WeighingStationDoneRTrig.Q THEN
+        #WeighingStation_WatchdogStart := FALSE;
+        #System.OrderTable[#WeighingStation_CurrentOrder].Status := ;
+        #System.OrderTable[#WeighingStation_CurrentOrder].CompleteTime := #CurrentTime;
+        #WeighingStation_CurrentOrder := 0;
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#WeighingStation_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Start Weigh Station = Task Type = 10
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+    END_IF;
+END_REGION
+(*
+REGION Profile Station - Carousel Conveyors 
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = #PROFILE_STATION_DEVICE
+        AND #System.OrderTable[1].Status = #QUEUED_STATUS
+        AND NOT ("Control_DB"."Profiling Station".Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        #ProfileStation_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#ProfileStation_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#ProfileStation_CurrentOrder].Device = #PROFILE_STATION_DEVICE
+        AND #System.OrderTable[#ProfileStation_CurrentOrder].Status = #QUEUED_STATUS
+        AND NOT ("Control_DB"."Profiling Station".Running)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        //OPC Commands to Move Pallets - Carousel Conveyors
+        // WCS => Order Table => OPC Ua Control Table
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := TRUE;//#System.OrderTable[#ProfileStation_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := #System.OrderTable[#ProfileStation_CurrentOrder].OPC_Control.Task_Type; //  Send the Task Type - Start Weigh Station = Task Type = 10
+        "Control_DB"."Carrousel_Order Table".Task_ID := #System.OrderTable[#ProfileStation_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := #System.OrderTable[#ProfileStation_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        #ProfileStation_WatchdogStart := true;
+        
+        
+    END_IF;
+    
+    //RUNNING
+    IF ("Control_DB"."Profiling Station".Running) AND #System.Auto_Man THEN
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+        #System.OrderTable[#ProfileStation_CurrentOrder].Status := #RUNNING_STATUS;
+        
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#ProfileStation_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Start Weigh Station = Task Type = 10
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        #ProfileStation_WatchdogStart := true;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT ("Control_DB"."Profiling Station".Running) AND #ProfileStation_CurrentOrder <> 0 THEN
+        #System.OrderTable[#ProfileStation_CurrentOrder].Status := #CANCELED_STATUS;
+        #System.OrderTable[#ProfileStation_CurrentOrder].CompleteTime := #CurrentTime;
+        #ProfileStation_CurrentOrder := 0;
+        "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#ProfileStation_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Start Weigh Station = Task Type = 10
+        "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        //#Cnv_Entry.Instruction.Execute := FALSE;
+    END_IF;
+    (*  
+      //Error
+      IF (#WeighingStation. OR #Cnv_PopUp_3.Error) THEN
+          //#Cnv_Entry.Instruction.Execute := FALSE;
+          
+          #System.OrderTable[#WeighingStation_CurrentOrder].ErrorID := (#Cnv_PopUp_2.Cnv_Errors.Error_Word_1
+        OR #Cnv_PopUp_3.Cnv_Errors.Error_Word_1);
+          
+      END_IF;
+     *)
+     //MOVEMENT FINALIZED
+    #ProfileStationDoneRTrig(CLK := "Control_DB"."Profiling Station".Done);
+    IF #ProfileStationDoneRTrig.Q THEN
+         #ProfileStation_WatchdogStart := FALSE;
+         #System.OrderTable[#ProfileStation_CurrentOrder].Status := #COMPLETED_STATUS;
+         #System.OrderTable[#ProfileStation_CurrentOrder].CompleteTime := #CurrentTime;
+         #ProfileStation_CurrentOrder := 0;
+         "Control_DB"."Carrousel_Order Table".Task_Data_Available := FALSE;//#System.OrderTable[#ProfileStation_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+         "Control_DB"."Carrousel_Order Table".Task_Type := 0; //  Send the Task Type - Start Weigh Station = Task Type = 10
+         "Control_DB"."Carrousel_Order Table".Task_ID := 0; // Send the Task ID number;
+         "Control_DB"."Carrousel_Order Table".Task_Metadata := ''; // Send the Task Metadata Unique identifier
+     END_IF;
+ END_REGION
+*)
+REGION Max Running Order Number
+    #MaxRunningOrderNo := MAX(IN1 := #Roller_To_Roller_CurrentOrder, IN2 := #Chain_To_Chain_CurrentOrder,
+                              IN3 := #Pop4_To_PickSt_CurrentOrder, IN4 := #PickSt_To_Pop1_CurrentOrder,
+                              IN5 := #WeighingStation_CurrentOrder, IN6 := #ProfileStation_CurrentOrder);
+END_REGION
+
+REGION Pause Orders
+    #ErrorRTrig(CLK := #System.Error);
+    #PauseRTrig(CLK := #System.PauseOrders OR NOT #System.Auto_Man);
+    IF #ErrorRTrig.Q OR #PauseRTrig.Q THEN
+        #System.PauseOrders := FALSE;
+        #System.Paused := #MaxRunningOrderNo > 0;
+        IF #System.Paused THEN
+            FOR #i := 1 TO UDINT_TO_DINT(#MaxRunningOrderNo) DO
+                IF #System.OrderTable[#i].Status = '' THEN
+                    EXIT;
+                ELSIF #System.OrderTable[#i].Status =  THEN
+                    #System.OrderTable[#i].Status := ;
+                ELSIF #System.OrderTable[#i].Status =  AND NOT #System.Auto_Man THEN
+                    #System.OrderTable[#i].Status := ;
+                END_IF;
+            END_FOR;
+        END_IF;
+    END_IF;
+    IF #System.Paused AND #MaxRunningOrderNo = 0 THEN
+        #System.Paused := FALSE;
+    END_IF;
+END_REGION
+
+REGION Cancel Orders
+    #CancelRTrig(CLK := #System.CancelOrders);
+    #WeighingStation.Cancel := #ProfileStation.Cancel := #CancelRTrig.Q;
+    IF #CancelRTrig.Q THEN
+        #Canceling := TRUE;
+        #System.CancelOrders := FALSE;
+        #System.Paused := FALSE;
+        FOR #i := 1 TO UDINT_TO_DINT(#MaxRunningOrderNo) DO
+            IF #System.OrderTable[#i].Status = '' THEN
+                CONTINUE;
+            ELSIF #System.OrderTable[#i].Status = 
+                OR #System.OrderTable[#i].Status = 
+            THEN
+                #System.OrderTable[#i].Status := ;
+                #System.OrderTable[#i].CompleteTime := #CurrentTime;
+            ELSIF #System.OrderTable[#i].Status = 
+            THEN
+                #System.OrderTable[#i].Status := ;
+                #System.OrderTable[#i].CompleteTime := #CurrentTime;
+            END_IF;
+        END_FOR;
+        #System.CurrentOrder := 0;
+    END_IF;
+    IF #Canceling AND NOT (#Cnv_Entry.Running OR #Cnv_PopUp_1.Running OR #WeighingStation.Running OR #ProfileStation.Running
+        OR #Cnv_PopUp_2.Running OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running OR #Cnv_Exit.Running) THEN
+        #Canceling := FALSE;
+        #Roller_To_Roller_CurrentOrder := #Chain_To_Chain_CurrentOrder:= #PickSt_To_Pop1_CurrentOrder := #Pop4_To_PickSt_CurrentOrder := 0;
+         #WeighingStation_CurrentOrder:= #ProfileStation_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Resume Orders
+    #ResumeRTrig(CLK := #System.ResumeOrders);
+    IF #ResumeRTrig.Q THEN
+        #System.ResumeOrders := FALSE;
+        #System.CurrentOrder := #MaxRunningOrderNo;
+        IF NOT #System.Error THEN
+            #System.Paused := FALSE;
+            FOR #i := 1 TO UDINT_TO_DINT(#MaxRunningOrderNo) DO
+                IF #System.OrderTable[#i].Status = '' THEN
+                    EXIT;
+                ELSIF #System.OrderTable[#i].Status = 
+                    OR #System.OrderTable[#i].Status = 
+                THEN
+                    #System.OrderTable[#i].Status := ;
+                END_IF;
+            END_FOR;
+        END_IF;
+
+    END_IF;
+END_REGION
+
+REGION Order Handler
+    IF #System.Running AND NOT #System.Error
+        AND (#System.OrderTable[#System.CurrentOrder].Status = 
+        OR #System.OrderTable[#System.CurrentOrder].Status = 
+        OR #System.OrderTable[#System.CurrentOrder].Status = 
+        OR #System.OrderTable[#System.CurrentOrder].Sequence = 0)
+    THEN
+        IF #System.CurrentOrder > 0 THEN
+            #System.CurrentOrder -= 1;
+        ELSE
+            #System.CurrentOrder := 0;
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION Watchdogs
+    //Watchdog Timers
+    #PickSt_To_Pop1WatchdogTimer(IN := #PickSt_To_Pop1WatchdogStart,
+                                 PT := UDINT_TO_TIME(#Watchdog.Pick_TO_Pop1 * 60000),
+                                 Q => #System.Watchdog_TimeOut.Pick_TO_Pop1);
+    #Roller_To_Roller_WatchdogTimer(IN := #Roller_To_Roller_WatchdogStart,
+                                    PT := UDINT_TO_TIME(#Watchdog.Roller_TO_Roller * 60000),
+                                    Q => #System.Watchdog_TimeOut.Roller_TO_Roller);
+    #Chain_To_Chain_WatchdogTimer(IN := #Chain_To_Chain_WatchdogStart,
+                                  PT := UDINT_TO_TIME(#Watchdog.Chain_TO_Chain * 60000),
+                                  Q => #System.Watchdog_TimeOut.Chain_TO_Chain);
+    #Pop4_To_PickWatchdogTimer(IN := #Pop4_To_PickWatchdogStart,
+                               PT := UDINT_TO_TIME(#Watchdog.Pop4_TO_Pick * 60000),
+                               Q => #System.Watchdog_TimeOut.Pop4_TO_Pick);
+    #WeighingStation_WatchdogTimer(IN := #WeighingStation_WatchdogStart,
+                                   PT := UDINT_TO_TIME(#Watchdog.Weigh_Station * 60000),
+                                   Q => #System.Watchdog_TimeOut.Weigh_Station);
+    #ProfileStation_WatchdogTimer(IN := #ProfileStation_WatchdogStart,
+                                  PT := UDINT_TO_TIME(#Watchdog.Profile_Station * 60000),
+                                  Q => #System.Watchdog_TimeOut.Profile_Station);
+    
+    //Reset  Watchdog Timers
+    IF #System.Error OR #CancelRTrig.Q OR #PauseRTrig.Q OR "Reset_All" THEN
+        #PickSt_To_Pop1WatchdogStart := FALSE;
+        #Roller_To_Roller_WatchdogStart := FALSE;
+        #Chain_To_Chain_WatchdogStart := FALSE;
+        #Pop4_To_PickWatchdogStart := FALSE;
+        #WeighingStation_WatchdogStart := FALSE;
+        #ProfileStation_WatchdogStart := FALSE;
+       
+    END_IF;
+END_REGION
+
+REGION Reset Next Order Number
+    IF #System.NextOrder > 1
+        AND #CurrentDTL.HOUR = 0
+        AND #CurrentDTL.MINUTE = 0
+        AND #CurrentDTL.SECOND = 0
+    THEN
+        #System.NextOrder := 1;
+    END_IF;
+        
+END_REGION
+
+REGION #System Mode and State
+    #System.Selected := #System_Selected; // System selected
+    #System.Ready := NOT #System.Error AND #System.Selected;
+    #System.Auto_Man := #AutoMan_Switch;
+    #System.Running := #Cnv_Entry.Running OR #Cnv_PopUp_1.Running OR #WeighingStation.Running
+    OR #ProfileStation.Running OR #Cnv_PopUp_3.Running OR #Cnv_PopUp_4.Running;
+            
+    #System.Error := #Cnv_Entry.Error OR #Cnv_PopUp_1.Error OR #Cnv_PopUp_2.Error OR #Cnv_PopUp_3.Error OR #Cnv_PopUp_4.Error
+    OR #Cnv_Exit.Error ; (*Implement Weigh station error and Profile Station error*)
+    #System.IDLE := NOT #System.Running AND NOT #System.Paused AND NOT #System.Error;
+    IF #System.Running THEN
+        #System.State := 1;
+    ELSIF #System.Paused AND NOT #System.Error THEN
+        #System.State := 2;
+    ELSIF #System.Error THEN
+        #System.State := 3;
+    ELSE
+        #System.State := 0;
+    END_IF;
+END_REGION
+END_FUNCTION_BLOCK

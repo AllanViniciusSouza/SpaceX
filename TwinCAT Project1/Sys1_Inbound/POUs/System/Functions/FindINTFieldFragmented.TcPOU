@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FindINTFieldFragmented" Id="{14c9ebc7-9311-4079-9aa8-356f6e57deed}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FindINTFieldFragmented : INT
+VAR_INPUT
+    FieldName : STRING(254);
+    Str1 : STRING(254);
+    Str2 : STRING(254);
+END_VAR
+VAR_OUTPUT
+    Valid : BOOL;
+END_VAR
+VAR
+    value : DINT;
+END_VAR
+]]></Declaration>
+    <Implementation><ST><![CDATA[FindINTFieldFragmented := -9999;
+value := FindDINTFieldFragmented(FieldName := FieldName, Str1 := Str1, Str2 := Str2, Valid => Valid);
+IF NOT Valid THEN RETURN; END_IF;
+Valid := (value >= -32768) AND (value <= 32767);
+IF Valid THEN FindINTFieldFragmented := DINT_TO_INT(value); END_IF;
+]]></ST></Implementation>
+  </POU>
+</TcPlcObject>

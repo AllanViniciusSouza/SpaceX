@@ -1,0 +1,37 @@
+FUNCTION_BLOCK "FB_HeartBeat"   // FB 25, author 
+
+VAR_INPUT
+   PC_HeartBeat : Word;
+END_VAR
+
+VAR_OUTPUT
+   PLC_HeartBeat : Word;
+   PC_Disconnected : Bool;
+END_VAR
+
+VAR
+   TimeOut : TON_TIME;
+   Timer : TON_TIME;
+   PC_Heartbeat_old : Word;
+   StartTimerBit : Bool := FALSE;
+END_VAR
+
+BEGIN
+#Timer(IN := #StartTimerBit, //
+       PT := t#500ms);
+IF NOT #StartTimerBit THEN
+    #StartTimerBit := TRUE;
+END_IF;
+#Timer(IN := #StartTimerBit, //
+       PT := t#500ms);
+IF #Timer.Q THEN
+    #StartTimerBit := FALSE;
+    RESET_TIMER(#Timer);
+    #PLC_HeartBeat += 1;
+END_IF;
+//Time Out Timer
+#TimeOut(IN := #PC_HeartBeat = #PC_Heartbeat_old,
+         PT := t#10s);
+#PC_Heartbeat_old := #PC_HeartBeat;
+#PC_Disconnected := #TimeOut.Q; // if time out set PC_Disconnected
+END_FUNCTION_BLOCK

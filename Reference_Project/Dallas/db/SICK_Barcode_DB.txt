@@ -1,0 +1,24 @@
+DATA_BLOCK "SICK_Barcode_DB"   // InstanceDB 47  instance of "SICK_Barcode_FB"
+
+VAR_INPUT
+   Rd_Done : Bool;
+   Req_Done : Bool;
+   Req_Busy : Bool;
+   Error : Bool;
+   arrResult : Array[1..200] of Byte;
+   iCounter : USInt;
+   iLength : Int;
+   Error_Code : DWord;
+END_VAR
+
+VAR_OUTPUT
+   Test_Comm : Bool;
+   Enable_Trigger : Bool;
+   Disable_Trigger : Bool;
+   Enable_Req : Bool;
+   Result : String;
+   Test_OK : Bool;
+END_VAR
+
+
+// ---- start values (path : type := value)

@@ -1,0 +1,155 @@
+FUNCTION "Feed_VTD_HMI_FC_1"   // FC 57, author 
+
+VAR_INPUT
+   HMI_No : UInt;
+   HMI_Box : UInt;
+   Sys_No : UInt;
+   Safety_OK : Bool;
+   BCD_Test_Ok_HMI : Bool;
+   BCD_Error_HMI : Bool;
+   BCD_RdDone : Bool;
+   BCD_ReqDone : Bool;
+   BCD_ReqBusy : Bool;
+   Sick_Lector_Reseult : String;
+   Level_Below_Extractor : UInt;
+   Speed_mm_s : Real;
+END_VAR
+
+VAR_IN_OUT
+   BCD_Start_Comm_Test_HMI : Bool;
+   BCD_Enable_Trigger_HMI : Bool;
+   BCD_Disable_Trigger_HMI : Bool;
+   BCD_Execute_Function : Bool;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+//Status
+"VTD_HMI".Error[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Error;
+"VTD_HMI".Warning[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Warning <> 0;
+"VTD_HMI".Enabled[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Enabled;
+"VTD_HMI".Stopped[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Stopped;
+"VTD_HMI".Running[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Running;
+"VTD_HMI".Docked[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Docked;
+"VTD_HMI".Safety_OK[#HMI_No] := #Safety_OK;
+"VTD_HMI".Current_Task_Type[#HMI_No] :="Control_DB".VTD_Sys[#Sys_No].Current_Task_Type;
+"VTD_HMI".Current_Task_ID[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Current_Task_ID;
+"VTD_HMI".Current_Level[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Current_Level;
+"VTD_HMI".DP_State[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].LP_State;
+"VTD_HMI".Pallet_Type[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Pallet_Loaded;
+"VTD_HMI".Shuttle_Loaded[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Shuttle_Loaded;
+"VTD_HMI".SM_State[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].SM_State;
+"VTD_HMI".LE_Error[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Status.%X0;
+"VTD_HMI".AE_Error[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Status_2.%X15;
+"VTD_HMI".Encoder_Delta[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Encoder_Delta;
+"VTD_HMI".Moving_To_Level[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Instruction.Move_To_Level;
+"VTD_HMI".Cnv_Occupied[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Pallet_Loaded <> 0;
+"VTD_HMI".Progress[#HMI_No] := REAL_TO_INT("Control_DB".VTD_Sys[#Sys_No].LE);
+"VTD_HMI".Motor_SetPoint[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Motor_Speed;
+"VTD_HMI".Motor_Actual_Speed[#HMI_No] := INT_TO_UINT("Control_DB".VTD_Sys[#Sys_No].Motor.Speed_Actual);
+"VTD_HMI".Motor_Actual_Current[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Motor.Actual_Current;
+"VTD_HMI".Actual_Torque[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Motor.Actual_Torque;
+"VTD_HMI".Motor_Ready[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Motor.Ready;
+"VTD_HMI".Level_Below_Extractor[#HMI_No] := #Level_Below_Extractor;
+"VTD_HMI".Speed_mm_s[#HMI_No] := #Speed_mm_s;
+"VTD_Mode_HMI" := "Control_DB".VTD_Sys[#Sys_No].Mode;
+
+//MOTOR STATUS
+IF "Control_DB".VTD_Sys[#Sys_No].Motor.Error THEN
+    "VTD_HMI".Motor_Status[#HMI_No] := 2;
+ELSIF "Control_DB".VTD_Sys[#Sys_No].Motor.Enabled THEN
+    "VTD_HMI".Motor_Status[#HMI_No] := 1;
+ELSIF NOT "Control_DB".VTD_Sys[#Sys_No].Motor.Enabled THEN
+    "VTD_HMI".Motor_Status[#HMI_No] := 0;
+END_IF;
+
+//BARCODE
+"PopUps_DB_1".Lector_Barcode[#HMI_No].BCD_Test_Ok := #BCD_Test_Ok_HMI;
+"PopUps_DB_1".Lector_Barcode[#HMI_No].BCD_Error := #BCD_Error_HMI;
+"PopUps_DB_1".Lector_Barcode[#HMI_No].BCD_RdDone := #BCD_RdDone;
+"PopUps_DB_1".Lector_Barcode[#HMI_No].BCD_ReqDone := #BCD_ReqDone;
+"PopUps_DB_1".Lector_Barcode[#HMI_No].BCD_ReqBusy := #BCD_ReqBusy;
+"PopUps_DB_1".Lector_Barcode[#HMI_No].Lector_Reseult := #Sick_Lector_Reseult;
+
+//Inputs
+"VTD_HMI".Upper_Overtravel[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.Upper_Overtravel;
+"VTD_HMI".Upper_Limet[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.Upper_limit;
+"VTD_HMI".Ultimate_Slow[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.Ultimate_SlowDown;
+"VTD_HMI".Ultimate_Creep[#Sys_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.Ultimate_Creep;
+"VTD_HMI".Lower_Limit[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.Lower_Limit;
+"VTD_HMI".Lower_Overtravel[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.Lower_Overtravel;
+"VTD_HMI".Level_Detect1[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.Level_Detect1;
+"VTD_HMI".Level_Detect2[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.Level_Detect2;
+"VTD_HMI".DP1_Extended[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.DP1_Extended;
+"VTD_HMI".DP2_Extended[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.DP2_Extended;
+"VTD_HMI".DP1_Retracted[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.DP1_Retracted;
+"VTD_HMI".DP2_Retracted[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].Inputs.DP2_Retracted;
+"VTD_HMI"."Chain Slack 1"[#HMI_No] := NOT "Control_DB".VTD_Sys[#Sys_No].Inputs.Chain_Slack_1;
+"VTD_HMI"."Chain Slack 2"[#HMI_No] := NOT "Control_DB".VTD_Sys[#Sys_No].Inputs.Chain_Slack_2;
+"VTD_HMI"."Chain Slack 3"[#HMI_No] := NOT "Control_DB".VTD_Sys[#Sys_No].Inputs.Chain_Slack_3;
+"VTD_HMI"."Chain Slack 4"[#HMI_No] := NOT "Control_DB".VTD_Sys[#Sys_No].Inputs.Chain_Slack_4;
+"VTD_HMI".AE[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].AE;
+"VTD_HMI".LE[#HMI_No] := "Control_DB".VTD_Sys[#Sys_No].LE;
+"PopUps_DB_1".Linear_Encoder[#HMI_No].LE_Speed := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Speed;
+"PopUps_DB_1".Linear_Encoder[#HMI_No].LE_X_Unsafe_Position := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Position;
+"PopUps_DB_1".Linear_Encoder[#HMI_No].LE_Speed := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Speed;
+"PopUps_DB_1".Linear_Encoder[#HMI_No].LE_Warnings := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Warnings;
+
+"PopUps_DB_1".Absolute_Encoder[#HMI_No].AE_Position_1 := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Position_1;
+"PopUps_DB_1".Absolute_Encoder[#HMI_No].AE_Position_2 := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Position_2;
+"PopUps_DB_1".Absolute_Encoder[#HMI_No].AE_Speed := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Speed;
+"PopUps_DB_1".Absolute_Encoder[#HMI_No].AE_Status_1 := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Status_1;
+"PopUps_DB_1".Absolute_Encoder[#HMI_No].AE_Status_2 := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Status_2;
+
+//Instruction
+IF NOT "VTD_HMI".Charge_VTD_Commands[#HMI_No] THEN
+    "Control_DB".VTD_Sys[#Sys_No].Instruction.Reset := "VTD_HMI".Reset[#HMI_No] OR "Screen_DB_1".Reset_All[#HMI_No];
+    "Control_DB".VTD_Sys[#Sys_No].Instruction.Enable := "VTD_HMI".Enable[#HMI_No];
+    IF "VTD_HMI".Stop[#HMI_No] THEN
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Stop := TRUE;
+    ELSIF "Screen_DB_1".Reset_All[1] OR "VTD_HMI".Reset[#HMI_No] THEN
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Stop := "VTD_HMI".Stop[#HMI_No] := FALSE;
+    END_IF;
+    
+    IF "Control_DB".VTD_Sys[#Sys_No].Mode <> 3 THEN
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Pallet_Type := "VTD_HMI".Pallet_Type[#HMI_No];
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Task_ID := "VTD_HMI".Task_ID[#HMI_No];
+        
+        IF "Control_DB".VTD_Sys[#Sys_No].Mode = 2 AND "VTD_HMI".Move_To_Level[#HMI_No] <> 0 THEN
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Move_To_Level := "VTD_HMI".Move_To_Level[#HMI_No];
+            "VTD_HMI".Move_To_Level[#HMI_No] := 0;
+        END_IF;
+        
+        //UP
+        IF "Control_DB".VTD_Sys[#Sys_No].LE < "Settings_DB".VTD_Sys[#Sys_No].Teach_Values.Levels_LE[#HMI_Box MOD 10 + 1] - 150
+        THEN
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_Up := "VTD_HMI".Manual_Up[#HMI_No];
+        ELSE
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_Up := "VTD_HMI".Manual_Up[#HMI_No] := FALSE;
+        END_IF;
+        //DOWN
+        IF "Control_DB".VTD_Sys[#Sys_No].LE > "Settings_DB".VTD_Sys[#Sys_No].Teach_Values.Levels_LE[#HMI_Box MOD 10]
+        THEN
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_Down := "VTD_HMI".Manual_Down[#HMI_No];
+        ELSE
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_Down := "VTD_HMI".Manual_Down[#HMI_No] := FALSE;
+        END_IF;
+        
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_LP_Retract := "VTD_HMI".Manual_DP_Retract[#HMI_No];
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_LP_Extend := "VTD_HMI".Manual_DP_Extend[#HMI_No];
+    END_IF;
+    
+    //ABSOLUTE ENCODER
+    "Control_DB".VTD_Sys[#Sys_No].Outputs.AE_Control_Word_1 := "PopUps_DB_1".Absolute_Encoder[#HMI_No].AE_Control_Word_1;
+    "Control_DB".VTD_Sys[#Sys_No].Outputs.AE_Control_Word_2 := "PopUps_DB_1".Absolute_Encoder[#HMI_No].AE_Control_Word_2;
+    
+    //LINEAR ENCODER
+    "VTD_HMI".LE_Bypass[#Sys_No] := "PopUps_DB_1".Linear_Encoder[#HMI_No].LE_Bypass;
+    
+    //BARCODE
+    #BCD_Start_Comm_Test_HMI := "PopUps_DB_1".Lector_Barcode[#HMI_No].BCD_Test_Comm;
+    #BCD_Enable_Trigger_HMI  := "PopUps_DB_1".Lector_Barcode[#HMI_No].BCD_Enable_Trigger;
+    #BCD_Disable_Trigger_HMI   := "PopUps_DB_1".Lector_Barcode[#HMI_No].BCD_Disable_Trigger;
+    #BCD_Execute_Function  := "PopUps_DB_1".Lector_Barcode[#HMI_No].BCD_Execute_Function;
+END_IF;
+END_FUNCTION

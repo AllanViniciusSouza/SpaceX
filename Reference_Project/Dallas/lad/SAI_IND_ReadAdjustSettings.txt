@@ -1,0 +1,43 @@
+// FB "SAI_IND_ReadAdjustSettings" 50  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ID : HW_IO;   // The Profinet Device Hardware Identifier under device properties
+END_VAR
+
+VAR_OUTPUT
+   ScaleCapacity : Real;   // The configured scale capacity
+   Increment : Real;   // The configured scale increment value
+   Done : Bool;   // Read done successfully
+   Error : Bool;   // Error during reading process
+END_VAR
+
+VAR_IN_OUT
+   Read : Bool;   // Switch this bit ON to start reading
+END_VAR
+
+VAR
+   Static01 : Bool;
+   Step : Int;
+   RDREC_CAP : RDREC;
+   CAP_RECORD : Real;
+   INC_RECORD : Real;
+   Activate : Bool;
+END_VAR
+
+VAR_TEMP
+   Temp02 : Bool;
+END_VAR
+
+--- Network 1  Comment: Initializes FB output bits:
+Error;
+Done; | Title: Initialization
+   parts: Contact, Move, PBox, RCoil, SCoil
+   operands: #Read, #Static01, #Error, #Done, #Activate, #Step
+--- Network 2  Comment: Read Scale Capacity and Increment steps:
+10. Read in the scale capacity value (REAL, Index 16#4367) 
+20. Read in the scale increment value (REAL, Index 16#4366) 
+30. Output bit DONE is set ON if read is successful
+99. Output bit ERROR is set ON when there is an error | Title: Sequence
+   parts: Coil, Contact, Eq, Move, RCoil, RDREC, SCoil
+   operands: #Activate, #Step, #RDREC_CAP.BUSY, #RDREC_CAP.REQ, #ID, #CAP_RECORD, #RDREC_CAP.VALID, #RDREC_CAP.ERROR, #RDREC_CAP.STATUS, #ScaleCapacity, #INC_RECORD, #Increment, #Done, #Error, #Read

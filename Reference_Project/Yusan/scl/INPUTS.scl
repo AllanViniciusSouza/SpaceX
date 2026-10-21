@@ -1,0 +1,2203 @@
+FUNCTION "INPUTS"   // FC 25, author 
+
+   // RETURN : Void
+BEGIN
+REGION SYSTEM 1
+    REGION EXTRACTOR CONVEYOR
+        "Control_DB".ECnv_Sys[1].Inputs.Left := "CVTD1 SENSOR CONVEYOR LEFT";
+        "Control_DB".ECnv_Sys[1].Inputs.Lpd1 := "CVTD1 SENSOR CONVEYOR LEFT (PALLET DETECT 1)";
+        "Control_DB".ECnv_Sys[1].Inputs.Center := "CVTD1 SENSOR CONVEYOR CENTER";
+        "Control_DB".ECnv_Sys[1].Inputs.Right := "CVTD1 SENSOR CONVEYOR RIGHT";
+        "Control_DB".ECnv_Sys[1].Inputs.Rpd1 := "CVTD1 SENSOR CONVEYOR RIGHT (PALLET DETECT 1)";
+        
+        "T_OH_Left_1".TOF(IN := "CVTD1 OVERHANG LEFT" OR NOT "Control_DB".VTD_Sys[1].Running,
+                          PT := T#200ms);
+        "Control_DB".ECnv_Sys[1].Inputs.Overhang_Left := "T_OH_Left_1".Q;
+        
+        "T_OH_Right_1".TOF(IN := "CVTD1 OVERHANG RIGHT" OR NOT "Control_DB".VTD_Sys[1].Running,
+                           PT := T#200ms);
+        "Control_DB".ECnv_Sys[1].Inputs.Overhang_Right := "T_OH_Right_1".Q;
+        
+        "Control_DB".ECnv_Sys[1].Inputs.VFD_Status := "CVTD1_StatusWord";
+        "Control_DB".ECnv_Sys[1].Inputs.VFD_ActualCurrent := WORD_TO_INT("CVTD1_ActualCurrent");
+        "Control_DB".ECnv_Sys[1].Inputs.VFD_Speed_Actual := WORD_TO_INT("CVTD1_ActualSpeed");
+        "Control_DB".ECnv_Sys[1].Inputs.VFD_ActualTorque := WORD_TO_INT("CVTD1_ActualTorque");
+    END_REGION
+    
+    REGION BUFFER CONVEYORS
+        REGION LEVEL 1
+            //BUFFER CONVEYOR LEVEL 1 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.Left := NOT "C1101 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.Lpd1 := NOT "C1101 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.Lpd2 := "C1101 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.Right := NOT "C1101 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.Rpd1 := NOT "C1101 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.Rpd2 := NOT "C1101 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.Sdetect1 := NOT "C1101 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.Sdetect2 := NOT "C1101 - SHUTTLE IN POSITION 2";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.VFD_Status := "C1101_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1101_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1101_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C1101_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 1 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.Left := NOT "C1201 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.Lpd1 := NOT "C1201 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.Lpd2 := NOT "C1201 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.Right := NOT "C1201 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.Rpd1 := NOT "C1201 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.Rpd2 := NOT "C1201 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.Sdetect1 := NOT "C1201 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.Sdetect2 := NOT "C1201 - SHUTTLE IN POSITION 2";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.VFD_Status := "C1201_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1201_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1201_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C1201_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 2
+            //BUFFER CONVEYOR LEVEL 2 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Left := NOT "C1102 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Lpd1 := NOT "C1102 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Lpd2 := NOT "C1102 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Right := NOT "C1102 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Rpd1 := NOT "C1102 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Rpd2 := NOT "C1102 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Sdetect1 := NOT "C1102 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Sdetect2 := NOT "C1102 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1102 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1102 - SENSOR SAFETY PIN1 DOWN";
+            
+            IF "Shuttle_MQTT_DB".Shuttle_MQTT[3].Message.Shuttle_Status.Position_ID = "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Barcode_ID THEN
+                "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Shuttle_High := "Shuttle_MQTT_DB".Shuttle_MQTT[3].Message.Shuttle_Status.Sensor_Inputs.%X13;
+            ELSIF "Shuttle_MQTT_DB".Shuttle_MQTT[4].Message.Shuttle_Status.Position_ID = "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Barcode_ID THEN
+                "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Shuttle_High := "Shuttle_MQTT_DB".Shuttle_MQTT[4].Message.Shuttle_Status.Sensor_Inputs.%X13;
+            ELSIF "Shuttle_MQTT_DB".Shuttle_MQTT[5].Message.Shuttle_Status.Position_ID = "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Barcode_ID THEN
+                "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.Shuttle_High := "Shuttle_MQTT_DB".Shuttle_MQTT[5].Message.Shuttle_Status.Sensor_Inputs.%X13;
+            END_IF;
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.VFD_Status := "C1102_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1102_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1102_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Inputs.VFD_ActualTorque := "C1102_ActualTorque";
+            
+            //BUFFER CONVEYOR LEVEL 2 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Left := NOT "C1202 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Lpd1 := NOT "C1202 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Lpd2 := NOT "C1202 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Right := NOT "C1202 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Rpd1 := NOT "C1202 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Rpd2 := NOT "C1202 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Sdetect1 := NOT "C1202 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Sdetect2 := NOT "C1202 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1202 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1202 - SENSOR SAFETY PIN1 DOWN";
+            
+            IF "Shuttle_MQTT_DB".Shuttle_MQTT[3].Message.Shuttle_Status.Position_ID = "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Barcode_ID THEN
+                "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Shuttle_High := "Shuttle_MQTT_DB".Shuttle_MQTT[3].Message.Shuttle_Status.Sensor_Inputs.%X13;
+            ELSIF "Shuttle_MQTT_DB".Shuttle_MQTT[4].Message.Shuttle_Status.Position_ID = "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Barcode_ID THEN
+                "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Shuttle_High := "Shuttle_MQTT_DB".Shuttle_MQTT[4].Message.Shuttle_Status.Sensor_Inputs.%X13;
+            ELSIF "Shuttle_MQTT_DB".Shuttle_MQTT[5].Message.Shuttle_Status.Position_ID = "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Barcode_ID THEN
+                "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.Shuttle_High := "Shuttle_MQTT_DB".Shuttle_MQTT[5].Message.Shuttle_Status.Sensor_Inputs.%X13;
+            END_IF;
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.VFD_Status := "C1202_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1202_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1202_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Inputs.VFD_ActualTorque := "C1202_ActualTorque";
+        END_REGION
+        
+        REGION LEVEL 3
+            //BUFFER CONVEYOR LEVEL 3 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.Left := NOT "C1103 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.Lpd1 := NOT "C1103 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.Lpd2 := NOT "C1103 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.Right := NOT "C1103 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.Rpd1 := NOT "C1103 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.Rpd2 := NOT "C1103 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.Sdetect1 := NOT "C1103 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.Sdetect2 := NOT "C1103 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1103 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1103 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.VFD_Status := "C1103_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1103_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1103_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Inputs.VFD_ActualTorque := "C1103_ActualTorque";
+            
+            //BUFFER CONVEYOR LEVEL 3 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.Left := NOT "C1203 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.Lpd1 := NOT "C1203 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.Lpd2 := NOT "C1203 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.Right := NOT "C1203 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.Rpd1 := NOT "C1203 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.Rpd2 := NOT "C1203 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.Sdetect1 := NOT "C1203 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.Sdetect2 := NOT "C1203 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1203 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1203 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.VFD_Status := "C1203_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1203_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1203_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Inputs.VFD_ActualTorque := "C1203_ActualTorque";
+        END_REGION
+        
+        REGION LEVEL 4
+            //BUFFER CONVEYOR LEVEL 4 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.Left := NOT "C1104 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.Lpd1 := NOT "C1104 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.Lpd2 := NOT "C1104 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.Right := NOT "C1104 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.Rpd1 := NOT "C1104 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.Rpd2 := NOT "C1104 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.Sdetect1 := NOT "C1104 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.Sdetect2 := NOT "C1104 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1104 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1104 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.VFD_Status := "C1104_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1104_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1104_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Inputs.VFD_ActualTorque := "C1104_ActualTorque";
+            
+            //BUFFER CONVEYOR LEVEL 4 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.Left := NOT "C1204 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.Lpd1 := NOT "C1204 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.Lpd2 := NOT "C1204 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.Right := NOT "C1204 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.Rpd1 := NOT "C1204 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.Rpd2 := NOT "C1204 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.Sdetect1 := NOT "C1204 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.Sdetect2 := NOT "C1204 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1204 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1204 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.VFD_Status := "C1204_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1204_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1204_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Inputs.VFD_ActualTorque := "C1204_ActualTorque";
+        END_REGION
+        
+        REGION LEVEL 5
+            //BUFFER CONVEYOR LEVEL 5 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.Left := NOT "C1105 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.Lpd1 := NOT "C1105 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.Lpd2 := NOT "C1105 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.Right := NOT "C1105 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.Rpd1 := NOT "C1105 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.Rpd2 := NOT "C1105 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.Sdetect1 := NOT "C1105 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.Sdetect2 := NOT "C1105 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1105 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1105 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.VFD_Status := "C1105_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1105_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1105_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Inputs.VFD_ActualTorque := "C1105_ActualTorque";
+            
+            //BUFFER CONVEYOR LEVEL 5 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.Left := NOT "C1205 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.Lpd1 := NOT "C1205 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.Lpd2 := NOT "C1205 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.Right := NOT "C1205 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.Rpd1 := NOT "C1205 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.Rpd2 := NOT "C1205 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.Sdetect1 := NOT "C1205 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.Sdetect2 := NOT "C1205 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1205 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1205 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.VFD_Status := "C1205_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1205_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1205_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Inputs.VFD_ActualTorque := "C1205_ActualTorque";
+        END_REGION
+        
+        REGION LEVEL 6
+            //BUFFER CONVEYOR LEVEL 6 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.Left := NOT "C1106 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.Lpd1 := NOT "C1106 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.Lpd2 := NOT "C1106 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.Right := NOT "C1106 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.Rpd1 := NOT "C1106 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.Rpd2 := NOT "C1106 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.Sdetect1 := NOT "C1106 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.Sdetect2 := NOT "C1106 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1106 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1106 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.VFD_Status := "C1106_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1106_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1106_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Inputs.VFD_ActualTorque := "C1106_ActualTorque";
+            
+            //BUFFER CONVEYOR LEVEL 6 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.Left := NOT "C1206 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.Lpd1 := NOT "C1206 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.Lpd2 := NOT "C1206 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.Right := NOT "C1206 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.Rpd1 := NOT "C1206 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.Rpd2 := NOT "C1206 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.Sdetect1 := NOT "C1206 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.Sdetect2 := NOT "C1206 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1206 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1206 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.VFD_Status := "C1206_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1206_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1206_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Inputs.VFD_ActualTorque := "C1206_ActualTorque";
+        END_REGION
+        
+        REGION LEVEL 7
+            //BUFFER CONVEYOR LEVEL 7 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.Left := NOT "C1107 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.Lpd1 := NOT "C1107 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.Lpd2 := NOT "C1107 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.Right := NOT "C1107 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.Rpd1 := NOT "C1107 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.Rpd2 := NOT "C1107 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.Sdetect1 := NOT "C1107 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.Sdetect2 := NOT "C1107 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1107 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1107 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.VFD_Status := "C1107_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1107_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1107_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Inputs.VFD_ActualTorque := "C1107_ActualTorque";
+            
+            //BUFFER CONVEYOR LEVEL 7 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.Left := NOT "C1207 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.Lpd1 := NOT "C1207 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.Lpd2 := NOT "C1207 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.Right := NOT "C1207 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.Rpd1 := NOT "C1207 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.Rpd2 := NOT "C1207 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.Sdetect1 := NOT "C1207 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.Sdetect2 := NOT "C1207 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1207 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1207 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.VFD_Status := "C1207_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1207_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1207_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Inputs.VFD_ActualTorque := "C1207_ActualTorque";
+        END_REGION
+        
+        REGION LEVEL 8
+            //BUFFER CONVEYOR LEVEL 8 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.Left := NOT "C1108 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.Lpd1 := NOT "C1108 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.Lpd2 := NOT "C1108 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.Right := NOT "C1108 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.Rpd1 := NOT "C1108 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.Rpd2 := NOT "C1108 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.Sdetect1 := NOT "C1108 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.Sdetect2 := NOT "C1108 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1108 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1108 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.VFD_Status := "C1108_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1108_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1108_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Inputs.VFD_ActualTorque := "C1108_ActualTorque";
+            
+            //BUFFER CONVEYOR LEVEL 8 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.Left := NOT "C1208 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.Lpd1 := NOT "C1208 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.Lpd2 := NOT "C1208 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.Right := NOT "C1208 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.Rpd1 := NOT "C1208 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.Rpd2 := NOT "C1208 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.Sdetect1 := NOT "C1208 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.Sdetect2 := NOT "C1208 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C1208 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C1208 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.VFD_Status := "C1208_StatusWord";
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C1208_ActualCurrent");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C1208_ActualSpeed");
+            "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Inputs.VFD_ActualTorque := "C1208_ActualTorque";
+        END_REGION
+    END_REGION
+    
+    REGION VTD
+        "Control_DB".VTD_Sys[1].Inputs.Upper_Overtravel  := "OVERTRAVEL UPPER LIMIT - CH1(1)";
+        "Control_DB".VTD_Sys[1].Inputs.Upper_limit := "VTD1 UPPER LIMIT";
+        "Control_DB".VTD_Sys[1].Inputs.Ultimate_SlowDown := "VTD1 ULTIMATE SLOWDOWN";
+        "Control_DB".VTD_Sys[1].Inputs.Ultimate_Creep := "VTD1 ULTIMATE CREEP";
+        "Control_DB".VTD_Sys[1].Inputs.Lower_Limit := "VTD1 LOWER LIMIT";
+        "Control_DB".VTD_Sys[1].Inputs.Lower_Overtravel := "OVERTRAVEL LOWER LIMIT - CH1(1)";
+        "Control_DB".VTD_Sys[1].Inputs.Level_Detect1 := "VTD1 LEVEL DETECT 1";
+        "Control_DB".VTD_Sys[1].Inputs.Level_Detect2 := "VTD1 LEVEL DETECT 2";
+        "Control_DB".VTD_Sys[1].Inputs.DP1_Extended := "VTD1 DOCKING PINS EXTENDED 1";
+        "Control_DB".VTD_Sys[1].Inputs.DP2_Extended := "VTD1 DOCKING PINS EXTENDED 2";
+        "Control_DB".VTD_Sys[1].Inputs.DP1_Retracted := "VTD1 DOCKING PINS RETRACTED 1";
+        "Control_DB".VTD_Sys[1].Inputs.DP2_Retracted := "VTD1 DOCKING PINS RETRACTED 2";
+        "Control_DB".VTD_Sys[1].Inputs.Chain_Slack_1 := NOT "Remote_Panel_DB_1".Chain_Slack_1_Filtered;
+        "Control_DB".VTD_Sys[1].Inputs.Chain_Slack_2 := NOT "Remote_Panel_DB_1".Chain_Slack_2_Filtered;
+        "Control_DB".VTD_Sys[1].Inputs.Chain_Slack_3 := NOT "Remote_Panel_DB_1".Chain_Slack_3_Filtered;
+        "Control_DB".VTD_Sys[1].Inputs.Chain_Slack_4 := NOT "Remote_Panel_DB_1".Chain_Slack_4_Filtered;
+        "Control_DB".VTD_Sys[1].Inputs.PushToEnter := "VTD1 PUSH TO ENTER VTD ZONE";
+        "Control_DB".VTD_Sys[1].Inputs.PushToExit := "VTD1 PUSH TO EXIT VTD ZONE";
+        "Control_DB".VTD_Sys[1].Inputs.VFD_Status := "VTD1_StatusWord";
+        "Control_DB".VTD_Sys[1].Inputs.VFD_ActualCurrent := REAL_TO_INT(("VTD1_ActualCurrent" / 10) / 72.5);
+        "Control_DB".VTD_Sys[1].Inputs.VFD_Speed_Actual := "VTD1_ActualSpeed";
+        "Control_DB".VTD_Sys[1].Inputs.VFD_ActualTorque := WORD_TO_INT("VTD1_ActualTorque");
+        
+    END_REGION
+    
+    REGION ABSOLUTE ENCODER
+        REGION DOCUMENTATION
+            //STATUS---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder state word 2 - INPUT WORD 1
+            //
+            // 15 … 12 Encoder’s Sign-OF-Life (NOT relevant)
+            // 11, 10 Reserved
+            // 9 Control requested 0 = No control BY the PLC requested 1 = Control BY the PLC requested
+            // 8 … 0 Reserved
+            
+            //Sensor 1 state word - INPUT WORD 2
+            //
+            // 15 Encoder error Description 0 = No error 1 = Error The error code is output in G1_XIST2.
+            // 14 Park mode activated 0 = Normal operation 1 = Park mode activated Feedback based on G1_STW bit 14: No output OF position data G1_XIST1 AND G1_XIST2
+            // 13 Transmission OF absolute position value 0 = No transmission 1 = Position value is output in G1_XIST2
+            // 12 Status OF the Preset function (set/shift OF home position executed) 0 = No Preset function active 1 = Preset function is run Feedback based on G1_STW bit 12:  
+            // 11 Requirement OF error acknowledgement detected New position value is output in G1_XIST1 AND G1_XIST2. On conclusion OF the Preset function the bit is set TO 0. 0 = No RETURN acknowledgement OF Encoder error 1 = Requirement OF error acknowledgement detected Reaction TO bit 15 in the sensor control word 1 G1_STW is acknowledged (see Table 14)
+            // 10 Reserved
+            // 9 … 0 NOT supported
+            
+            //Position 1 - INPUT WORD 3 AND 4
+            // "AE_Position_1_Scaled" := (*SCALE_X(MIN := "Settings_DB".VTD_Settings.VTD_Min_Height,
+            //                                   VALUE := *)NORM_X(MIN := 0,
+            //                                                   VALUE := (SHL(IN:="AE_Position_1", N:=2) * 0.00228881) (*- "AE_Offset"*),
+            //                                                   MAX := 1073741824)(*,
+            //                                   MAX := "Settings_DB".VTD_Settings.VTD_Max_Heigh)*);
+            // "mm_per_pulse" := 401,5584 / 262144;
+            // 
+            //CONTROL---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder control word 2 - OUTPUT WORD 1
+            //
+            // 15 … 12 Master’s Sign-OF-Life (NOT relevant)
+            // 10 control BY PLC 0 = No control BY the PLC 1 = Control BY the PLC Enables the PLC BY using control words TO activate / deactivate encoder functions
+            // 7 Fault acknowledge Error-buffer handling NOT supported
+            // 11, 9, 8, 6 … 0 Reserved
+            // "AE_Control_Word_1".%X10 := "AE_PLC_Control";
+            // 
+            //Sensor 1 control word - OUTPUT WORD 2-------------------------------------------------------------------------------------------
+            //
+            // 15 Acknowledging a sensor error Description 0 = Encoder error message NOT acknowledged BY PLC 1 = Encoder error message acknowledged BY the PLC
+            // 14 Activate park mode 0 = Normal operation 1 = Activate park mode
+            // 13 Request FOR the absolute position value 0 = No request 1 = Request BY the master Results in the cyclic output OF the position values in G1_XIST2
+            // 12 Activate preset value (see note below) Defines that a configured preset value is used (see section 3.5 on page 24) 0 = Preset value is NOT activated 1 = Preset value is activated
+            // 11 Preset mode Defines how a configured preset value is used 0 = Preset value is used as a new absolute value 1 = Preset value is added TO the previous value
+            // 10 … 0 Reserved
+            // "AE_Control_Word_2".%X15 := "VTD_Reset_HMI_Tags";
+            // "AE_Control_Word_2".%X14 := "AE_Activate_ParkMode";
+            // "AE_Control_Word_2".%X13 := "AE_Request_ABS_Value";
+            // "AE_Control_Word_2".%X12 := "AE_Activate_Preset_Value";
+            // "AE_Control_Word_2".%X11 := "AE_Preset_Mode";
+        END_REGION
+        
+        //STATUS---------------------------------------------------------------------------------------------------------------------
+        "Control_DB".VTD_Sys[1].Inputs.AE_Status_2 := "AE_Status_2(1)";
+        //Position 1 - INPUT WORD 3 AND 4
+        "Control_DB".VTD_Sys[1].Inputs.AE_Position_1 := REAL_TO_DINT(((((*1073741823 - reverse the direction*)
+ (SHR(IN := "AE_Position_1(1)", N := 2))) - 31381317) * 0.0015318237304688 (*Mechanical relationship*)+ 48062)(*Offset*));
+        
+        // Position 2 - INPUT WORD 5 AND 6
+        "Control_DB".VTD_Sys[1].Inputs.AE_Position_2 := SHR(IN := "AE_Position_2(1)", N := 2);
+        
+        //Speed A - INPUT WORD 7
+        "Control_DB".VTD_Sys[1].Inputs.AE_Speed := "AE_Speed(1)" * 10;
+    END_REGION
+    
+    REGION LINEAR ENCODER
+        "Control_DB".VTD_Sys[1].Inputs.LE_Position := "LE_X_Unsafe_Position(1)" / 10;
+        "Control_DB".VTD_Sys[1].Inputs.LE_Speed := "LE_Speed(1)" * 100;
+        "Control_DB".VTD_Sys[1].Inputs.LE_Status := "LE_Status(1)";
+        "Control_DB".VTD_Sys[1].Inputs.LE_Warnings := "LE_Warnings(1)";
+        REGION DOCUMENTATION
+            //STATUS 
+            //
+            // 0 ERR - Error message (Error code in XP00– XP15); remaining bits = 0, see Error Codes
+            // 1 NP - No position information/OUT (XP = 0, YP = 0, SP = 0)
+            // 2 WRN - Warnings present, see Warning Module
+            // 3 EV - Event present
+            // 4 posdetected - Valid position information available
+            
+            //WARNINGS
+            //
+            // 0 WRN01 A code with non-PXV content was found.
+            // 1 WRN02 the read head is too close TO the Data Matrix code tape.
+            // 2 WRN03 the read head is too far from the Data Matrix code tape.
+            // 3 WRN04 Y position too large. The sensor is just before OUT.
+            // 4 WRN05 Y position is too small. The sensor is just before OUT.
+            // 5 WRN06 the read head is rotated OR tilted in relation TO the Data Matrix code tape.
+            // 6 WRN07 Low level OF code contrast.
+            // 7 WRN08 Repair tape detected.
+            // 8 WRN09 Temperature too high.
+            // 9...15 Reserved
+            
+            //QUALITY GRADE
+            //
+            //The quality grades enable constant monitoring of the code tape and the camera along the entire
+            //traverse distance. This enables you to detect and act upon potential damage or contamination
+            //of the code tape and camera at the earliest stage possible during commissioning and normal
+            //operation. As a result, this maximizes the overall functional reliability of your plant, and
+            //it means you are able to immediately localize the issue in the case of a fault. Evaluations
+            //are made using a scale of 1 to 6. The value 1 is the best possible read quality. A value greater
+            //than 3 or worse requires the camera and its path to be inspected. The value 7 signifies "No position"
+            //because no code was detected. An evaluation that indicates poor quality as the outcome can be due to
+            //a misalignment or incorrect orientation, an incorrect measuring distance, or because the code tape has been affixed incorrectly
+        END_REGION
+    END_REGION
+    
+    REGION SICK BARCODE LECTORS
+        IF "Control_DB".VTDBarcode_Station[1].Running AND "SICK_Lector_Control_DB_1".Result <> "Control_DB".VTDBarcode_Station[1].Barcode_Old THEN
+            "Control_DB".VTD_Sys[1].Inputs."Barcode 1" := "SICK_Lector_Control_DB_1".Result;
+            // "Control_DB".VTD_Control.Inputs."Barcode 2'" := SICK_Barcode_DB".Result;
+            // "Control_DB".VTDBarcode_Station[1].Barcode_Old := "SICK_Lector_DB_1".Barcode_Result;
+        ELSE
+            "Control_DB".VTD_Sys[1].Inputs."Barcode 1" :=
+            "Control_DB".VTD_Sys[1].Inputs."Barcode 2" := '';
+        END_IF;
+
+    END_REGION
+    
+    REGION VFD HARDWARE ID
+        //Buffer conveyors 1
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.G120_Hardware_ID := "C1101~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.G120_Hardware_ID := "C1102~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.G120_Hardware_ID := "C1103~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.G120_Hardware_ID := "C1104~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.G120_Hardware_ID := "C1105~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.G120_Hardware_ID := "C1106~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.G120_Hardware_ID := "C1107~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.G120_Hardware_ID := "C1108~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //Buffer conveyors 2
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.G120_Hardware_ID := "C1201~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.G120_Hardware_ID := "C1202~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.G120_Hardware_ID := "C1203~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.G120_Hardware_ID := "C1204~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.G120_Hardware_ID := "C1205~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.G120_Hardware_ID := "C1206~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.G120_Hardware_ID := "C1207~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.G120_Hardware_ID := "C1208~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //Extractor conveyor
+        "Settings_DB".ECnv_Sys[1].G120_Hardware_ID := "CVTD_1~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //VTD
+        "Settings_DB".VTD_Sys[1].G120_Hardware_ID := "VTD_1~DO_VECTOR_1~Standard_telegram_20__PZD-2_6";
+    END_REGION
+END_REGION
+
+REGION SYSTEM 2
+    REGION EXTRACTOR CONVEYOR
+        "Control_DB".ECnv_Sys[2].Inputs.Left := "CVTD2 SENSOR CONVEYOR LEFT";
+        "Control_DB".ECnv_Sys[2].Inputs.Lpd1 := "CVTD2 SENSOR CONVEYOR LEFT (PALLET DETECT 1)";
+        "Control_DB".ECnv_Sys[2].Inputs.Center := "CVTD2 SENSOR CONVEYOR CENTER";
+        "Control_DB".ECnv_Sys[2].Inputs.Right := "CVTD2 SENSOR CONVEYOR RIGHT";
+        "Control_DB".ECnv_Sys[2].Inputs.Rpd1 := "CVTD2 SENSOR CONVEYOR RIGHT (PALLET DETECT 1)";
+        
+        "T_OH_Left_2".TOF(IN := "CVTD2 OVERHANG LEFT" OR NOT "Control_DB".VTD_Sys[2].Running,
+                          PT := T#200ms);
+        "Control_DB".ECnv_Sys[2].Inputs.Overhang_Left := "T_OH_Left_2".Q;
+        
+        "T_OH_Right_2".TOF(IN:= "CVTD2 OVERHANG RIGHT" OR NOT "Control_DB".VTD_Sys[2].Running,
+                          PT:= T#200ms);
+       "Control_DB".ECnv_Sys[2].Inputs.Overhang_Right := "T_OH_Right_2".Q;
+       
+        "Control_DB".ECnv_Sys[2].Inputs.VFD_Status := "CVTD2_StatusWord";
+        "Control_DB".ECnv_Sys[2].Inputs.VFD_ActualCurrent := WORD_TO_INT("CVTD2_ActualCurrent");
+        "Control_DB".ECnv_Sys[2].Inputs.VFD_Speed_Actual := WORD_TO_INT("CVTD2_ActualSpeed");
+        "Control_DB".ECnv_Sys[2].Inputs.VFD_ActualTorque := WORD_TO_INT("CVTD2_ActualTorque");
+    END_REGION
+    
+    REGION BUFFER CONVEYORS
+        REGION LEVEL 1
+            //BUFFER CONVEYOR LEVEL 1 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.Left := NOT "C2101 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.Lpd1 := NOT "C2101 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.Lpd2 := NOT "C2101 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.Right := NOT "C2101 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.Rpd1 := NOT "C2101 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.Rpd2 := NOT "C2101 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.Sdetect1 := NOT "C2101 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.Sdetect2 := NOT "C2101 - SHUTTLE IN POSITION 2";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.VFD_Status := "C2101_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.VFD_ActualCurrent :=WORD_TO_INT("C2101_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.VFD_Speed_Actual :=WORD_TO_INT("C2101_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C2101_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 1 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.Left := NOT "C2201 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.Lpd1 := NOT "C2201 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.Lpd2 := NOT "C2201 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.Right := NOT "C2201 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.Rpd1 := NOT "C2201 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.Rpd2 := NOT "C2201 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.Sdetect1 := NOT "C2201 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.Sdetect2 := NOT "C2201 - SHUTTLE IN POSITION 2";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.VFD_Status := "C2201_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2201_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2201_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C2201_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 2
+            //BUFFER CONVEYOR LEVEL 2 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.Left := NOT "C2102 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.Lpd1 := NOT "C2102 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.Lpd2 := NOT "C2102 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.Right := NOT "C2102 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.Rpd1 := NOT "C2102 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.Rpd2 := NOT "C2102 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.Sdetect1 := NOT "C2102 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.Sdetect2 := NOT "C2102 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2102 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2102 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.VFD_Status := "C2102_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2102_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2102_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C2102_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 2 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.Left := NOT "C2202 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.Lpd1 := NOT "C2202 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.Lpd2 := NOT "C2202 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.Right := NOT "C2202 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.Rpd1 := NOT "C2202 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.Rpd2 := NOT "C2202 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.Sdetect1 := NOT "C2202 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.Sdetect2 := NOT "C2202 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2202 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2202 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.VFD_Status := "C2202_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2202_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2202_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C2202_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 3
+            //BUFFER CONVEYOR LEVEL 3 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.Left := NOT "C2103 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.Lpd1 := NOT "C2103 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.Lpd2 := NOT "C2103 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.Right := NOT "C2103 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.Rpd1 := NOT "C2103 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.Rpd2 := NOT "C2103 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.Sdetect1 := NOT "C2103 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.Sdetect2 := NOT "C2103 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2103 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2103 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.VFD_Status := "C2103_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2103_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2103_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C2103_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 3 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.Left := NOT "C2203 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.Lpd1 := NOT "C2203 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.Lpd2 := NOT "C2203 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.Right := NOT "C2203 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.Rpd1 := NOT "C2203 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.Rpd2 := NOT "C2203 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.Sdetect1 := NOT "C2203 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.Sdetect2 := NOT "C2203 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2203 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2203 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.VFD_Status := "C2203_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2203_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2203_ActualSpeed");
+        END_REGION
+        
+        REGION LEVEL 4
+            //BUFFER CONVEYOR LEVEL 4 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.Left := NOT "C2104 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.Lpd1 := NOT "C2104 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.Lpd2 := NOT "C2104 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.Right := NOT "C2104 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.Rpd1 := NOT "C2104 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.Rpd2 := NOT "C2104 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.Sdetect1 := NOT "C2104 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.Sdetect2 := NOT "C2104 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2104 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2104 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.VFD_Status := "C2104_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2104_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2104_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C2104_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 4 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.Left := NOT "C2204 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.Lpd1 := NOT "C2204 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.Lpd2 := NOT "C2204 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.Right := NOT "C2204 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.Rpd1 := NOT "C2204 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.Rpd2 := NOT "C2204 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.Sdetect1 := NOT "C2204 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.Sdetect2 := NOT "C2204 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2204 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2204 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.VFD_Status := "C2204_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2204_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2204_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C2204_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 5
+            //BUFFER CONVEYOR LEVEL 5 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.Left := NOT "C2105 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.Lpd1 := NOT "C2105 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.Lpd2 := NOT "C2105 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.Right := NOT "C2105 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.Rpd1 := NOT "C2105 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.Rpd2 := NOT "C2105 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.Sdetect1 := NOT "C2105 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.Sdetect2 := NOT "C2105 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2105 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2105 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.VFD_Status := "C2105_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2105_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2105_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C2105_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 5 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.Left := NOT "C2205 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.Lpd1 := NOT "C2205 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.Lpd2 := NOT "C2205 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.Right := NOT "C2205 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.Rpd1 := NOT "C2205 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.Rpd2 := NOT "C2205 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.Sdetect1 := NOT "C2205 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.Sdetect2 := NOT "C2205 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2205 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2205 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.VFD_Status := "C2205_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2205_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2205_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C2205_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 6
+            //BUFFER CONVEYOR LEVEL 6 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.Left := NOT "C2106 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.Lpd1 := NOT "C2106 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.Lpd2 := NOT "C2106 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.Right := NOT "C2106 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.Rpd1 := NOT "C2106 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.Rpd2 := NOT "C2106 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.Sdetect1 := NOT "C2106 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.Sdetect2 := NOT "C2106 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2106 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2106 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.VFD_Status := "C2106_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2106_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2106_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C2106_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 6 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.Left := NOT "C2206 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.Lpd1 := NOT "C2206 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.Lpd2 := NOT "C2206 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.Right := NOT "C2206 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.Rpd1 := NOT "C2206 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.Rpd2 := NOT "C2206 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.Sdetect1 := NOT "C2206 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.Sdetect2 := NOT "C2206 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2206 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2206 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.VFD_Status := "C2206_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2206_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2206_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C2206_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 7
+            //BUFFER CONVEYOR LEVEL 7 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.Left := NOT "C2107 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.Lpd1 := NOT "C2107 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.Lpd2 := NOT "C2107 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.Right := NOT "C2107 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.Rpd1 := NOT "C2107 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.Rpd2 := NOT "C2107 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.Sdetect1 := NOT "C2107 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.Sdetect2 := NOT "C2107 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2107 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2107 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.VFD_Status := "C2107_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2107_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2107_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C2107_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 7 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.Left := NOT "C2207 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.Lpd1 := NOT "C2207 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.Lpd2 := NOT "C2207 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.Right := NOT "C2207 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.Rpd1 := NOT "C2207 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.Rpd2 := NOT "C2207 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.Sdetect1 := NOT "C2207 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.Sdetect2 := NOT "C2207 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2207 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2207 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.VFD_Status := "C2207_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2207_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2207_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C2207_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 8
+            //BUFFER CONVEYOR LEVEL 8 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.Left := NOT "C2108 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.Lpd1 := NOT "C2108 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.Lpd2 := NOT "C2108 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.Right := NOT "C2108 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.Rpd1 := NOT "C2108 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.Rpd2 := NOT "C2108 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.Sdetect1 := NOT "C2108 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.Sdetect2 := NOT "C2108 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2108 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2108 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.VFD_Status := "C2108_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2108_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2108_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C2108_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 8 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.Left := NOT "C2208 - SENSOR CNV LEFT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.Lpd1 := NOT "C2208 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.Lpd2 := NOT "C2208 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.Right := NOT "C2208 - SENSOR CNV RIGHT";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.Rpd1 := NOT "C2208 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.Rpd2 := NOT "C2208 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.Sdetect1 := NOT "C2208 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.Sdetect2 := NOT "C2208 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C2208 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C2208 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.VFD_Status := "C2208_StatusWord";
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C2208_ActualCurrent");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C2208_ActualSpeed");
+            "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C2208_ActualTorque");
+        END_REGION
+    END_REGION
+    
+    REGION VTD
+        "Control_DB".VTD_Sys[2].Inputs.Upper_Overtravel :=  "OVERTRAVEL UPPER LIMIT - CH1(2)";
+        "Control_DB".VTD_Sys[2].Inputs.Upper_limit := "VTD2 UPPER LIMIT";
+        "Control_DB".VTD_Sys[2].Inputs.Ultimate_SlowDown := "VTD2 ULTIMATE SLOWDOWN";
+        "Control_DB".VTD_Sys[2].Inputs.Ultimate_Creep := "VTD2 ULTIMATE CREEP";
+        "Control_DB".VTD_Sys[2].Inputs.Lower_Limit := "VTD2 LOWER LIMIT";
+        "Control_DB".VTD_Sys[2].Inputs.Lower_Overtravel := "OVERTRAVEL LOWER LIMIT - CH1(2)";
+        "Control_DB".VTD_Sys[2].Inputs.Level_Detect1 := "VTD2 LEVEL DETECT 1";
+        "Control_DB".VTD_Sys[2].Inputs.Level_Detect2 := "VTD2 LEVEL DETECT 2";
+        "Control_DB".VTD_Sys[2].Inputs.DP1_Extended := "VTD2 DOCKING PINS EXTENDED 1";
+        "Control_DB".VTD_Sys[2].Inputs.DP2_Extended := "VTD2 DOCKING PINS EXTENDED 2";
+        "Control_DB".VTD_Sys[2].Inputs.DP1_Retracted := "VTD2 DOCKING PINS RETRACTED 1";
+        "Control_DB".VTD_Sys[2].Inputs.DP2_Retracted := "VTD2 DOCKING PINS RETRACTED 2";
+        "Control_DB".VTD_Sys[2].Inputs.Chain_Slack_1 := NOT "Remote_Panel_DB_2".Chain_Slack_1_Filtered;
+        "Control_DB".VTD_Sys[2].Inputs.Chain_Slack_2 := NOT "Remote_Panel_DB_2".Chain_Slack_2_Filtered;
+        "Control_DB".VTD_Sys[2].Inputs.Chain_Slack_3 := NOT "Remote_Panel_DB_2".Chain_Slack_3_Filtered;
+        "Control_DB".VTD_Sys[2].Inputs.Chain_Slack_4 := NOT "Remote_Panel_DB_2".Chain_Slack_4_Filtered;
+        "Control_DB".VTD_Sys[2].Inputs.PushToEnter := "VTD2 PUSH TO ENTER VTD ZONE";
+        "Control_DB".VTD_Sys[2].Inputs.PushToExit := "VTD2 PUSH TO EXIT VTD ZONE";
+        "Control_DB".VTD_Sys[2].Inputs.VFD_Status := "VTD2_StatusWord";
+        "Control_DB".VTD_Sys[2].Inputs.VFD_ActualCurrent := REAL_TO_INT(("VTD2_ActualCurrent" / 10) / 72.5);
+        "Control_DB".VTD_Sys[2].Inputs.VFD_Speed_Actual := "VTD2_ActualSpeed";
+        "Control_DB".VTD_Sys[2].Inputs.VFD_ActualTorque := WORD_TO_INT("VTD2_ActualTorque");
+        
+    END_REGION
+    
+    REGION ABSOLUTE ENCODER
+        REGION DOCUMENTATION
+            //STATUS---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder state word 2 - INPUT WORD 1
+            //
+            // 15 … 12 Encoder’s Sign-OF-Life (NOT relevant)
+            // 11, 10 Reserved
+            // 9 Control requested 0 = No control BY the PLC requested 1 = Control BY the PLC requested
+            // 8 … 0 Reserved
+            
+            //Sensor 1 state word - INPUT WORD 2
+            //
+            // 15 Encoder error Description 0 = No error 1 = Error The error code is output in G1_XIST2.
+            // 14 Park mode activated 0 = Normal operation 1 = Park mode activated Feedback based on G1_STW bit 14: No output OF position data G1_XIST1 AND G1_XIST2
+            // 13 Transmission OF absolute position value 0 = No transmission 1 = Position value is output in G1_XIST2
+            // 12 Status OF the Preset function (set/shift OF home position executed) 0 = No Preset function active 1 = Preset function is run Feedback based on G1_STW bit 12:  
+            // 11 Requirement OF error acknowledgement detected New position value is output in G1_XIST1 AND G1_XIST2. On conclusion OF the Preset function the bit is set TO 0. 0 = No RETURN acknowledgement OF Encoder error 1 = Requirement OF error acknowledgement detected Reaction TO bit 15 in the sensor control word 1 G1_STW is acknowledged (see Table 14)
+            // 10 Reserved
+            // 9 … 0 NOT supported
+            
+            //Position 1 - INPUT WORD 3 AND 4
+            // "AE_Position_1_Scaled" := (*SCALE_X(MIN := "Settings_DB".VTD_Settings.VTD_Min_Height,
+            //                                   VALUE := *)NORM_X(MIN := 0,
+            //                                                   VALUE := (SHL(IN:="AE_Position_1", N:=2) * 0.00228881) (*- "AE_Offset"*),
+            //                                                   MAX := 1073741824)(*,
+            //                                   MAX := "Settings_DB".VTD_Settings.VTD_Max_Heigh)*);
+            // "mm_per_pulse" := 401,5584 / 262144;
+            // 
+            //CONTROL---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder control word 2 - OUTPUT WORD 1
+            //
+            // 15 … 12 Master’s Sign-OF-Life (NOT relevant)
+            // 10 control BY PLC 0 = No control BY the PLC 1 = Control BY the PLC Enables the PLC BY using control words TO activate / deactivate encoder functions
+            // 7 Fault acknowledge Error-buffer handling NOT supported
+            // 11, 9, 8, 6 … 0 Reserved
+            // "AE_Control_Word_1".%X10 := "AE_PLC_Control";
+            // 
+            //Sensor 1 control word - OUTPUT WORD 2-------------------------------------------------------------------------------------------
+            //
+            // 15 Acknowledging a sensor error Description 0 = Encoder error message NOT acknowledged BY PLC 1 = Encoder error message acknowledged BY the PLC
+            // 14 Activate park mode 0 = Normal operation 1 = Activate park mode
+            // 13 Request FOR the absolute position value 0 = No request 1 = Request BY the master Results in the cyclic output OF the position values in G1_XIST2
+            // 12 Activate preset value (see note below) Defines that a configured preset value is used (see section 3.5 on page 24) 0 = Preset value is NOT activated 1 = Preset value is activated
+            // 11 Preset mode Defines how a configured preset value is used 0 = Preset value is used as a new absolute value 1 = Preset value is added TO the previous value
+            // 10 … 0 Reserved
+            // "AE_Control_Word_2".%X15 := "VTD_Reset_HMI_Tags";
+            // "AE_Control_Word_2".%X14 := "AE_Activate_ParkMode";
+            // "AE_Control_Word_2".%X13 := "AE_Request_ABS_Value";
+            // "AE_Control_Word_2".%X12 := "AE_Activate_Preset_Value";
+            // "AE_Control_Word_2".%X11 := "AE_Preset_Mode";
+        END_REGION
+        
+        //STATUS---------------------------------------------------------------------------------------------------------------------
+        "Control_DB".VTD_Sys[2].Inputs.AE_Status_2 := "AE_Status_2(2)";
+        //Position 1 - INPUT WORD 3 AND 4
+        "Control_DB".VTD_Sys[2].Inputs.AE_Position_1 := REAL_TO_DINT(((((*1073741823 - reverse the direction*)
+                                                                                                                                    (SHR(IN := "AE_Position_1(2)", N := 2))) - 31381317) * 0.0015318237304688 (*Mechanical relationship*) + 434391)(*Offset*));
+        
+        // Position 2 - INPUT WORD 5 AND 6
+        "Control_DB".VTD_Sys[2].Inputs.AE_Position_2 := SHR(IN := "AE_Position_2(2)", N := 2);
+        
+        //Speed A - INPUT WORD 7
+        "Control_DB".VTD_Sys[2].Inputs.AE_Speed := "AE_Speed(2)";
+    END_REGION
+    
+    REGION LINEAR ENCODER
+        "Control_DB".VTD_Sys[2].Inputs.LE_Position := "LE_X_Unsafe_Position(2)" / 10;
+        "Control_DB".VTD_Sys[2].Inputs.LE_Speed := "LE_Speed(2)" * 100;
+        "Control_DB".VTD_Sys[2].Inputs.LE_Status := "LE_Status(2)";
+        "Control_DB".VTD_Sys[2].Inputs.LE_Warnings := "LE_Warnings(2)";
+        REGION DOCUMENTATION
+            //STATUS 
+            //
+            // 0 ERR - Error message (Error code in XP00– XP15); remaining bits = 0, see Error Codes
+            // 1 NP - No position information/OUT (XP = 0, YP = 0, SP = 0)
+            // 2 WRN - Warnings present, see Warning Module
+            // 3 EV - Event present
+            // 4 posdetected - Valid position information available
+            
+            //WARNINGS
+            //
+            // 0 WRN01 A code with non-PXV content was found.
+            // 1 WRN02 the read head is too close TO the Data Matrix code tape.
+            // 2 WRN03 the read head is too far from the Data Matrix code tape.
+            // 3 WRN04 Y position too large. The sensor is just before OUT.
+            // 4 WRN05 Y position is too small. The sensor is just before OUT.
+            // 5 WRN06 the read head is rotated OR tilted in relation TO the Data Matrix code tape.
+            // 6 WRN07 Low level OF code contrast.
+            // 7 WRN08 Repair tape detected.
+            // 8 WRN09 Temperature too high.
+            // 9...15 Reserved
+            
+            //QUALITY GRADE
+            //
+            //The quality grades enable constant monitoring of the code tape and the camera along the entire
+            //traverse distance. This enables you to detect and act upon potential damage or contamination
+            //of the code tape and camera at the earliest stage possible during commissioning and normal
+            //operation. As a result, this maximizes the overall functional reliability of your plant, and
+            //it means you are able to immediately localize the issue in the case of a fault. Evaluations
+            //are made using a scale of 1 to 6. The value 1 is the best possible read quality. A value greater
+            //than 3 or worse requires the camera and its path to be inspected. The value 7 signifies "No position"
+            //because no code was detected. An evaluation that indicates poor quality as the outcome can be due to
+            //a misalignment or incorrect orientation, an incorrect measuring distance, or because the code tape has been affixed incorrectly
+        END_REGION
+    END_REGION
+    
+    REGION SICK BARCODE LECTORS
+        IF "Control_DB".VTDBarcode_Station[2].Running AND "SICK_Lector_Control_DB_2".Result <> "Control_DB".VTDBarcode_Station[2].Barcode_Old THEN
+            "Control_DB".VTD_Sys[2].Inputs."Barcode 1" := "SICK_Lector_Control_DB_2".Result;
+            // "Control_DB".VTD_Control.Inputs."Barcode 2'" := SICK_Barcode_DB".Result;
+            // "Control_DB".VTDBarcode_Station[2].Barcode_Old := "SICK_Lector_Control_DB_2".Result;
+        ELSE
+            "Control_DB".VTD_Sys[2].Inputs."Barcode 1" :=
+            "Control_DB".VTD_Sys[2].Inputs."Barcode 2" := '';
+        END_IF;
+        
+    END_REGION
+    
+    REGION VFD HARDWARE ID
+        //Buffer conveyors 1
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.G120_Hardware_ID := "C2101~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.G120_Hardware_ID := "C2102~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.G120_Hardware_ID := "C2103~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.G120_Hardware_ID := "C2104~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.G120_Hardware_ID := "C2105~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.G120_Hardware_ID := "C2106~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.G120_Hardware_ID := "C2107~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.G120_Hardware_ID := "C2108~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //Buffer conveyors 2
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.G120_Hardware_ID := "C2201~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.G120_Hardware_ID := "C2202~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.G120_Hardware_ID := "C2203~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.G120_Hardware_ID := "C2204~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.G120_Hardware_ID := "C2205~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.G120_Hardware_ID := "C2206~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.G120_Hardware_ID := "C2207~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.G120_Hardware_ID := "C2208~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //Extractor conveyor
+        "Settings_DB".ECnv_Sys[2].G120_Hardware_ID := "CVTD_2~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //VTD
+        "Settings_DB".VTD_Sys[2].G120_Hardware_ID := "VTD_2~DO_VECTOR_1~Standard_telegram_20__PZD-2_6";
+    END_REGION
+END_REGION
+
+REGION SYSTEM 3
+    REGION EXTRACTOR CONVEYOR
+        "Control_DB".ECnv_Sys[3].Inputs.Left := "CVTD3 SENSOR CONVEYOR LEFT (FWD)";
+        "Control_DB".ECnv_Sys[3].Inputs.Lpd1 := "CVTD3 SENSOR CONVEYOR LEFT (PALLET DETECT 1)";
+        "Control_DB".ECnv_Sys[3].Inputs.Center := "CVTD3 SENSOR CONVEYOR CENTER";
+        "Control_DB".ECnv_Sys[3].Inputs.Right := "CVTD3 SENSOR CONVEYOR RIGHT (BWD)";
+        "Control_DB".ECnv_Sys[3].Inputs.Rpd1 := "CVTD3 SENSOR CONVEYOR RIGHT (PALLET DETECT 1)";
+        
+        "T_OH_Left_3".TOF(IN := "CVTD3 OVERHANG LEFT" OR NOT "Control_DB".VTD_Sys[3].Running,
+                          PT := T#200ms);
+        "Control_DB".ECnv_Sys[3].Inputs.Overhang_Left := "T_OH_Left_3".Q;
+        
+        "T_OH_Right_3".TOF(IN := "CVTD3 OVERHANG RIGHT" OR NOT "Control_DB".VTD_Sys[3].Running,
+                           PT := T#200ms);
+        "Control_DB".ECnv_Sys[3].Inputs.Overhang_Right := "T_OH_Right_3".Q;
+        
+        "Control_DB".ECnv_Sys[3].Inputs.VFD_Status := "CVTD3_StatusWord";
+        "Control_DB".ECnv_Sys[3].Inputs.VFD_ActualCurrent := WORD_TO_INT("CVTD3_ActualCurrent");
+        "Control_DB".ECnv_Sys[3].Inputs.VFD_Speed_Actual := WORD_TO_INT("CVTD3_ActualSpeed");
+        "Control_DB".ECnv_Sys[3].Inputs.VFD_ActualTorque := WORD_TO_INT("CVTD3_ActualTorque");
+    END_REGION
+    
+    REGION BUFFER CONVEYORS
+        REGION LEVEL 1
+            //BUFFER CONVEYOR LEVEL 1 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.Left := NOT "C3101 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.Lpd1 := NOT "C3101 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.Lpd2 := NOT "C3101 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.Right := NOT "C3101 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.Rpd1 := NOT "C3101 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.Rpd2 := NOT "C3101 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.Sdetect1 := NOT "C3101 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.Sdetect2 := NOT "C3101 - SHUTTLE IN POSITION 2";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.VFD_Status := "C3101_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3101_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3101_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C3101_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 1 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.Left := NOT "C3201 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.Lpd1 := NOT "C3201 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.Lpd2 := NOT "C3201 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.Right := NOT "C3201 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.Rpd1 := NOT "C3201 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.Rpd2 := NOT "C3201 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.Sdetect1 := NOT "C3201 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.Sdetect2 := NOT "C3201 - SHUTTLE IN POSITION 2";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.VFD_Status := "C3201_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3201_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3201_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C3201_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 2
+            //BUFFER CONVEYOR LEVEL 2 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.Left := NOT "C3102 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.Lpd1 := NOT "C3102 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.Lpd2 := NOT "C3102 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.Right := NOT "C3102 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.Rpd1 := NOT "C3102 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.Rpd2 := NOT "C3102 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.Sdetect1 := NOT "C3102 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.Sdetect2 := NOT "C3102 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3102 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3102 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.VFD_Status := "C3102_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3102_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3102_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C3102_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 2 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.Left := NOT "C3202 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.Lpd1 := NOT "C3202 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.Lpd2 := NOT "C3202 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.Right := NOT "C3202 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.Rpd1 := NOT "C3202 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.Rpd2 := NOT "C3202 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.Sdetect1 := NOT "C3202 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.Sdetect2 := NOT "C3202 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3202 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3202 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.VFD_Status := "C3202_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3202_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3202_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C3202_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 3
+            //BUFFER CONVEYOR LEVEL 3 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.Left := NOT "C3103 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.Lpd1 := NOT "C3103 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.Lpd2 := NOT "C3103 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.Right := NOT "C3103 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.Rpd1 := NOT "C3103 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.Rpd2 := NOT "C3103 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.Sdetect1 := NOT "C3103 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.Sdetect2 := NOT "C3103 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3103 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3103 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.VFD_Status := "C3103_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3103_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3103_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C3103_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 3 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.Left := NOT "C3203 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.Lpd1 := NOT "C3203 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.Lpd2 := NOT "C3203 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.Right := NOT "C3203 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.Rpd1 := NOT "C3203 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.Rpd2 := NOT "C3203 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.Sdetect1 := NOT "C3203 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.Sdetect2 := NOT "C3203 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3203 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3203 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.VFD_Status := "C3203_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3203_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3203_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C3203_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 4
+            //BUFFER CONVEYOR LEVEL 4 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.Left := NOT "C3104 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.Lpd1 := NOT "C3104 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.Lpd2 := NOT "C3104 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.Right := NOT "C3104 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.Rpd1 := NOT "C3104 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.Rpd2 := NOT "C3104 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.Sdetect1 := NOT "C3104 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.Sdetect2 := NOT "C3104 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3104 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3104 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.VFD_Status := "C3104_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3104_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3104_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C3104_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 4 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.Left := NOT "C3204 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.Lpd1 := NOT "C3204 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.Lpd2 := NOT "C3204 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.Right := NOT "C3204 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.Rpd1 := NOT "C3204 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.Rpd2 := NOT "C3204 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.Sdetect1 := NOT "C3204 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.Sdetect2 := NOT "C3204 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3204 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3204 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.VFD_Status := "C3204_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3204_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3204_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C3204_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 5
+            //BUFFER CONVEYOR LEVEL 5 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.Left := NOT "C3105 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.Lpd1 := NOT "C3105 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.Lpd2 := NOT "C3105 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.Right := NOT "C3105 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.Rpd1 := NOT "C3105 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.Rpd2 := NOT "C3105 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.Sdetect1 := NOT "C3105 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.Sdetect2 := NOT "C3105 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3105 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3105 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.VFD_Status := "C3105_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3105_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3105_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C3105_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 5 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.Left := NOT "C3205 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.Lpd1 := NOT "C3205 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.Lpd2 := NOT "C3205 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.Right := NOT "C3205 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.Rpd1 := NOT "C3205 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.Rpd2 := NOT "C3205 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.Sdetect1 := NOT "C3205 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.Sdetect2 := NOT "C3205 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3205 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3205 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.VFD_Status := "C3205_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3205_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3205_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C3205_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 6
+            //BUFFER CONVEYOR LEVEL 6 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.Left := NOT "C3106 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.Lpd1 := NOT "C3106 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.Lpd2 := NOT "C3106 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.Right := NOT "C3106 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.Rpd1 := NOT "C3106 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.Rpd2 := NOT "C3106 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.Sdetect1 := NOT "C3106 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.Sdetect2 := NOT "C3106 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3106 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3106 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.VFD_Status := "C3106_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3106_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3106_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C3106_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 6 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.Left := NOT "C3206 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.Lpd1 := NOT "C3206 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.Lpd2 := NOT "C3206 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.Right := NOT "C3206 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.Rpd1 := NOT "C3206 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.Rpd2 := NOT "C3206 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.Sdetect1 := NOT "C3206 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.Sdetect2 := NOT "C3206 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3206 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3206 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.VFD_Status := "C3206_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3206_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3206_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C3206_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 7
+            //BUFFER CONVEYOR LEVEL 7 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.Left := NOT "C3107 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.Lpd1 := NOT "C3107 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.Lpd2 := NOT "C3107 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.Right := NOT "C3107 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.Rpd1 := NOT "C3107 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.Rpd2 := NOT "C3107 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.Sdetect1 := NOT "C3107 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.Sdetect2 := NOT "C3107 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3107 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3107 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.VFD_Status := "C3107_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3107_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3107_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C3107_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 7 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.Left := NOT "C3207 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.Lpd1 := NOT "C3207 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.Lpd2 := NOT "C3207 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.Right := NOT "C3207 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.Rpd1 := NOT "C3207 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.Rpd2 := NOT "C3207 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.Sdetect1 := NOT "C3207 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.Sdetect2 := NOT "C3207 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3207 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3207 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.VFD_Status := "C3207_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3207_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3207_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C3207_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 8
+            //BUFFER CONVEYOR LEVEL 8 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.Left := NOT "C3108 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.Lpd1 := NOT "C3108 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.Lpd2 := NOT "C3108 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.Right := NOT "C3108 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.Rpd1 := NOT "C3108 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.Rpd2 := NOT "C3108 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.Sdetect1 := NOT "C3108 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.Sdetect2 := NOT "C3108 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3108 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3108 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.VFD_Status := "C3108_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3108_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3108_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C3108_ActualTorque");
+            
+            //BUFFER CONVEYOR LEVEL 8 - CONVEYOR 2
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.Left := NOT "C3208 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.Lpd1 := NOT "C3208 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.Lpd2 := NOT "C3208 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.Right := NOT "C3208 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.Rpd1 := NOT "C3208 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.Rpd2 := NOT "C3208 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.Sdetect1 := NOT "C3208 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.Sdetect2 := NOT "C3208 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := "C3208 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C3208 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.VFD_Status := "C3208_StatusWord";
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.VFD_ActualCurrent := WORD_TO_INT("C3208_ActualCurrent");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.VFD_Speed_Actual := WORD_TO_INT("C3208_ActualSpeed");
+            "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Inputs.VFD_ActualTorque := WORD_TO_INT("C3208_ActualTorque");
+        END_REGION
+    END_REGION
+    
+    REGION VTD
+        "Control_DB".VTD_Sys[3].Inputs.Upper_Overtravel := "OVERTRAVEL UPPER LIMIT - CH1(3)";
+        "Control_DB".VTD_Sys[3].Inputs.Upper_limit := "VTD3 UPPER LIMIT";
+        "Control_DB".VTD_Sys[3].Inputs.Ultimate_SlowDown := "VTD3 ULTIMATE SLOWDOWN";
+        "Control_DB".VTD_Sys[3].Inputs.Ultimate_Creep := "VTD3 ULTIMATE CREEP";
+        "Control_DB".VTD_Sys[3].Inputs.Lower_Limit := "VTD3 LOWER LIMIT";
+        "Control_DB".VTD_Sys[3].Inputs.Lower_Overtravel := "OVERTRAVEL LOWER LIMIT - CH1(3)";
+        "Control_DB".VTD_Sys[3].Inputs.Level_Detect1 := "VTD3 LEVEL DETECT 1";
+        "Control_DB".VTD_Sys[3].Inputs.Level_Detect2 := "VTD3 LEVEL DETECT 2";
+        "Control_DB".VTD_Sys[3].Inputs.DP1_Extended := "VTD3 DOCKING PINS EXTENDED 1";
+        "Control_DB".VTD_Sys[3].Inputs.DP2_Extended := "VTD3 DOCKING PINS EXTENDED 2";
+        "Control_DB".VTD_Sys[3].Inputs.DP1_Retracted := "VTD3 DOCKING PINS RETRACTED 1";
+        "Control_DB".VTD_Sys[3].Inputs.DP2_Retracted := "VTD3 DOCKING PINS RETRACTED 2";
+        "Control_DB".VTD_Sys[3].Inputs.Chain_Slack_1 := NOT "Remote_Panel_DB_3".Chain_Slack_1_Filtered;
+        "Control_DB".VTD_Sys[3].Inputs.Chain_Slack_2 := NOT "Remote_Panel_DB_3".Chain_Slack_2_Filtered;
+        "Control_DB".VTD_Sys[3].Inputs.Chain_Slack_3 := NOT "Remote_Panel_DB_3".Chain_Slack_3_Filtered;
+        "Control_DB".VTD_Sys[3].Inputs.Chain_Slack_4 := NOT "Remote_Panel_DB_3".Chain_Slack_4_Filtered;
+        "Control_DB".VTD_Sys[3].Inputs.PushToEnter := "VTD3 PUSH TO ENTER VTD ZONE";
+        "Control_DB".VTD_Sys[3].Inputs.PushToExit := "VTD3 PUSH TO EXIT VTD ZONE";
+        
+        "Control_DB".VTD_Sys[3].Inputs.VFD_Status := "VTD3_StatusWord";
+        "Control_DB".VTD_Sys[3].Inputs.VFD_ActualCurrent := REAL_TO_INT(("VTD3_ActualCurrent" / 10) / 72.5);
+        "Control_DB".VTD_Sys[3].Inputs.VFD_Speed_Actual := "VTD3_ActualSpeed";
+        "Control_DB".VTD_Sys[3].Inputs.VFD_ActualTorque := WORD_TO_INT("VTD3_ActualTorque");
+        
+    END_REGION
+    
+    REGION ABSOLUTE ENCODER
+        REGION DOCUMENTATION
+            //STATUS---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder state word 2 - INPUT WORD 1
+            //
+            // 15 … 12 Encoder’s Sign-OF-Life (NOT relevant)
+            // 11, 10 Reserved
+            // 9 Control requested 0 = No control BY the PLC requested 1 = Control BY the PLC requested
+            // 8 … 0 Reserved
+            
+            //Sensor 1 state word - INPUT WORD 2
+            //
+            // 15 Encoder error Description 0 = No error 1 = Error The error code is output in G1_XIST2.
+            // 14 Park mode activated 0 = Normal operation 1 = Park mode activated Feedback based on G1_STW bit 14: No output OF position data G1_XIST1 AND G1_XIST2
+            // 13 Transmission OF absolute position value 0 = No transmission 1 = Position value is output in G1_XIST2
+            // 12 Status OF the Preset function (set/shift OF home position executed) 0 = No Preset function active 1 = Preset function is run Feedback based on G1_STW bit 12:  
+            // 11 Requirement OF error acknowledgement detected New position value is output in G1_XIST1 AND G1_XIST2. On conclusion OF the Preset function the bit is set TO 0. 0 = No RETURN acknowledgement OF Encoder error 1 = Requirement OF error acknowledgement detected Reaction TO bit 15 in the sensor control word 1 G1_STW is acknowledged (see Table 14)
+            // 10 Reserved
+            // 9 … 0 NOT supported
+            
+            //Position 1 - INPUT WORD 3 AND 4
+            // "AE_Position_1_Scaled" := (*SCALE_X(MIN := "Settings_DB".VTD_Settings.VTD_Min_Height,
+            //                                   VALUE := *)NORM_X(MIN := 0,
+            //                                                   VALUE := (SHL(IN:="AE_Position_1", N:=2) * 0.00228881) (*- "AE_Offset"*),
+            //                                                   MAX := 1073741824)(*,
+            //                                   MAX := "Settings_DB".VTD_Settings.VTD_Max_Heigh)*);
+            // "mm_per_pulse" := 401,5584 / 262144;
+            // 
+            //CONTROL---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder control word 2 - OUTPUT WORD 1
+            //
+            // 15 … 12 Master’s Sign-OF-Life (NOT relevant)
+            // 10 control BY PLC 0 = No control BY the PLC 1 = Control BY the PLC Enables the PLC BY using control words TO activate / deactivate encoder functions
+            // 7 Fault acknowledge Error-buffer handling NOT supported
+            // 11, 9, 8, 6 … 0 Reserved
+            // "AE_Control_Word_1".%X10 := "AE_PLC_Control";
+            // 
+            //Sensor 1 control word - OUTPUT WORD 2-------------------------------------------------------------------------------------------
+            //
+            // 15 Acknowledging a sensor error Description 0 = Encoder error message NOT acknowledged BY PLC 1 = Encoder error message acknowledged BY the PLC
+            // 14 Activate park mode 0 = Normal operation 1 = Activate park mode
+            // 13 Request FOR the absolute position value 0 = No request 1 = Request BY the master Results in the cyclic output OF the position values in G1_XIST2
+            // 12 Activate preset value (see note below) Defines that a configured preset value is used (see section 3.5 on page 24) 0 = Preset value is NOT activated 1 = Preset value is activated
+            // 11 Preset mode Defines how a configured preset value is used 0 = Preset value is used as a new absolute value 1 = Preset value is added TO the previous value
+            // 10 … 0 Reserved
+            // "AE_Control_Word_2".%X15 := "VTD_Reset_HMI_Tags";
+            // "AE_Control_Word_2".%X14 := "AE_Activate_ParkMode";
+            // "AE_Control_Word_2".%X13 := "AE_Request_ABS_Value";
+            // "AE_Control_Word_2".%X12 := "AE_Activate_Preset_Value";
+            // "AE_Control_Word_2".%X11 := "AE_Preset_Mode";
+        END_REGION
+        
+        //STATUS---------------------------------------------------------------------------------------------------------------------
+        "Control_DB".VTD_Sys[3].Inputs.AE_Status_2 := "AE_Status_2(3)";
+        //Position 1 - INPUT WORD 3 AND 4
+        "Control_DB".VTD_Sys[3].Inputs.AE_Position_1 := REAL_TO_DINT(((((*1073741823 - reverse the direction*)
+      (SHR(IN := "AE_Position_1(3)", N := 2))) - 31381317) * 0.0015318237304688 (*Mechanical relationship*)- 225511)(*Offset*));
+        
+        // Position 2 - INPUT WORD 5 AND 6
+        "Control_DB".VTD_Sys[3].Inputs.AE_Position_2 := SHR(IN := "AE_Position_2(3)", N := 2);
+        
+        //Speed A - INPUT WORD 7
+        "Control_DB".VTD_Sys[3].Inputs.AE_Speed := "AE_Speed(3)";
+    END_REGION
+    
+    REGION LINEAR ENCODER
+        "Control_DB".VTD_Sys[3].Inputs.LE_Position := "LE_X_Unsafe_Position(3)" / 10;
+        "Control_DB".VTD_Sys[3].Inputs.LE_Speed := "LE_Speed(3)" * 100;
+        "Control_DB".VTD_Sys[3].Inputs.LE_Status := "LE_Status(3)";
+        "Control_DB".VTD_Sys[3].Inputs.LE_Warnings := "LE_Warnings(3)";
+        REGION DOCUMENTATION
+            //STATUS 
+            //
+            // 0 ERR - Error message (Error code in XP00– XP15); remaining bits = 0, see Error Codes
+            // 1 NP - No position information/OUT (XP = 0, YP = 0, SP = 0)
+            // 2 WRN - Warnings present, see Warning Module
+            // 3 EV - Event present
+            // 4 posdetected - Valid position information available
+            
+            //WARNINGS
+            //
+            // 0 WRN01 A code with non-PXV content was found.
+            // 1 WRN02 the read head is too close TO the Data Matrix code tape.
+            // 2 WRN03 the read head is too far from the Data Matrix code tape.
+            // 3 WRN04 Y position too large. The sensor is just before OUT.
+            // 4 WRN05 Y position is too small. The sensor is just before OUT.
+            // 5 WRN06 the read head is rotated OR tilted in relation TO the Data Matrix code tape.
+            // 6 WRN07 Low level OF code contrast.
+            // 7 WRN08 Repair tape detected.
+            // 8 WRN09 Temperature too high.
+            // 9...15 Reserved
+            
+            //QUALITY GRADE
+            //
+            //The quality grades enable constant monitoring of the code tape and the camera along the entire
+            //traverse distance. This enables you to detect and act upon potential damage or contamination
+            //of the code tape and camera at the earliest stage possible during commissioning and normal
+            //operation. As a result, this maximizes the overall functional reliability of your plant, and
+            //it means you are able to immediately localize the issue in the case of a fault. Evaluations
+            //are made using a scale of 1 to 6. The value 1 is the best possible read quality. A value greater
+            //than 3 or worse requires the camera and its path to be inspected. The value 7 signifies "No position"
+            //because no code was detected. An evaluation that indicates poor quality as the outcome can be due to
+            //a misalignment or incorrect orientation, an incorrect measuring distance, or because the code tape has been affixed incorrectly
+        END_REGION
+    END_REGION
+    
+    REGION SICK BARCODE LECTORS
+        IF "Control_DB".VTDBarcode_Station[3].Running AND "SICK_Lector_Control_DB_3".Result <> "Control_DB".VTDBarcode_Station[3].Barcode_Old THEN
+            "Control_DB".VTD_Sys[3].Inputs."Barcode 1" := "SICK_Lector_Control_DB_3".Result;
+            // "Control_DB".VTD_Control.Inputs."Barcode 2'" := SICK_Barcode_DB".Result;
+            // "Control_DB".VTDBarcode_Station[3].Barcode_Old := "SICK_Lector_Control_DB_3".Result;
+        ELSE
+            "Control_DB".VTD_Sys[3].Inputs."Barcode 1" :=
+            "Control_DB".VTD_Sys[3].Inputs."Barcode 2" := '';
+        END_IF;
+        
+    END_REGION
+    
+    REGION VFD HARDWARE ID
+        //Buffer conveyors 1
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.G120_Hardware_ID := "C3101~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.G120_Hardware_ID := "C3102~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.G120_Hardware_ID := "C3103~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.G120_Hardware_ID := "C3104~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.G120_Hardware_ID := "C3105~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.G120_Hardware_ID := "C3106~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.G120_Hardware_ID := "C3107~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.G120_Hardware_ID := "C3108~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //Buffer conveyors 2
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.G120_Hardware_ID := "C3201~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.G120_Hardware_ID := "C3202~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.G120_Hardware_ID := "C3203~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.G120_Hardware_ID := "C3204~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.G120_Hardware_ID := "C3205~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.G120_Hardware_ID := "C3206~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.G120_Hardware_ID := "C3207~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.G120_Hardware_ID := "C3208~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //Extractor conveyor
+        "Settings_DB".ECnv_Sys[3].G120_Hardware_ID := "CVTD_3~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //VTD
+        "Settings_DB".VTD_Sys[3].G120_Hardware_ID := "VTD_3~DO_VECTOR_1~Standard_telegram_20__PZD-2_6";
+    END_REGION
+END_REGION
+
+REGION SYSTEM 4
+    REGION EXTRACTOR CONVEYOR
+        "Control_DB".ECnv_Sys[4].Inputs.Left := "CVTD4 SENSOR CONVEYOR LEFT (FWD)";
+        "Control_DB".ECnv_Sys[4].Inputs.Lpd1 := "CVTD4 SENSOR CONVEYOR LEFT (PALLET DETECT 1)";
+        "Control_DB".ECnv_Sys[4].Inputs.Center := "CVTD4 SENSOR CONVEYOR CENTER";
+        "Control_DB".ECnv_Sys[4].Inputs.Right := "CVTD4 SENSOR CONVEYOR RIGHT (BWD)";
+        "Control_DB".ECnv_Sys[4].Inputs.Rpd1 := "CVTD4 SENSOR CONVEYOR RIGHT (PALLET DETECT 1)";
+        
+        "T_OH_Left_4".TOF(IN := "CVTD4 OVERHANG LEFT" OR NOT "Control_DB".VTD_Sys[4].Running,
+                          PT := T#200ms);
+        "Control_DB".ECnv_Sys[4].Inputs.Overhang_Left := "T_OH_Left_4".Q;
+        
+        "I_OH_Right_4".TOF(IN := "CVTD4 OVERHANG RIGHT" OR NOT "Control_DB".VTD_Sys[4].Running,
+                           PT := T#200ms);
+        "Control_DB".ECnv_Sys[4].Inputs.Overhang_Right := "I_OH_Right_4".Q;
+        
+        "Control_DB".ECnv_Sys[4].Inputs.VFD_Status := "CVTD4_StatusWord";
+        "Control_DB".ECnv_Sys[4].Inputs.VFD_ActualCurrent := WORD_TO_INT("CVTD4_ActualCurrent");
+        "Control_DB".ECnv_Sys[4].Inputs.VFD_Speed_Actual := WORD_TO_INT("CVTD4_ActualSpeed");
+        "Control_DB".ECnv_Sys[4].Inputs.VFD_ActualTorque := WORD_TO_INT("CVTD4_ActualTorque");
+    END_REGION
+    
+    REGION BUFFER CONVEYORS
+        REGION LEVEL 1
+            //BUFFER CONVEYOR LEVEL 1 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.Left := NOT "C4101 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.Lpd1 := NOT "C4101 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.Lpd2 := NOT "C4101 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.Right := NOT "C4101 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.Rpd1 := NOT "C4101 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.Rpd2 := NOT "C4101 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.Sdetect1 := NOT "C4101 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.Sdetect2 := NOT "C4101 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C4101 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C4101 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.VFD_Status := "C4101_StatusWord";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C4101_ActualCurrent");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C4101_ActualSpeed");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C4101_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 2
+            //BUFFER CONVEYOR LEVEL 2 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.Left := NOT "C4102 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.Lpd1 := NOT "C4102 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.Lpd2 := NOT "C4102 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.Right := NOT "C4102 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.Rpd1 := NOT "C4102 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.Rpd2 := NOT "C4102 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.Sdetect1 := NOT "C4102 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.Sdetect2 := NOT "C4102 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C4102 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C4102 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.VFD_Status := "C4102_StatusWord";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C4102_ActualCurrent");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C4102_ActualSpeed");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C4102_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 3
+            //BUFFER CONVEYOR LEVEL 3 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.Left := NOT "C4103 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.Lpd1 := NOT "C4103 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.Lpd2 := NOT "C4103 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.Right := NOT "C4103 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.Rpd1 := NOT "C4103 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.Rpd2 := NOT "C4103 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.Sdetect1 := NOT "C4103 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.Sdetect2 := NOT "C4103 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C4103 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C4103 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.VFD_Status := "C4103_StatusWord";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C4103_ActualCurrent");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C4103_ActualSpeed");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C4103_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 4
+            //BUFFER CONVEYOR LEVEL 4 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.Left := NOT "C4104 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.Lpd1 := NOT "C4104 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.Lpd2 := NOT "C4104 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.Right := NOT "C4104 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.Rpd1 := NOT "C4104 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.Rpd2 := NOT "C4104 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.Sdetect1 := NOT "C4104 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.Sdetect2 := NOT "C4104 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C4104 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C4104 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.VFD_Status := "C4104_StatusWord";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C4104_ActualCurrent");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C4104_ActualSpeed");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C4104_ActualTorque");
+            
+        END_REGION
+        
+        REGION LEVEL 5
+            //BUFFER CONVEYOR LEVEL 5 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.Left := NOT "C4105 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.Lpd1 := NOT "C4105 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.Lpd2 := NOT "C4105 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.Right := NOT "C4105 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.Rpd1 := NOT "C4105 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.Rpd2 := NOT "C4105 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.Sdetect1 := NOT "C4105 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.Sdetect2 := NOT "C4105 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C4105 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C4105 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.VFD_Status := "C4105_StatusWord";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C4105_ActualCurrent");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C4105_ActualSpeed");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C4105_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 6
+            //BUFFER CONVEYOR LEVEL 6 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.Left := NOT "C4106 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.Lpd1 := NOT "C4106 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.Lpd2 := NOT "C4106 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.Right := NOT "C4106 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.Rpd1 := NOT "C4106 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.Rpd2 := NOT "C4106 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.Sdetect1 := NOT "C4106 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.Sdetect2 := NOT "C4106 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C4106 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C4106 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.VFD_Status := "C4106_StatusWord";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C4106_ActualCurrent");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C4106_ActualSpeed");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C4106_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 7
+            //BUFFER CONVEYOR LEVEL 7 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.Left := NOT "C4107 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.Lpd1 := NOT "C4107 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.Lpd2 := NOT "C4107 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.Right := NOT "C4107 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.Rpd1 := NOT "C4107 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.Rpd2 := NOT "C4107 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.Sdetect1 := NOT "C4107 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.Sdetect2 := NOT "C4107 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C4107 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C4107 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.VFD_Status := "C4107_StatusWord";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C4107_ActualCurrent");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C4107_ActualSpeed");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C4107_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 8
+            //BUFFER CONVEYOR LEVEL 8 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.Left := NOT "C4108 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.Lpd1 := NOT "C4108 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.Lpd2 := NOT "C4108 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.Right := NOT "C4108 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.Rpd1 := NOT "C4108 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.Rpd2 := NOT "C4108 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.Sdetect1 := NOT "C4108 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.Sdetect2 := NOT "C4108 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C4108 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C4108 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.VFD_Status := "C4108_StatusWord";
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C4108_ActualCurrent");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C4108_ActualSpeed");
+            "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C4108_ActualTorque");
+        END_REGION
+    END_REGION
+    
+    REGION VTD
+        "Control_DB".VTD_Sys[4].Inputs.Upper_Overtravel := "OVERTRAVEL UPPER LIMIT - CH1(4)";
+        "Control_DB".VTD_Sys[4].Inputs.Upper_limit := "VTD4 UPPER LIMIT";
+        "Control_DB".VTD_Sys[4].Inputs.Ultimate_SlowDown := "VTD4 ULTIMATE SLOWDOWN";
+        "Control_DB".VTD_Sys[4].Inputs.Ultimate_Creep := "VTD4 ULTIMATE CREEP";
+        "Control_DB".VTD_Sys[4].Inputs.Lower_Limit := "VTD4 LOWER LIMIT";
+        "Control_DB".VTD_Sys[4].Inputs.Lower_Overtravel := "OVERTRAVEL LOWER LIMIT - CH1(4)";
+        "Control_DB".VTD_Sys[4].Inputs.Level_Detect1 := "VTD4 LEVEL DETECT 1";
+        "Control_DB".VTD_Sys[4].Inputs.Level_Detect2 := "VTD4 LEVEL DETECT 2";
+        "Control_DB".VTD_Sys[4].Inputs.DP1_Extended := "VTD4 DOCKING PINS 1 EXTENDED";
+        "Control_DB".VTD_Sys[4].Inputs.DP2_Extended := "VTD4 DOCKING PINS 2 EXTENDED";
+        "Control_DB".VTD_Sys[4].Inputs.DP1_Retracted := "VTD4 DOCKING PINS 1 RETRACTED";
+        "Control_DB".VTD_Sys[4].Inputs.DP2_Retracted := "VTD4 DOCKING PINS 2 RETRACTED";
+        "Control_DB".VTD_Sys[4].Inputs.Chain_Slack_1 := NOT "Remote_Panel_DB_4".Chain_Slack_1_Filtered;
+        "Control_DB".VTD_Sys[4].Inputs.Chain_Slack_2 := NOT "Remote_Panel_DB_4".Chain_Slack_2_Filtered;
+        "Control_DB".VTD_Sys[4].Inputs.Chain_Slack_3 := NOT "Remote_Panel_DB_4".Chain_Slack_3_Filtered;
+        "Control_DB".VTD_Sys[4].Inputs.Chain_Slack_4 := NOT "Remote_Panel_DB_4".Chain_Slack_4_Filtered;
+        "Control_DB".VTD_Sys[4].Inputs.PushToEnter := "VTD4 PUSH TO ENTER VTD ZONE";
+        "Control_DB".VTD_Sys[4].Inputs.PushToExit := "VTD4 PUSH TO EXIT VTD ZONE";
+        "Control_DB".VTD_Sys[4].Inputs.VFD_Status := "VTD4_StatusWord";
+        "Control_DB".VTD_Sys[4].Inputs.VFD_ActualCurrent := REAL_TO_INT(("VTD4_ActualCurrent" / 10) / 72.5);
+        "Control_DB".VTD_Sys[4].Inputs.VFD_Speed_Actual := "VTD4_ActualSpeed";
+        "Control_DB".VTD_Sys[4].Inputs.VFD_ActualTorque := WORD_TO_INT("VTD4_ActualTorque");
+      
+    END_REGION
+    
+    REGION ABSOLUTE ENCODER
+        REGION DOCUMENTATION
+            //STATUS---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder state word 2 - INPUT WORD 1
+            //
+            // 15 … 12 Encoder’s Sign-OF-Life (NOT relevant)
+            // 11, 10 Reserved
+            // 9 Control requested 0 = No control BY the PLC requested 1 = Control BY the PLC requested
+            // 8 … 0 Reserved
+            
+            //Sensor 1 state word - INPUT WORD 2
+            //
+            // 15 Encoder error Description 0 = No error 1 = Error The error code is output in G1_XIST2.
+            // 14 Park mode activated 0 = Normal operation 1 = Park mode activated Feedback based on G1_STW bit 14: No output OF position data G1_XIST1 AND G1_XIST2
+            // 13 Transmission OF absolute position value 0 = No transmission 1 = Position value is output in G1_XIST2
+            // 12 Status OF the Preset function (set/shift OF home position executed) 0 = No Preset function active 1 = Preset function is run Feedback based on G1_STW bit 12:  
+            // 11 Requirement OF error acknowledgement detected New position value is output in G1_XIST1 AND G1_XIST2. On conclusion OF the Preset function the bit is set TO 0. 0 = No RETURN acknowledgement OF Encoder error 1 = Requirement OF error acknowledgement detected Reaction TO bit 15 in the sensor control word 1 G1_STW is acknowledged (see Table 14)
+            // 10 Reserved
+            // 9 … 0 NOT supported
+            
+            //Position 1 - INPUT WORD 3 AND 4
+            // "AE_Position_1_Scaled" := (*SCALE_X(MIN := "Settings_DB".VTD_Settings.VTD_Min_Height,
+            //                                   VALUE := *)NORM_X(MIN := 0,
+            //                                                   VALUE := (SHL(IN:="AE_Position_1", N:=2) * 0.00228881) (*- "AE_Offset"*),
+            //                                                   MAX := 1073741824)(*,
+            //                                   MAX := "Settings_DB".VTD_Settings.VTD_Max_Heigh)*);
+            // "mm_per_pulse" := 401,5584 / 262144;
+            // 
+            //CONTROL---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder control word 2 - OUTPUT WORD 1
+            //
+            // 15 … 12 Master’s Sign-OF-Life (NOT relevant)
+            // 10 control BY PLC 0 = No control BY the PLC 1 = Control BY the PLC Enables the PLC BY using control words TO activate / deactivate encoder functions
+            // 7 Fault acknowledge Error-buffer handling NOT supported
+            // 11, 9, 8, 6 … 0 Reserved
+            // "AE_Control_Word_1".%X10 := "AE_PLC_Control";
+            // 
+            //Sensor 1 control word - OUTPUT WORD 2-------------------------------------------------------------------------------------------
+            //
+            // 15 Acknowledging a sensor error Description 0 = Encoder error message NOT acknowledged BY PLC 1 = Encoder error message acknowledged BY the PLC
+            // 14 Activate park mode 0 = Normal operation 1 = Activate park mode
+            // 13 Request FOR the absolute position value 0 = No request 1 = Request BY the master Results in the cyclic output OF the position values in G1_XIST2
+            // 12 Activate preset value (see note below) Defines that a configured preset value is used (see section 3.5 on page 24) 0 = Preset value is NOT activated 1 = Preset value is activated
+            // 11 Preset mode Defines how a configured preset value is used 0 = Preset value is used as a new absolute value 1 = Preset value is added TO the previous value
+            // 10 … 0 Reserved
+            // "AE_Control_Word_2".%X15 := "VTD_Reset_HMI_Tags";
+            // "AE_Control_Word_2".%X14 := "AE_Activate_ParkMode";
+            // "AE_Control_Word_2".%X13 := "AE_Request_ABS_Value";
+            // "AE_Control_Word_2".%X12 := "AE_Activate_Preset_Value";
+            // "AE_Control_Word_2".%X11 := "AE_Preset_Mode";
+        END_REGION
+        
+        //STATUS---------------------------------------------------------------------------------------------------------------------
+        "Control_DB".VTD_Sys[4].Inputs.AE_Status_2 := "AE_Status_2(4)";
+        //Position 1 - INPUT WORD 3 AND 4
+        "Control_DB".VTD_Sys[4].Inputs.AE_Position_1 := REAL_TO_DINT((((1073741823 - (*reverse the direction*)
+ (SHR(IN := "AE_Position_1(4)", N := 2))) - 31381317) * 0.0015318237304688 (*Mechanical relationship*)- 935884) (*Offset*));
+        
+        // Position 2 - INPUT WORD 5 AND 6
+        "Control_DB".VTD_Sys[4].Inputs.AE_Position_2 := SHR(IN := "AE_Position_2(4)", N := 2);
+        
+        //Speed A - INPUT WORD 7
+        "Control_DB".VTD_Sys[4].Inputs.AE_Speed := "AE_Speed(4)";
+    END_REGION
+    
+    REGION LINEAR ENCODER
+        "Control_DB".VTD_Sys[4].Inputs.LE_Position := "LE_X_Unsafe_Position(4)" / 10;
+        "Control_DB".VTD_Sys[4].Inputs.LE_Speed := "LE_Speed(4)" * 100;
+        "Control_DB".VTD_Sys[4].Inputs.LE_Status := "LE_Status(4)";
+        "Control_DB".VTD_Sys[4].Inputs.LE_Warnings := "LE_Warnings(4)";
+        REGION DOCUMENTATION
+            //STATUS 
+            //
+            // 0 ERR - Error message (Error code in XP00– XP15); remaining bits = 0, see Error Codes
+            // 1 NP - No position information/OUT (XP = 0, YP = 0, SP = 0)
+            // 2 WRN - Warnings present, see Warning Module
+            // 3 EV - Event present
+            // 4 posdetected - Valid position information available
+            
+            //WARNINGS
+            //
+            // 0 WRN01 A code with non-PXV content was found.
+            // 1 WRN02 the read head is too close TO the Data Matrix code tape.
+            // 2 WRN03 the read head is too far from the Data Matrix code tape.
+            // 3 WRN04 Y position too large. The sensor is just before OUT.
+            // 4 WRN05 Y position is too small. The sensor is just before OUT.
+            // 5 WRN06 the read head is rotated OR tilted in relation TO the Data Matrix code tape.
+            // 6 WRN07 Low level OF code contrast.
+            // 7 WRN08 Repair tape detected.
+            // 8 WRN09 Temperature too high.
+            // 9...15 Reserved
+            
+            //QUALITY GRADE
+            //
+            //The quality grades enable constant monitoring of the code tape and the camera along the entire
+            //traverse distance. This enables you to detect and act upon potential damage or contamination
+            //of the code tape and camera at the earliest stage possible during commissioning and normal
+            //operation. As a result, this maximizes the overall functional reliability of your plant, and
+            //it means you are able to immediately localize the issue in the case of a fault. Evaluations
+            //are made using a scale of 1 to 6. The value 1 is the best possible read quality. A value greater
+            //than 3 or worse requires the camera and its path to be inspected. The value 7 signifies "No position"
+            //because no code was detected. An evaluation that indicates poor quality as the outcome can be due to
+            //a misalignment or incorrect orientation, an incorrect measuring distance, or because the code tape has been affixed incorrectly
+        END_REGION
+    END_REGION
+    
+    REGION SICK BARCODE LECTORS
+        IF "Control_DB".VTDBarcode_Station[4].Running AND "SICK_Lector_Control_DB_4".Result <> "Control_DB".VTDBarcode_Station[4].Barcode_Old THEN
+            "Control_DB".VTD_Sys[4].Inputs."Barcode 1" := "SICK_Lector_Control_DB_4".Result;
+            // "Control_DB".VTD_Control.Inputs."Barcode 2'" := SICK_Barcode_DB".Result;
+            // "Control_DB".VTDBarcode_Station[4].Barcode_Old := "SICK_Lector_Control_DB_4".Result;
+        ELSE
+            "Control_DB".VTD_Sys[4].Inputs."Barcode 1" :=
+            "Control_DB".VTD_Sys[4].Inputs."Barcode 2" := '';
+        END_IF;
+        
+    END_REGION
+    
+    REGION VFD HARDWARE ID
+        //Buffer conveyors 1
+        "Settings_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.G120_Hardware_ID := "C4101~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.G120_Hardware_ID := "C4102~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.G120_Hardware_ID := "C4103~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.G120_Hardware_ID := "C4104~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.G120_Hardware_ID := "C4105~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.G120_Hardware_ID := "C4106~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.G120_Hardware_ID := "C4107~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.G120_Hardware_ID := "C4108~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //Extractor conveyor
+        "Settings_DB".ECnv_Sys[4].G120_Hardware_ID := "CVTD_4~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //VTD
+        "Settings_DB".VTD_Sys[4].G120_Hardware_ID := "VTD_4~DO_VECTOR_1~Standard_telegram_20__PZD-2_6";
+    END_REGION
+END_REGION
+
+REGION SYSTEM 5
+    REGION EXTRACTOR CONVEYOR
+        "Control_DB".ECnv_Sys[5].Inputs.Left := "CVTD5 SENSOR CONVEYOR LEFT (FWD)";
+        "Control_DB".ECnv_Sys[5].Inputs.Lpd1 := "CVTD5 SENSOR CONVEYOR LEFT (PALLET DETECT 1)";
+        "Control_DB".ECnv_Sys[5].Inputs.Center := "CVTD5 SENSOR CONVEYOR CENTER";
+        "Control_DB".ECnv_Sys[5].Inputs.Right := "CVTD5 SENSOR CONVEYOR RIGHT (BWD)";
+        "Control_DB".ECnv_Sys[5].Inputs.Rpd1 := "CVTD5 SENSOR CONVEYOR RIGHT (PALLET DETECT 1)";
+        
+        "T_OH_Left_5".TOF(IN := "CVTD5 OVERHANG LEFT" OR NOT "Control_DB".VTD_Sys[5].Running,
+                          PT := T#200ms);
+        "Control_DB".ECnv_Sys[5].Inputs.Overhang_Left := "T_OH_Left_5".Q;
+        "I_OH_Right_5".TOF(IN := "CVTD5 OVERHANG RIGHT" OR NOT "Control_DB".VTD_Sys[5].Running,
+                          PT := T#200ms);
+        "Control_DB".ECnv_Sys[5].Inputs.Overhang_Right := "I_OH_Right_5".Q;
+        
+        "Control_DB".ECnv_Sys[5].Inputs.VFD_Status := "CVTD5_StatusWord";
+        "Control_DB".ECnv_Sys[5].Inputs.VFD_ActualCurrent := WORD_TO_INT("CVTD5_ActualCurrent");
+        "Control_DB".ECnv_Sys[5].Inputs.VFD_Speed_Actual := WORD_TO_INT("CVTD5_ActualSpeed");
+        "Control_DB".ECnv_Sys[5].Inputs.VFD_ActualTorque := WORD_TO_INT("CVTD5_ActualTorque");
+    END_REGION
+    
+    REGION BUFFER CONVEYORS
+        REGION LEVEL 1
+            //BUFFER CONVEYOR LEVEL 1 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.Left := NOT "C5101 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.Lpd1 := NOT "C5101 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.Lpd2 := NOT "C5101 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.Right := NOT "C5101 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.Rpd1 := NOT "C5101 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.Rpd2 := NOT "C5101 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.Sdetect1 := NOT "C5101 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.Sdetect2 := NOT "C5101 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C5101 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C5101 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.VFD_Status := "C5101_StatusWord";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C5101_ActualCurrent");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C5101_ActualSpeed");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C5101_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 2
+            //BUFFER CONVEYOR LEVEL 2 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.Left := NOT "C5102 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.Lpd1 := NOT "C5102 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.Lpd2 := NOT "C5102 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.Right := NOT "C5102 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.Rpd1 := NOT "C5102 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.Rpd2 := NOT "C5102 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.Sdetect1 := NOT "C5102 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.Sdetect2 := NOT "C5102 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C5102 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C5102 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.VFD_Status := "C5102_StatusWord";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C5102_ActualCurrent");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C5102_ActualSpeed");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C5102_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 3
+            //BUFFER CONVEYOR LEVEL 3 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.Left := NOT "C5103 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.Lpd1 := NOT "C5103 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.Lpd2 := NOT "C5103 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.Right := NOT "C5103 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.Rpd1 := NOT "C5103 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.Rpd2 := NOT "C5103 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.Sdetect1 := NOT "C5103 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.Sdetect2 := NOT "C5103 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C5103 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C5103 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.VFD_Status := "C5103_StatusWord";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C5103_ActualCurrent");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C5103_ActualSpeed");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C5103_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 4
+            //BUFFER CONVEYOR LEVEL 4 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.Left := NOT "C5104 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.Lpd1 := NOT "C5104 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.Lpd2 := NOT "C5104 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.Right := NOT "C5104 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.Rpd1 := NOT "C5104 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.Rpd2 := NOT "C5104 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.Sdetect1 := NOT "C5104 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.Sdetect2 := NOT "C5104 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C5104 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C5104 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.VFD_Status := "C5104_StatusWord";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C5104_ActualCurrent");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C5104_ActualSpeed");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C5104_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 5
+            //BUFFER CONVEYOR LEVEL 5 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.Left := NOT "C5105 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.Lpd1 := NOT "C5105 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.Lpd2 := NOT "C5105 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.Right := NOT "C5105 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.Rpd1 := NOT "C5105 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.Rpd2 := NOT "C5105 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.Sdetect1 := NOT "C5105 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.Sdetect2 := NOT "C5105 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C5105 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C5105 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.VFD_Status := "C5105_StatusWord";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C5105_ActualCurrent");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C5105_ActualSpeed");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C5105_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 6
+            //BUFFER CONVEYOR LEVEL 6 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.Left := NOT "C5106 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.Lpd1 := NOT "C5106 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.Lpd2 := NOT "C5106 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.Right := NOT "C5106 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.Rpd1 := NOT "C5106 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.Rpd2 := NOT "C5106 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.Sdetect1 := NOT "C5106 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.Sdetect2 := NOT "C5106 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C5106 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C5106 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.VFD_Status := "C5106_StatusWord";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C5106_ActualCurrent");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C5106_ActualSpeed");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C5106_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 7
+            //BUFFER CONVEYOR LEVEL 7 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.Left := NOT "C5107 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.Lpd1 := NOT "C5107 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.Lpd2 := NOT "C5107 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.Right := NOT "C5107 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.Rpd1 := NOT "C5107 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.Rpd2 := NOT "C5107 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.Sdetect1 := NOT "C5107 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.Sdetect2 := NOT "C5107 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C5107 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C5107 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.VFD_Status := "C5107_StatusWord";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C5107_ActualCurrent");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C5107_ActualSpeed");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C5107_ActualTorque");
+        END_REGION
+        
+        REGION LEVEL 8
+            //BUFFER CONVEYOR LEVEL 8 - CONVEYOR 1
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.Left := NOT "C5108 - SENSOR CNV LEFT (FWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.Lpd1 := NOT "C5108 - SENSOR CNV LEFT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.Lpd2 := NOT "C5108 - SENSOR CNV LEFT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.Right := NOT "C5108 - SENSOR CNV RIGHT (BWD)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.Rpd1 := NOT "C5108 - SENSOR CNV RIGHT (PALLET DETECT 1)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.Rpd2 := NOT "C5108 - SENSOR CNV RIGHT (PALLET DETECT 2)";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.Sdetect1 := NOT "C5108 - SHUTTLE IN POSITION 1";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.Sdetect2 := NOT "C5108 - SHUTTLE IN POSITION 2";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Extended := "C5108 - SENSOR SAFETY PIN1 UP";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Inputs.DP_Retracted := "C5108 - SENSOR SAFETY PIN1 DOWN";
+            
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.VFD_Status := "C5108_StatusWord";
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.VFD_ActualCurrent := WORD_TO_INT("C5108_ActualCurrent");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.VFD_Speed_Actual := WORD_TO_INT("C5108_ActualSpeed");
+            "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Inputs.VFD_ActualTorque := WORD_TO_INT("C5108_ActualTorque");
+        END_REGION
+    END_REGION
+    
+    REGION VTD
+        "Control_DB".VTD_Sys[5].Inputs.Upper_Overtravel := "OVERTRAVEL UPPER LIMIT - CH1(5)";
+        "Control_DB".VTD_Sys[5].Inputs.Upper_limit := "VTD5 UPPER LIMIT";
+        "Control_DB".VTD_Sys[5].Inputs.Ultimate_SlowDown := "VTD5 ULTIMATE SLOWDOWN";
+        "Control_DB".VTD_Sys[5].Inputs.Ultimate_Creep := "VTD5 ULTIMATE CREEP";
+        "Control_DB".VTD_Sys[5].Inputs.Lower_Limit := "VTD5 LOWER LIMIT";
+        "Control_DB".VTD_Sys[5].Inputs.Lower_Overtravel := "OVERTRAVEL LOWER LIMIT - CH1(5)";
+        "Control_DB".VTD_Sys[5].Inputs.Level_Detect1 := "VTD5 LEVEL DETECT 1";
+        "Control_DB".VTD_Sys[5].Inputs.Level_Detect2 := "VTD5 LEVEL DETECT 2";
+        "Control_DB".VTD_Sys[5].Inputs.DP1_Extended := "VTD5 DOCKING PINS 1 EXTENDED";
+        "Control_DB".VTD_Sys[5].Inputs.DP2_Extended := "VTD5 DOCKING PINS 2 EXTENDED";
+        "Control_DB".VTD_Sys[5].Inputs.DP1_Retracted := "VTD5 DOCKING PINS 1 RETRACTED";
+        "Control_DB".VTD_Sys[5].Inputs.DP2_Retracted := "VTD5 DOCKING PINS 2 RETRACTED";
+        "Control_DB".VTD_Sys[5].Inputs.Chain_Slack_1 := NOT "Remote_Panel_DB_5".Chain_Slack_1_Filtered;
+        "Control_DB".VTD_Sys[5].Inputs.Chain_Slack_2 := NOT "Remote_Panel_DB_5".Chain_Slack_2_Filtered;
+        "Control_DB".VTD_Sys[5].Inputs.Chain_Slack_3 := NOT "Remote_Panel_DB_5".Chain_Slack_3_Filtered;
+        "Control_DB".VTD_Sys[5].Inputs.Chain_Slack_4 := NOT "Remote_Panel_DB_5".Chain_Slack_4_Filtered;
+        "Control_DB".VTD_Sys[5].Inputs.PushToEnter := "VTD5 PUSH TO ENTER VTD ZONE";
+        "Control_DB".VTD_Sys[5].Inputs.PushToExit := "VTD5 PUSH TO EXIT VTD ZONE";
+        "Control_DB".VTD_Sys[5].Inputs.VFD_Status := "VTD5_StatusWord";
+        "Control_DB".VTD_Sys[5].Inputs.VFD_ActualCurrent := REAL_TO_INT(("VTD5_ActualCurrent" / 10) / 72.5);
+        "Control_DB".VTD_Sys[5].Inputs.VFD_Speed_Actual := "VTD5_ActualSpeed";
+        "Control_DB".VTD_Sys[5].Inputs.VFD_ActualTorque := WORD_TO_INT("VTD5_ActualTorque");
+        
+    END_REGION
+    
+    REGION ABSOLUTE ENCODER
+        REGION DOCUMENTATION
+            //STATUS---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder state word 2 - INPUT WORD 1
+            //
+            // 15 … 12 Encoder’s Sign-OF-Life (NOT relevant)
+            // 11, 10 Reserved
+            // 9 Control requested 0 = No control BY the PLC requested 1 = Control BY the PLC requested
+            // 8 … 0 Reserved
+            
+            //Sensor 1 state word - INPUT WORD 2
+            //
+            // 15 Encoder error Description 0 = No error 1 = Error The error code is output in G1_XIST2.
+            // 14 Park mode activated 0 = Normal operation 1 = Park mode activated Feedback based on G1_STW bit 14: No output OF position data G1_XIST1 AND G1_XIST2
+            // 13 Transmission OF absolute position value 0 = No transmission 1 = Position value is output in G1_XIST2
+            // 12 Status OF the Preset function (set/shift OF home position executed) 0 = No Preset function active 1 = Preset function is run Feedback based on G1_STW bit 12:  
+            // 11 Requirement OF error acknowledgement detected New position value is output in G1_XIST1 AND G1_XIST2. On conclusion OF the Preset function the bit is set TO 0. 0 = No RETURN acknowledgement OF Encoder error 1 = Requirement OF error acknowledgement detected Reaction TO bit 15 in the sensor control word 1 G1_STW is acknowledged (see Table 14)
+            // 10 Reserved
+            // 9 … 0 NOT supported
+            
+            //Position 1 - INPUT WORD 3 AND 4
+            // "AE_Position_1_Scaled" := (*SCALE_X(MIN := "Settings_DB".VTD_Settings.VTD_Min_Height,
+            //                                   VALUE := *)NORM_X(MIN := 0,
+            //                                                   VALUE := (SHL(IN:="AE_Position_1", N:=2) * 0.00228881) (*- "AE_Offset"*),
+            //                                                   MAX := 1073741824)(*,
+            //                                   MAX := "Settings_DB".VTD_Settings.VTD_Max_Heigh)*);
+            // "mm_per_pulse" := 401,5584 / 262144;
+            // 
+            //CONTROL---------------------------------------------------------------------------------------------------------------------
+            //
+            //Encoder control word 2 - OUTPUT WORD 1
+            //
+            // 15 … 12 Master’s Sign-OF-Life (NOT relevant)
+            // 10 control BY PLC 0 = No control BY the PLC 1 = Control BY the PLC Enables the PLC BY using control words TO activate / deactivate encoder functions
+            // 7 Fault acknowledge Error-buffer handling NOT supported
+            // 11, 9, 8, 6 … 0 Reserved
+            // "AE_Control_Word_1".%X10 := "AE_PLC_Control";
+            // 
+            //Sensor 1 control word - OUTPUT WORD 2-------------------------------------------------------------------------------------------
+            //
+            // 15 Acknowledging a sensor error Description 0 = Encoder error message NOT acknowledged BY PLC 1 = Encoder error message acknowledged BY the PLC
+            // 14 Activate park mode 0 = Normal operation 1 = Activate park mode
+            // 13 Request FOR the absolute position value 0 = No request 1 = Request BY the master Results in the cyclic output OF the position values in G1_XIST2
+            // 12 Activate preset value (see note below) Defines that a configured preset value is used (see section 3.5 on page 24) 0 = Preset value is NOT activated 1 = Preset value is activated
+            // 11 Preset mode Defines how a configured preset value is used 0 = Preset value is used as a new absolute value 1 = Preset value is added TO the previous value
+            // 10 … 0 Reserved
+            // "AE_Control_Word_2".%X15 := "VTD_Reset_HMI_Tags";
+            // "AE_Control_Word_2".%X14 := "AE_Activate_ParkMode";
+            // "AE_Control_Word_2".%X13 := "AE_Request_ABS_Value";
+            // "AE_Control_Word_2".%X12 := "AE_Activate_Preset_Value";
+            // "AE_Control_Word_2".%X11 := "AE_Preset_Mode";
+        END_REGION
+        
+        //STATUS---------------------------------------------------------------------------------------------------------------------
+        "Control_DB".VTD_Sys[5].Inputs.AE_Status_2 := "AE_Status_2(5)";
+        //Position 1 - INPUT WORD 3 AND 4
+        "Control_DB".VTD_Sys[5].Inputs.AE_Position_1 := REAL_TO_DINT((((1073741823 - (*reverse the direction*)
+ (SHR(IN := "AE_Position_1(5)", N := 2))) - 31381317) * 0.0015318237304688 (*Mechanical relationship*) - 1805195)(*Offset*));
+        
+// Position 2 - INPUT WORD 5 AND 6
+        "Control_DB".VTD_Sys[5].Inputs.AE_Position_2 := SHR(IN := "AE_Position_2(5)", N := 2);
+        
+        //Speed A - INPUT WORD 7
+        "Control_DB".VTD_Sys[5].Inputs.AE_Speed := "AE_Speed(5)";
+    END_REGION
+    
+    REGION LINEAR ENCODER
+        "Control_DB".VTD_Sys[5].Inputs.LE_Position := "LE_X_Unsafe_Position(5)" / 10;
+        "Control_DB".VTD_Sys[5].Inputs.LE_Speed := "LE_Speed(5)" * 100;
+        "Control_DB".VTD_Sys[5].Inputs.LE_Status := "LE_Status(5)";
+        "Control_DB".VTD_Sys[5].Inputs.LE_Warnings := "LE_Warnings(5)";
+        REGION DOCUMENTATION
+            //STATUS 
+            //
+            // 0 ERR - Error message (Error code in XP00– XP15); remaining bits = 0, see Error Codes
+            // 1 NP - No position information/OUT (XP = 0, YP = 0, SP = 0)
+            // 2 WRN - Warnings present, see Warning Module
+            // 3 EV - Event present
+            // 4 posdetected - Valid position information available
+            
+            //WARNINGS
+            //
+            // 0 WRN01 A code with non-PXV content was found.
+            // 1 WRN02 the read head is too close TO the Data Matrix code tape.
+            // 2 WRN03 the read head is too far from the Data Matrix code tape.
+            // 3 WRN04 Y position too large. The sensor is just before OUT.
+            // 4 WRN05 Y position is too small. The sensor is just before OUT.
+            // 5 WRN06 the read head is rotated OR tilted in relation TO the Data Matrix code tape.
+            // 6 WRN07 Low level OF code contrast.
+            // 7 WRN08 Repair tape detected.
+            // 8 WRN09 Temperature too high.
+            // 9...15 Reserved
+            
+            //QUALITY GRADE
+            //
+            //The quality grades enable constant monitoring of the code tape and the camera along the entire
+            //traverse distance. This enables you to detect and act upon potential damage or contamination
+            //of the code tape and camera at the earliest stage possible during commissioning and normal
+            //operation. As a result, this maximizes the overall functional reliability of your plant, and
+            //it means you are able to immediately localize the issue in the case of a fault. Evaluations
+            //are made using a scale of 1 to 6. The value 1 is the best possible read quality. A value greater
+            //than 3 or worse requires the camera and its path to be inspected. The value 7 signifies "No position"
+            //because no code was detected. An evaluation that indicates poor quality as the outcome can be due to
+            //a misalignment or incorrect orientation, an incorrect measuring distance, or because the code tape has been affixed incorrectly
+        END_REGION
+    END_REGION
+    
+    REGION SICK BARCODE LECTORS
+        IF "Control_DB".VTDBarcode_Station[5].Running AND "SICK_Lector_Control_DB_5".Result <> "Control_DB".VTDBarcode_Station[5].Barcode_Old THEN
+            "Control_DB".VTD_Sys[5].Inputs."Barcode 1" := "SICK_Lector_Control_DB_5".Result;
+            // "Control_DB".VTD_Control.Inputs."Barcode 2'" := SICK_Barcode_DB".Result;
+            // "Control_DB".VTDBarcode_Station[5].Barcode_Old := "SICK_Lector_Control_DB_5".Result;
+        ELSE
+            "Control_DB".VTD_Sys[5].Inputs."Barcode 1" :=
+            "Control_DB".VTD_Sys[5].Inputs."Barcode 2" := '';
+        END_IF;
+        
+    END_REGION
+    
+    REGION VFD HARDWARE ID
+        //Buffer conveyors 1
+        "Settings_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.G120_Hardware_ID := "C5101~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.G120_Hardware_ID := "C5102~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.G120_Hardware_ID := "C5103~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.G120_Hardware_ID := "C5104~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.G120_Hardware_ID := "C5105~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.G120_Hardware_ID := "C5106~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.G120_Hardware_ID := "C5107~Drive_1~Standard_telegram_20__PZD-2_6";
+        "Settings_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.G120_Hardware_ID := "C5108~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //Extractor conveyor
+        "Settings_DB".ECnv_Sys[5].G120_Hardware_ID := "CVTD_5~Drive_1~Standard_telegram_20__PZD-2_6";
+        
+        //VTD
+        "Settings_DB".VTD_Sys[5].G120_Hardware_ID := "VTD_5~DO_VECTOR_1~Standard_telegram_20__PZD-2_6";
+    END_REGION
+END_REGION
+
+REGION LEVEL KEYS
+    // System 1
+    "HMI_DB".Rem_Loc_Keys[1].Level[1] := "KEY REMOTE/LOCAL L1 - CH1(1)";
+    "HMI_DB".Rem_Loc_Keys[1].Level[2] := "KEY REMOTE/LOCAL L2 - CH1(1)";
+    "HMI_DB".Rem_Loc_Keys[1].Level[3] := "KEY REMOTE/LOCAL L3 - CH1(1)";
+    "HMI_DB".Rem_Loc_Keys[1].Level[4] := "KEY REMOTE/LOCAL L4 - CH1(1)";
+    "HMI_DB".Rem_Loc_Keys[1].Level[5] := "KEY REMOTE/LOCAL L5 - CH1(1)";
+    "HMI_DB".Rem_Loc_Keys[1].Level[6] := "KEY REMOTE/LOCAL L6 - CH1(1)";
+    "HMI_DB".Rem_Loc_Keys[1].Level[7] := "KEY REMOTE/LOCAL L7 - CH1(1)";
+    "HMI_DB".Rem_Loc_Keys[1].Level[8] := "KEY REMOTE/LOCAL L8 - CH1(1)";
+    
+    // System 2
+    "HMI_DB".Rem_Loc_Keys[2].Level[1] := "KEY REMOTE/LOCAL L1 - CH1(2)";
+    "HMI_DB".Rem_Loc_Keys[2].Level[2] := "KEY REMOTE/LOCAL L2 - CH1(2)";
+    "HMI_DB".Rem_Loc_Keys[2].Level[3] := "KEY REMOTE/LOCAL L3 - CH1(2)";
+    "HMI_DB".Rem_Loc_Keys[2].Level[4] := "KEY REMOTE/LOCAL L4 - CH1(2)";
+    "HMI_DB".Rem_Loc_Keys[2].Level[5] := "KEY REMOTE/LOCAL L5 - CH1(2)";
+    "HMI_DB".Rem_Loc_Keys[2].Level[6] := "KEY REMOTE/LOCAL L6 - CH1(2)";
+    "HMI_DB".Rem_Loc_Keys[2].Level[7] := "KEY REMOTE/LOCAL L7 - CH1(2)";
+    "HMI_DB".Rem_Loc_Keys[2].Level[8] := "KEY REMOTE/LOCAL L8 - CH1(2)";
+    
+    // System 3
+    "HMI_DB".Rem_Loc_Keys[3].Level[1] := "KEY REMOTE/LOCAL L1 - CH1(3)";
+    "HMI_DB".Rem_Loc_Keys[3].Level[2] := "KEY REMOTE/LOCAL L2 - CH1(3)";
+    "HMI_DB".Rem_Loc_Keys[3].Level[3] := "KEY REMOTE/LOCAL L3 - CH1(3)";
+    "HMI_DB".Rem_Loc_Keys[3].Level[4] := "KEY REMOTE/LOCAL L4 - CH1(3)";
+    "HMI_DB".Rem_Loc_Keys[3].Level[5] := "KEY REMOTE/LOCAL L5 - CH1(3)";
+    "HMI_DB".Rem_Loc_Keys[3].Level[6] := "KEY REMOTE/LOCAL L6 - CH1(3)";
+    "HMI_DB".Rem_Loc_Keys[3].Level[7] := "KEY REMOTE/LOCAL L7 - CH1(3)";
+    "HMI_DB".Rem_Loc_Keys[3].Level[8] := "KEY REMOTE/LOCAL L8 - CH1(3)";
+    
+    // System 4
+    "HMI_DB".Rem_Loc_Keys[4].Level[1] := "KEY REMOTE/LOCAL L1 - CH1(4)";
+    "HMI_DB".Rem_Loc_Keys[4].Level[2] := "KEY REMOTE/LOCAL L2 - CH1(4)";
+    "HMI_DB".Rem_Loc_Keys[4].Level[3] := "KEY REMOTE/LOCAL L3 - CH1(4)";
+    "HMI_DB".Rem_Loc_Keys[4].Level[4] := "KEY REMOTE/LOCAL L4 - CH1(4)";
+    "HMI_DB".Rem_Loc_Keys[4].Level[5] := "KEY REMOTE/LOCAL L5 - CH1(4)";
+    "HMI_DB".Rem_Loc_Keys[4].Level[6] := "KEY REMOTE/LOCAL L6 - CH1(4)";
+    "HMI_DB".Rem_Loc_Keys[4].Level[7] := "KEY REMOTE/LOCAL L7 - CH1(4)";
+    "HMI_DB".Rem_Loc_Keys[4].Level[8] := "KEY REMOTE/LOCAL L8 - CH1(4)";
+    
+    // System 5
+    "HMI_DB".Rem_Loc_Keys[5].Level[1] := "KEY REMOTE/LOCAL L1 - CH1(5)";
+    "HMI_DB".Rem_Loc_Keys[5].Level[2] := "KEY REMOTE/LOCAL L2 - CH1(5)";
+    "HMI_DB".Rem_Loc_Keys[5].Level[3] := "KEY REMOTE/LOCAL L3 - CH1(5)";
+    "HMI_DB".Rem_Loc_Keys[5].Level[4] := "KEY REMOTE/LOCAL L4 - CH1(5)";
+    "HMI_DB".Rem_Loc_Keys[5].Level[5] := "KEY REMOTE/LOCAL L5 - CH1(5)";
+    "HMI_DB".Rem_Loc_Keys[5].Level[6] := "KEY REMOTE/LOCAL L6 - CH1(5)";
+    "HMI_DB".Rem_Loc_Keys[5].Level[7] := "KEY REMOTE/LOCAL L7 - CH1(5)";
+    "HMI_DB".Rem_Loc_Keys[5].Level[8] := "KEY REMOTE/LOCAL L8 - CH1(5)";
+END_REGION;
+END_FUNCTION

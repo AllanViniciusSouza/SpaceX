@@ -1,0 +1,503 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-20T12:52:53.0506322Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FC ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="Infeed_Stop_Sensor" Datatype="Bool" Accessibility="Public" />
+    <Member Name="Ready_To_Receive" Datatype="Bool" Accessibility="Public" />
+    <Member Name="Auto_Mode" Datatype="Bool" Accessibility="Public" />
+    <Member Name="Transfer_In_Progress" Datatype="Bool" Accessibility="Public" />
+    <Member Name="DB_LGX_To_SM_Infeed_Ready_To_Send" Datatype="Bool" Accessibility="Public" />
+    <Member Name="DB_LGX_To_SM_Infeed_Transfer_In_Progress" Datatype="Bool" Accessibility="Public" />
+  </Section>
+  <Section Name="Output">
+    <Member Name="Fault_Handshake" Datatype="Bool" Accessibility="Public" />
+    <Member Name="DB_SM_To_LGX_Infeed_Ready_To_Receive" Datatype="Bool" Accessibility="Public" />
+    <Member Name="DB_SM_To_LGX_Infeed_Pallet_Received" Datatype="Bool" Accessibility="Public" />
+    <Member Name="DB_SM_To_LGX_Infeed_Transfer_In_Progress" Datatype="Bool" Accessibility="Public" />
+  </Section>
+  <Section Name="InOut" />
+  <Section Name="Temp">
+    <Member Name="tReady_To_Receive_Condition" Datatype="Bool" />
+    <Member Name="tPallet_Received_Condition" Datatype="Bool" />
+  </Section>
+  <Section Name="Constant" />
+  <Section Name="Return">
+    <Member Name="Ret_Val" Datatype="Void" Accessibility="Public" />
+  </Section>
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>Handshake_Infeed_FC</Name>
+      <Namespace />
+      <Number>47</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <LineComment Inserted="false" NoClosingBracket="false" UId="21">
+    <Text UId="22"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="23" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="24">
+    <Text UId="25"> STEP 1: Is SM ready to receive?</Text>
+  </LineComment>
+  <NewLine Num="1" UId="26" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="27">
+    <Text UId="28"> Condition: SM in Auto, infeed conveyor healthy,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="29" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="30">
+    <Text UId="31">            no transfer in progress, no alarm</Text>
+  </LineComment>
+  <NewLine Num="1" UId="32" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="33">
+    <Text UId="34"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="35" />
+  <Access Scope="LocalVariable" UId="36">
+    <Symbol UId="37">
+      <Component Name="tReady_To_Receive_Condition" UId="38" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="39" />
+  <Token Text=":=" UId="40" />
+  <NewLine Num="1" UId="41" />
+  <Access Scope="LocalVariable" UId="42">
+    <Symbol UId="43">
+      <Component Name="Auto_Mode" UId="44" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="45" />
+  <Token Text="AND" UId="46" />
+  <Blank Num="1" UId="47" />
+  <Access Scope="LocalVariable" UId="48">
+    <Symbol UId="49">
+      <Component Name="Ready_To_Receive" UId="50" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="51" />
+  <Token Text="AND" UId="52" />
+  <Blank Num="1" UId="53" />
+  <Token Text="NOT" UId="54" />
+  <Blank Num="1" UId="55" />
+  <Access Scope="LocalVariable" UId="56">
+    <Symbol UId="57">
+      <Component Name="DB_SM_To_LGX_Infeed_Ready_To_Receive" UId="58" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="59" />
+  <Token Text="AND" UId="60" />
+  <Blank Num="1" UId="61" />
+  <Token Text="NOT" UId="62" />
+  <Blank Num="1" UId="63" />
+  <Access Scope="LocalVariable" UId="64">
+    <Symbol UId="65">
+      <Component Name="DB_SM_To_LGX_Infeed_Pallet_Received" UId="66" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="67" />
+  <NewLine Num="2" UId="68" />
+  <Token Text="IF" UId="69" />
+  <Blank Num="1" UId="70" />
+  <Access Scope="LocalVariable" UId="71">
+    <Symbol UId="72">
+      <Component Name="DB_LGX_To_SM_Infeed_Ready_To_Send" UId="73" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="74" />
+  <Blank Num="4" UId="75" />
+  <Token Text="AND" UId="76" />
+  <Blank Num="1" UId="77" />
+  <Access Scope="LocalVariable" UId="78">
+    <Symbol UId="79">
+      <Component Name="tReady_To_Receive_Condition" UId="80" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="81" />
+  <Token Text="THEN" UId="82" />
+  <NewLine Num="1" UId="83" />
+  <Blank Num="4" UId="84" />
+  <Access Scope="LocalVariable" UId="85">
+    <Symbol UId="86">
+      <Component Name="DB_SM_To_LGX_Infeed_Ready_To_Receive" UId="87" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="88" />
+  <Token Text=":=" UId="89" />
+  <Blank Num="1" UId="90" />
+  <Access Scope="LiteralConstant" UId="91">
+    <Constant UId="92">
+      <ConstantValue UId="94">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="95" />
+  <NewLine Num="1" UId="96" />
+  <Token Text="END_IF" UId="97" />
+  <Token Text=";" UId="98" />
+  <NewLine Num="2" UId="99" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="100">
+    <Text UId="101"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="102" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="103">
+    <Text UId="104"> STEP 2: Confirm pallet received</Text>
+  </LineComment>
+  <NewLine Num="1" UId="105" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="106">
+    <Text UId="107"> Condition: Photocell active while transfer is in progress</Text>
+  </LineComment>
+  <NewLine Num="1" UId="108" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="109">
+    <Text UId="110"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="111" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="112">
+    <Text UId="113"> #tPallet_Received_Condition :=</Text>
+  </LineComment>
+  <NewLine Num="1" UId="114" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="115">
+    <Text UId="116"> #Infeed_Stop_Sensor</Text>
+  </LineComment>
+  <NewLine Num="1" UId="117" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="118">
+    <Text UId="119"> AND #DB_LGX_To_SM_Infeed_Transfer_In_Progress</Text>
+  </LineComment>
+  <NewLine Num="1" UId="120" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="121">
+    <Text UId="122"> AND #DB_SM_To_LGX_Infeed_Ready_To_Receive;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="123" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="124">
+    <Text UId="125"> </Text>
+  </LineComment>
+  <NewLine Num="1" UId="126" />
+  <Access Scope="LocalVariable" UId="127">
+    <Symbol UId="128">
+      <Component Name="tPallet_Received_Condition" UId="129" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="130" />
+  <Token Text=":=" UId="131" />
+  <NewLine Num="1" UId="132" />
+  <Access Scope="LocalVariable" UId="133">
+    <Symbol UId="134">
+      <Component Name="Infeed_Stop_Sensor" UId="135" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="136" />
+  <NewLine Num="2" UId="137" />
+  <Token Text="IF" UId="138" />
+  <Blank Num="1" UId="139" />
+  <Access Scope="LocalVariable" UId="140">
+    <Symbol UId="141">
+      <Component Name="tPallet_Received_Condition" UId="142" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="143" />
+  <Token Text="THEN" UId="144" />
+  <NewLine Num="1" UId="145" />
+  <Blank Num="4" UId="146" />
+  <Access Scope="LocalVariable" UId="147">
+    <Symbol UId="148">
+      <Component Name="DB_SM_To_LGX_Infeed_Pallet_Received" UId="149" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="150" />
+  <Token Text=":=" UId="151" />
+  <Blank Num="1" UId="152" />
+  <Access Scope="LiteralConstant" UId="153">
+    <Constant UId="154">
+      <ConstantValue UId="156">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="157" />
+  <NewLine Num="1" UId="158" />
+  <Blank Num="4" UId="159" />
+  <Access Scope="LocalVariable" UId="160">
+    <Symbol UId="161">
+      <Component Name="DB_SM_To_LGX_Infeed_Ready_To_Receive" UId="162" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="163" />
+  <Token Text=":=" UId="164" />
+  <Blank Num="1" UId="165" />
+  <Access Scope="LiteralConstant" UId="166">
+    <Constant UId="167">
+      <ConstantValue UId="169">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="170" />
+  <NewLine Num="1" UId="171" />
+  <Token Text="ELSE" UId="172" />
+  <NewLine Num="1" UId="173" />
+  <Blank Num="4" UId="174" />
+  <Access Scope="LocalVariable" UId="175">
+    <Symbol UId="176">
+      <Component Name="DB_SM_To_LGX_Infeed_Pallet_Received" UId="177" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="178" />
+  <Token Text=":=" UId="179" />
+  <Blank Num="1" UId="180" />
+  <Access Scope="LiteralConstant" UId="181">
+    <Constant UId="182">
+      <ConstantValue UId="184">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="185" />
+  <NewLine Num="1" UId="186" />
+  <Token Text="END_IF" UId="187" />
+  <Token Text=";" UId="188" />
+  <NewLine Num="2" UId="189" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="190">
+    <Text UId="191"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="192" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="193">
+    <Text UId="194"> STEP 3: Reset after LGX confirms end of transfer</Text>
+  </LineComment>
+  <NewLine Num="1" UId="195" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="196">
+    <Text UId="197"> (LGX resets Transfer_In_Progress upon receiving Pallet_Received)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="198" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="199">
+    <Text UId="200"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="201" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="202">
+    <Text UId="203"> IF #DB_SM_To_LGX_Infeed_Pallet_Received</Text>
+  </LineComment>
+  <NewLine Num="1" UId="204" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="205">
+    <Text UId="206">     AND NOT #DB_LGX_To_SM_Infeed_Transfer_In_Progress THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="207" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="208">
+    <Text UId="209">     #DB_SM_To_LGX_Infeed_Pallet_Received := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="210" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="211">
+    <Text UId="212"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="2" UId="213" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="214">
+    <Text UId="215"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="216" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="217">
+    <Text UId="218"> STEP 4: Reset Ready_To_Receive if LGX withdraws Ready_To_Send</Text>
+  </LineComment>
+  <NewLine Num="1" UId="219" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="220">
+    <Text UId="221"> (e.g. LGX cancelled the operation before starting transfer)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="222" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="223">
+    <Text UId="224"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="225" />
+  <Token Text="IF" UId="226" />
+  <Blank Num="1" UId="227" />
+  <Token Text="NOT" UId="228" />
+  <Blank Num="1" UId="229" />
+  <Access Scope="LocalVariable" UId="230">
+    <Symbol UId="231">
+      <Component Name="DB_LGX_To_SM_Infeed_Ready_To_Send" UId="232" />
+    </Symbol>
+  </Access>
+  <NewLine Num="1" UId="233" />
+  <Blank Num="4" UId="234" />
+  <Token Text="AND" UId="235" />
+  <Blank Num="1" UId="236" />
+  <Token Text="NOT" UId="237" />
+  <Blank Num="1" UId="238" />
+  <Access Scope="LocalVariable" UId="239">
+    <Symbol UId="240">
+      <Component Name="DB_LGX_To_SM_Infeed_Transfer_In_Progress" UId="241" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="242" />
+  <Token Text="THEN" UId="243" />
+  <NewLine Num="1" UId="244" />
+  <Blank Num="4" UId="245" />
+  <Access Scope="LocalVariable" UId="246">
+    <Symbol UId="247">
+      <Component Name="DB_SM_To_LGX_Infeed_Ready_To_Receive" UId="248" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="249" />
+  <Token Text=":=" UId="250" />
+  <Blank Num="1" UId="251" />
+  <Access Scope="LiteralConstant" UId="252">
+    <Constant UId="253">
+      <ConstantValue UId="255">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="256" />
+  <NewLine Num="1" UId="257" />
+  <Token Text="END_IF" UId="258" />
+  <Token Text=";" UId="259" />
+  <NewLine Num="2" UId="260" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="261">
+    <Text UId="262"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="263" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="264">
+    <Text UId="265"> FAULT SUPERVISION</Text>
+  </LineComment>
+  <NewLine Num="1" UId="266" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="267">
+    <Text UId="268"> If Transfer_In_Progress remains active without pallet arriving:</Text>
+  </LineComment>
+  <NewLine Num="1" UId="269" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="270">
+    <Text UId="271"> use external timer / timeout bit (implement in OB1)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="272" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="273">
+    <Text UId="274"> ---------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="275" />
+  <Access Scope="LocalVariable" UId="276">
+    <Symbol UId="277">
+      <Component Name="Fault_Handshake" UId="278" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="279" />
+  <Token Text=":=" UId="280" />
+  <Blank Num="1" UId="281" />
+  <Access Scope="LiteralConstant" UId="282">
+    <Constant UId="283">
+      <ConstantValue UId="285">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="286" />
+  <Blank Num="1" UId="287" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="288">
+    <Text UId="289"> Placeholder - implement watchdog</Text>
+  </LineComment>
+  <NewLine Num="2" UId="290" />
+  <Access Scope="LocalVariable" UId="291">
+    <Symbol UId="292">
+      <Component Name="DB_SM_To_LGX_Infeed_Transfer_In_Progress" UId="293" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="294" />
+  <Token Text=":=" UId="295" />
+  <Blank Num="1" UId="296" />
+  <Access Scope="LocalVariable" UId="297">
+    <Symbol UId="298">
+      <Component Name="Transfer_In_Progress" UId="299" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="300" />
+  <NewLine Num="1" UId="301" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FC>
+</Document>

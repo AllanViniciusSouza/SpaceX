@@ -1,0 +1,46 @@
+// FB "Main_Safety_RTG1" 1  language F_FBD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR
+   SAFETY_OK_VTD : Bool;
+   SAFETY_OK_CAROUSEL : Bool;
+   MAIN_PANEL_OK : Bool;
+   REMOTE_PANEL_OK : Bool;
+   E-STOP_INBOUND_OK : Bool;
+   PICK_STATION_OK : Bool;
+   data_Safe : DInt;
+   HMI_E-STOP : Bool;
+END_VAR
+
+--- Network 1  Title: SAFETY OK VTD
+   parts: A, Coil
+   operands: #MAIN_PANEL_OK, #REMOTE_PANEL_OK, #HMI_E-STOP, #SAFETY_OK_VTD, STO VTD - CH 1, STO VTD - CH 2, STO Buffer 1/2/3 - CH1, STO Buffer 1/2/3 - CH2, STO Econveyor - CH1, STO Econveyor - CH2, Power Enable Safety Stopper Conveyors (1,2,3) - CH1, Power Enable Safety Stopper Conveyors (1,2,3) - CH2, STO Release Brake1, STO Release Brake2, STO VTD - CH1, STO VTD - CH2
+--- Network 2  Title: CAROUSEL
+   parts: A, Coil
+   operands: #MAIN_PANEL_OK, #REMOTE_PANEL_OK, #HMI_E-STOP, #E-STOP_INBOUND_OK, #SAFETY_OK_CAROUSEL, STO Lift 2/3/4 -CH1, STO Lift 2/3/4 -CH2, STO Lift 1 and I/O Roller - CH1, STO Lift 1 and I/O Roller - CH2, STO Roller 1/2/3 - CH1, STO Roller 1/2/3 - CH2, STO Chain 1/2/3  -CH1, STO Chain 1/2/3 - CH2, STO Roller 4/Spare - CH1, STO Roller 4/Spare - CH2
+--- Network 3  Title: MAIN PANEL
+   parts: ESTOP1, O
+   operands: E-Stop (Cabinet)- CH1, Reset (Cabinet) - CH1, Reset_Comissioning, #MAIN_PANEL_OK
+--- Network 4  Title: REMOTE PANEL
+   CALL FC "REMOTE PANEL"
+   parts: O
+   operands: Reset (Cabinet) - CH1, Reset_Comissioning, #REMOTE_PANEL_OK, #E-STOP_INBOUND_OK
+--- Network 5  Title: 1=Acknowledgment for reintegration required
+   parts: Coil
+   operands: F00384_IOfailsafe.ACK_NEC
+--- Network 6  Title: MICRO SCAM PICK STATIOM
+   parts: ESTOP1, O
+   operands: LighGuard_Cut-Off Path 01, Reset (Cabinet) - CH1, Reset_Comissioning
+--- Network 7  Title: HMI E-STOP
+   parts: ESTOP1, F_FB_KTP_Mobile, O
+   operands: F00384_IOfailsafe.QBAD, F00384_IOfailsafe.ACK_REQ, Reset (Cabinet) - CH1, Reset_Comissioning, Tag_1, F00384_IOfailsafe.ACK_REI, Tag_2, F_KTP_MO_DB.GLOBAL_E_STOP, #HMI_E-STOP
+--- Network 8  Title: LIGHTGUARD
+   parts: ESTOP1, O
+   operands: LighGuard_Cut-Off Path 01, Reset (Cabinet) - CH1, Reset_Comissioning, #PICK_STATION_OK
+--- Network 9  Title: SHUTTLES E-STOP
+   parts: Coil
+   operands: #SAFETY_OK_VTD, Global_Estop
+--- Network 10  Title: GLOBAL ACK
+   parts: ACK_GL, O
+   operands: Reset (Cabinet) - CH1, Reset_Comissioning
+--- Network 11  

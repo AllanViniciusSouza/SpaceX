@@ -1,0 +1,59 @@
+DATA_BLOCK "Auto_Test_2_DB"   // InstanceDB 118  instance of "Auto_Test"
+
+VAR_INPUT
+   Sys_No : UInt;
+   Automatic : Bool;
+   Manual : Bool;
+   Level : UInt;
+   Error : Bool;
+   Start : Bool;
+   Pause : Bool;
+   Stop : Bool;
+   Pallet Type : Char;
+   Tower 1 Pallet Alignment : Char;
+   Tower 2 Pallet Alignment : Char;
+   Extractor Pallet Alignment : Char;
+   Pallet_Allignment : Char;
+   Tower : UInt;
+   Transfer_From_To : Byte;
+   From level : Byte;
+   To level : Byte;
+   Testing Time : UInt;
+   Numer of cycles : Byte;
+END_VAR
+
+VAR_OUTPUT
+   Running : Bool;
+   Time_Runnng : Time;
+   Start_Time : String;
+   Stop_Time : String;
+   Duration : Time;
+END_VAR
+
+VAR_IN_OUT
+   Order Table_1 : "OrderTable_UDT";
+   Step_Table_0 : "OrderTable_UDT";
+   System_OrderSent : Bool;
+   Total_Duration : Time;
+END_VAR
+
+VAR
+   State : Int;
+   R_Start : R_TRIG;
+   T_Delay : TON_TIME;
+   Time_Delay : Time;
+   Send_VTD_Order : Bool;
+   Send_CNV_Order : Bool;
+   R_TRIG_Instance : R_TRIG;
+   T_Running : TON_TIME;
+   F_TRIG : F_TRIG;
+   R_TRIG : R_TRIG;
+   Error_Code : Int;
+   test : Bool;
+   N_Cycles : UInt;
+   Testing_Time : Time;
+   R_Manual_Mode : R_TRIG;
+END_VAR
+
+
+// ---- start values (path : type := value)

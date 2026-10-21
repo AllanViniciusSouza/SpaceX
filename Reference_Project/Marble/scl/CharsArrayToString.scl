@@ -1,0 +1,33 @@
+FUNCTION "CharsArrayToString"   // FC 27, author 
+
+VAR_INPUT
+   Lenght : Int;
+   CharsArray : Array[1..16] of Char;
+END_VAR
+
+VAR_TEMP
+   tempStr_1 : String;
+   foundPos : Int;
+   i : Int;
+END_VAR
+
+   // RETURN : String
+BEGIN
+#tempStr_1 := '';
+FOR #i := 1 TO MIN(IN1 := #Lenght - 1, IN2 := 16) DO
+    IF #CharsArray[#i] <> '$00' THEN
+        #tempStr_1 := CONCAT(IN1 := #tempStr_1, IN2 := CHAR_TO_STRING(#CharsArray[#i]));
+    END_IF;
+END_FOR;
+
+// Remove '$00'
+// string 1
+#foundPos := FIND(IN1 := #tempStr_1, IN2 := '$00');
+WHILE #foundPos > 0 DO
+    #tempStr_1 := REPLACE(IN1 := #tempStr_1, IN2 := '', P := #foundPos, L := 1);
+    #foundPos := FIND(IN1 := #tempStr_1, IN2 := '$00');
+END_WHILE;
+
+#CharsArrayToString := #tempStr_1;
+
+END_FUNCTION

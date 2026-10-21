@@ -1,0 +1,104 @@
+FUNCTION_BLOCK "SICK_Lector_Control_FB"   // FB 19, author 
+
+VAR_INPUT
+   Rd_Done : Bool;
+   Req_Done : Bool;
+   Req_Busy : Bool;
+   Error : Bool;
+   arrResult : Array[1..200] of Byte;
+   iCounter : USInt;
+   iLength : Int;
+   Error_Code : DWord;
+END_VAR
+
+VAR_OUTPUT
+   Test_Comm : Bool;
+   Enable_Trigger : Bool;
+   Disable_Trigger : Bool;
+   Enable_Req : Bool;
+   Result : String;
+   Test_OK : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Test_Comm_HMI : Bool;
+   Enable_HMI : Bool;
+   Disable_HMI : Bool;
+   Auto_Start_Lector : Bool;
+   Auto_Stop_Lector : Bool;
+END_VAR
+
+VAR
+   Timer : TON_TIME;
+   R_Done_DB : R_TRIG;
+   T_Reset_DB : TON_TIME;
+END_VAR
+
+BEGIN
+//Communication Test
+IF #Test_Comm_HMI THEN
+    #Test_Comm := 1;
+    #Enable_Req := 1;
+    #Timer.TON(IN:=True,
+                           PT:=t#1s);
+END_IF;
+
+//TEST OK
+IF #Req_Done AND #Timer.Q AND NOT #Error THEN
+    #Test_OK := 1;
+    #Test_Comm := 0;
+    #Enable_Req := 0;
+    #Test_Comm_HMI := 0;
+    #Timer.TON(IN := FALSE,
+                           PT := t#0s);
+END_IF;
+
+//ERROR
+IF #Timer.Q AND #Error THEN
+        #Test_OK := 0;
+        #Test_Comm := 0;
+        #Enable_Req := 0;
+        #Test_Comm_HMI := 0;
+        #Timer.TON(IN := FALSE,
+                               PT := t#0s);
+    END_IF;
+    
+//Enable Trigger
+    IF #Enable_HMI OR #Auto_Start_Lector THEN
+    #Enable_Trigger := 1;
+    #Enable_Req := 1;
+    #Disable_HMI := 0;
+    #Disable_Trigger := 0;
+//Disable Trigger
+ELSIF #Disable_HMI OR #"Auto_Stop_Lector" THEN
+    #Disable_Trigger := 1;
+    #Enable_Req := 1;
+    #Enable_HMI := 0;
+    #Enable_Trigger := 0;
+ELSE
+    #Enable_Trigger := 0;
+    #Enable_Req := 0;
+    #Disable_Trigger := 0;
+END_IF;
+
+
+#R_Done_DB(CLK:=#Rd_Done);
+
+IF #R_Done_DB.Q OR #T_Reset_DB.Q OR
+    (#Enable_HMI AND #Disable_HMI)
+THEN
+    #Disable_HMI := 0;
+    #Enable_Trigger := 0;
+    #Disable_Trigger := 0;
+    #Enable_Req := 0;
+    #T_Reset_DB.TON(IN := FALSE,
+                            PT := T#0S);
+            #Auto_Stop_Lector := 0;
+END_IF;
+
+#T_Reset_DB(IN:=(#Enable_HMI OR #Disable_HMI OR #Auto_Start_Lector OR #Auto_Stop_Lector),
+              PT:=T#10S);
+    
+    
+#Result := ByteArrayToString_1(Lenght := #iLength, ByteArray := #arrResult);
+END_FUNCTION_BLOCK

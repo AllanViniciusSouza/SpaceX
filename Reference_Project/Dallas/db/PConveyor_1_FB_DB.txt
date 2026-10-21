@@ -1,0 +1,27 @@
+DATA_BLOCK "PConveyor_1_FB_DB"   // InstanceDB 13  instance of "PConveyor_1_FB"
+
+VAR_INPUT
+   Cnv_Settings : "PopUp_Cnv_Settings";
+   TimeStartBoost_Roller : UInt;
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Control : "PopUp_Cnv_Control";
+   SinaSpeed_Roller : SinaSpeed;
+   SinaSpeed_Lift : SinaSpeed;
+END_VAR
+
+VAR
+   State : UInt;
+   Timer_TC : TON_TIME;
+   Timer_Transfer : TON_TIME;
+   Watchdog : TON_TIME;
+   Transfer_Direction : String;
+   MainSetpoint_Roller : Int;
+   MainSetpoint_Lift : Int;
+   IEC_Timer_0_Instance_1 : TON_TIME;
+   R_TRIG_Instance : R_TRIG;
+END_VAR
+
+
+// ---- start values (path : type := value)

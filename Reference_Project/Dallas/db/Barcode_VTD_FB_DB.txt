@@ -1,0 +1,25 @@
+DATA_BLOCK "Barcode_VTD_FB_DB"   // InstanceDB 144  instance of "Barcode_Station_FB"
+
+VAR_INPUT
+   Start : Bool;
+   Barcode : String;
+END_VAR
+
+VAR_OUTPUT
+   Ready : Bool;
+   Running : Bool;
+   Done : Bool;
+   Valid : Bool;
+   Barcode_Out : String;
+   Counter : UInt;
+END_VAR
+
+VAR
+   State : UInt;
+   R_TRIG_Instance : R_TRIG;
+   IEC_Timer_0_Instance : TON_TIME;
+   IEC_Timer_0_Instance_1 : TP_TIME;
+END_VAR
+
+
+// ---- start values (path : type := value)

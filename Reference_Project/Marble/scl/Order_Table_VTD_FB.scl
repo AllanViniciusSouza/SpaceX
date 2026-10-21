@@ -1,0 +1,647 @@
+FUNCTION_BLOCK "Order_Table_VTD_FB"   // FB 32, author 
+
+VAR_INPUT
+   System_Selected : Bool;
+   AutoMan_Switch : Bool;   // Auto/Man Switch on CPU Panel - 1 = Auto, 0 = Manual
+   CurrentTime : String;
+   CurrentDTL : DTL;
+   Watchdog : "Watchdog_Settings_UDT";
+   VTD_CurrentLevel : UInt;
+   OPC_UA_State_VTD : UInt;
+   OPC_UA_state_L2 : UInt;
+   OPC_UA_state_L3 : UInt;
+   OPC_UA_state_L4 : UInt;
+   OPC_UA_state_L5 : UInt;
+   OPC_UA_state_L6 : UInt;
+   Clear_OrderTable : Bool;
+END_VAR
+
+VAR_IN_OUT
+   VTD : "VTD_Control";
+   Extrator_Conveyor : "ECnv_Control";
+   Cnv_Buffer_21 : "Buffer_Cnv_Control";
+   Cnv_Buffer_31 : "Buffer_Cnv_Control";
+   Cnv_Buffer_41 : "Buffer_Cnv_Control";
+   Cnv_Buffer_51 : "Buffer_Cnv_Control";
+   Cnv_Buffer_61 : "Buffer_Cnv_Control";
+   System : "System_UDT";
+   Control_OPC_Ua : "WMS_OPC_UA";
+END_VAR
+
+VAR
+   VTD_CurrentOrder : UDInt := 0;
+   Pallet_InOut_CurrentOrder : UDInt;
+   Shuttle_InOut_CurrentOrder : UDInt;
+   VTDDoneRTrig : R_TRIG;
+   Pallet_InOut_RTrig : R_TRIG;
+   Shuttle_InOut_RTrig : R_TRIG;
+   PalletRefused_RTrig : R_TRIG;
+   ErrorRTrig : R_TRIG;
+   CancelRTrig : R_TRIG;
+   PauseRTrig : R_TRIG;
+   ResumeRTrig : R_TRIG;
+   Clear_Store : R_TRIG;
+   Clear_Retrieve : R_TRIG;
+   Canceling : Bool;
+   VTD_WatchdogTimer : TON_TIME;
+   Pallet_InOut_WatchdogTimer : TON_TIME;
+   Shuttle_InOut_WatchdogTimer : TON_TIME;
+   VTD_WatchdogStart : Bool;
+   Pallet_InOut_WatchdogStart : Bool;
+   Shuttle_InOut_WatchdogStart : Bool;
+   F_AutoMode : F_TRIG;
+END_VAR
+
+VAR_TEMP
+   i : DInt;
+   n : DInt;
+   EmptyOrder : "OrderTable_UDT";
+   MaxRunningOrderNo : UInt;
+END_VAR
+
+VAR CONSTANT
+   VTD_DEVICE : String := 'VTD';
+   PALLET_INOUT_DEVICE : String := 'Pallet In Out';
+   SHUTTLE_INOUT_DEVICE : String := 'Shuttle In Out';
+   RUNNING_STATUS : String := 'Running';
+   COMPLETED_STATUS : String := 'Completed';
+   QUEUED_STATUS : String := 'Queued';
+   PALLET_REFUSED_STATUS : String := 'Pallet Refused';
+   ERROR_STATUS : String := 'Error';
+   CANCELED_STATUS : String := 'Canceled';
+   PAUSED_STATUS : String := 'Paused';
+   ORDER_REFUSED : String := 'Refused';
+   ERROR_CANCELED_STATUS : String := 'Error\Cancel';
+END_VAR
+
+BEGIN
+
+// Converts the task type for strings 
+IF #System.OrderTable[1].OPC_Control.Task_Type = 1 THEN
+    #System.OrderTable[1].Device := 'VTD';
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 4 OR #System.OrderTable[1].OPC_Control.Task_Type = 5  THEN
+    #System.OrderTable[1].Device := 'Pallet In Out';
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 2 OR #System.OrderTable[1].OPC_Control.Task_Type = 3 THEN
+    #System.OrderTable[1].Device := 'Shuttle In Out';
+ELSE
+    #System.OrderTable[1].Device := '';
+END_IF;
+
+REGION #New Order was Sent
+    IF #System.OrderSent THEN
+        //Count orders in Step Table
+        FOR #i := 0 TO 20 DO
+            IF #System.StepTable[#i].OrderNo <> 0
+                AND #System.StepTable[#i].StepNo <> 0
+                AND #System.StepTable[#i].PlaceTime <> ''
+            THEN
+                #System.StepTable[#i].Status := #QUEUED_STATUS;
+                #n += 1;
+            ELSE
+                EXIT;
+            END_IF;
+        END_FOR;
+        IF #n > 0 THEN
+            //shift order table down by Order number rows
+            FOR #i := 99 TO (#n + 1) BY -1 DO
+                #System.OrderTable[#i] := #System.OrderTable[#i - #n];
+            END_FOR;
+            //copy data from step table to order table
+            FOR #i := 0 (*1*) TO #n DO
+                #System.OrderTable[#n - #i (*+ 1*)] := #System.StepTable[#i];
+            END_FOR;
+            //clean step table
+            FOR #i := 0 (*1*) TO 20 DO
+                #System.StepTable[#i] := #EmptyOrder;
+            END_FOR;
+            #System.CurrentOrder += #n;
+            
+            //VTD move to floor
+            IF #VTD_CurrentOrder <> 0 THEN
+                #VTD_CurrentOrder += #n;
+            END_IF;
+            
+            //Shuttle transfer in/out of the VTD
+            IF #Pallet_InOut_CurrentOrder <> 0 THEN
+                #Pallet_InOut_CurrentOrder += #n;
+            END_IF;
+            
+            //Shuttle in/out of the VTD
+            IF #Shuttle_InOut_CurrentOrder <> 0 THEN
+                #Shuttle_InOut_CurrentOrder += #n;
+            END_IF;
+            
+                    END_IF;
+        #System.OrderSent := FALSE;
+    END_IF;
+END_REGION
+
+REGION Auto/Man Mode
+    //Enable Devices in Auto/Man Mode
+    IF #System.Auto_Man THEN
+        #VTD.Instruction.Enable :=
+        #Extrator_Conveyor.Enabled :=
+        #Cnv_Buffer_21.Instruction.Enable :=
+        #Cnv_Buffer_31.Instruction.Enable :=
+        #Cnv_Buffer_41.Instruction.Enable :=
+        #Cnv_Buffer_51.Instruction.Enable :=
+        #Cnv_Buffer_61.Instruction.Enable := TRUE;
+    END_IF;
+    //Disable Devices in Auto/Man Mode
+       #F_AutoMode(CLK:=#System.Auto_Man);
+       
+       IF #F_AutoMode.Q THEN
+           #VTD.Instruction.Enable :=
+           #Extrator_Conveyor.Enabled :=
+           #Cnv_Buffer_21.Instruction.Enable :=
+           #Cnv_Buffer_31.Instruction.Enable :=
+           #Cnv_Buffer_41.Instruction.Enable :=
+           #Cnv_Buffer_51.Instruction.Enable :=
+           #Cnv_Buffer_61.Instruction.Enable := FALSE;
+       END_IF;
+END_REGION
+
+REGION VTD
+    //VTD 
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = #VTD_DEVICE
+        AND #System.OrderTable[1].Status = #QUEUED_STATUS
+        AND NOT (#OPC_UA_State_VTD > 0 AND #OPC_UA_State_VTD <= 400)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        #VTD_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#VTD_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#VTD_CurrentOrder].Device = #VTD_DEVICE
+        AND #System.OrderTable[#VTD_CurrentOrder].Status = #QUEUED_STATUS
+        AND NOT (#OPC_UA_State_VTD > 0 AND #OPC_UA_State_VTD <= 400)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available:= TRUE; // Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type:= #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Task_Type; // Send the Task Type - VTD = Task Type = 1
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type:= #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Pallet_Type; // Send the Pallet Type -C=Chep/E=Euro
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID:=#System.OrderTable[#VTD_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata:=#System.OrderTable[#VTD_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location:= #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Destination_Location; // Send the VTD Destination Location
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := 0; // Send the VTD Destination Location
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Weight := #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Pallet_Weight;
+        #VTD_WatchdogStart := TRUE;
+    END_IF;
+    
+    //RUNNING
+    IF #VTD.Running AND #System.Auto_Man THEN
+        #System.OrderTable[#VTD_CurrentOrder].Status := #RUNNING_STATUS;
+        #System.OrderTable[#VTD_CurrentOrder].OPC_Control.SM_State := "Control_DB".VTD_Sys[#System.Id].SM_State;
+        #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Movement_Ready := TRUE;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT #VTD.Running AND #VTD_CurrentOrder <> 0 THEN
+        #System.OrderTable[#VTD_CurrentOrder].Status := #CANCELED_STATUS;
+        #System.OrderTable[#VTD_CurrentOrder].CompleteTime := #CurrentTime;
+        #VTD_CurrentOrder := 0;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := 0; // Send the Task Type - VTD = Task Type = 1
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := ' '; // Send the Pallet Type -C=Chep/E=Euro
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := 0; // Send the VTD Destination Location
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := 0; // Send the VTD Destination 
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Weight := 0;
+    END_IF;
+    
+    //Error
+    IF #VTD.Error THEN
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := 0; // Send the Task Type - VTD = Task Type = 1
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := ' '; // Send the Pallet Type -C=Chep/E=Euro
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := 0; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := ''; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := 0; // Send the VTD Destination Location
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := 0; // Send the VTD Destination 
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Weight := 0;
+        #System.OrderTable[#VTD_CurrentOrder].ErrorID := #VTD.VTD_Errors.Error_Word_1 OR #VTD.VTD_Errors.Error_Word_2 OR #VTD.VTD_Errors.Error_Word_3 OR #VTD.VTD_Errors.Error_Word_4 OR #VTD.VTD_Errors.Error_Word_5;
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #VTDDoneRTrig(CLK := "Control_DB"."VTD_Order Table"[#System.Id].Movement_Request_Complete );
+    IF #VTDDoneRTrig.Q THEN
+        #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Movement_Ready := FALSE;
+        #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Movement_Request_Complete := TRUE;
+        #VTD_WatchdogStart := FALSE;
+        #System.OrderTable[#VTD_CurrentOrder].Status := #COMPLETED_STATUS;
+        #System.OrderTable[#VTD_CurrentOrder].CompleteTime := #CurrentTime;
+    END_IF;
+    
+    //Acknoledgment
+    IF #System.OrderTable[#VTD_CurrentOrder].Status = #COMPLETED_STATUS AND #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack THEN
+        "Control_DB"."VTD_Order Table"[#System.Id].Movement_Request_Complete := FALSE;
+        #VTD_CurrentOrder := 0;
+    END_IF;
+    
+    //Simulated Handshake
+    IF "OrderTable_HMI"."Manual order" THEN
+        IF #System.OrderTable[#VTD_CurrentOrder].Status = #RUNNING_STATUS THEN
+            #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack := FALSE;
+        ELSIF #System.OrderTable[#VTD_CurrentOrder].Status = #COMPLETED_STATUS THEN
+            #System.OrderTable[#VTD_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack := TRUE;
+        END_IF;
+    END_IF;
+END_REGION
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REGION Pallet_InOut VTD
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = #PALLET_INOUT_DEVICE
+        AND #System.OrderTable[1].Status = #QUEUED_STATUS
+        AND NOT (#OPC_UA_State_VTD > 0 AND #OPC_UA_State_VTD <= 400)
+        AND NOT (#OPC_UA_state_L2 > 0 AND #OPC_UA_state_L2 < 400 AND #VTD_CurrentLevel = 2)
+        AND NOT (#OPC_UA_state_L3 > 0 AND #OPC_UA_state_L2 < 400 AND #VTD_CurrentLevel = 3)
+        AND NOT (#OPC_UA_state_L4 > 0 AND #OPC_UA_state_L2 < 400 AND #VTD_CurrentLevel = 4)
+        AND NOT (#OPC_UA_state_L5 > 0 AND #OPC_UA_state_L2 < 400 AND #VTD_CurrentLevel = 5)
+        AND NOT (#OPC_UA_state_L6 > 0 AND #OPC_UA_state_L2 < 400 AND #VTD_CurrentLevel = 6)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        #Pallet_InOut_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#Pallet_InOut_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#Pallet_InOut_CurrentOrder].Device = #PALLET_INOUT_DEVICE
+        AND #System.OrderTable[#Pallet_InOut_CurrentOrder].Status = #QUEUED_STATUS
+        AND NOT (#OPC_UA_State_VTD > 0 AND #OPC_UA_State_VTD < 400)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        //OPC Commands to Move Pallets IN/OUT (Buffer conveyors/Extractor conveyors)
+        // WCS => Order Table => OPC Ua Control Table
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := TRUE; // Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_Type; // Send the Task Type - Pallet Transfer IN/OUT = Task Type = 4/
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Alignment := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Alignment;
+        #Pallet_InOut_WatchdogStart := TRUE;
+    END_IF;
+    
+    //RUNNING
+    IF #OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD <= 120 AND #System.Auto_Man THEN
+        #System.OrderTable[#Pallet_InOut_CurrentOrder].Status := #RUNNING_STATUS;
+        IF #VTD_CurrentLevel <> 0 THEN
+            #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.SM_State := "Control_DB".LCnv_Sys[#System.Id].Cnv_Level[#VTD_CurrentLevel].Cnv1.SM_State;
+        END_IF;
+        #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Movement_Ready := TRUE;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#Extrator_Conveyor.Running OR #Cnv_Buffer_21.Running OR #Cnv_Buffer_31.Running OR #Cnv_Buffer_41.Running OR #Cnv_Buffer_51.Running OR #Cnv_Buffer_61.Running)
+        AND #Pallet_InOut_CurrentOrder <> 0 THEN
+        #System.OrderTable[#Pallet_InOut_CurrentOrder].Status := #CANCELED_STATUS;
+        #System.OrderTable[#Pallet_InOut_CurrentOrder].CompleteTime := #CurrentTime;
+        #Pallet_InOut_CurrentOrder := 0;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_Type; // Send the Task Type - Pallet Transfer IN/OUT = Task Type = 4/
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Alignment := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Alignment;
+    END_IF;
+    
+    //Error
+    IF (#Extrator_Conveyor.Error OR #Cnv_Buffer_21.Error OR #Cnv_Buffer_31.Error OR #Cnv_Buffer_41.Error OR #Cnv_Buffer_51.Error OR #Cnv_Buffer_61.Error) THEN
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := FALSE; // Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_Type; // Send the Task Type - Pallet Transfer IN/OUT = Task Type = 4/
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Alignment := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Alignment;
+        #System.OrderTable[#Pallet_InOut_CurrentOrder].Status := #ERROR_STATUS;
+        
+        // #System.OrderTable[#Pallet_InOut_CurrentOrder].ErrorID := (#Extrator_Conveyor.Cnv_Errors. OR #Cnv_Buffer_11.Error OR #Cnv_Buffer_21.Error OR #Cnv_Buffer_31.Error OR #Cnv_Buffer_41.Error OR #Cnv_Buffer_51.Error OR #Cnv_Buffer_61.Error OR #Cnv_Buffer_71.Error OR #Cnv_Buffer_81.Error
+        // OR #Cnv_Buffer_12.Error OR #Cnv_Buffer_22.Error OR #Cnv_Buffer_32.Error OR #Cnv_Buffer_42.Error OR #Cnv_Buffer_52.Error OR #Cnv_Buffer_62.Error OR #Cnv_Buffer_72.Error OR #Cnv_Buffer_82.Error);
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #Pallet_InOut_RTrig(CLK := "Control_DB"."VTD_Order Table"[#System.Id].Movement_Request_Complete);
+    IF #Pallet_InOut_RTrig.Q THEN
+        #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Movement_Ready := FALSE;
+        #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Movement_Request_Complete := TRUE;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := FALSE; //#System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_Type; // Send the Task Type - Pallet Transfer IN/OUT = Task Type = 4/
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Type;
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Alignment := #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Pallet_Alignment;
+        #System.OrderTable[#Pallet_InOut_CurrentOrder].Status := #COMPLETED_STATUS;
+        #System.OrderTable[#Pallet_InOut_CurrentOrder].CompleteTime := #CurrentTime;
+    END_IF;
+    
+    //Acknoledgment
+    IF #System.OrderTable[#Pallet_InOut_CurrentOrder].Status = #COMPLETED_STATUS AND #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack THEN
+        "Control_DB"."VTD_Order Table"[#System.Id].Movement_Request_Complete := FALSE;
+        #Pallet_InOut_CurrentOrder := 0;
+    END_IF;
+    
+    //Simulated Handshake
+    IF "OrderTable_HMI"."Manual order" THEN
+        IF #System.OrderTable[#Pallet_InOut_CurrentOrder].Status = #RUNNING_STATUS THEN
+            #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack := FALSE;
+        ELSIF #System.OrderTable[#Pallet_InOut_CurrentOrder].Status = #COMPLETED_STATUS THEN
+            #System.OrderTable[#Pallet_InOut_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack := TRUE;
+        END_IF;
+    END_IF;
+END_REGION
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REGION Shuttle_InOut
+    //Shuttle Interlock on VTD 
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = #SHUTTLE_INOUT_DEVICE
+        AND #System.OrderTable[1].Status = #QUEUED_STATUS
+        AND NOT (#OPC_UA_State_VTD > 0 AND #OPC_UA_State_VTD <= 400)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        #Shuttle_InOut_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#Shuttle_InOut_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#Shuttle_InOut_CurrentOrder].Device = #SHUTTLE_INOUT_DEVICE
+        AND #System.OrderTable[#Shuttle_InOut_CurrentOrder].Status = #QUEUED_STATUS
+        AND NOT (#OPC_UA_State_VTD > 0 AND #OPC_UA_State_VTD <= 400)
+        AND NOT #System.Error
+        AND NOT #Canceling
+    THEN
+        //OPC Commands to Move Shuttle IN/OUT (Shuttles IN/OUT)
+        // WCS => Order Table => OPC Ua Control Table
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := TRUE;// Send the Task Data Available from WCS
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Pallet_Type; // Send Pallet Type
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Type; // Send the Task Type - Pallet Transfer IN/OUT = Task Type = 4/
+        "Control_DB"."VTD_Order Table"[#System.Id].Shuttle_ID := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_ID;// Send the Shuttle ID
+        "Control_DB"."VTD_Order Table"[#System.Id].Shuttle_Loaded := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_Loaded; // Send the Shuttle status (Loaded/Unloaded)
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        #Shuttle_InOut_WatchdogStart := TRUE;
+    END_IF;
+    
+    //RUNNING
+    IF #OPC_UA_State_VTD >= 70 AND #OPC_UA_State_VTD <= 90 AND #System.Auto_Man THEN
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].Status := #RUNNING_STATUS;
+        IF #VTD_CurrentLevel <> 0 THEN
+            #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.SM_State := "Control_DB".VTD_Sys[#System.Id].SM_State;
+        END_IF;
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Movement_Ready := TRUE;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#VTD.Running) AND #Shuttle_InOut_CurrentOrder <> 0 THEN
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].Status := #CANCELED_STATUS;
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].CompleteTime := #CurrentTime;
+        #Shuttle_InOut_CurrentOrder := 0;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := FALSE;// Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Pallet_Type; // Send Pallet Type
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Type; // Send the Task Type - Pallet Transfer IN/OUT = Task Type = 4/
+        "Control_DB"."VTD_Order Table"[#System.Id].Shuttle_ID := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_ID;// Send the Shuttle ID
+        "Control_DB"."VTD_Order Table"[#System.Id].Shuttle_Loaded := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_Loaded; // Send the Shuttle status (Loaded/Unloaded)
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+    END_IF;
+    
+    //Error
+    IF (#VTD.Error) THEN
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := FALSE;//#System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Pallet_Type; // Send Pallet Type
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Type; // Send the Task Type - Pallet Transfer IN/OUT = Task Type = 4/
+        "Control_DB"."VTD_Order Table"[#System.Id].Shuttle_ID := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_ID;// Send the Shuttle ID
+        "Control_DB"."VTD_Order Table"[#System.Id].Shuttle_Loaded := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_Loaded; // Send the Shuttle status (Loaded/Unloaded)
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].Status := #ERROR_STATUS;
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].ErrorID := (#VTD.VTD_Errors.Error_Word_3);
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #Shuttle_InOut_RTrig(CLK := #VTD.Shuttle_Interlock.Interlock_Complete);
+    IF #Shuttle_InOut_RTrig.Q THEN
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Movement_Ready := FALSE;
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Movement_Request_Complete := TRUE;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := FALSE;//#System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Data_Available; // Send the Task Data Available from WCS 
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_ID := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_ID; // Send the Task ID number;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Metadata; // Send the Task Metadata Unique identifier
+        "Control_DB"."VTD_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Pallet_Type; // Send Pallet Type
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Type := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Task_Type; // Send the Task Type - Pallet Transfer IN/OUT = Task Type = 4/
+        "Control_DB"."VTD_Order Table"[#System.Id].Shuttle_ID := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_ID;// Send the Shuttle ID
+        "Control_DB"."VTD_Order Table"[#System.Id].Shuttle_Loaded := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Shuttle_Loaded; // Send the Shuttle status (Loaded/Unloaded)
+        "Control_DB"."VTD_Order Table"[#System.Id].Source_Location := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Source_Location; // Send the Source Location from the Conveyor
+        "Control_DB"."VTD_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Destination_Location; // Send the Destination Location to the Conveyor;
+        
+        #Shuttle_InOut_WatchdogStart := FALSE;
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].Status := #COMPLETED_STATUS;
+        #System.OrderTable[#Shuttle_InOut_CurrentOrder].CompleteTime := #CurrentTime;
+    END_IF;
+    
+    //Acknoledgment
+    IF #System.OrderTable[#Shuttle_InOut_CurrentOrder].Status = #COMPLETED_STATUS AND #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack THEN
+        "Control_DB"."VTD_Order Table"[#System.Id].Movement_Request_Complete := FALSE;
+        #Shuttle_InOut_CurrentOrder := 0;
+    END_IF;
+    
+    //Simulated Handshake
+    IF "OrderTable_HMI"."Manual order" THEN
+        IF #System.OrderTable[#Shuttle_InOut_CurrentOrder].Status = #RUNNING_STATUS THEN
+            #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack := FALSE;
+        ELSIF #System.OrderTable[#Shuttle_InOut_CurrentOrder].Status = #COMPLETED_STATUS THEN
+            #System.OrderTable[#Shuttle_InOut_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack := TRUE;
+        END_IF;
+    END_IF;
+END_REGION
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+REGION Max Running Order Number
+    #MaxRunningOrderNo := MAX(IN1 := #VTD_CurrentOrder, IN2 := #Pallet_InOut_CurrentOrder,
+                              IN3 := #Shuttle_InOut_CurrentOrder, IN4 := #System.CurrentOrder);
+                               
+END_REGION
+
+REGION Pause Orders
+    #ErrorRTrig(CLK := #System.Error);
+    #PauseRTrig(CLK := #System.PauseOrders OR NOT #System.Auto_Man);
+    IF #ErrorRTrig.Q OR #PauseRTrig.Q THEN
+        #System.PauseOrders := FALSE;
+        #System.Paused := #MaxRunningOrderNo > 0;
+        IF #System.Paused THEN
+            FOR #i := 1 TO UDINT_TO_DINT(#MaxRunningOrderNo) DO
+                IF #System.OrderTable[#i].Status = '' THEN
+                    EXIT;
+                ELSIF #System.OrderTable[#i].Status = #QUEUED_STATUS THEN
+                    #System.OrderTable[#i].Status := #PAUSED_STATUS;
+                ELSIF #System.OrderTable[#i].Status = #RUNNING_STATUS AND NOT #System.Auto_Man THEN
+                    #System.OrderTable[#i].Status := #CANCELED_STATUS;
+                END_IF;
+            END_FOR;
+        END_IF;
+    END_IF;
+    IF #System.Paused AND #MaxRunningOrderNo = 0 THEN
+        #System.Paused := FALSE;
+    END_IF;
+END_REGION
+
+REGION Cancel Orders
+    #CancelRTrig(CLK := #System.CancelOrders);
+    (*#WeighingStation.Cancel := #ProfileStation.Cancel:= #CancelRTrig.Q*);
+    IF #CancelRTrig.Q THEN
+        #Canceling := TRUE;
+        #System.CancelOrders := FALSE;
+        #System.Paused := FALSE;
+        FOR #i := 1 TO UDINT_TO_DINT(#MaxRunningOrderNo) DO
+            IF #System.OrderTable[#i].Status = '' THEN
+                CONTINUE;
+            ELSIF #System.OrderTable[#i].Status = #PAUSED_STATUS
+                OR #System.OrderTable[#i].Status = #QUEUED_STATUS
+            THEN
+                #System.OrderTable[#i].Status := #CANCELED_STATUS;
+                #System.OrderTable[#i].CompleteTime := #CurrentTime;
+            ELSIF #System.OrderTable[#i].Status = #ERROR_STATUS
+            THEN
+                #System.OrderTable[#i].Status := #ERROR_CANCELED_STATUS;
+                #System.OrderTable[#i].CompleteTime := #CurrentTime;
+            END_IF;
+        END_FOR;
+        #System.CurrentOrder := 0;
+    END_IF;
+    IF #Canceling AND NOT (#VTD.Running OR #Extrator_Conveyor.Running OR #Cnv_Buffer_21.Running OR #Cnv_Buffer_41.Running) THEN
+        #Canceling := FALSE;
+        #VTD_CurrentOrder := #Pallet_InOut_CurrentOrder:= #Shuttle_InOut_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Resume Orders
+    #ResumeRTrig(CLK := #System.ResumeOrders);
+    IF #ResumeRTrig.Q THEN
+        #System.ResumeOrders := FALSE;
+        #System.CurrentOrder := #MaxRunningOrderNo;
+        IF NOT #System.Error THEN
+            #System.Paused := FALSE;
+            FOR #i := 1 TO UDINT_TO_DINT(#MaxRunningOrderNo) DO
+                IF #System.OrderTable[#i].Status = '' THEN
+                    EXIT;
+                ELSIF #System.OrderTable[#i].Status = #PAUSED_STATUS
+                    OR #System.OrderTable[#i].Status = #ERROR_STATUS
+                THEN
+                    #System.OrderTable[#i].Status := #QUEUED_STATUS;
+                END_IF;
+            END_FOR;
+        END_IF;
+
+    END_IF;
+END_REGION
+
+REGION Order Handler
+    IF #System.Running AND NOT #System.Error
+        AND (#System.OrderTable[#System.CurrentOrder].Status = #COMPLETED_STATUS
+        OR #System.OrderTable[#System.CurrentOrder].Status = #ERROR_STATUS
+        OR #System.OrderTable[#System.CurrentOrder].Status = #ERROR_CANCELED_STATUS
+        OR #System.OrderTable[#System.CurrentOrder].Sequence = 0)
+    THEN
+        IF #System.CurrentOrder > 0 THEN
+            #System.CurrentOrder -= 1;
+        ELSE
+            #System.CurrentOrder := 0;
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION Watchdogs
+    //Watchdog Timers
+   
+    #VTD_WatchdogTimer(IN := #VTD_WatchdogStart,
+                       PT := UDINT_TO_TIME(#Watchdog.VTD * 60000),
+                       Q => #System.Watchdog_TimeOut.VTD);
+    #Pallet_InOut_WatchdogTimer(IN := #Pallet_InOut_WatchdogStart,
+                                PT := UDINT_TO_TIME(#Watchdog.Pallet_INOut * 60000),
+                                Q => #System.Watchdog_TimeOut.Pallet_InOut);
+    #Shuttle_InOut_WatchdogTimer(IN := #Shuttle_InOut_WatchdogStart,
+                                 PT := UDINT_TO_TIME(#Watchdog.Shuttle_INOut * 60000),
+                                 Q => #System.Watchdog_TimeOut.Shuttle_InOut);
+   
+    //Reset  Watchdog Timers
+    IF #System.Error OR #CancelRTrig.Q OR #PauseRTrig.Q OR "Reset_All" OR
+        ("Screen_DB_1".Reset_All[1] AND
+        ("HMI_Box_Connected_1" = 1) OR ("HMI_Box_Connected_1" = 2) OR ("HMI_Box_Connected_1" = 3) OR ("HMI_Box_Connected_1" = 4) OR ("HMI_Box_Connected_1" = 5) OR
+        ("HMI_Box_Connected_1" = 11 AND "KEY REMOTE/LOCAL L1 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 12 AND "KEY REMOTE/LOCAL L2 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 13 AND "KEY REMOTE/LOCAL L3 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 14 AND "KEY REMOTE/LOCAL L4 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 15 AND "KEY REMOTE/LOCAL L5 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 16 AND "KEY REMOTE/LOCAL L6 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 21 AND "KEY REMOTE/LOCAL L1 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 22 AND "KEY REMOTE/LOCAL L2 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 23 AND "KEY REMOTE/LOCAL L3 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 24 AND "KEY REMOTE/LOCAL L4 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 25 AND "KEY REMOTE/LOCAL L5 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 26 AND "KEY REMOTE/LOCAL L6 - CH1(2)"))
+    THEN
+        #VTD_WatchdogStart := FALSE;
+        #Pallet_InOut_WatchdogStart := FALSE;
+        #Shuttle_InOut_WatchdogStart := FALSE;
+    END_IF;
+END_REGION
+
+REGION Reset Next Order Number
+    IF #System.NextOrder > 1
+        AND #CurrentDTL.HOUR = 0
+        AND #CurrentDTL.MINUTE = 0
+        AND #CurrentDTL.SECOND = 0
+    THEN
+        #System.NextOrder := 1;
+    END_IF;
+        
+END_REGION
+
+REGION #System Mode and State
+    #System.Selected := #System_Selected; // System selected
+    #System.Ready := NOT #System.Error AND #System.Selected;
+    #System.Auto_Man := #AutoMan_Switch;
+    #System.Running := #VTD.Running OR #Extrator_Conveyor.Running
+    OR (#Cnv_Buffer_21.Running OR
+    #Cnv_Buffer_31.Running OR #Cnv_Buffer_41.Running OR #Cnv_Buffer_51.Running OR #Cnv_Buffer_61.Running AND #OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD <= 120);
+            
+    #System.Error := #VTD.Error OR #Extrator_Conveyor.Error OR 
+    #OPC_UA_State_VTD = 400;
+    
+    #System.IDLE := NOT #System.Running AND NOT #System.Paused AND NOT #System.Error;
+    IF #System.Running THEN
+        #System.State := 1;
+    ELSIF #System.Paused AND NOT #System.Error THEN
+        #System.State := 2;
+    ELSIF #System.Error THEN
+        #System.State := 3;
+    ELSE
+        #System.State := 0;
+    END_IF;
+END_REGION
+
+REGION Clear order table
+    IF #Clear_OrderTable THEN
+        FOR #i := 0 TO 99 DO
+            #System.OrderTable[#i] := #EmptyOrder;
+        END_FOR;
+        "Control_DB"."VTD_Order Table"[#System.Id].Task_Data_Available := FALSE;
+    END_IF;
+END_REGION
+END_FUNCTION_BLOCK

@@ -1,19 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <DUT Name="Barcode_Station_DUT" Id="{402cf4f0-ec72-4303-95a1-765419dd60ec}">
     <Declaration><![CDATA[TYPE Barcode_Station_DUT :
 STRUCT
+	// Explicit capacity matches the default STRING length in the Siemens source.
 	Start:	BOOL;
 	Ready:	BOOL;
 	Running:	BOOL;
 	Done:	BOOL;
 	Valid:	BOOL;
-	Reading_Gate_number:	STRING;
-	Reading_Gate_number_OLD:	STRING;
-	Number_OF_Reading_Gates:	STRING;
-	Number_OF_Reading_Gates_OLD:	STRING;
-	Barcode:	STRING;
-	Barcode_Old:	STRING;
+	Reading_Gate_number:	STRING(254);
+	Reading_Gate_number_OLD:	STRING(254);
+	Number_OF_Reading_Gates:	STRING(254);
+	Number_OF_Reading_Gates_OLD:	STRING(254);
+	Barcode:	STRING(254);
+	Barcode_Old:	STRING(254);
 END_STRUCT
 END_TYPE
 ]]></Declaration>

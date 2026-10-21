@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_HMI_VtdStatus" Id="{3dfda645-a3c1-40e8-868c-751396a160de}">
+    <Declaration><![CDATA[// PLC -> HMI: status of the VTD for the screen VTD.
+TYPE ST_HMI_VtdStatus :
+STRUCT
+    // State
+    bEnabled : BOOL;
+    bError : BOOL;
+    bStopped : BOOL;
+    bRunning : BOOL;
+    bDocked : BOOL;
+    bSafetyOk : BOOL;                  // Display only
+    bModeManual : BOOL;
+    bModeSemi : BOOL;
+    bModeAuto : BOOL;
+    sPalletType : STRING(20);
+    uiCurrentLevel : UINT;             // 0 = between levels
+    uiLevelBelow : UINT;
+    uiStateMachine : UINT;
+    sDockingPinState : STRING(20);     // 'Extended', 'Retracted', ...
+    sBarcode : STRING(40);
+
+    // Position and drive
+    rLePosition_mm : REAL;             // DL50 position
+    rLeSpeed_mm_s : REAL;
+    diAbsoluteEncoder : DINT;
+    iEncoderDelta : INT;
+    bLinearEncoderError : BOOL;
+    bAbsoluteEncoderError : BOOL;
+    bBarcodeError : BOOL;
+    iSetpoint_pct : INT;
+    iVelocity_pct : INT;
+    rVelocity_mm_s : REAL;
+    rCurrent_A : REAL;
+    iTorque_pct : INT;
+    bMotorReady : BOOL;
+
+    // Levels and limit switches
+    abLevelReached : ARRAY[1..8] OF BOOL;
+    arLevelPosition_mm : ARRAY[1..8] OF REAL;  // Teach values
+    bUpperOvertravel : BOOL;
+    bUpperLimit : BOOL;
+    bLowerLimit : BOOL;
+    bLowerOvertravel : BOOL;
+
+    // Signals
+    bLevelDetect1 : BOOL;
+    bLevelDetect2 : BOOL;
+    bUltimateSlowdown : BOOL;
+    bUltimateCreep : BOOL;
+    bDp1Extended : BOOL;
+    bDp2Extended : BOOL;
+    bDp1Retracted : BOOL;
+    bDp2Retracted : BOOL;
+    abChainSlack : ARRAY[1..4] OF BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_SEW_MovikitStatus" Id="{a702be29-962c-43c5-9428-62d0c074108a}">
+    <Declaration><![CDATA[// Decoded process input data of a MOVIKIT Positioning drive (Standard 8 PD).
+// Source: SEW manual 33959862, chapter 9.5. Written by FB_SEW_Drive.
+TYPE ST_SEW_MovikitStatus :
+STRUCT
+    // Communication
+    bEtherCatOk : BOOL;                 // EtherCAT OP and working counter valid
+    bHandshakeError : BOOL;             // PI 1.15 did not follow PO 1.15 within the timeout
+    bCommunicationOk : BOOL;            // bEtherCatOk AND NOT bHandshakeError
+
+    // PI 1 - Status word
+    wStatusWord : WORD;
+    bReady : BOOL;                      // PI 1.0
+    bStoInactive : BOOL;                // PI 1.1
+    bOutputStageEnabled : BOOL;         // PI 1.2
+    bBrakeReleased : BOOL;              // PI 1.3
+    bMotorTurning : BOOL;               // PI 1.4
+    bReferenced : BOOL;                 // PI 1.5
+    bRelativePositionApplied : BOOL;    // PI 1.6
+    bInPosition : BOOL;                 // PI 1.7
+    bError : BOOL;                      // PI 1.8
+    bWarning : BOOL;                    // PI 1.9
+    bDriveTrain2Active : BOOL;          // PI 1.10
+    bSpeedReached : BOOL;               // PI 1.11 setpoint/actual speed comparison
+    bSwLimitSwitchesInactive : BOOL;    // PI 1.12
+    bStandbyActive : BOOL;              // PI 1.14
+    bHandshakeOut : BOOL;               // PI 1.15
+
+    // PI 2..8
+    iActualSpeed : INT;                 // PI 2, user units (scaling from MOVISUITE)
+    byFaultCode : BYTE;                 // PI 3 high byte (error/warning code)
+    bySubfaultCode : BYTE;              // PI 3 low byte (subfault, or active FCB if no error)
+    iActualTorque_0p1pct : INT;         // PI 4, 0.1 % of nominal motor torque
+    wDigitalInputs : WORD;              // PI 5, DI 00..
+    uiActualMode : UINT;                // PI 6, see E_SEW_MovikitMode
+    diActualPosition : DINT;            // PI 7 (high) + PI 8 (low), user units
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

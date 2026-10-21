@@ -1,0 +1,483 @@
+FUNCTION_BLOCK "SICK_CCOMM_PNDP"   // FB 10, author SICKAG
+
+VAR_INPUT
+   HWInputIdent : HW_IO;   // Hardware identification number of the input module
+   HWInputLength : USInt;   // Size of the input module
+   HWOutputIdent : HW_IO;   // Hardware identification number of the output module
+   HWOutputLength : USInt;   // Size of the output module
+   TOut : Time := T#5s;   // Time out
+   Req : Bool;   // A positive edge starts the request
+   CommandLength : UInt;   // Byte length of the command
+END_VAR
+
+VAR_OUTPUT
+   RdDone : Bool;   // Reading result arrived
+   RdLength : Int;   // Byte length of the reading result
+   ReqDone : Bool;   // Requested data available
+   ReqBusy : Bool;   // Request busy
+   ReqLength : Int;   // Byte length of the requested data
+   Error : Bool;   // Error
+   Errorcode : DWord;   // Error code
+END_VAR
+
+VAR_IN_OUT
+   arrCommand : Array[0..499] of Byte;
+   arrRecord : Array[0..499] of Byte;
+END_VAR
+
+VAR
+   bTriggerReq : Bool := false;   // Rising edge detection
+   bTriggerReqMem : Bool := false;   // Rising edge detection
+   bReadFrag : Bool;
+   bWriteFrag : Bool;
+   bReqBusyMem : Bool;
+   iReadStep : USInt;
+   iWriteStep : USInt;
+   iReadIndex : UInt;
+   iWriteIndex : UInt;
+   iReadHeaderLength : UInt;
+   iWriteHeaderLength : UInt;
+   iReadFragmentLength : UInt;
+   iWriteFragmentLength : UInt;
+   iRecordSize : UInt;
+   iCommandSize : UInt;
+   nTempErrorCode : DWord;
+   arrInputImage : Array[0..127] of Byte;
+   arrOutputImage : Array[0..127] of Byte;
+   fbTimeout : TON_TIME;
+END_VAR
+
+VAR_TEMP
+   iTemp1 : Int;
+   iTemp2 : UDInt;
+   iTemp3 : UDInt;
+END_VAR
+
+BEGIN
+(*===========================================================================================
+Name:   SICK_CCOMM_PNDP
+Author: SICK AG
+=============================================================================================
+Description: 
+The function block use a Profinet/Probibus connection to communicate with a SICK AutoIdent
+device. The FB makes it possible to send and receive sensor data. The Confirmed Messaging 
+protocol (CM-Protocol) is used to receive even long fragmented read results.
+
+Send a command:
+The "Req" parameter must be triggered with a rising edge (signal change FALSE to TRUE) in 
+order to carry out the function. For the time during which a valid response has yet to be 
+received from the device, the "ReqBusy" parameter is used to signal  that a response is still 
+pending. The module signals the "ReqDone" = TRUE output parameter when the function has been 
+successfully completed. If data was requested by the device, this data is copied into the 
+Record (arrRecord). The "ReqDone" indicates that new data has been received  for a PLC cycle.
+Only one CoLa-A command request can be send to the same device at one time. 
+
+Receive a reading result:
+Data sent via trigger command or directly by the device (e.g., direct trigger via a light 
+barrier) is stored in the Record (arrRecord). The "RdDone" output indicates that new data 
+has been received for a PLC cycle. The data sent by the device can be changed or adapted in 
+output format of SOPAS-ET. 
+
+This AOI supports the folowing SICK devices:
+- Lector6xx
+- RFU6xx
+- CLV6xx 
+- RFH6xx
+=============================================================================================
+Confirmed Messaging Protocol definitions:
+arrInputImage[0]        = Status byte 
+arrInputImage[1]        = Receive counter
+arrInputImage[2]        = Transmit counter back
+arrInputImage[3]        = Command length LSB
+arrInputImage[4]        = Command length MSB
+arrInputImage[5..127]   = Device response (CoLa-A)
+
+arrOutputImage[0]       = Status byte 
+arrOutputImage[1]       = Receive counter back
+arrOutputImage[2]       = Transmit counter
+arrOutputImage[3]       = Command length LSB
+arrOutputImage[4]       = Command length MSB
+arrOutputImage[5..127]  = Device request (CoLa-A)
+=============================================================================================
+Version history:
+Date       | Version | Created under               | Author  | Remark
+---------------------------------------------------------------------------------------------
+16/01/2014 | V1.0    | TIA Portal V12 SP1 Update 2 | SICK AG | Initial version
+07/08/2014 | V1.1    | TIA Portal V12 SP1 Update 4 | SICK AG | Replace R_TRIG function 
+22/04/2015 | V1.2    | TIA Portal V12 SP1 Update 4 | SICK AG | Avoid warnings that occur with 
+                                                               TIA V13
+============================================================================================*)
+
+(*===================================== INITIALISATION =====================================*)
+#iRecordSize:= 500;   (*Length of the arrRecord array*)
+#iCommandSize:= 500;  (*Length of the arrCommand array*)
+
+#RdDone:= false;
+#iReadStep:= 0;
+
+(*Rising edge detection of the request flag*)
+#bTriggerReq:= #Req AND NOT #bTriggerReqMem;
+#bTriggerReqMem:= #Req;
+
+(*Error detection*)
+IF #nTempErrorCode <>16#0000_0000 THEN
+  #ReqDone:= false;
+  #ReqBusy:= false;
+  #bReqBusyMem:= false;
+  #Error:= true;
+  #Errorcode:= #nTempErrorCode;
+  #nTempErrorCode:= 16#0000_0000;
+  #ReqLength:= 0;
+  #iWriteStep:= 0;
+  RETURN;
+END_IF;
+
+(*Time out detection*)
+#fbTimeout(IN:=#bReqBusyMem, PT:=#TOut);
+IF #fbTimeout.Q THEN
+  #nTempErrorCode:= 16#0000_0001; (*Error: Time out*) 
+END_IF;
+
+(*Check the hardware ident length of the input module*)
+IF #HWInputLength <8 OR #HWInputLength >128 THEN
+  #nTempErrorCode:= 16#0000_0002; (*Error: Incorrect module input length*)
+END_IF;
+
+(*Check the hardware ident length of the output module*)
+IF #HWOutputLength <8 OR #HWOutputLength >128 THEN
+  #nTempErrorCode:= 16#0000_0003; (*Error: Incorrect module output length*)
+END_IF;
+
+(*Error detected*)
+IF #nTempErrorCode <>16#0000_0000 THEN
+  RETURN;
+END_IF;
+
+
+(*===================================== COMMUNICATION ======================================*)
+(*Set output data*)
+#iTemp1:= DPWR_DAT(LADDR:= #HWOutputIdent, RECORD:= #arrOutputImage);
+IF #iTemp1 <>0 THEN
+  #nTempErrorCode.%W1:= #iTemp1;
+  #nTempErrorCode.%W0:= 16#0004; (*Error: Set output data via DPWR_DAT*)
+  RETURN;
+END_IF;
+
+(*Get input data*)
+#iTemp1:= DPRD_DAT(LADDR:= #HWInputIdent, RECORD=> #arrInputImage);
+IF #iTemp1 <>0 THEN
+  #nTempErrorCode.%W1:= #iTemp1;
+  #nTempErrorCode.%W0:= 16#0005; (*Error: Get input data via DPRD_DAT*)
+  RETURN;
+END_IF;
+
+(*Receive counter ==0 && Receive counter back <>0*)
+IF #arrInputImage[1] =0 AND #arrOutputImage[1] <>0 THEN
+  #arrOutputImage[1]:= #arrInputImage[1]; (*Recive counter => Receive counter back*)
+  RETURN;
+END_IF;
+
+(*Transmit counter <> Transmit counter back*)
+IF NOT #bReqBusyMem AND (#arrInputImage[2] <> #arrOutputImage[2]) THEN
+  #arrOutputImage[2]:= 0; (*0 => Transmit counter*)
+  RETURN;
+END_IF;
+
+
+(*============================== HANDLING OF THE RECEIVED DATA =============================*)
+(*New telegram available*)
+IF NOT (#arrInputImage[1] = #arrOutputImage[1]) THEN
+    
+  (*Reset error every incoming telegram (Read only mode, e.g. for hand held scanners)*)
+  IF #CommandLength <=0 THEN
+    #Error:= false;
+    #Errorcode:= 16#0000_0000;
+  END_IF;
+  
+  (*Confirm the receive counter*)
+  #arrOutputImage[1]:= #arrInputImage[1];
+  
+  (*Get telegram length from the received header*)
+  #iReadHeaderLength.%B0:= #arrInputImage[3];
+  #iReadHeaderLength.%B1:= #arrInputImage[4];
+  
+  (*Check if fragmentation is not active at the moment*)
+  IF NOT #bReadFrag THEN
+    #iReadIndex:= 0;
+    
+    (*Check if fragmentation is needed*)
+    IF (#HWInputLength-5) < #iReadHeaderLength THEN
+      #bReadFrag:= true;
+    END_IF;
+  END_IF;
+  
+  (*Fragmentation is needed*)
+  IF #bReadFrag THEN
+    IF (#HWInputLength-5) < #iReadHeaderLength THEN
+      #iReadFragmentLength:= #HWInputLength-5;
+    ELSE
+      #iReadFragmentLength:= #iReadHeaderLength;
+    END_IF;
+    
+  (*No fragmentation needed*)
+  ELSE
+    #iReadFragmentLength:= #iReadHeaderLength;
+  END_IF;
+  
+  (*Copy input data into the output record*)
+  IF (#iReadIndex+#iReadFragmentLength) <= #iRecordSize THEN
+    MOVE_BLK(IN:= #arrInputImage[5], COUNT:= #iReadFragmentLength, OUT=> #arrRecord[#iReadIndex]);
+  END_IF;
+  
+  (*Check if all data has been received*)
+  IF (#HWInputLength-5) < #iReadHeaderLength THEN
+    #iReadIndex:= #iReadIndex+#iReadFragmentLength;
+
+  (*All data has been received*)
+  ELSE
+    #bReadFrag:= false;
+    #iReadStep:= 1;
+  END_IF;
+  
+  (*Incoming data filter*)
+  (* - Check if the receiving telegram os a CoLa answer on a requested 
+       comand or a reading result.
+     
+      sRA  sWA  sMA  sAN  sAI  sEA  sPX  s{   sSI  sSN  sFA
+  sRN  X                                       X    X    X
+  sRI  X                                       X    X    X
+  sWN       X                                  X    X    X
+  sWI       X                                  X    X    X
+  sMN            X    X                        X    X    X
+  sMI            X         X                   X    X    X
+  sEN                           X              X    X    X
+  sEI                           X              X    X    X
+  sPE                                X         X    X    X
+  s{                                      X    X    X    X
+  *)
+  IF #iReadStep =1 THEN
+    (*Filter is only active, while requested data expected*)
+    IF #bReqBusyMem THEN
+      IF #CommandLength >3 THEN
+        (*Get the prefix from the requested command (e.g. 'sRN '*)   
+        #iTemp2.%B3:= #arrCommand[0];
+        #iTemp2.%B2:= #arrCommand[1];
+        #iTemp2.%B1:= #arrCommand[2];
+        #iTemp2.%B0:= 16#20;
+      
+        (*Get the prefix from the command response (e.g. 'sRA ')*)
+        #iTemp3.%B3:= #arrRecord[0];
+        #iTemp3.%B2:= #arrRecord[1];
+        #iTemp3.%B1:= #arrRecord[2];
+        #iTemp3.%B0:= 16#20;
+      ELSE
+        #iTemp2:= 16#0000_0000;
+        #iTemp3:= 16#0000_0000;
+      END_IF;
+      
+      CASE #iTemp3 OF
+      (*'s{  '*)
+      16#737B2020:  IF #iTemp2 = 16#737B2020 THEN
+                      #iReadStep:= 2; (*Command response*)
+                    ELSE
+                      #iReadStep:= 3; (*Reading result*)
+                    END_IF;
+      
+      (*'sRA '*)
+      16#73524120:  IF (#iTemp2 = 16#73524E20) OR (#iTemp2 = 16#73524920) THEN
+                      #iReadStep:= 2; (*Command response*)
+                    ELSE
+                      #iReadStep:= 3; (*Reading result*)
+                    END_IF;
+      
+      (*'sWA '*)
+      16#73574120:  IF (#iTemp2 = 16#73574E20) OR (#iTemp2 = 16#73574920) THEN
+                      #iReadStep:= 2; (*Command response*)
+                    ELSE
+                      #iReadStep:= 3; (*Reading result*)
+                    END_IF;
+                    
+      (*'sMA '*)
+      16#734D4120:  IF (#iTemp2 = 16#734D4E20) OR (#iTemp2 = 16#734D4920) THEN
+                      #iReadStep:= 2; (*Command response*)
+                    ELSE
+                      #iReadStep:= 3; (*Reading result*)
+                    END_IF;
+                    
+      (*'sAN '*)
+      16#73414E20:  IF #iTemp2 = 16#734D4E20 THEN
+                      #iReadStep:= 2; (*Command response*)
+                    ELSE
+                      #iReadStep:= 3; (*Reading result*)
+                    END_IF;
+                    
+      (*'sAI '*)
+      16#73414920:  IF #iTemp2 = 16#734D4920 THEN
+                      #iReadStep:= 2; (*Command response*)
+                    ELSE
+                      #iReadStep:= 3; (*Reading result*)
+                    END_IF;
+      
+      (*'sEA '*)
+      16#73454120:  IF (#iTemp2 = 16#73454E20) OR (#iTemp2 = 16#73454920) THEN
+                      #iReadStep:= 2; (*Command response*)
+                    ELSE
+                      #iReadStep:= 3; (*Reading result*)
+                    END_IF;
+                    
+      (*'sPX '*)
+      16#73505820:  IF #iTemp2 = 16#73504520 THEN
+                      #iReadStep:= 2; (*Command response*)
+                    ELSE
+                      #iReadStep:= 3; (*Reading result*)
+                    END_IF;
+                    
+      (*'sSI '*)
+      16#73534920:  #iReadStep:= 3; (*Reading result*)
+
+      (*'sSN '*)
+      16#73534E20:  #iReadStep:= 3; (*Reading result*)
+
+      (*'sFA '*)
+      16#73464120:  #iReadStep:= 2; (*Command response*)
+  
+      (*Invalid CoLa-A answer*)
+      ELSE
+        (*Check if a user defined command is used (Request == Response)*)
+        FOR #iTemp1:= 0 TO UINT_TO_INT(#CommandLength-1) DO
+          IF #arrCommand[#iTemp1] = #arrRecord[#iTemp1] THEN
+            #iReadStep:= 2; (*Command response*)
+          ELSE
+            #iReadStep:= 3; (*Reading result*)
+            EXIT;
+          END_IF;
+        END_FOR;
+      END_CASE;
+    
+    (*Reading result*)
+    ELSE
+      #iReadStep:= 3;  (*Reading result*)
+    END_IF;
+  END_IF;
+  
+  (*Incoming telegram is a command response*)
+  IF #iReadStep =2 THEN
+    IF (#iReadIndex+#iReadFragmentLength) <= #iRecordSize THEN
+      #ReqLength:= UDINT_TO_INT(#iReadIndex+#iReadFragmentLength);
+      #ReqDone:= true;
+      #ReqBusy:= false;
+      #bReqBusyMem:= false;
+    ELSE
+      #nTempErrorCode:= 16#0000_0006; (*Error: Incoming command response > Record size*)
+    END_IF;
+  END_IF;
+  
+  (*Incoming telegram is a reading result*)
+  IF #iReadStep =3 THEN
+    IF (#iReadIndex+#iReadFragmentLength) <= #iRecordSize THEN
+      #RdLength:= UDINT_TO_INT(#iReadIndex+#iReadFragmentLength);
+      #RdDone:= true;
+    ELSE
+      #RdLength:= -1;
+      #RdDone:= false;    
+    END_IF;
+  END_IF;
+END_IF;
+
+
+(*=========================== HANDLING OF THE DATA TO BE WRITTEN ===========================*)
+IF #bTriggerReq AND NOT #bReqBusyMem THEN
+  #ReqDone:= false;
+  #ReqBusy:= true;
+  #bReqBusyMem:= true;
+  #Error:= false;
+  #Errorcode:= 16#0000_0000;
+  #iWriteIndex:= 0;
+  
+  (*Check command length*)
+  IF #CommandLength <=0 THEN
+    #nTempErrorCode:= 16#0000_0007; (*Error: Command length <= 0*)
+    RETURN;
+  ELSIF #CommandLength > #iCommandSize THEN
+    #nTempErrorCode:= 16#0000_0008; (*Error: Command length > command array*)
+    RETURN;
+  END_IF;
+  
+  (*Check if the the command telegram must be fragmented*)
+  IF (#HWOutputLength-5) < #CommandLength THEN
+    #iWriteFragmentLength:= #HWOutputLength-5;
+  ELSE
+    #iWriteFragmentLength:= #CommandLength;
+  END_IF;
+  
+  #iWriteHeaderLength:= #CommandLength;
+  #iWriteStep:= 1;  
+END_IF;
+
+(*Write step 1: Command transfer*)
+IF (#iWriteStep =1) AND(#arrInputImage[2] = #arrOutputImage[2]) THEN
+
+  (*Copy command data into the output record*)
+  IF((#iWriteIndex+#iWriteFragmentLength) <= #iCommandSize) AND (#iWriteFragmentLength <= (#HWOutputLength-5)) THEN
+    MOVE_BLK(IN:= #arrCommand[#iWriteIndex], COUNT:= #iWriteFragmentLength, OUT=> #arrOutputImage[5]);
+    (*Increment transmit counter*)
+    IF #arrOutputImage[2] = 16#FF THEN
+      #arrOutputImage[2]:= 16#01; (*Counter overflow, zero is skipped*)
+    ELSE
+      #arrOutputImage[2]:= #arrOutputImage[2]+1;
+    END_IF;
+    
+    (*Set command/fragment length*)
+    #arrOutputImage[3]:= #iWriteHeaderLength.%B0;
+    #arrOutputImage[4]:= #iWriteHeaderLength.%B1;
+    
+    (*Next step*)
+    #iWriteStep:= 2;
+  ELSE
+    #nTempErrorCode:= 16#0000_0009; (*Error: Fragmentation error*)
+  END_IF;
+    RETURN;
+END_IF;
+
+(*Write step 2: Fragmentation handling*)
+IF #iWriteStep =2 THEN
+
+  (*Fragmentation is needed*)
+  IF (#HWOutputLength-5) < #iWriteHeaderLength THEN
+    #bWriteFrag:= true;
+    
+    (*Next index*)
+    #iWriteIndex:= #iWriteIndex+#iWriteFragmentLength;
+    
+    (*Set next header length*)
+    #iWriteHeaderLength:= #iWriteHeaderLength-#iWriteFragmentLength;
+    
+    (*Set next fragment length*)
+    IF (#HWOutputLength-5) < #iWriteHeaderLength THEN
+      #iWriteFragmentLength:= #HWOutputLength-5;
+    ELSE
+      #iWriteFragmentLength:= #iWriteHeaderLength;
+    END_IF;
+  
+  (*Fragmentation is not needed*)
+  ELSE
+    #bWriteFrag:= false;
+  END_IF;
+  
+  (*Next step*)
+  #iWriteStep:= 3;
+END_IF;
+
+(*Write step 3: Check if the transmission of the command/fragment is done*)
+IF #iWriteStep =3 THEN
+  
+  (*Transmit counter back == Transmit counter*)
+  IF #arrInputImage[2] = #arrOutputImage[2] THEN
+    IF #bWriteFrag THEN
+      #iWriteStep:= 1;
+    ELSE
+      #iWriteStep:= 0;
+    END_IF;
+  END_IF;
+END_IF;
+END_FUNCTION_BLOCK

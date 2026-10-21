@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Cnv_Interlock_DUT" Id="{057176b0-c7d1-4ced-a3f3-ac69597e34a8}">
+    <Declaration><![CDATA[// Motor interlock between two or more devices whose motors must not run at the same time
+// (for example Control.Turn_Table rotation and Control.TBCnv roller).
+// One FB_Conveyor_MotorInterlock instance per group grants one motor at a time.
+// Functional interlock in the standard PLC, NOT a safety function.
+TYPE Cnv_Interlock_DUT :
+STRUCT
+	Run_Request:	BOOL;	// Device FB -> interlock: the device wants to run its motor
+	Motor_Stopped:	BOOL;	// Device FB -> interlock: motor not turning and output stage off
+	Run_Allowed:	BOOL;	// Interlock -> device FB: the motor may run. FALSE = stop and do not start
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

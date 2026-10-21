@@ -3,10 +3,12 @@
   <DUT Name="Cnv_Errors_DUT" Id="{4c0f0708-8af3-4fdf-adc5-509ce8c61434}">
     <Declaration><![CDATA[TYPE Cnv_Errors_DUT :
 STRUCT
-	Error_Word_1:	UINT;
-	Error_Word_2:	UINT;
-	Error_Word_3:	UINT;
-	Error_Word_4:	UINT;
+	// Bit fields. WORD (was UINT, as in the Siemens source) so that the words can be
+	// passed to Set_Bit_F, whose VAR_IN_OUT Variavel is a WORD.
+	Error_Word_1:	WORD;
+	Error_Word_2:	WORD;
+	Error_Word_3:	WORD;
+	Error_Word_4:	WORD;
 END_STRUCT
 END_TYPE
 ]]></Declaration>

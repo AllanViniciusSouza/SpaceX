@@ -1,0 +1,38 @@
+﻿TYPE "ID_Decoded"
+VERSION : 0.1
+   STRUCT
+      Device_Type : Int;
+      Level : Int;
+      VTD : Int;
+   END_STRUCT;
+
+END_TYPE
+
+FUNCTION "ID_Decode_F" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      ID : DInt;
+   END_VAR
+
+   VAR_IN_OUT 
+      ID_Decoded : "ID_Decoded";
+   END_VAR
+
+   VAR_TEMP 
+      Temp : UInt;
+   END_VAR
+
+
+BEGIN
+	
+	// Extract XX (first two digits)
+	#ID_Decoded.Device_Type := #ID / 10000;        // 123456 / 10000 = 12
+	
+	// Extract YY (middle two digits)
+	#ID_Decoded.Level := (#ID MOD 10000) / 100; // 123456 % 10000 = 3456 → 3456 / 100 = 34
+	
+	// Extract ZZ (last two digits)
+	#ID_Decoded.VTD := #ID MOD 100;       // 123456 % 100 = 56
+END_FUNCTION
+

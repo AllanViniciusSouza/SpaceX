@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FC_TIAScalarToken" Id="{e10690c1-84b7-4111-bffb-efa9bc730e97}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FC_TIAScalarToken : BOOL
+VAR_INPUT
+    FieldName : STRING(254);
+    JsonStr : STRING(254);
+END_VAR
+VAR_OUTPUT
+    Token : STRING(32);
+END_VAR
+VAR
+    pattern : STRING(254);
+    character : STRING(1);
+    position : INT;
+    cursor : INT;
+    scan : INT;
+    length : INT;
+    valueStart : INT;
+    previous : STRING(1);
+END_VAR
+]]></Declaration>
+    <Implementation><ST><![CDATA[// Restricted flat ASCII field extractor, not a general JSON parser.
+// Require a complete scalar followed by ',' or '}'. Never accept truncation.
+FC_TIAScalarToken := FALSE;
+Token := '';
+IF (LEN(FieldName) = 0) OR (LEN(FieldName) > 250) THEN RETURN; END_IF;
+pattern := CONCAT(CONCAT('"', FieldName), '"');
+position := FIND(JsonStr, pattern);
+IF position = 0 THEN RETURN; END_IF;
+// Reject field-name text inside a quoted value.
+previous := '';
+FOR scan := 1 TO position - 1 DO
+    character := MID(JsonStr, 1, scan);
+    IF (character <> ' ') AND (character <> '$T') AND
+       (character <> '$R') AND (character <> '$N') THEN
+        previous := character;
+    END_IF;
+END_FOR;
+IF (previous <> '') AND (previous <> '{') AND (previous <> ',') THEN RETURN; END_IF;
+length := LEN(JsonStr);
+cursor := position + LEN(pattern);
+FOR scan := cursor TO length DO
+    character := MID(JsonStr, 1, scan);
+    IF (character <> ' ') AND (character <> '$T') AND
+       (character <> '$R') AND (character <> '$N') THEN EXIT; END_IF;
+END_FOR;
+IF scan > length THEN RETURN; END_IF;
+IF MID(JsonStr, 1, scan) <> ':' THEN RETURN; END_IF;
+cursor := scan + 1;
+FOR scan := cursor TO length DO
+    character := MID(JsonStr, 1, scan);
+    IF (character <> ' ') AND (character <> '$T') AND
+       (character <> '$R') AND (character <> '$N') THEN EXIT; END_IF;
+END_FOR;
+valueStart := scan;
+FOR cursor := valueStart TO length DO
+    character := MID(JsonStr, 1, cursor);
+    IF (character = ',') OR (character = '}') THEN
+        // Trim trailing JSON whitespace before extracting the token.
+        position := cursor - 1;
+        FOR scan := cursor - 1 TO valueStart BY -1 DO
+            character := MID(JsonStr, 1, scan);
+            IF (character <> ' ') AND (character <> '$T') AND
+               (character <> '$R') AND (character <> '$N') THEN EXIT; END_IF;
+            position := scan - 1;
+        END_FOR;
+        IF (position < valueStart) OR (position - valueStart + 1 > 32) THEN RETURN; END_IF;
+        Token := MID(JsonStr, position - valueStart + 1, valueStart);
+        FC_TIAScalarToken := TRUE;
+        RETURN;
+    END_IF;
+END_FOR;
+]]></ST></Implementation>
+  </POU>
+</TcPlcObject>

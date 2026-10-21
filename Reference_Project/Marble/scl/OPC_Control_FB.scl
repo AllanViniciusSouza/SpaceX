@@ -1,0 +1,1354 @@
+FUNCTION_BLOCK "OPC_Control_FB"   // FB 9, author 
+
+VAR_INPUT
+   Id : UInt;
+   OPC_Enable : Bool;
+   Clear_VTD_OrderTable : Bool;
+   Clear_Buffers_OrderTable : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Error_ID : Word;
+END_VAR
+
+VAR
+   Source_Location_VTD : "ID_Decoded";
+   Destination_Location_VTD : "ID_Decoded";
+   Source_Location_Buffers : "ID_Decoded";
+   Destination_Location_Buffers : "ID_Decoded";
+   State_VTD : UInt;
+   State_Main : UInt;
+   State_L2 : UInt;
+   State_L3 : UInt;
+   State_L4 : UInt;
+   State_L5 : UInt;
+   State_L6 : UInt;
+   T_Wait_Report_Done : TON_TIME;
+END_VAR
+
+VAR_TEMP
+   i : UInt;
+   j : UInt;
+   f : UInt;
+   HMI_Reset : Bool;
+END_VAR
+
+BEGIN
+IF "FirstScan" THEN
+    "OPC_Enable" := TRUE;
+END_IF;
+
+REGION Errors STATE Main System
+    //Level 2
+    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1."Error" OR "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2."Error" THEN
+        #State_L2 := 400;
+    END_IF;
+    
+    //Level 3
+    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1."Error" OR "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2."Error" THEN
+        #State_L3 := 400;
+    END_IF;
+    
+    //Level 4
+    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1."Error" OR "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2."Error" THEN
+        #State_L4 := 400;
+    END_IF;
+    
+    //Level 5
+    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1."Error" OR "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2."Error" THEN
+        #State_L5 := 400;
+    END_IF;
+    
+    //Level 6
+    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1."Error" OR "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2."Error" THEN
+        #State_L6 := 400;
+    END_IF;
+    
+    //VTD and Extractor conveyor error
+    IF "Control_DB".VTD_Sys[#Id].Error OR "Control_DB".ECnv_Sys[#Id].Error
+        OR ("Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Error AND "Control_DB".VTD_Sys[#Id].Current_Level = 2)
+        OR ("Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Error AND "Control_DB".VTD_Sys[#Id].Current_Level = 3)
+        OR ("Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Error AND "Control_DB".VTD_Sys[#Id].Current_Level = 4)
+        OR ("Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Error AND "Control_DB".VTD_Sys[#Id].Current_Level = 5)
+        OR ("Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Error AND "Control_DB".VTD_Sys[#Id].Current_Level = 6)
+    THEN
+        #State_VTD := 400;
+    END_IF;
+    
+    //Bit OPC in Error
+    IF #State_VTD = 400 OR #State_L2 = 400 OR #State_L3 = 400 OR #State_L4 = 400 OR #State_L5 = 400 OR #State_L6 = 400 THEN
+        #Error_ID.%X0 := TRUE;
+    ELSE
+        #Error_ID.%X0 := FALSE;
+        #Error_ID.%X6 := FALSE;
+        #Error_ID.%X7 := FALSE;
+        #Error_ID.%X8 := FALSE;
+    END_IF;
+    
+    IF ("Reset_All" OR #HMI_Reset) AND #State_VTD = 400
+    THEN
+        #State_VTD := 250;
+        
+    END_IF;
+    
+    IF ("Reset_All" OR #HMI_Reset) AND #State_L2 = 400
+    THEN
+        #State_L2 := 250;
+    END_IF;
+    
+    IF ("Reset_All" OR #HMI_Reset) AND #State_L3 = 400
+    THEN
+        #State_L3 := 250;
+    END_IF;
+    
+    IF ("Reset_All" OR #HMI_Reset) AND #State_L4 = 400
+    THEN
+        #State_L4 := 250;
+    END_IF;
+    
+    IF ("Reset_All" OR #HMI_Reset) AND #State_L5 = 400
+    THEN
+        #State_L5 := 250;
+    END_IF;
+    
+    IF ("Reset_All" OR #HMI_Reset) AND #State_L6 = 400
+    THEN
+        #State_L6 := 250;
+    END_IF;
+END_REGION
+
+
+
+(*
+
+Type of task to be performed:
+
+    1 = Move to Floor
+
+    2 = Shuttle Transfer into VTD
+
+    3 = Shuttle Transfer out of VTD
+
+    4 = Transfer Pallet into VTD
+
+    5 = Transfer Pallet out of VTD
+
+    6 = Transfer Pallet Roller to Roller
+
+    7 = Transfer Pallet Chain to Chain  
+
+    8 = Transfer to pick station 
+
+    9 = Transfer from Pick station 
+
+    10 = Weigh Pallet
+
+    11 = Set chain Cnv as active (lower) // no use for now
+
+    12 = Set Roller Cnv as active (raise) // no use for now
+
+
+
+    Need to isolate ZZ in XXYYZZ to confirm #i = ZZ
+
+    
+
+    Extract XX (first two digits)
+
+    xx := inputNumber / 10000;
+
+        
+
+    Extract YY (middle two digits)
+
+    yy := (inputNumber / 100) MOD 100;
+
+        
+
+    Extract ZZ (last two digits)
+
+    zz := inputNumber MOD 100;    
+
+*)
+
+
+IF #OPC_Enable THEN
+    REGION VTDs, Buffer conveyors 1 and Shuttle 
+        CASE #State_VTD OF
+            0:  //Pre operational state
+                #State_VTD := 10;
+                
+            10: //Idle waiting for task
+                IF "Control_DB"."VTD_Order Table"[#Id].Task_Data_Available AND "Control_DB".VTD_Sys[#Id].Mode = 3 AND
+                    NOT "Control_DB".VTD_Sys[#Id].Running AND NOT "Control_DB"."VTD_Order Table"[#Id].Movement_Ready AND "Control_DB".VTD_Sys[#Id].SM_State <= 10 THEN
+                    // "Control_DB".WMS_OPC_UA.Task_Data_Available := FALSE;
+                    #State_VTD := 20;
+                END_IF;
+                
+            20: //Determine the type of task
+                ID_Decode_F(ID := "Control_DB"."VTD_Order Table"[#Id].Source_Location,
+                              ID_Decoded := #Source_Location_VTD);
+                ID_Decode_F(ID := "Control_DB"."VTD_Order Table"[#Id].Destination_Location,
+                              ID_Decoded := #Destination_Location_VTD);
+                
+                //VTD move to floor
+                IF "Control_DB"."VTD_Order Table"[#Id].Task_Type = 1
+                    AND NOT "Control_DB".VTD_Sys[#Id].Running THEN
+                    #State_VTD := 30;
+                    
+                    //Shuttle transfer in/out of the VTD
+                ELSIF "Control_DB"."VTD_Order Table"[#Id].Task_Type = 2 OR "Control_DB"."VTD_Order Table"[#Id].Task_Type = 3
+                THEN
+                    #State_VTD := 70;
+                    
+                    //Transfer Pallet in/out of the VTD
+                ELSIF "Control_DB"."VTD_Order Table"[#Id].Task_Type = 4 OR "Control_DB"."VTD_Order Table"[#Id].Task_Type = 5
+                THEN
+                    #State_VTD := 100;
+                END_IF;
+                
+                //=========================== VTD Move to floor ===========================
+            30: //Set all the Move to level variables
+                "Control_DB".VTD_Sys[#Id].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_Type);
+                "Control_DB".VTD_Sys[#Id].Instruction.Pallet_Type := "Control_DB"."VTD_Order Table"[#Id].Pallet_Type;
+                "Control_DB".VTD_Sys[#Id].Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_ID);
+                "Control_DB".VTD_Sys[#Id].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table"[#Id].Task_Metadata;
+                "Control_DB".VTD_Sys[#Id].Instruction.Move_To_Level := INT_TO_UINT(#Destination_Location_VTD.Level);
+                #State_VTD := 35;
+                
+            35://Wait for the VTD to start its movement
+                "Control_DB"."VTD_Order Table"[#Id].SM_State := "Control_DB".VTD_Sys[#Id].SM_State;
+                IF "Control_DB".VTD_Sys[#Id].Enabled AND "Control_DB".VTD_Sys[#Id].Running THEN
+                    "Control_DB"."VTD_Order Table"[#Id].Movement_Ready := TRUE;
+                    #State_VTD := 40;
+                END_IF;
+                
+            40: //Wait for the VTD to complete its movement
+                "Control_DB"."VTD_Order Table"[#Id].SM_State := "Control_DB".VTD_Sys[#Id].SM_State;
+                IF "Control_DB".VTD_Sys[#Id].SM_State = 100 THEN
+                    #State_VTD := 41;
+                END_IF;
+                
+            41: //Wait for XXs for report done
+                #T_Wait_Report_Done(IN := TRUE,
+                                    PT := T#500ms);
+                IF #T_Wait_Report_Done.Q THEN
+                    "Control_DB"."VTD_Order Table"[#Id].Movement_Request_Complete := TRUE;
+                    #State_VTD := 45;
+                END_IF;
+                
+            45: //Wait for the ACK before we go back to Idle
+                "Control_DB"."VTD_Order Table"[#Id].SM_State := "Control_DB".VTD_Sys[#Id].SM_State;
+                IF "Control_DB"."VTD_Order Table"[#Id].Movement_Request_Complete_Ack THEN///////////////////////////////////////////////////////////////////
+                    #State_VTD := 250;
+                END_IF;
+                
+                //=========================== Transfer Shuttle in/out of the VTD ===========================
+            70: //Set all the shuttle interlock variables
+                "Control_DB".VTD_Sys[#Id].Instruction.Task_ID := "Control_DB"."VTD_Order Table"[#Id].Task_ID; //Assign task ID to WCS Task ID
+                "Control_DB".VTD_Sys[#Id].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table"[#Id].Task_Metadata;
+                "Control_DB".VTD_Sys[#Id].Instruction.Pallet_Type := "Control_DB"."VTD_Order Table"[#Id].Pallet_Type;
+                "Control_DB".VTD_Sys[#Id].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_Type);
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Interlock_Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_ID);
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Interlock_Task_Metadata := "Control_DB"."VTD_Order Table"[#Id].Task_Metadata;
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_ID := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Shuttle_ID);
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Loaded := "Control_DB"."VTD_Order Table"[#Id].Shuttle_Loaded;
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Start_Location := "Control_DB"."VTD_Order Table"[#Id].Source_Location;
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Target_Location := "Control_DB"."VTD_Order Table"[#Id].Destination_Location;
+                
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Interlock_Request := TRUE;
+                #State_VTD := 75;
+                
+            75: //Inform WCS that the VTD is ready to interlock
+                "Control_DB"."VTD_Order Table"[#Id].SM_State := "Control_DB".VTD_Sys[#Id].SM_State;
+                IF "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Ready_To_Interlock THEN
+                    "Control_DB"."VTD_Order Table"[#Id].Movement_Ready := TRUE;
+                    "Control_DB"."VTD_Order Table"[#Id].Task_Data_Available := FALSE;
+                    #State_VTD := 80;
+                END_IF;
+                
+            80://Inform WCS that the interlock is complete
+                IF "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Interlock_Complete THEN
+                    "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Interlock_Request := FALSE;
+                    "Control_DB"."VTD_Order Table"[#Id].Movement_Request_Complete := TRUE;
+                    #State_VTD := 81;
+                END_IF;
+                
+            81: //Wait for XXs for report done
+                #T_Wait_Report_Done.TON(IN := TRUE,
+                                        PT := T#500mS);
+                IF #T_Wait_Report_Done.Q THEN
+                    #State_VTD := 90;
+                END_IF;
+                
+            90: //Reset VTD back to idle state
+                IF "Control_DB"."VTD_Order Table"[#Id].Movement_Request_Complete_Ack THEN
+                    "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Interlock_Complete_Ack := TRUE;
+                    #State_VTD := 250;
+                END_IF;
+                
+                //=========================== Transfer Pallet in/out of the VTD ===========================
+                //
+            100: //Set the DESTINATION conveyor variables
+                IF #Destination_Location_VTD.Level >= 2 AND #Destination_Location_VTD.Level <= "Settings_DB".VTD_Sys[#Id].Highest_Level THEN
+                    
+                    //Extractor conveyor to CNV 1
+                    IF #Destination_Location_VTD.Device_Type = 10 AND "Control_DB".ECnv_Sys[#Id].Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Task_Metadata := "Control_DB"."VTD_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."VTD_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."VTD_Order Table"[#Id].Destination_Location;
+                        
+                        //Enable the conveyor and start the transfer
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Start_Transfer := TRUE;
+                        #State_VTD := 105;
+                        
+                        //CNV1 to Extractor
+                    ELSIF #Destination_Location_VTD.Device_Type = 12 AND #Source_Location_VTD.Device_Type = 10 AND
+                        NOT "Control_DB".ECnv_Sys[#Id].Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_ID);
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".ECnv_Sys[#Id].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_Type);
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Transfer_From_ID := "Control_DB"."VTD_Order Table"[#Id].Source_Location;
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Transfer_To_ID := "Control_DB"."VTD_Order Table"[#Id].Destination_Location;
+                        
+                        //Enable the conveyor and start the transfer
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Start_Transfer := TRUE;
+                        #State_VTD := 105;
+                    ELSE
+                        IF #Destination_Location_VTD.Device_Type = 10 AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF #Destination_Location_VTD.Device_Type = 10 AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Inputs.Shuttle_High THEN
+                            //The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                            
+                        ELSIF #Destination_Location_VTD.Device_Type = 12 THEN
+                            "Control_DB".ECnv_Sys[#Id].Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                        END_IF;
+                        
+                        #State_VTD := 400; //ERROR
+                    END_IF;
+                ELSE
+                    #State_VTD := 400;
+                END_IF;
+                
+            105:  //Set the SOURCE conveyor variables
+                IF #Source_Location_VTD.Level >= 2 AND #Source_Location_VTD.Level <= "Settings_DB".VTD_Sys[#Id].Highest_Level THEN
+                    
+                    //Extractor Cnv TO CNV 1
+                    IF (#Source_Location_VTD.Device_Type = 12 AND #Destination_Location_VTD.Device_Type = 10 AND "Control_DB".ECnv_Sys[#Id].Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Source_Location_VTD.Level].Cnv1.Cnv_Occupied)
+                    THEN
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_ID);
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Task_Metadata := "Control_DB"."VTD_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".ECnv_Sys[#Id].Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_Type);
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Transfer_To_ID := "Control_DB"."VTD_Order Table"[#Id].Destination_Location;
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Transfer_From_ID := "Control_DB"."VTD_Order Table"[#Id].Source_Location;
+                        
+                        //Enable the conveyor and start the transfer
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Start_Transfer := TRUE;
+                        #State_VTD := 110;
+                        
+                        //Cnv1 to Extractor
+                    ELSIF #Source_Location_VTD.Device_Type = 10 AND NOT "Control_DB".ECnv_Sys[#Id].Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Source_Location_VTD.Level].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Source_Location_VTD.Level].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Source_Location_VTD.Level].Cnv1.Instruction.Task_Metadata := "Control_DB"."VTD_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Source_Location_VTD.Level].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."VTD_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Source_Location_VTD.Level].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."VTD_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Source_Location_VTD.Level].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."VTD_Order Table"[#Id].Source_Location;
+                        
+                        //Enable the conveyor and start the transfer
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Source_Location_VTD.Level].Cnv1.Instruction.Start_Transfer := TRUE;
+                        #State_VTD := 110;
+                        
+                    ELSE
+                        #State_VTD := 400; //ERROR
+                    END_IF;
+                ELSE
+                    #State_VTD := 400;
+                END_IF;
+                
+            110: //Start the transfer
+                "Control_DB"."VTD_Order Table"[#Id].SM_State := "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.SM_State;
+                
+                IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Running THEN
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Start_Transfer := FALSE;
+                    IF (#Source_Location_VTD.Device_Type = 12 AND #Destination_Location_VTD.Device_Type = 10) OR
+                        (#Source_Location_VTD.Device_Type = 10 AND #Destination_Location_VTD.Device_Type = 12) AND
+                        "Control_DB".ECnv_Sys[#Id].Running
+                    THEN
+                        "Control_DB".ECnv_Sys[#Id].Instruction.Start_Transfer := FALSE;
+                        #State_VTD := 115;
+                    END_IF;
+                    "Control_DB"."VTD_Order Table"[#Id].Movement_Ready := TRUE;
+                END_IF;
+                
+            115: //Wait for the transfer to complete
+                "Control_DB"."VTD_Order Table"[#Id].SM_State := "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.SM_State;
+                
+                IF (#Source_Location_VTD.Device_Type = 12 AND #Destination_Location_VTD.Device_Type = 10) OR
+                    (#Source_Location_VTD.Device_Type = 10 AND #Destination_Location_VTD.Device_Type = 12) THEN
+                    IF "Control_DB".ECnv_Sys[#Id].Done AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Done THEN
+                        #State_VTD := 118;
+                    END_IF;
+                END_IF;
+                
+            118: //report done
+                "Control_DB"."VTD_Order Table"[#Id].Movement_Request_Complete := TRUE;
+                #State_VTD := 120;
+                
+            120: //Wait for the ACK before we go back to Idle
+                "Control_DB"."VTD_Order Table"[#Id].SM_State := "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.SM_State;
+                IF "Control_DB"."VTD_Order Table"[#Id].Movement_Request_Complete_Ack THEN
+                    #State_VTD := 250;
+                END_IF;
+                
+            250: //Reset all variable and return to idle
+                "Control_DB".ECnv_Sys[#Id].Instruction.Reset := FALSE;
+                "Control_DB".ECnv_Sys[#Id].Instruction.Start_Transfer := FALSE;
+                "Control_DB".ECnv_Sys[#Id].Instruction.Task_ID := 0;
+                "Control_DB".ECnv_Sys[#Id].Instruction.Task_Metadata := '';
+                "Control_DB".ECnv_Sys[#Id].Current_Task_Type := 0;
+                "Control_DB".ECnv_Sys[#Id].Instruction.Transfer_From_ID := 0;
+                "Control_DB".ECnv_Sys[#Id].Instruction.Transfer_To_ID := 0;
+                
+                "Control_DB".VTD_Sys[#Id].Instruction.Reset := FALSE;
+                "Control_DB".VTD_Sys[#Id].Instruction.Pallet_Type := 0;
+                "Control_DB".VTD_Sys[#Id].Instruction.Task_ID := 0;
+                "Control_DB".VTD_Sys[#Id].Instruction.Task_Metadata := '';
+                "Control_DB".VTD_Sys[#Id].Instruction.Move_To_Level := 0;
+                "Control_DB".VTD_Sys[#Id].Current_Task_Type := 0;
+                
+                //Reset Shuttle interlock
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Interlock_Request := FALSE;
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Start_Location := 0;
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Target_Location := 0;
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Loaded := 0;
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_ID := 0;
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Interlock_Task_ID := 0;
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Interlock_Task_Metadata := '';
+                "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Interlock_Complete_Ack := FALSE;
+                
+                IF #Destination_Location_VTD.Device_Type = 10 OR #Source_Location_VTD.Device_Type = 10 THEN
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Reset := FALSE;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Start_Transfer := FALSE;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Task_ID := 0;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Task_Metadata := '';
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Current_Task_Type := 0;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Transfer_From_ID := 0;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[#Destination_Location_VTD.Level].Cnv1.Instruction.Transfer_To_ID := 0;
+                END_IF;
+                
+                //Reset the OPC control variables
+                "Control_DB"."VTD_Order Table"[#Id].SM_State := 0;
+                "Control_DB"."VTD_Order Table"[#Id].Movement_Ready := FALSE;
+                "Control_DB"."VTD_Order Table"[#Id].Movement_Request_Complete := FALSE;
+                "Control_DB"."VTD_Order Table"[#Id].Movement_Request_Complete_Ack := FALSE;
+                "Control_DB"."VTD_Order Table"[#Id].Pallet_Weight := 0;
+                "Control_DB"."VTD_Order Table"[#Id].Task_Metadata := '';
+                #T_Wait_Report_Done.TON(IN := FALSE,
+                                        PT := T#0S);
+                #State_VTD := 0;
+                
+            400:// Error state
+                #Error_ID.%X8 := TRUE;
+                IF "Reset_All" OR #HMI_Reset THEN
+                    #Error_ID.%X8 := FALSE;
+                    #State_VTD := 250;
+                END_IF;
+        END_CASE;
+        
+    END_REGION
+    
+    REGION Transfer Pallet BUFFERS (CNV 1 and CNV 2)
+        REGION Main State
+            CASE #State_Main OF
+                0:  //Pre operational state
+                    #State_Main := 10;
+                    
+                10: //Idle waiting for task
+                    IF "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available THEN
+                        #State_Main := 20;
+                    END_IF;
+                    
+                20: //Determine the type of task
+                    ID_Decode_F(ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location,
+                                  ID_Decoded := #Source_Location_Buffers);
+                    ID_Decode_F(ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location,
+                                  ID_Decoded := #Destination_Location_Buffers);
+                    
+                    //Transfer Pallet L2
+                    IF ("Control_DB"."Buffer_Order Table"[#Id].Task_Type = 12)
+                    THEN
+                        IF #Destination_Location_Buffers.Device_Type = 10 AND #Source_Location_Buffers.Level = 11 THEN
+                            #State_L2 := 100;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        ELSIF #Destination_Location_Buffers.Device_Type = 11 AND #Source_Location_Buffers.Level = 10 THEN
+                            #State_L2 := 101;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        END_IF;
+                        
+                        //Transfer Pallet L3
+                    ELSIF ("Control_DB"."Buffer_Order Table"[#Id].Task_Type = 13)
+                    THEN
+                        IF #Destination_Location_Buffers.Device_Type = 10 AND #Source_Location_Buffers.Level = 11 THEN
+                            #State_L3 := 100;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        ELSIF #Destination_Location_Buffers.Device_Type = 11 AND #Source_Location_Buffers.Level = 10 THEN
+                            #State_L3 := 101;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        END_IF;
+                        
+                        //Transfer Pallet L4
+                    ELSIF ("Control_DB"."Buffer_Order Table"[#Id].Task_Type = 14)
+                    THEN
+                        IF #Destination_Location_Buffers.Device_Type = 10 AND #Source_Location_Buffers.Level = 11 THEN
+                            #State_L4 := 100;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        ELSIF #Destination_Location_Buffers.Device_Type = 11 AND #Source_Location_Buffers.Level = 10 THEN
+                            #State_L4 := 101;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        END_IF;
+                        
+                        //Transfer Pallet L5
+                    ELSIF ("Control_DB"."Buffer_Order Table"[#Id].Task_Type = 15)
+                    THEN
+                        IF #Destination_Location_Buffers.Device_Type = 10 AND #Source_Location_Buffers.Level = 11 THEN
+                            #State_L5 := 100;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        ELSIF #Destination_Location_Buffers.Device_Type = 11 AND #Source_Location_Buffers.Level = 10 THEN
+                            #State_L5 := 101;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        END_IF;
+                        
+                        //Transfer Pallet L6
+                    ELSIF ("Control_DB"."Buffer_Order Table"[#Id].Task_Type = 16)
+                    THEN
+                        IF #Destination_Location_Buffers.Device_Type = 10 AND #Source_Location_Buffers.Level = 11 THEN
+                            #State_L6 := 100;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        ELSIF #Destination_Location_Buffers.Device_Type = 11 AND #Source_Location_Buffers.Level = 10 THEN
+                            #State_L6 := 101;
+                            "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+                        END_IF;
+                    END_IF;
+            END_CASE;
+        END_REGION
+        
+        REGION Level 2
+            CASE #State_L2 OF
+                0:  //Idle
+                    ;
+                    
+                100: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 1 to CNV 2
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L2 := 105;
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Inputs.Shuttle_High THEN
+                            // The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                            #State_L2 := 400; //ERROR
+                        END_IF;
+                    END_IF;
+                    
+                101: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 2 to CNV 1
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L2 := 106;
+                        
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Inputs.Shuttle_High THEN
+                            //The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                        END_IF;
+                    END_IF;
+                    
+                105:  //Set the SOURCE conveyor variables
+                    //Cnv1 to CNV 2
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L2 := 110;
+                        
+                    ELSE
+                        #State_L2 := 400; //ERROR
+                    END_IF;
+                    
+                106:  //Set the SOURCE conveyor variables
+                    //Cnv2 to CNV 1
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L2 := 110;
+                    ELSE
+                        #State_L2 := 400; //ERROR
+                    END_IF;
+                    
+                110: //Start the transfer
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Running;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Running;
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Running AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Running THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB"."Buffer_Order Table"[#Id].Movement_Ready := TRUE;
+                        #State_L2 := 115;
+                    END_IF;
+                    
+                115: //Wait for the transfer to complete
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Done AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Done THEN
+                        #State_L2 := 118;
+                    END_IF;
+                    
+                118: //report done
+                    "Control_DB".Movement_Completed.Level_2 := TRUE;
+                    #State_L2 := 120;
+                    
+                120: //Wait for the ACK before we go back to Idle
+                    IF NOT "Control_DB".Movement_Completed.Level_2 THEN
+                        #State_L2 := 250;
+                    END_IF;
+                    
+                250: //Reset all variable and return to idle
+                    IF #Destination_Location_Buffers.Device_Type = 10 OR #Source_Location_Buffers.Device_Type = 10 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv1.Instruction.Transfer_To_ID := 0;
+                    ELSIF #Destination_Location_Buffers.Device_Type = 11 OR #Source_Location_Buffers.Device_Type = 11 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[2].Cnv2.Instruction.Transfer_To_ID := 0;
+                    END_IF;
+                    
+                    #State_L2 := 0;
+                    
+                400:// Error state
+                    #Error_ID.%X8 := TRUE;
+                    IF "Reset_All" OR #HMI_Reset THEN
+                        #Error_ID.%X8 := FALSE;
+                        #State_L2 := 250;
+                    END_IF;
+            END_CASE;
+        END_REGION
+
+        REGION Level 3
+            CASE #State_L3 OF
+                0:  //Idle
+                    ;
+                    
+                100: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 1 to CNV 2
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L3 := 105;
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Inputs.Shuttle_High THEN
+                            // The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                            #State_L3 := 400; //ERROR
+                        END_IF;
+                    END_IF;
+                    
+                101: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 2 to CNV 1
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L3 := 106;
+                        
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Inputs.Shuttle_High THEN
+                            //The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                        END_IF;
+                    END_IF;
+                    
+                105:  //Set the SOURCE conveyor variables
+                    //Cnv1 to CNV 2
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L3 := 110;
+                        
+                    ELSE
+                        #State_L3 := 400; //ERROR
+                    END_IF;
+                    
+                106:  //Set the SOURCE conveyor variables
+                    //Cnv2 to CNV 1
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L3 := 110;
+                    ELSE
+                        #State_L3 := 400; //ERROR
+                    END_IF;
+                    
+                110: //Start the transfer
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Running;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Running;
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Running AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Running THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB"."Buffer_Order Table"[#Id].Movement_Ready := TRUE;
+                        #State_L3 := 115;
+                    END_IF;
+                    
+                115: //Wait for the transfer to complete
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Done AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Done THEN
+                        #State_L3 := 118;
+                    END_IF;
+                    
+                118: //report done
+                    "Control_DB".Movement_Completed.Level_3 := TRUE;
+                    #State_L3 := 120;
+                    
+                120: //Wait for the ACK before we go back to Idle
+                    IF NOT "Control_DB".Movement_Completed.Level_3 THEN
+                        #State_L3 := 250;
+                    END_IF;
+                    
+                250: //Reset all variable and return to idle
+                    IF #Destination_Location_Buffers.Device_Type = 10 OR #Source_Location_Buffers.Device_Type = 10 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv1.Instruction.Transfer_To_ID := 0;
+                    ELSIF #Destination_Location_Buffers.Device_Type = 11 OR #Source_Location_Buffers.Device_Type = 11 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[3].Cnv2.Instruction.Transfer_To_ID := 0;
+                    END_IF;
+                    
+                    #State_L3 := 0;
+                    
+                400:// Error state
+                    #Error_ID.%X8 := TRUE;
+                    IF "Reset_All" OR #HMI_Reset THEN
+                        #Error_ID.%X8 := FALSE;
+                        #State_L3 := 250;
+                    END_IF;
+            END_CASE;
+        END_REGION
+
+        REGION Level 4
+            CASE #State_L4 OF
+                0:  //Idle
+                    ;
+                    
+                100: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 1 to CNV 2
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L4 := 105;
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Inputs.Shuttle_High THEN
+                            // The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                            #State_L4 := 400; //ERROR
+                        END_IF;
+                    END_IF;
+                    
+                101: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 2 to CNV 1
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L4 := 106;
+                        
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Inputs.Shuttle_High THEN
+                            //The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                        END_IF;
+                    END_IF;
+                    
+                105:  //Set the SOURCE conveyor variables
+                    //Cnv1 to CNV 2
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L4 := 110;
+                        
+                    ELSE
+                        #State_L4 := 400; //ERROR
+                    END_IF;
+                    
+                106:  //Set the SOURCE conveyor variables
+                    //Cnv2 to CNV 1
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L4 := 110;
+                    ELSE
+                        #State_L4 := 400; //ERROR
+                    END_IF;
+                    
+                110: //Start the transfer
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Running;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Running;
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Running AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Running THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB"."Buffer_Order Table"[#Id].Movement_Ready := TRUE;
+                        #State_L4 := 115;
+                    END_IF;
+                    
+                115: //Wait for the transfer to complete
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Done AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Done THEN
+                        #State_L4 := 118;
+                    END_IF;
+                    
+                118: //report done
+                    "Control_DB".Movement_Completed.Level_4 := TRUE;
+                    #State_L4 := 120;
+                    
+                120: //Wait for the ACK before we go back to Idle
+                    IF NOT "Control_DB".Movement_Completed.Level_4 THEN
+                        #State_L4 := 250;
+                    END_IF;
+                    
+                250: //Reset all variable and return to idle
+                    IF #Destination_Location_Buffers.Device_Type = 10 OR #Source_Location_Buffers.Device_Type = 10 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv1.Instruction.Transfer_To_ID := 0;
+                    ELSIF #Destination_Location_Buffers.Device_Type = 11 OR #Source_Location_Buffers.Device_Type = 11 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[4].Cnv2.Instruction.Transfer_To_ID := 0;
+                    END_IF;
+                    
+                    #State_L4 := 0;
+                    
+                400:// Error state
+                    #Error_ID.%X8 := TRUE;
+                    IF "Reset_All" OR #HMI_Reset THEN
+                        #Error_ID.%X8 := FALSE;
+                        #State_L4 := 250;
+                    END_IF;
+            END_CASE;
+        END_REGION
+
+        REGION Level 5
+            CASE #State_L5 OF
+                0:  //Idle
+                    ;
+                    
+                100: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 1 to CNV 2
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L5 := 105;
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Inputs.Shuttle_High THEN
+                            // The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                            #State_L5 := 400; //ERROR
+                        END_IF;
+                    END_IF;
+                    
+                101: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 2 to CNV 1
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L5 := 106;
+                        
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Inputs.Shuttle_High THEN
+                            //The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                        END_IF;
+                    END_IF;
+                    
+                105:  //Set the SOURCE conveyor variables
+                    //Cnv1 to CNV 2
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L5 := 110;
+                        
+                    ELSE
+                        #State_L5 := 400; //ERROR
+                    END_IF;
+                    
+                106:  //Set the SOURCE conveyor variables
+                    //Cnv2 to CNV 1
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L5 := 110;
+                    ELSE
+                        #State_L5 := 400; //ERROR
+                    END_IF;
+                    
+                110: //Start the transfer
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Running;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Running;
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Running AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Running THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB"."Buffer_Order Table"[#Id].Movement_Ready := TRUE;
+                        #State_L5 := 115;
+                    END_IF;
+                    
+                115: //Wait for the transfer to complete
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Done AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Done THEN
+                        #State_L5 := 118;
+                    END_IF;
+                    
+                118: //report done
+                    "Control_DB".Movement_Completed.Level_5 := TRUE;
+                    #State_L5 := 120;
+                    
+                120: //Wait for the ACK before we go back to Idle
+                    IF NOT "Control_DB".Movement_Completed.Level_5 THEN
+                        #State_L5 := 250;
+                    END_IF;
+                    
+                250: //Reset all variable and return to idle
+                    IF #Destination_Location_Buffers.Device_Type = 10 OR #Source_Location_Buffers.Device_Type = 10 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv1.Instruction.Transfer_To_ID := 0;
+                    ELSIF #Destination_Location_Buffers.Device_Type = 11 OR #Source_Location_Buffers.Device_Type = 11 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[5].Cnv2.Instruction.Transfer_To_ID := 0;
+                    END_IF;
+                    
+                    #State_L5 := 0;
+                    
+                400:// Error state
+                    #Error_ID.%X8 := TRUE;
+                    IF "Reset_All" OR #HMI_Reset THEN
+                        #Error_ID.%X8 := FALSE;
+                        #State_L5 := 250;
+                    END_IF;
+            END_CASE;
+        END_REGION
+
+        REGION Level 6
+            CASE #State_L6 OF
+                0:  //Idle
+                    ;
+                    
+                100: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 1 to CNV 2
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L6 := 105;
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Inputs.Shuttle_High THEN
+                            // The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                            #State_L6 := 400; //ERROR
+                        END_IF;
+                    END_IF;
+                    
+                101: //Set the DESTINATION conveyor variables
+                    #State_Main := 0;
+                    
+                    //CNV 2 to CNV 1
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Cnv_Occupied AND
+                        NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        #State_L6 := 106;
+                        
+                    ELSE
+                        IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Cnv_Occupied THEN
+                            //Conveyor It's occupied. Check the sensors on the extractor or buffer, or verify if the pallet is misaligned.
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Cnv_Errors.Error_Word_1.%X1 := TRUE;
+                            
+                        ELSIF "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Inputs.Shuttle_High THEN
+                            //The shuttle is LID high
+                            "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Cnv_Errors.Error_Word_1.%X2 := TRUE;
+                        END_IF;
+                    END_IF;
+                    
+                105:  //Set the SOURCE conveyor variables
+                    //Cnv1 to CNV 2
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L6 := 110;
+                        
+                    ELSE
+                        #State_L6 := 400; //ERROR
+                    END_IF;
+                    
+                106:  //Set the SOURCE conveyor variables
+                    //Cnv2 to CNV 1
+                    IF NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Cnv_Occupied AND
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Cnv_Occupied
+                    THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Task_ID := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_ID);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Task_Metadata := "Control_DB"."Buffer_Order Table"[#Id].Task_Metadata;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Current_Task_Type := INT_TO_UINT("Control_DB"."Buffer_Order Table"[#Id].Task_Type);
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Transfer_To_ID := "Control_DB"."Buffer_Order Table"[#Id].Destination_Location;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Transfer_From_ID := "Control_DB"."Buffer_Order Table"[#Id].Source_Location;
+                        #State_L6 := 110;
+                    ELSE
+                        #State_L6 := 400; //ERROR
+                    END_IF;
+                    
+                110: //Start the transfer
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Running;
+                    "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Start_Transfer := NOT "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Running;
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Running AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Running THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB"."Buffer_Order Table"[#Id].Movement_Ready := TRUE;
+                        #State_L6 := 115;
+                    END_IF;
+                    
+                115: //Wait for the transfer to complete
+                    IF "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Done AND "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Done THEN
+                        #State_L6 := 118;
+                    END_IF;
+                    
+                118: //report done
+                    "Control_DB".Movement_Completed.Level_6 := TRUE;
+                    #State_L6 := 120;
+                    
+                120: //Wait for the ACK before we go back to Idle
+                    IF NOT "Control_DB".Movement_Completed.Level_6 THEN
+                        #State_L6 := 250;
+                    END_IF;
+                    
+                250: //Reset all variable and return to idle
+                    IF #Destination_Location_Buffers.Device_Type = 10 OR #Source_Location_Buffers.Device_Type = 10 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv1.Instruction.Transfer_To_ID := 0;
+                    ELSIF #Destination_Location_Buffers.Device_Type = 11 OR #Source_Location_Buffers.Device_Type = 11 THEN
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Reset := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Start_Transfer := FALSE;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Task_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Task_Metadata := '';
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Current_Task_Type := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Transfer_From_ID := 0;
+                        "Control_DB".LCnv_Sys[#Id].Cnv_Level[6].Cnv2.Instruction.Transfer_To_ID := 0;
+                    END_IF;
+                    
+                    #State_L6 := 0;
+                    
+                400:// Error state
+                    #Error_ID.%X8 := TRUE;
+                    IF "Reset_All" OR #HMI_Reset THEN
+                        #Error_ID.%X8 := FALSE;
+                        #State_L6 := 250;
+                    END_IF;
+            END_CASE;
+        END_REGION
+    END_REGION
+    
+ELSIF NOT #OPC_Enable THEN
+    //Reset all variable and return to idle
+    
+    //Reset the OPC control variables
+    "Control_DB"."VTD_Order Table"[#Id].SM_State := 0;
+    "Control_DB"."VTD_Order Table"[#Id].Movement_Ready := FALSE;
+    "Control_DB"."VTD_Order Table"[#Id].Movement_Request_Complete := FALSE;
+    
+    // Reset Order table VTD variables
+    "Control_DB"."VTD_Order Table"[#Id].Task_Type := 0;
+    "Control_DB"."VTD_Order Table"[#Id].Pallet_Type := 'C';
+    "Control_DB"."VTD_Order Table"[#Id].Task_ID := 0;
+    "Control_DB"."VTD_Order Table"[#Id].Task_Metadata := '';
+    "Control_DB"."VTD_Order Table"[#Id].Source_Location := 0;
+    "Control_DB"."VTD_Order Table"[#Id].Destination_Location := 0;
+    #Destination_Location_VTD.Level := 0;
+    #Source_Location_VTD.Level := 0;
+    "Control_DB"."VTD_Order Table"[#Id].Shuttle_ID := 0;
+    "Control_DB"."VTD_Order Table"[#Id].Shuttle_Loaded := FALSE;
+    
+    //Reset VTD variables
+    "Control_DB".VTD_Sys[#Id].Instruction.Reset := FALSE;
+    "Control_DB".VTD_Sys[#Id].Instruction.Pallet_Type := 0;
+    "Control_DB".VTD_Sys[#Id].Instruction.Task_ID := 0;
+    "Control_DB".VTD_Sys[#Id].Instruction.Task_Metadata := '';//
+    "Control_DB".ECnv_Sys[#Id].Current_Task_Type := 0;
+    "Control_DB".VTD_Sys[#Id].Instruction.Move_To_Level := 99;
+    "Control_DB".VTD_Sys[#Id].Current_Task_Type := 0;
+    
+    //Reset Shuttle interlock
+    "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Interlock_Request := FALSE;
+    "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Start_Location := 0;
+    "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Target_Location := 0;
+    "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Loaded := 0;
+    "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_ID := 0;
+    "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Interlock_Task_ID := 0;
+    "Control_DB".VTD_Sys[#Id].Shuttle_Interlock.Shuttle_Interlock_Task_Metadata := '';//
+    
+    //Reset conveyor variables
+    "Control_DB".ECnv_Sys[#Id].Instruction.Reset := FALSE;
+    // "Control_DB".ECnv_Control.Instruction.Enable := FALSE;
+    "Control_DB".ECnv_Sys[#Id].Instruction.Start_Transfer := FALSE;
+    "Control_DB".ECnv_Sys[#Id].Instruction.Task_ID := 0;
+    "Control_DB".ECnv_Sys[#Id].Instruction.Task_Metadata := '';//
+    "Control_DB".ECnv_Sys[#Id].Instruction.Transfer_From_ID := 0;
+    "Control_DB".ECnv_Sys[#Id].Instruction.Transfer_To_ID := 0;
+    
+    FOR #i := "Settings_DB".VTD_Sys[#Id].Lowest_Level TO "Settings_DB".VTD_Sys[#Id].Highest_Level DO
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv1.Instruction.Reset := FALSE;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv1.Instruction.Start_Transfer := FALSE;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv1.Instruction.Task_ID := 0;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv1.Instruction.Task_Metadata := '';
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv1.Current_Task_Type := 0;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv1.Instruction.Transfer_From_ID := 0;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv1.Instruction.Transfer_To_ID := 0;
+        
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv2.Instruction.Reset := FALSE;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv2.Instruction.Start_Transfer := FALSE;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv2.Instruction.Task_ID := 0;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv2.Instruction.Task_Metadata := '';
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv2.Current_Task_Type := 0;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv2.Instruction.Transfer_From_ID := 0;
+        "Control_DB".LCnv_Sys[#Id].Cnv_Level[#i].Cnv2.Instruction.Transfer_To_ID := 0;
+    END_FOR;
+END_IF;
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+REGION Clear order table
+    IF #Clear_VTD_OrderTable THEN
+        #State_VTD := 250;
+        "Control_DB"."VTD_Order Table"[#Id].Task_Data_Available := 0;
+    END_IF;
+    
+    IF #Clear_Buffers_OrderTable THEN
+        #State_Main := 0;
+        #State_L2 := 250;
+        #State_L3 := 250;
+        #State_L4 := 250;
+        #State_L5 := 250;
+        #State_L6 := 250;
+        "Control_DB"."Buffer_Order Table"[#Id].Task_Data_Available := 0;
+    END_IF;
+END_REGION
+
+REGION SHUTTLES POSITION
+    FOR #f := 1 TO "Settings_DB".System.Shuttle_Count DO
+        "Control_DB".Shuttles_Position[#f].x := "Shuttle_MQTT_DB".Shuttle_MQTT[#f].Message.Shuttle_Status.Position_X;
+        "Control_DB".Shuttles_Position[#f].y := "Shuttle_MQTT_DB".Shuttle_MQTT[#f].Message.Shuttle_Status.Position_Y;
+    END_FOR;
+END_REGION
+
+#HMI_Reset := ("Screen_DB_1".Reset_All[1] AND
+("HMI_Box_Connected_1" = 11 AND "KEY REMOTE/LOCAL L1 - CH1(1)") OR
+("HMI_Box_Connected_1" = 12 AND "KEY REMOTE/LOCAL L2 - CH1(1)") OR
+("HMI_Box_Connected_1" = 13 AND "KEY REMOTE/LOCAL L3 - CH1(1)") OR
+("HMI_Box_Connected_1" = 14 AND "KEY REMOTE/LOCAL L4 - CH1(1)") OR
+("HMI_Box_Connected_1" = 15 AND "KEY REMOTE/LOCAL L5 - CH1(1)") OR
+("HMI_Box_Connected_1" = 16 AND "KEY REMOTE/LOCAL L6 - CH1(1)") OR
+("HMI_Box_Connected_1" = 21 AND "KEY REMOTE/LOCAL L1 - CH1(2)") OR
+("HMI_Box_Connected_1" = 22 AND "KEY REMOTE/LOCAL L2 - CH1(2)") OR
+("HMI_Box_Connected_1" = 23 AND "KEY REMOTE/LOCAL L3 - CH1(2)") OR
+("HMI_Box_Connected_1" = 24 AND "KEY REMOTE/LOCAL L4 - CH1(2)") OR
+("HMI_Box_Connected_1" = 25 AND "KEY REMOTE/LOCAL L5 - CH1(2)") OR
+("HMI_Box_Connected_1" = 26 AND "KEY REMOTE/LOCAL L6 - CH1(2)"));
+
+END_FUNCTION_BLOCK

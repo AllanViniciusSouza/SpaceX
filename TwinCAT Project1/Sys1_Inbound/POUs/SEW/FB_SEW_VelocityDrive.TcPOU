@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_SEW_VelocityDrive" Id="{74563307-5090-4f5b-95e6-306996cef247}" SpecialFunc="None">
+    <Declaration><![CDATA[// Communication and status layer for a SEW drive running MOVIKIT Velocity
+// with the "5 PD" basic process data profile (SBusPLUS, not CiA402).
+// Source: SEW manual 33959862 "MOVIKIT Positioning, Velocity", chapter 4.2
+// and chapter 9 "Process data assignment". Only words and bits marked V/P
+// (available with MOVIKIT Velocity) are used.
+//
+// MOVIKIT Velocity always runs operating mode Speed (200): there is no PO 6.
+// PO 1 control word, PO 2 setpoint speed, PO 3 acceleration, PO 4 deceleration,
+// PO 5 digital outputs. PI 1 status word, PI 2 actual speed, PI 3 fault/subfault,
+// PI 4 torque, PI 5 digital inputs.
+//
+// This block does NOT decide any motion. The owner of the axis (e.g.
+// Buffer_Conveyor_FB) sets the commands; this block only packs them into
+// PO 1..5, decodes PI 1..5 and supervises the communication
+// (EtherCAT state + MOVIKIT handshake).
+//
+// Safety-related behavior:
+//  - Enable and start are forced to 0 while communication is not OK.
+//  - PO 1.3 "Release brake (without enable)" is never set.
+//  - PO 1.13 "Output stage inhibit" is never set; removing enable stops the
+//    drive with the emergency stop ramp (FCB 14).
+FUNCTION_BLOCK FB_SEW_VelocityDrive
+VAR_INPUT
+    i_stProcessInput : ST_SEW_ProcessInput5;  // Raw PI 1..5 + EtherCAT diagnostics (from FC Inputs)
+
+    i_bEnable : BOOL;                         // PO 1.0 + PO 1.1 enable (FALSE = stop with FCB 14)
+    i_bStart : BOOL;                          // PO 1.7 start/stop with fieldbus ramp
+    i_bFaultReset : BOOL;                     // PO 1.8, drive resets on the rising edge
+
+    i_iSpeedSetpoint : INT;                   // PO 2, signed, user units
+    i_uiAcceleration : UINT;                  // PO 3, user units
+    i_uiDeceleration : UINT;                  // PO 4, user units
+
+    i_tHandshakeTimeout : TIME := T#1S;       // Max time for PI 1.15 to follow PO 1.15
+END_VAR
+VAR_OUTPUT
+    q_aProcessOutput : ARRAY[1..5] OF UINT;   // Raw PO 1..5 (to FC Outputs)
+    q_stStatus : ST_SEW_VelocityStatus;       // Decoded PI 1..5
+
+    q_bReady : BOOL;                          // Communication OK, ready, STO inactive, no error
+    q_bError : BOOL;                          // Drive error or communication error
+    q_udiErrorId : UDINT;                     // See ERROR_ID_* below, or PI 3 (fault * 256 + subfault)
+END_VAR
+VAR
+    bHandshakeIn : BOOL;                      // Value sent in PO 1.15
+    bHandshakeWaiting : BOOL;
+    tonHandshake : TON;
+    wControlWord : WORD;
+END_VAR
+VAR CONSTANT
+    ERROR_ID_ETHERCAT : UDINT := 16#FFFF0001; // Drive not in OP or working counter invalid
+    ERROR_ID_HANDSHAKE : UDINT := 16#FFFF0002; // MOVIKIT handshake timeout
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{region "Communication supervision"}
+// EtherCAT: state OP (lower nibble = 8) and valid working counter.
+q_stStatus.bEtherCatOk := (NOT i_stProcessInput.bWcStateError)
+                          AND ((i_stProcessInput.uiEcState AND 16#000F) = 8);
+
+// MOVIKIT handshake (manual chapter 9.3): the drive copies PO 1.15 to PI 1.15.
+// When both are equal, invert PO 1.15; otherwise the timeout runs.
+q_stStatus.bHandshakeOut := i_stProcessInput.aWord[1].15;
+
+IF q_stStatus.bEtherCatOk THEN
+    IF bHandshakeIn = q_stStatus.bHandshakeOut THEN
+        bHandshakeIn := NOT bHandshakeIn;
+        bHandshakeWaiting := FALSE;
+    ELSE
+        bHandshakeWaiting := TRUE;
+    END_IF
+ELSE
+    // No valid data: the EtherCAT error is reported instead of the handshake.
+    bHandshakeWaiting := FALSE;
+END_IF
+
+tonHandshake(IN := bHandshakeWaiting, PT := i_tHandshakeTimeout);
+q_stStatus.bHandshakeError := tonHandshake.Q;
+
+q_stStatus.bCommunicationOk := q_stStatus.bEtherCatOk AND NOT q_stStatus.bHandshakeError;
+{endregion}
+
+{region "Decode process inputs (PI 1..5)"}
+q_stStatus.wStatusWord := UINT_TO_WORD(i_stProcessInput.aWord[1]);
+q_stStatus.bReady := q_stStatus.wStatusWord.0;
+q_stStatus.bStoInactive := q_stStatus.wStatusWord.1;
+q_stStatus.bOutputStageEnabled := q_stStatus.wStatusWord.2;
+q_stStatus.bBrakeReleased := q_stStatus.wStatusWord.3;
+q_stStatus.bMotorTurning := q_stStatus.wStatusWord.4;
+q_stStatus.bError := q_stStatus.wStatusWord.8;
+q_stStatus.bWarning := q_stStatus.wStatusWord.9;
+q_stStatus.bDriveTrain2Active := q_stStatus.wStatusWord.10;
+q_stStatus.bSpeedReached := q_stStatus.wStatusWord.11;
+q_stStatus.bStandbyActive := q_stStatus.wStatusWord.14;
+// Bits 5, 6, 7 and 12 exist only with MOVIKIT Positioning and are not decoded.
+
+// Same-size integer conversions keep the bit pattern (signed values).
+q_stStatus.iActualSpeed := UINT_TO_INT(i_stProcessInput.aWord[2]);
+q_stStatus.byFaultCode := WORD_TO_BYTE(SHR(UINT_TO_WORD(i_stProcessInput.aWord[3]), 8));
+q_stStatus.bySubfaultCode := WORD_TO_BYTE(UINT_TO_WORD(i_stProcessInput.aWord[3]) AND 16#00FF);
+q_stStatus.iActualTorque_0p1pct := UINT_TO_INT(i_stProcessInput.aWord[4]);
+q_stStatus.wDigitalInputs := UINT_TO_WORD(i_stProcessInput.aWord[5]);
+{endregion}
+
+{region "Diagnostics"}
+q_bError := q_stStatus.bError OR NOT q_stStatus.bCommunicationOk;
+q_bReady := q_stStatus.bCommunicationOk AND q_stStatus.bReady
+            AND q_stStatus.bStoInactive AND NOT q_stStatus.bError;
+
+IF NOT q_stStatus.bEtherCatOk THEN
+    q_udiErrorId := ERROR_ID_ETHERCAT;
+ELSIF q_stStatus.bHandshakeError THEN
+    q_udiErrorId := ERROR_ID_HANDSHAKE;
+ELSIF q_stStatus.bError THEN
+    q_udiErrorId := UINT_TO_UDINT(i_stProcessInput.aWord[3]);
+ELSE
+    q_udiErrorId := 0;
+END_IF
+{endregion}
+
+{region "Build process outputs (PO 1..5)"}
+wControlWord := 0;
+
+IF q_stStatus.bCommunicationOk AND i_bEnable THEN
+    wControlWord.0 := TRUE;     // Enable/emergency stop
+    wControlWord.1 := TRUE;     // Enable/application stop
+    wControlWord.7 := i_bStart; // Start/stop with fieldbus ramp
+END_IF
+
+wControlWord.8 := i_bFaultReset;  // Allowed without enable
+wControlWord.15 := bHandshakeIn;  // MOVIKIT handshake, no effect on motion
+// Never set: bit 3 (release brake without enable), bit 10 (drive train 2),
+// bit 13 (output stage inhibit), bit 14 (standby).
+// Bits 4, 5, 6 and 12 exist only with MOVIKIT Positioning.
+
+q_aProcessOutput[1] := WORD_TO_UINT(wControlWord);
+
+IF q_stStatus.bCommunicationOk AND i_bEnable THEN
+    q_aProcessOutput[2] := INT_TO_UINT(i_iSpeedSetpoint);
+ELSE
+    q_aProcessOutput[2] := 0;
+END_IF
+
+q_aProcessOutput[3] := i_uiAcceleration;
+q_aProcessOutput[4] := i_uiDeceleration;
+q_aProcessOutput[5] := 0;  // Drive digital outputs not used
+{endregion}
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

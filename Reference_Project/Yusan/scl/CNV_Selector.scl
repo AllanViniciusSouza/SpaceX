@@ -1,0 +1,283 @@
+FUNCTION "CNV_Selector"   // FC 8, author 
+
+   // RETURN : Void
+BEGIN
+//CNV SCREEN SELECTION
+
+CASE "CNV_System_Selected" OF
+    0:
+        "CNV_ID_HMI" := 0;
+        "CNV_ID_HMI(1)" := 0;
+        
+    1://SYSTEM 1
+        "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[1].ID; // EXTRACTOR CONVEYOR
+        "CNV_HMI".CNV2_Selected[1] := "CNV2_Selected";
+        CASE "CNV_Level_Selected" OF
+            1: //LEVEL 1
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.ID; //CNV 2
+                END_IF;
+            2: //LEVEL 2
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.ID; //CNV 2
+                END_IF;
+            3: //LEVEL 3
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.ID; //CNV 2
+                END_IF;
+            4: //LEVEL 4
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.ID; //CNV 2
+                END_IF;
+            5: //LEVEL 5
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.ID; //CNV 2
+                END_IF;
+            6: //LEVEL 6
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.ID; //CNV 2
+                END_IF;
+            7: //LEVEL 7
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.ID; //CNV 2
+                END_IF;
+            8: //LEVEL 8
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.ID; //CNV 2
+                END_IF;
+        END_CASE;
+        
+    2://SYSTEM 2
+        "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[2].ID; // EXTRACTOR CONVEYOR
+        "CNV_HMI".CNV2_Selected[2] := "CNV2_Selected";
+        CASE "CNV_Level_Selected" OF
+            1: //LEVEL 1
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.ID; //CNV 2
+                END_IF;
+            2: //LEVEL 2
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.ID; //CNV 2
+                END_IF;
+            3: //LEVEL 3
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.ID; //CNV 2
+                END_IF;
+            4: //LEVEL 4
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.ID; //CNV 2
+                END_IF;
+            5: //LEVEL 5
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.ID; //CNV 2
+                END_IF;
+            6: //LEVEL 6
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.ID; //CNV 2
+                END_IF;
+            7: //LEVEL 7
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.ID; //CNV 2
+                END_IF;
+            8: //LEVEL 8
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.ID; //CNV 2
+                END_IF;
+        END_CASE;
+        
+    3://SYSTEM 3
+        "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[3].ID; // EXTRACTOR CONVEYOR
+        "CNV_HMI".CNV2_Selected[3] := "CNV2_Selected";
+        CASE "CNV_Level_Selected" OF
+            1: //LEVEL 1
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.ID; //CNV 2
+                END_IF;
+            2: //LEVEL 2
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.ID; //CNV 2
+                END_IF;
+            3: //LEVEL 3
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.ID; //CNV 2
+                END_IF;
+            4: //LEVEL 4
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.ID; //CNV 2
+                END_IF;
+            5: //LEVEL 5
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.ID; //CNV 2
+                END_IF;
+            6: //LEVEL 6
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.ID; //CNV 2
+                END_IF;
+            7: //LEVEL 7
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.ID; //CNV 2
+                END_IF;
+            8: //LEVEL 8
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.ID; //CNV 2
+                END_IF;
+        END_CASE;
+        
+    4://SYSTEM 4
+        "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[4].ID; // EXTRACTOR CONVEYOR
+        "CNV_HMI".CNV2_Selected[4] := "CNV2_Selected";
+        CASE "CNV_Level_Selected" OF
+            1: //LEVEL 1
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[1].Cnv2.ID; //CNV 2
+                END_IF;
+            2: //LEVEL 2
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[2].Cnv2.ID; //CNV 2
+                END_IF;
+            3: //LEVEL 3
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[3].Cnv2.ID; //CNV 2
+                END_IF;
+            4: //LEVEL 4
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[4].Cnv2.ID; //CNV 2
+                END_IF;
+            5: //LEVEL 5
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[5].Cnv2.ID; //CNV 2
+                END_IF;
+            6: //LEVEL 6
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[6].Cnv2.ID; //CNV 2
+                END_IF;
+            7: //LEVEL 7
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[7].Cnv2.ID; //CNV 2
+                END_IF;
+            8: //LEVEL 8
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[4].Cnv_Level[8].Cnv2.ID; //CNV 2
+                END_IF;
+        END_CASE;
+        
+    5://SYSTEM 5
+        "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[5].ID; // EXTRACTOR CONVEYOR
+        "CNV_HMI".CNV2_Selected[5] := "CNV2_Selected";
+        CASE "CNV_Level_Selected" OF
+            1: //LEVEL 1
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[1].Cnv2.ID; //CNV 2
+                END_IF;
+            2: //LEVEL 2
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[2].Cnv2.ID; //CNV 2
+                END_IF;
+            3: //LEVEL 3
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[3].Cnv2.ID; //CNV 2
+                END_IF;
+            4: //LEVEL 4
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[4].Cnv2.ID; //CNV 2
+                END_IF;
+            5: //LEVEL 5
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[5].Cnv2.ID; //CNV 2
+                END_IF;
+            6: //LEVEL 6
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[6].Cnv2.ID; //CNV 2
+                END_IF;
+            7: //LEVEL 7
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[7].Cnv2.ID; //CNV 2
+                END_IF;
+            8: //LEVEL 8
+                IF "CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.ID; //CNV 1
+                ELSIF "CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[5].Cnv_Level[8].Cnv2.ID; //CNV 2
+                END_IF;
+        END_CASE;
+END_CASE;
+
+END_FUNCTION

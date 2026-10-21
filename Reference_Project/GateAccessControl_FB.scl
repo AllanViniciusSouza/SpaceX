@@ -1,0 +1,102 @@
+﻿FUNCTION_BLOCK "GateAccessControl_FB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      UnlockPermissive : Bool;   // TRUE = ModeManager allows gate to be unlocked
+      FaultResetCmd : Bool;   // rising edge = attempt to reset a latched GateFault (only if hardware is OK)
+      I_G1_GuardOpen : Bool;   // BYTE1 bit0: Guard Open(1) / Guard Closed(0)
+      I_L1_Unlocked : Bool;   // BYTE2 bit0: Unlocked(1) / Locked(0) - diagnostic only, NOT safety-relevant
+      GateLockedFeedback : Bool;   // Guard switch safe output. Closed+Locked=1
+      NoEStop : Bool;   // E-Stop safe output. Released=1
+      ResetPulseTime : Time := T#500MS;   // R1 / RS_xx pulse width
+      LockConfirmTimeout : Time := T#300S;   // max time allowed for lock feedback to confirm after command
+      UnlockConfirmTimeout : Time := T#300S;   // max time allowed for unlock feedback to confirm after command
+   END_VAR
+
+   VAR_OUTPUT 
+      O_S1_SolenoidEnergise : Bool;   // BYTE1 bit0: Energise(1) / De-energise(0)                                    // ASSUMPTION: Energise = UNLOCK (fail-safe locked                                    // when de-energised). CONFIRM against your GSDML /                                    // wiring before commissioning - if reversed, invert                                    // the assignment below.
+      GateClosed : Bool;   // debounced gate closed status
+      GateFault : Bool;   // latched TRUE on lock/unlock discrepancy timeout
+      ForceRTE_Request : Bool;   // pulses TRUE to force ModeManager into RTE_REQUESTED                                   // (e.g. rear escape used unexpectedly - area accessed                                   // outside the normal sequence, treat as if entry                                   // was requested so the system re-syncs its state)
+   END_VAR
+
+   VAR 
+      ResetPulse_GuardReset {InstructionName := 'TP_TIME'; LibVersion := '1.0'} : TP_TIME;
+      LockConfirmTON {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      UnlockConfirmTON {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      FaultResetCmd_Edge_M { S7_SetPoint := 'True'} : Bool;
+      FaultResetCmd_Rising : Bool;
+      GateFault_Latch : Bool;
+      WasLockedAndValid : Bool;
+   END_VAR
+
+
+BEGIN
+	// ------------------------------------------------------
+	// Standard feedback passthrough
+	// ------------------------------------------------------
+	#GateClosed := NOT #I_G1_GuardOpen;
+	
+	// ------------------------------------------------------
+	// Solenoid command.
+	// Energise = Unlock, confirmed by user: solenoid energised
+	// frees the mechanism so the operator can rotate the manual
+	// handle. De-energised = locked (fail-safe default).
+	// ------------------------------------------------------
+	#O_S1_SolenoidEnergise := #UnlockPermissive AND NOT #GateFault_Latch;
+	
+	// ------------------------------------------------------
+	// Lock / unlock confirmation supervision, using the
+	// consolidated GateLockedFeedback signal fed in from the
+	// safety logic.
+	// ------------------------------------------------------
+	#LockConfirmTON(IN := NOT #O_S1_SolenoidEnergise AND NOT #GateLockedFeedback AND #GateClosed,
+	                PT := #LockConfirmTimeout);
+	IF #LockConfirmTON.Q THEN
+	    (*#GateFault_Latch := TRUE*);
+	END_IF;
+	
+	#UnlockConfirmTON(IN := #O_S1_SolenoidEnergise AND #GateLockedFeedback,
+	                  PT := #UnlockConfirmTimeout);
+	IF #UnlockConfirmTON.Q THEN
+	    (*#GateFault_Latch := TRUE*);
+	END_IF;
+	
+	// ------------------------------------------------------
+	// Forced-open / unexpected drop detection.
+	// If the gate was locked last scan and is no longer locked
+	// THIS scan, without an unlock having been permitted, this
+	// mirrors the device's own "Guard forced open, reset
+	// required" condition (LS red double flash).
+	// ------------------------------------------------------
+	IF #WasLockedAndValid AND NOT #GateLockedFeedback AND NOT #UnlockPermissive THEN
+	    // #GateFault_Latch := TRUE;
+	    (*#ForceRTE_Request := TRUE*);
+	ELSE
+	    #ForceRTE_Request := FALSE;
+	END_IF;
+	
+	#WasLockedAndValid := #GateLockedFeedback;
+	
+	// ------------------------------------------------------
+	// Reset sequence: pulse R1 (guard reset), per manual
+	// procedure. Safe qualifier resets (RS_GSx/RS_ESx) are
+	// now the responsibility of the separate safety logic
+	// block, not this one.
+	// ------------------------------------------------------
+	#FaultResetCmd_Rising := #FaultResetCmd AND NOT #FaultResetCmd_Edge_M;
+	#FaultResetCmd_Edge_M := #FaultResetCmd;
+	
+	#ResetPulse_GuardReset(IN := #FaultResetCmd_Rising,
+	                       PT := #ResetPulseTime);
+	
+	IF #FaultResetCmd_Rising
+	    AND NOT #LockConfirmTON.Q
+	    AND NOT #UnlockConfirmTON.Q
+	    AND #GateClosed THEN
+	    #GateFault_Latch := FALSE;
+	END_IF;
+	
+	#GateFault := #GateFault_Latch := FALSE;
+END_FUNCTION_BLOCK
+

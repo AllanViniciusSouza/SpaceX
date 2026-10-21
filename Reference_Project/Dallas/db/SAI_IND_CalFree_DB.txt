@@ -1,0 +1,33 @@
+DATA_BLOCK "SAI_IND_CalFree_DB"   // InstanceDB 112  instance of "SAI_IND_CalFree"
+
+VAR_INPUT
+   ID : HW_IO;
+END_VAR
+
+VAR_OUTPUT
+   Process : Bool;
+   Done : Bool;
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   RatedCapacity : Real;
+   Unit : SInt;
+   RatedOutput : Real;
+   Start : Bool;
+END_VAR
+
+VAR
+   Activate : Bool;
+   Status_RECORD : Int;
+   CalFree_RECORD : Int;
+   AdjustStep : SInt;
+   Check01 : Bool;
+   Check02 : Bool;
+   WRREC_CalFree : WRREC;
+   Static01 : Bool;
+   RDREC_Status : RDREC;
+END_VAR
+
+
+// ---- start values (path : type := value)

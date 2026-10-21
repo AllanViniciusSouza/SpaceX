@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FC_SEW_MovikitModeName" Id="{a55c96a1-a16b-4113-b2d8-3c36a6cb3c7b}" SpecialFunc="None">
+    <Declaration><![CDATA[// Readable name of a MOVIKIT operating mode value (PI 6 / PO 6), for HMI and diagnostics.
+FUNCTION FC_SEW_MovikitModeName : STRING(40)
+VAR_INPUT
+    i_uiMode : UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE i_uiMode OF
+    0:   FC_SEW_MovikitModeName := 'Default (0)';
+    100: FC_SEW_MovikitModeName := 'Jog position-controlled (100)';
+    101: FC_SEW_MovikitModeName := 'Jog speed-controlled (101)';
+    200: FC_SEW_MovikitModeName := 'Speed (200)';
+    300: FC_SEW_MovikitModeName := 'Referencing offset configured (300)';
+    301: FC_SEW_MovikitModeName := 'Referencing offset fieldbus (301)';
+    400: FC_SEW_MovikitModeName := 'Positioning absolute (400)';
+    401: FC_SEW_MovikitModeName := 'Positioning relative (401)';
+    402: FC_SEW_MovikitModeName := 'Positioning modulo positive (402)';
+    403: FC_SEW_MovikitModeName := 'Positioning modulo negative (403)';
+    404: FC_SEW_MovikitModeName := 'Positioning modulo short (404)';
+    420: FC_SEW_MovikitModeName := 'Touchprobe absolute direction (420)';
+    421: FC_SEW_MovikitModeName := 'Touchprobe absolute sign (421)';
+    422: FC_SEW_MovikitModeName := 'Touchprobe endless direction (422)';
+    423: FC_SEW_MovikitModeName := 'Touchprobe endless sign (423)';
+    700: FC_SEW_MovikitModeName := 'Brake test (700)';
+ELSE
+    FC_SEW_MovikitModeName := CONCAT('Unknown (', CONCAT(UINT_TO_STRING(i_uiMode), ')'));
+END_CASE
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

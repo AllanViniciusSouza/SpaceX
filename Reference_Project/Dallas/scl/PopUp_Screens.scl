@@ -1,0 +1,131 @@
+FUNCTION "PopUp_Screens"   // FC 9, author 
+
+   // RETURN : Void
+BEGIN
+//CHARGE SETTINGS CHANGING CONVEYORS SELECTION
+IF "PopUps_DB".Cnv_Select <> "PopUps_DB".Cnv_Select_Old THEN
+    "Screen_DB".Charge_Cnv := TRUE;
+    "PopUps_DB".Cnv_Select_Old := "PopUps_DB".Cnv_Select;
+END_IF;
+
+//CHARGE VTD SETTINGS FROM DB
+"R_TRIG_DB"(CLK := "Screen_DB".Charge_VTD);
+IF "R_TRIG_DB".Q THEN
+    //VTD SETTINGS
+    "PopUps_DB".VTD_Settings := "Settings_DB".VTD_Settings;
+    "PopUps_DB".Shuttle_MQTT_Settings := "Settings_DB".Shuttle_MQTT_Settings;
+    "Screen_DB".Charge_VTD := 0;
+END_IF;
+
+//CHARGE CNV SETTINGS FROM DB
+"R_TRIG_DB_4"(CLK := "Screen_DB".Charge_Cnv);
+IF "R_TRIG_DB_4".Q THEN
+    "EConveyor_Visibility" := "PConveyor_Visibility" := "IConveyor_Visibility" := "OConveyor_Visibility" := "BConveyor_Visibility" := FALSE;
+    //CONVEYORS SETTINGS
+    CASE "PopUps_DB".Cnv_Select OF
+        120001:
+            "PopUps_DB".ECnv_Settings := "Settings_DB".ECnv_Settings;
+        100101:
+            "PopUps_DB".Buffer_Cnv_Settings := "Settings_DB".LCnv_Settings[1];
+        100201:
+            "PopUps_DB".Buffer_Cnv_Settings := "Settings_DB".LCnv_Settings[2];
+        100301:
+            "PopUps_DB".Buffer_Cnv_Settings := "Settings_DB".LCnv_Settings[3];
+        130001:
+            "PopUps_DB".Inbound_Cnv_Settings := "Settings_DB".Inbound_Cnv_Settings;
+        140001:
+            "PopUps_DB".Outbound_Cnv_Settings := "Settings_DB".Outbound_Cnv_Settings;
+        150001:
+            "PopUps_DB".PopUp_Cnv_settings := "Settings_DB".PopUp_Cnv_Settings[1];
+        160001:
+            "PopUps_DB".PopUp_Cnv_settings := "Settings_DB".PopUp_Cnv_Settings[2];
+        170001:
+            "PopUps_DB".PopUp_Cnv_settings := "Settings_DB".PopUp_Cnv_Settings[3];
+        180001:
+            "PopUps_DB".PopUp_Cnv_settings := "Settings_DB".PopUp_Cnv_Settings[4];
+        410001:
+            "PopUps_DB".Outbound_Cnv_Settings := "Settings_DB".Pick_Cnv_Settings;
+    END_CASE;
+    // "Screen_DB".Charge_Cnv := 0;
+END_IF;
+
+//CHARGE VTD SETTINGS FROM HMI
+IF NOT "Screen_DB".Charge_VTD THEN
+    
+    IF "HMI_DB".ScreenNo = 7 OR "HMI_DB".ScreenNo = 11 THEN
+        "Settings_DB".VTD_Settings := "PopUps_DB".VTD_Settings;
+    END_IF;
+    
+    //SHUTTLE MQTT SETTINGS
+    "Settings_DB".Shuttle_MQTT_Settings := "PopUps_DB".Shuttle_MQTT_Settings;
+END_IF;
+
+//CHARGE CNV SETTINGS FROM HMI
+IF NOT "Screen_DB".Charge_Cnv THEN
+    //CONVEYORS SETTINGS
+    IF "HMI_DB".ScreenNo = 8 OR "HMI_DB".ScreenNo = 10 THEN
+        CASE "PopUps_DB".Cnv_Select OF
+            120001:
+                "Settings_DB".ECnv_Settings := "PopUps_DB".ECnv_Settings;
+                "PConveyor_Visibility" := "IConveyor_Visibility" := "OConveyor_Visibility" := "BConveyor_Visibility" := FALSE;
+                "EConveyor_Visibility" := TRUE;
+                
+            100101:
+                "Settings_DB".LCnv_Settings[1] := "PopUps_DB".Buffer_Cnv_Settings;
+                "PConveyor_Visibility" := "IConveyor_Visibility" := "OConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "BConveyor_Visibility" := TRUE;
+                
+            100201:
+                "Settings_DB".LCnv_Settings[2] := "PopUps_DB".Buffer_Cnv_Settings;
+                "PConveyor_Visibility" := "IConveyor_Visibility" := "OConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "BConveyor_Visibility" := TRUE;
+                
+            100301:
+                "Settings_DB".LCnv_Settings[3] := "PopUps_DB".Buffer_Cnv_Settings;
+                "PConveyor_Visibility" := "IConveyor_Visibility" := "OConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "BConveyor_Visibility" := TRUE;
+                
+            130001:
+                "Settings_DB".Inbound_Cnv_Settings := "PopUps_DB".Inbound_Cnv_Settings;
+                "PConveyor_Visibility" := "BConveyor_Visibility" := "OConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "IConveyor_Visibility" := TRUE;
+                
+            140001:
+                "Settings_DB".Outbound_Cnv_Settings := "PopUps_DB".Outbound_Cnv_Settings;
+                "PConveyor_Visibility" := "BConveyor_Visibility" := "IConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "OConveyor_Visibility" := TRUE;
+                
+            150001:
+                "Settings_DB".PopUp_Cnv_Settings[1] := "PopUps_DB".PopUp_Cnv_settings;
+                "BConveyor_Visibility" := "IConveyor_Visibility" := "OConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "PConveyor_Visibility" := TRUE;
+                
+            160001:
+                "Settings_DB".PopUp_Cnv_Settings[2] := "PopUps_DB".PopUp_Cnv_settings;
+                "BConveyor_Visibility" := "IConveyor_Visibility" := "OConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "PConveyor_Visibility" := TRUE;
+               
+            170001:
+                "Settings_DB".PopUp_Cnv_Settings[3] := "PopUps_DB".PopUp_Cnv_settings;
+                "BConveyor_Visibility" := "IConveyor_Visibility" := "OConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "PConveyor_Visibility" := TRUE;
+                
+            180001:
+                "Settings_DB".PopUp_Cnv_Settings[4] := "PopUps_DB".PopUp_Cnv_settings;
+                "BConveyor_Visibility" := "IConveyor_Visibility" := "OConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "PConveyor_Visibility" := TRUE;
+                
+            410001:
+                "Settings_DB".Pick_Cnv_Settings := "PopUps_DB".Outbound_Cnv_Settings;
+                "PConveyor_Visibility" := "BConveyor_Visibility" := "IConveyor_Visibility" := "EConveyor_Visibility" := FALSE;
+                "OConveyor_Visibility" := TRUE;
+        END_CASE;
+    END_IF;
+END_IF;
+
+
+
+
+
+
+END_FUNCTION

@@ -1,0 +1,108 @@
+FUNCTION_BLOCK "Barcode_Station_FB"   // FB 33, author 
+
+VAR_INPUT
+   Start : Bool;
+   Barcode : String;
+END_VAR
+
+VAR_OUTPUT
+   Ready : Bool;
+   Running : Bool;
+   Done : Bool;
+   Valid : Bool;
+   Barcode_Out : String;
+   Counter : UInt;
+END_VAR
+
+VAR
+   State : UInt;
+   R_TRIG_Instance : R_TRIG;
+   IEC_Timer_0_Instance : TON_TIME;
+   IEC_Timer_0_Instance_1 : TP_TIME;
+END_VAR
+
+BEGIN
+#R_TRIG_Instance(CLK:=#Start);
+
+IF #R_TRIG_Instance.Q THEN
+    IF #State = 0 THEN
+        #State := 10;
+    END_IF;
+END_IF;
+
+CASE #State OF
+        
+    0: // IDLE
+        #Running := FALSE;
+        #Ready := TRUE;
+        #IEC_Timer_0_Instance(IN := FALSE,
+                              PT := T#0S);
+        "IEC_Timer_0_DB_19".TP(IN := FALSE,
+                               PT := T#0S);
+        
+    10: // Start
+        #Barcode_Out := '';
+        #Done := FALSE;
+        #Valid := FALSE;
+        #Ready := FALSE;
+        #Running := TRUE;
+        #State := 20;
+        
+    20: // Reading code
+        "Control_DB".InBarcode_Station.Start := FALSE;
+        "Control_DB".InBarcode_Station."Reading Gate number" := FindStringField(FieldName := 'Number', JsonStr := "SICK_Barcode_DB".Result);
+        "Control_DB".Inbound_Cnv.Inputs.Barcode := FindStringField(FieldName := 'Code', JsonStr := "SICK_Barcode_DB".Result);
+        "Control_DB".InBarcode_Station."Number of Reading Gates" := FindStringField(FieldName := 'NRG', JsonStr := "SICK_Barcode_DB".Result);
+        "Auto_Start_Barcode" := TRUE;
+        
+        //Check if the gate is open
+            IF "Control_DB".InBarcode_Station."Number of Reading Gates" <> "Control_DB".InBarcode_Station."Number of Reading Gates OLD" THEN
+                "Control_DB".InBarcode_Station."Number of Reading Gates OLD" := "Control_DB".InBarcode_Station."Number of Reading Gates";
+            END_IF;
+            
+            //Timer to read the barcode
+            #IEC_Timer_0_Instance(IN := TRUE,
+                                  PT := T#7S);
+            
+            //If a new code was read or the time finished
+            IF "Control_DB".InBarcode_Station."Reading Gate number" <> "Control_DB".InBarcode_Station."Reading Gate number OLD" OR #IEC_Timer_0_Instance.Q THEN
+                "Auto_Start_Barcode" := FALSE; //Close the gate
+                //New code
+                IF "Control_DB".InBarcode_Station."Reading Gate number" <> "Control_DB".InBarcode_Station."Reading Gate number OLD" THEN
+                    //Check if the string is not empty
+                    IF LEN(IN := "SICK_Barcode_DB".Result) > 1 AND "Control_DB".InBarcode_Station."Reading Gate number" <> '' THEN
+                        #Valid := TRUE;
+                        #Barcode_Out := "Control_DB".Inbound_Cnv.Inputs.Barcode;
+                    ELSE //Empty
+                        #Valid := FALSE;
+                        #Barcode_Out := '';
+                    END_IF;
+                    //Save OLD
+                    "Control_DB".InBarcode_Station."Reading Gate number OLD" := "Control_DB".InBarcode_Station."Reading Gate number";
+                    #IEC_Timer_0_Instance(IN := FALSE,
+                                          PT := T#0S);
+                        #State := 30;
+                    ELSE // No code
+                    #Valid := FALSE;
+                    #Barcode_Out := '';
+                    #IEC_Timer_0_Instance(IN := FALSE,
+                                          PT := T#0S);
+                    #State := 30;
+                END_IF;
+            END_IF;
+        
+        30: // Finally
+            "IEC_Timer_0_DB_19".TP(IN := FALSE,
+                                   PT := T#0S);
+            "Auto_Stop_Barcode" := TRUE; //Close gate
+            //Make sure the command was sent
+            IF "Auto_Stop_Barcode" THEN
+                #Counter := #Counter + 1;
+                #Running := FALSE;
+                #Done := TRUE;
+                #State := 0;
+            END_IF;
+END_CASE;
+
+
+END_FUNCTION_BLOCK

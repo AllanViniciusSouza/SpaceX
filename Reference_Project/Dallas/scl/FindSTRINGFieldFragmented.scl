@@ -1,0 +1,84 @@
+FUNCTION "FindSTRINGFieldFragmented"   // FC 21, author 
+
+VAR_INPUT
+   FieldName : String;
+   Str1 : String;
+   Str2 : String;
+END_VAR
+
+VAR_TEMP
+   searchStr : String;
+   iStart : Int;
+   iEnd : Int;
+   tempVal : String;
+   fieldFound : Bool;
+   loopIdx : Int;
+END_VAR
+
+   // RETURN : String
+BEGIN
+// Build search string
+#searchStr := CONCAT(IN1 := '"', IN2 := #FieldName);
+#searchStr := CONCAT(IN1 := #searchStr, IN2 := '" :');
+
+// Serach for JSON field
+#iStart := FIND(IN1 := #Str1, IN2 := #searchStr);
+
+IF #iStart > 0 THEN
+    // Found full field in String_1
+    #iEnd := FIND(IN1 := MID(IN := #Str1, P := #iStart + LEN(#searchStr), L := 20), IN2 := ',');
+    IF #iEnd = 0 THEN
+        #iEnd := FIND(IN1 := MID(IN := #Str1, P := #iStart + LEN(#searchStr), L := 20), IN2 := '}');
+    END_IF;
+    IF #iEnd > 0 THEN
+        #tempVal := MID(IN := #Str1, P := #iStart + LEN(#searchStr), L := #iEnd - 1);
+        #fieldFound := TRUE;
+    END_IF;
+END_IF;
+
+// Search for full field in Str2
+IF NOT #fieldFound THEN
+    #iStart := FIND(IN1 := #Str2, IN2 := #searchStr);
+    IF #iStart > 0 THEN
+        #iEnd := FIND(IN1 := MID(IN := #Str2, P := #iStart + LEN(#searchStr), L := 20), IN2 := ',');
+        IF #iEnd = 0 THEN
+            #iEnd := FIND(IN1 := MID(IN := #Str2, P := #iStart + LEN(#searchStr), L := 20), IN2 := '}');
+        END_IF;
+        IF #iEnd > 0 THEN
+            #tempVal := MID(IN := #Str2, P := #iStart + LEN(#searchStr), L := #iEnd - 1);
+            #fieldFound := TRUE;
+        END_IF;
+    END_IF;
+END_IF;
+
+// Search for fragmented field: end of name in Str1 and beginning in Str2
+IF NOT #fieldFound THEN
+    // Examines last 10 characters of String_1
+    FOR #loopIdx := LEN(#Str1) - 15 TO LEN(#Str1) DO
+        IF MID(IN := #Str1, P := #loopIdx, L := 1) = '"' THEN
+            #tempVal := MID(IN := #Str1, P := #loopIdx, L := LEN(#Str1) - #loopIdx + 1);
+            #tempVal := CONCAT(IN1 := #tempVal, IN2 := #Str2); // concatenates piece from beginning of String_2
+            #iStart := FIND(IN1 := #tempVal, IN2 := #searchStr);
+            IF #iStart > 0 THEN
+                #iEnd := FIND(IN1 := MID(IN := #tempVal, P := #iStart + LEN(#searchStr), L := 20), IN2 := ',');
+                IF #iEnd = 0 THEN
+                    #iEnd := FIND(IN1 := MID(IN := #tempVal, P := #iStart + LEN(#searchStr), L := 20), IN2 := '}');
+                END_IF;
+                IF #iEnd > 0 THEN
+                    #tempVal := MID(IN := #tempVal, P := #iStart + LEN(#searchStr), L := #iEnd - 1);
+                    #fieldFound := TRUE;
+                END_IF;
+            END_IF;
+            EXIT; // found, you can leave
+        END_IF;
+    END_FOR;
+END_IF;
+
+// Return value
+IF #fieldFound THEN
+    #FindSTRINGFieldFragmented := #tempVal;
+ELSE
+    #FindSTRINGFieldFragmented := 'NOT FOUND'; // default value if not found
+END_IF;
+
+END_FUNCTION

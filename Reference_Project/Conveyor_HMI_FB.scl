@@ -1,0 +1,1565 @@
+﻿FUNCTION_BLOCK "Conveyor_HMI_FB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR 
+      R_Charge_Cnv_Commands {InstructionName := 'R_TRIG'; LibVersion := '1.0'} : R_TRIG;
+      T_Reset_Charge {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+   END_VAR
+
+   VAR_TEMP 
+      i : UInt;
+      J : UInt;
+      No_Light_Guard : Bool;
+   END_VAR
+
+
+BEGIN
+	"CNV_Selector"();
+	
+	REGION SEND/RECEIVE BUTTON
+	    IF "CNV_System_Selected" = 1 AND NOT "Control_DB".VTD_Sys[1].Running AND "Control_DB".VTD_Sys[1].Current_Level <> 0 THEN
+	        IF "CNV2_Selected" = 1 AND "HMI_DB".ScreenNo_Main = 2 THEN
+	            //CNV 1
+	            IF "Control_DB".ECnv_Sys[1].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[1].Running AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv1.Running AND
+	                "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv1.Pallet_Type <> 1 AND "Control_DB".ECnv_Sys[1].Pallet_Type <> 5 THEN
+	                "CNV_HMI".In_Out[1] := TRUE;
+	                "CNV_In_Out" := TRUE;
+	            ELSIF NOT "Control_DB".ECnv_Sys[1].Cnv_Occupied AND "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[1].Running AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv1.Running THEN
+	                "CNV_HMI".In_Out[1] := FALSE;
+	                "CNV_In_Out" := FALSE;
+	            ELSE
+	                ;
+	            END_IF;
+	            //CNV 2
+	        ELSIF "CNV2_Selected" = 2 AND "HMI_DB".ScreenNo_Main = 2 THEN   //CNV 2
+	            IF "Control_DB".ECnv_Sys[1].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv2.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[1].Running AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv2.Running AND
+	                "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv2.Pallet_Type <> 1 AND "Control_DB".ECnv_Sys[1].Pallet_Type <> 5 THEN
+	                "CNV_HMI".In_Out[1] := TRUE;
+	                "CNV_In_Out" := TRUE;
+	            ELSIF NOT "Control_DB".ECnv_Sys[1].Cnv_Occupied AND "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv2.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[1].Running AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level["Control_DB".VTD_Sys[1].Current_Level].Cnv2.Running THEN
+	                "CNV_HMI".In_Out[1] := FALSE;
+	                "CNV_In_Out" := FALSE;
+	            ELSE
+	                ;
+	            END_IF;
+	        END_IF;
+	    END_IF;
+	    
+	    IF "CNV_System_Selected" = 2 AND NOT "Control_DB".VTD_Sys[2].Running AND "Control_DB".VTD_Sys[2].Current_Level <> 0 THEN
+	        IF "CNV2_Selected" = 1 AND "HMI_DB".ScreenNo_Main = 2 THEN
+	            //CNV 1
+	            IF "Control_DB".ECnv_Sys[2].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[2].Running AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv1.Running AND
+	                "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv1.Pallet_Type <> 1 AND "Control_DB".ECnv_Sys[2].Pallet_Type <> 5 THEN
+	                "CNV_HMI".In_Out[2] := TRUE;
+	                "CNV_In_Out" := TRUE;
+	            ELSIF NOT "Control_DB".ECnv_Sys[2].Cnv_Occupied AND "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[2].Running AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv1.Running THEN
+	                "CNV_HMI".In_Out[2] := FALSE;
+	                "CNV_In_Out" := FALSE;
+	            ELSE
+	                ;
+	            END_IF;
+	            //CNV 2
+	        ELSIF "CNV2_Selected" = 2 AND "HMI_DB".ScreenNo_Main = 2 THEN   //CNV 2
+	            IF "Control_DB".ECnv_Sys[2].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv2.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[2].Running AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv2.Running AND
+	                "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv2.Pallet_Type <> 1 AND "Control_DB".ECnv_Sys[2].Pallet_Type <> 5 THEN
+	                "CNV_HMI".In_Out[2] := TRUE;
+	                "CNV_In_Out" := TRUE;
+	            ELSIF NOT "Control_DB".ECnv_Sys[2].Cnv_Occupied AND "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv2.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[2].Running AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level["Control_DB".VTD_Sys[2].Current_Level].Cnv2.Running THEN
+	                "CNV_HMI".In_Out[2] := FALSE;
+	                "CNV_In_Out" := FALSE;
+	            ELSE
+	                ;
+	            END_IF;
+	        END_IF;
+	    END_IF;
+	    
+	    IF "CNV_System_Selected" = 3 AND NOT "Control_DB".VTD_Sys[3].Running AND "Control_DB".VTD_Sys[3].Current_Level <> 0 THEN
+	        IF "CNV2_Selected" = 1 AND "HMI_DB".ScreenNo_Main = 2 THEN
+	            //CNV 1
+	            IF "Control_DB".ECnv_Sys[3].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level["Control_DB".VTD_Sys[3].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[3].Running AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level["Control_DB".VTD_Sys[3].Current_Level].Cnv1.Running THEN
+	                "CNV_HMI".In_Out[3] := TRUE;
+	                "CNV_In_Out" := TRUE;
+	            ELSIF NOT "Control_DB".ECnv_Sys[3].Cnv_Occupied AND "Control_DB".LCnv_Sys[3].Cnv_Level["Control_DB".VTD_Sys[3].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[3].Running AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level["Control_DB".VTD_Sys[3].Current_Level].Cnv1.Running THEN
+	                "CNV_HMI".In_Out[3] := FALSE;
+	                "CNV_In_Out" := FALSE;
+	            ELSE
+	                ;
+	            END_IF;
+	            //CNV 2
+	        ELSIF "CNV2_Selected" = 2 AND "HMI_DB".ScreenNo_Main = 2 THEN   //CNV 2
+	            IF "Control_DB".ECnv_Sys[3].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level["Control_DB".VTD_Sys[3].Current_Level].Cnv2.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[3].Running AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level["Control_DB".VTD_Sys[3].Current_Level].Cnv2.Running THEN
+	                "CNV_HMI".In_Out[3] := TRUE;
+	                "CNV_In_Out" := TRUE;
+	            ELSIF NOT "Control_DB".ECnv_Sys[3].Cnv_Occupied AND "Control_DB".LCnv_Sys[3].Cnv_Level["Control_DB".VTD_Sys[3].Current_Level].Cnv2.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[3].Running AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level["Control_DB".VTD_Sys[3].Current_Level].Cnv2.Running THEN
+	                "CNV_HMI".In_Out[3] := FALSE;
+	                "CNV_In_Out" := FALSE;
+	            ELSE
+	                ;
+	            END_IF;
+	        END_IF;
+	    END_IF;
+	    
+	    IF "CNV_System_Selected" = 4 AND NOT "Control_DB".VTD_Sys[4].Running AND "Control_DB".VTD_Sys[4].Current_Level <> 0 THEN
+	        IF "CNV2_Selected" = 1 AND "HMI_DB".ScreenNo_Main = 2 THEN
+	            //CNV 1
+	            IF "Control_DB".ECnv_Sys[4].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level["Control_DB".VTD_Sys[4].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[4].Running AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level["Control_DB".VTD_Sys[4].Current_Level].Cnv1.Running THEN
+	                "CNV_HMI".In_Out[4] := TRUE;
+	                "CNV_In_Out" := TRUE;
+	            ELSIF NOT "Control_DB".ECnv_Sys[4].Cnv_Occupied AND "Control_DB".LCnv_Sys[4].Cnv_Level["Control_DB".VTD_Sys[4].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[4].Running AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level["Control_DB".VTD_Sys[4].Current_Level].Cnv1.Running THEN
+	                "CNV_HMI".In_Out[4] := FALSE;
+	                "CNV_In_Out" := FALSE;
+	            ELSE
+	                ;
+	            END_IF;
+	        END_IF;
+	    END_IF;
+	    
+	    IF "CNV_System_Selected" = 5 AND NOT "Control_DB".VTD_Sys[5].Running AND "Control_DB".VTD_Sys[5].Current_Level <> 0 THEN
+	        IF "CNV2_Selected" = 1 AND "HMI_DB".ScreenNo_Main = 2 THEN
+	            //CNV 1
+	            IF "Control_DB".ECnv_Sys[5].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level["Control_DB".VTD_Sys[5].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[5].Running AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level["Control_DB".VTD_Sys[5].Current_Level].Cnv1.Running THEN
+	                "CNV_HMI".In_Out[5] := TRUE;
+	                "CNV_In_Out" := TRUE;
+	            ELSIF NOT "Control_DB".ECnv_Sys[5].Cnv_Occupied AND "Control_DB".LCnv_Sys[5].Cnv_Level["Control_DB".VTD_Sys[5].Current_Level].Cnv1.Cnv_Occupied AND
+	                NOT "Control_DB".ECnv_Sys[5].Running AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level["Control_DB".VTD_Sys[5].Current_Level].Cnv1.Running THEN
+	                "CNV_HMI".In_Out[5] := FALSE;
+	                "CNV_In_Out" := FALSE;
+	            ELSE
+	                ;
+	            END_IF;
+	        END_IF;
+	    END_IF;
+	END_REGION ;
+	
+	REGION Assign Conveyor 1
+	    REGION CHARGE DATA FROM THE CORRECT CONVEYOR
+	        //CHARGE DATA CHANGING CONVEYORS ID
+	        IF "CNV_ID_HMI" <> "CNV_ID_HMI_Old" THEN
+	            "Screen_DB".Charge_Cnv_Commands := TRUE;
+	            "CNV_ID_HMI_Old" := "CNV_ID_HMI";
+	        END_IF;
+	        #R_Charge_Cnv_Commands(CLK := "Screen_DB".Charge_Cnv_Commands OR "HMI_DB".ScreenNo_Main = 2);
+	        
+	        //CHARGE ONCE THE COMMANDS STATUS
+	        IF "Screen_DB".Charge_Cnv_Commands THEN
+	            CASE "CNV_ID_HMI" OF
+	                    //SYSTEM 1
+	                120001:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Pallet_Allignment;
+	                120101:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Pallet_Allignment;
+	                120201:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Pallet_Allignment;
+	                120301:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Pallet_Allignment;
+	                120401:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Pallet_Allignment;
+	                120501:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Pallet_Allignment;
+	                120601:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Pallet_Allignment;
+	                120701:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Pallet_Allignment;
+	                120801:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[1].Instruction.Pallet_Allignment;
+	                    
+	                    //SYSTEM 2
+	                120002:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Pallet_Allignment;
+	                120102:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Pallet_Allignment;
+	                120202:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Pallet_Allignment;
+	                120302:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Pallet_Allignment;
+	                120402:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Pallet_Allignment;
+	                120502:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Pallet_Allignment;
+	                120602:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Pallet_Allignment;
+	                120702:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Pallet_Allignment;
+	                120802:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[2].Instruction.Pallet_Allignment;
+	                    
+	                    //SYSTEM 3
+	                120003:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120103:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120203:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120303:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120403:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120503:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120603:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120703:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120803:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                    
+	                    //SYSTEM 4
+	                120004:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120104:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120204:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120304:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120404:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120504:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120604:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120704:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                120804:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[4].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[3].Instruction.Pallet_Allignment;
+	                //SYSTEM 5
+	                120005:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Pallet_Allignment;
+	                120105:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Pallet_Allignment;
+	                120205:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Pallet_Allignment;
+	                120305:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Pallet_Allignment;
+	                120405:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Pallet_Allignment;
+	                120505:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Pallet_Allignment;
+	                120605:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Pallet_Allignment;
+	                120705:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Pallet_Allignment;
+	                120805:
+	                    "Enable_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Enable;
+	                    "Mode_Change_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Mode_Change;
+	                    "Task_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI" := "Control_DB".ECnv_Sys[5].Instruction.Pallet_Allignment;
+	            END_CASE;
+	            // "Screen_DB".Charge_Cnv_Commands := 0;
+	        END_IF;
+	    END_REGION
+	    
+	    REGION CHARGE DATA FROM HMI (AFTER CHARGE DATA)
+	        IF NOT "Screen_DB".Charge_Cnv_Commands AND "HMI_DB".ScreenNo_Main = 2 AND NOT #R_Charge_Cnv_Commands.Q THEN
+	            CASE "CNV_ID_HMI" OF
+	                    //SYSTEM 1
+	                120101:
+	                    "Feed_ECNV"(System_No := 1,
+	                                Safety_OK:="Remote_Panel_DB_1".Safety_OK,
+	                                System_Busy:="System_1_Busy");
+	                120201:
+	                    "Feed_ECNV"(System_No := 1,
+	                                Safety_OK:="Remote_Panel_DB_1".Safety_OK,
+	                                System_Busy:="System_1_Busy");
+	                120301:
+	                    "Feed_ECNV"(System_No := 1,
+	                                Safety_OK:="Remote_Panel_DB_1".Safety_OK,
+	                                System_Busy:="System_1_Busy");
+	                120401:
+	                    "Feed_ECNV"(System_No := 1,
+	                                Safety_OK:="Remote_Panel_DB_1".Safety_OK,
+	                                System_Busy:="System_1_Busy");
+	                120501:
+	                    "Feed_ECNV"(System_No := 1,
+	                                Safety_OK:="Remote_Panel_DB_1".Safety_OK,
+	                                System_Busy:="System_1_Busy");
+	                120601:
+	                    "Feed_ECNV"(System_No := 1,
+	                                Safety_OK:="Remote_Panel_DB_1".Safety_OK,
+	                                System_Busy:="System_1_Busy");
+	                120701:
+	                    "Feed_ECNV"(System_No := 1,
+	                                Safety_OK:="Remote_Panel_DB_1".Safety_OK,
+	                                System_Busy:="System_1_Busy");
+	                120801:
+	                    "Feed_ECNV"(System_No := 1,
+	                                Safety_OK:="Remote_Panel_DB_1".Safety_OK,
+	                                System_Busy:="System_1_Busy");
+	                    
+	                    //SYSTEM 2
+	                120102:
+	                    "Feed_ECNV"(System_No := 2,
+	                                Safety_OK:="Remote_Panel_DB_2".Safety_OK,
+	                                System_Busy:="System_2_Busy");
+	                120202:
+	                    "Feed_ECNV"(System_No := 2,
+	                                Safety_OK:="Remote_Panel_DB_2".Safety_OK,
+	                                System_Busy:="System_2_Busy");
+	                120302:
+	                    "Feed_ECNV"(System_No := 2,
+	                                Safety_OK:="Remote_Panel_DB_2".Safety_OK,
+	                                System_Busy:="System_2_Busy");
+	                120402:
+	                    "Feed_ECNV"(System_No := 2,
+	                                Safety_OK:="Remote_Panel_DB_2".Safety_OK,
+	                                System_Busy:="System_2_Busy");
+	                120502:
+	                    "Feed_ECNV"(System_No := 2,
+	                                Safety_OK:="Remote_Panel_DB_2".Safety_OK,
+	                                System_Busy:="System_2_Busy");
+	                120602:
+	                    "Feed_ECNV"(System_No := 2,
+	                                Safety_OK:="Remote_Panel_DB_2".Safety_OK,
+	                                System_Busy:="System_2_Busy");
+	                120702:
+	                    "Feed_ECNV"(System_No := 2,
+	                                Safety_OK:="Remote_Panel_DB_2".Safety_OK,
+	                                System_Busy:="System_2_Busy");
+	                120802:
+	                    "Feed_ECNV"(System_No := 2,
+	                                Safety_OK:="Remote_Panel_DB_2".Safety_OK,
+	                                System_Busy:="System_2_Busy");
+	                    
+	                    //SYSTEM 3
+	                120103:
+	                    "Feed_ECNV"(System_No := 3,
+	                                Safety_OK:="Remote_Panel_DB_3".Safety_OK,
+	                                System_Busy:="System_3_Busy");
+	                120203:
+	                    "Feed_ECNV"(System_No := 3,
+	                                Safety_OK:="Remote_Panel_DB_3".Safety_OK,
+	                                System_Busy:="System_3_Busy");
+	                120303:
+	                    "Feed_ECNV"(System_No := 3,
+	                                Safety_OK:="Remote_Panel_DB_3".Safety_OK,
+	                                System_Busy:="System_3_Busy");
+	                120403:
+	                    "Feed_ECNV"(System_No := 3,
+	                                Safety_OK:="Remote_Panel_DB_3".Safety_OK,
+	                                System_Busy:="System_3_Busy");
+	                120503:
+	                    "Feed_ECNV"(System_No := 3,
+	                                Safety_OK:="Remote_Panel_DB_3".Safety_OK,
+	                                System_Busy:="System_3_Busy");
+	                120603:
+	                    "Feed_ECNV"(System_No := 3,
+	                                Safety_OK:="Remote_Panel_DB_3".Safety_OK,
+	                                System_Busy:="System_3_Busy");
+	                120703:
+	                    "Feed_ECNV"(System_No := 3,
+	                                Safety_OK:="Remote_Panel_DB_3".Safety_OK,
+	                                System_Busy:="System_3_Busy");
+	                120803:
+	                    "Feed_ECNV"(System_No := 3,
+	                                Safety_OK:="Remote_Panel_DB_3".Safety_OK,
+	                                System_Busy:="System_3_Busy");
+	                    
+	                    //SYSTEM 4
+	                120104:
+	                    "Feed_ECNV"(System_No := 4,
+	                                Safety_OK:="Remote_Panel_DB_4".Safety_OK,
+	                                System_Busy:="System_4_Busy");
+	                120204:
+	                    "Feed_ECNV"(System_No := 4,
+	                                Safety_OK:="Remote_Panel_DB_4".Safety_OK,
+	                                System_Busy:="System_4_Busy");
+	                120304:
+	                    "Feed_ECNV"(System_No := 4,
+	                                Safety_OK:="Remote_Panel_DB_4".Safety_OK,
+	                                System_Busy:="System_4_Busy");
+	                120404:
+	                    "Feed_ECNV"(System_No := 4,
+	                                Safety_OK:="Remote_Panel_DB_4".Safety_OK,
+	                                System_Busy:="System_4_Busy");
+	                120504:
+	                    "Feed_ECNV"(System_No := 4,
+	                                Safety_OK:="Remote_Panel_DB_4".Safety_OK,
+	                                System_Busy:="System_4_Busy");
+	                120604:
+	                    "Feed_ECNV"(System_No := 4,
+	                                Safety_OK:="Remote_Panel_DB_4".Safety_OK,
+	                                System_Busy:="System_4_Busy");
+	                120704:
+	                    "Feed_ECNV"(System_No := 4,
+	                                Safety_OK:="Remote_Panel_DB_4".Safety_OK,
+	                                System_Busy:="System_4_Busy");
+	                120804:
+	                    "Feed_ECNV"(System_No := 4,
+	                                Safety_OK:="Remote_Panel_DB_4".Safety_OK,
+	                                System_Busy:="System_4_Busy");
+	                    
+	                    //SYSTEM 5
+	                120105:
+	                    "Feed_ECNV"(System_No := 5,
+	                                Safety_OK:="Remote_Panel_DB_5".Safety_OK,
+	                                System_Busy:="System_5_Busy");
+	                120205:
+	                    "Feed_ECNV"(System_No := 5,
+	                                Safety_OK:="Remote_Panel_DB_5".Safety_OK,
+	                                System_Busy:="System_5_Busy");
+	                120305:
+	                    "Feed_ECNV"(System_No := 5,
+	                                Safety_OK:="Remote_Panel_DB_5".Safety_OK,
+	                                System_Busy:="System_5_Busy");
+	                120405:
+	                    "Feed_ECNV"(System_No := 5,
+	                                Safety_OK:="Remote_Panel_DB_5".Safety_OK,
+	                                System_Busy:="System_5_Busy");
+	                120505:
+	                    "Feed_ECNV"(System_No := 5,
+	                                Safety_OK:="Remote_Panel_DB_5".Safety_OK,
+	                                System_Busy:="System_5_Busy");
+	                120605:
+	                    "Feed_ECNV"(System_No := 5,
+	                                Safety_OK:="Remote_Panel_DB_5".Safety_OK,
+	                                System_Busy:="System_5_Busy");
+	                120705:
+	                    "Feed_ECNV"(System_No := 5,
+	                                Safety_OK:="Remote_Panel_DB_5".Safety_OK,
+	                                System_Busy:="System_5_Busy");
+	                120805:
+	                    "Feed_ECNV"(System_No := 5,
+	                                Safety_OK:="Remote_Panel_DB_5".Safety_OK,
+	                                System_Busy:="System_5_Busy");
+	            END_CASE;
+	        END_IF;
+	    END_REGION
+	END_REGION
+	
+	REGION Assign Conveyor 2
+	    REGION CHARGE DATA FROM THE CORRECT CONVEYOR
+	        //CHARGE DATA CHANGING CONVEYORS ID
+	        IF "CNV_ID_HMI(1)" <> "CNV_ID_HM_Old(1)" THEN
+	            "Screen_DB".Charge_Cnv_Commands := TRUE;
+	            "CNV_ID_HM_Old(1)" := "CNV_ID_HMI(1)";
+	        END_IF;
+	        #R_Charge_Cnv_Commands(CLK := "Screen_DB".Charge_Cnv_Commands OR "HMI_DB".ScreenNo_Main = 2);
+	        
+	        IF "Screen_DB".Charge_Cnv_Commands THEN
+	            CASE "CNV_ID_HMI(1)" OF
+	                    //CNV 1 - SYSTEM 1
+	                100101:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Instruction.Pallet_Allignment;
+	                    "HMI_Light_Guard_Bypass" := "Bypass".Remote_Panel_1."Light Guards CX101 - CH1";
+	                100201:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Instruction.Pallet_Allignment;
+	                100301:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Instruction.Pallet_Allignment;
+	                100401:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Instruction.Pallet_Allignment;
+	                100501:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Instruction.Pallet_Allignment;
+	                100601:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Instruction.Pallet_Allignment;
+	                100701:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Instruction.Pallet_Allignment;
+	                100801:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Instruction.Pallet_Allignment;
+	                    //CNV 2 - SYSTEM 1
+	                110101:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Instruction.Pallet_Allignment;
+	                    "HMI_Light_Guard_Bypass" := "Bypass".Remote_Panel_1."Light Guards CX201 - CH1";
+	                110201:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Instruction.Pallet_Allignment;
+	                110301:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Instruction.Pallet_Allignment;
+	                110401:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Instruction.Pallet_Allignment;
+	                110501:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Instruction.Pallet_Allignment;
+	                110601:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Instruction.Pallet_Allignment;
+	                110701:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Instruction.Pallet_Allignment;
+	                110801:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Instruction.Pallet_Allignment;
+	                    //CNV 1 - SYSTEM 2
+	                100102:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Instruction.Pallet_Allignment;
+	                    "HMI_Light_Guard_Bypass" := "Bypass".Remote_Panel_2."Light Guards CX101 - CH1";
+	                100202:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Instruction.Pallet_Allignment;
+	                100302:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Instruction.Pallet_Allignment;
+	                100402:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Instruction.Pallet_Allignment;
+	                100502:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Instruction.Pallet_Allignment;
+	                100602:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Instruction.Pallet_Allignment;
+	                100702:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Instruction.Pallet_Allignment;
+	                100802:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Instruction.Pallet_Allignment;
+	                    //CNV 2 - SYSTEM 2
+	                110102:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Instruction.Pallet_Allignment;
+	                    "HMI_Light_Guard_Bypass" := "Bypass".Remote_Panel_2."Light Guards CX201 - CH1";
+	                110202:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Instruction.Pallet_Allignment;
+	                110302:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Instruction.Pallet_Allignment;
+	                110402:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Instruction.Pallet_Allignment;
+	                110502:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Instruction.Pallet_Allignment;
+	                110602:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Instruction.Pallet_Allignment;
+	                110702:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Instruction.Pallet_Allignment;
+	                110802:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Instruction.Pallet_Allignment;
+	                    //CNV 1 - SYSTEM 3
+	                100103:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Instruction.Pallet_Allignment;
+	                    "HMI_Light_Guard_Bypass" := "Bypass".Remote_Panel_3."Light Guards CX101 - CH1";
+	                100203:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Instruction.Pallet_Allignment;
+	                100303:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Instruction.Pallet_Allignment;
+	                100403:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Instruction.Pallet_Allignment;
+	                100503:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Instruction.Pallet_Allignment;
+	                100603:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Instruction.Pallet_Allignment;
+	                100703:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Instruction.Pallet_Allignment;
+	                100803:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Instruction.Pallet_Allignment;
+	                    //CNV 2 - SYSTEM 3
+	                110103:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Instruction.Pallet_Allignment;
+	                    "HMI_Light_Guard_Bypass" := "Bypass".Remote_Panel_3."Light Guards CX201 - CH1";
+	                110203:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Instruction.Pallet_Allignment;
+	                110303:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Instruction.Pallet_Allignment;
+	                110403:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Instruction.Pallet_Allignment;
+	                110503:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Instruction.Pallet_Allignment;
+	                110603:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Instruction.Pallet_Allignment;
+	                110703:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Instruction.Pallet_Allignment;
+	                110803:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Instruction.Pallet_Allignment;
+	                    //CNV 2 - SYSTEM 4
+	                110104:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv2.Instruction.Pallet_Allignment;
+	                110204:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv2.Instruction.Pallet_Allignment;
+	                110304:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv2.Instruction.Pallet_Allignment;
+	                110404:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv2.Instruction.Pallet_Allignment;
+	                110504:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv2.Instruction.Pallet_Allignment;
+	                110604:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv2.Instruction.Pallet_Allignment;
+	                110704:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv2.Instruction.Pallet_Allignment;
+	                110804:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv2.Instruction.Pallet_Allignment;
+	                    //CNV 2 - SYSTEM 5
+	                110105:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv2.Instruction.Pallet_Allignment;
+	                110205:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv2.Instruction.Pallet_Allignment;
+	                110305:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv2.Instruction.Pallet_Allignment;
+	                110405:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv2.Instruction.Pallet_Allignment;
+	                110505:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv2.Instruction.Pallet_Allignment;
+	                110605:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv2.Instruction.Pallet_Allignment;
+	                110705:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv2.Instruction.Pallet_Allignment;
+	                110805:
+	                    "Enable_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv2.Instruction.Enable;
+	                    "Mode_Change_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv2.Instruction.Mode_Change;
+	                    "Task_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv2.Instruction.Task_ID;
+	                    "Transfer_To_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv2.Instruction.Transfer_To_ID;
+	                    "Transfer_From_ID_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv2.Instruction.Transfer_From_ID;
+	                    "Pallet_Allignment_HMI(1)" := "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv2.Instruction.Pallet_Allignment;
+	            END_CASE;
+	            "Screen_DB".Charge_Cnv_Commands := 0;
+	        END_IF;
+	    END_REGION
+	    
+	    REGION CHARGE DATA FROM HMI (AFTER CHARGE DATA)
+	        IF NOT "Screen_DB".Charge_Cnv_Commands AND "HMI_DB".ScreenNo_Main = 2 AND NOT #R_Charge_Cnv_Commands.Q THEN
+	            CASE "CNV_ID_HMI(1)" OF
+	                    //SYSTEM 1
+	                    //CNV 1
+	                100101:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 1,
+	                                     Level := 1,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                100201:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 1,
+	                                     Level := 2,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                100301:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 1,
+	                                     Level := 3,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1101 - CH1",
+	                                        
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                100401:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 1,
+	                                     Level := 4,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                100501:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 1,
+	                                     Level := 5,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                100601:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 1,
+	                                     Level := 6,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                100701:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 1,
+	                                     Level := 7,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                100801:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 1,
+	                                     Level := 8,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                    //CNV 2
+	                110101:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 1,
+	                                     Level := 1,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                110201:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 1,
+	                                     Level := 2,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                110301:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 1,
+	                                     Level := 3,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                110401:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 1,
+	                                     Level := 4,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                110501:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 1,
+	                                     Level := 5,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                110601:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 1,
+	                                     Level := 6,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                110701:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 1,
+	                                     Level := 7,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                110801:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 1,
+	                                     Level := 8,
+	                                     Light_Guard_IO:="LIGHT GUARDS C1201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(1)",
+	                                     System_Busy:="System_1_Busy");
+	                    //SYSTEM 2
+	                    //CNV 1
+	                100102:
+	                    "Feed_BCNV_Cnv1(1)"(System_No := 2,
+	                                        Level := 1,
+	                                        Light_Guard_IO := "LIGHT GUARDS C2101 - CH1",
+	                                        Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                        System_Busy := "System_2_Busy");
+	                100202:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 2,
+	                                     Level := 2,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                100302:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 2,
+	                                     Level := 3,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                100402:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 2,
+	                                     Level := 4,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                100502:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 2,
+	                                     Level := 5,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                100602:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 2,
+	                                     Level := 6,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                100702:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 2,
+	                                     Level := 7,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                100802:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 2,
+	                                     Level := 8,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                    //CNV 2
+	                110102:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 2,
+	                                     Level := 1,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                110202:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 2,
+	                                     Level := 2,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                110302:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 2,
+	                                     Level := 3,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                110402:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 2,
+	                                     Level := 4,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                110502:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 2,
+	                                     Level := 5,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                110602:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 2,
+	                                     Level := 6,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                110702:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 2,
+	                                     Level := 7,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                110802:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 2,
+	                                     Level := 8,
+	                                     Light_Guard_IO:="LIGHT GUARDS C2201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(2)",
+	                                     System_Busy:="System_2_Busy");
+	                    //SYSTEM 3
+	                    //CNV 1
+	                100103:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 3,
+	                                     Level := 1,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                100203:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 3,
+	                                     Level := 2,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                100303:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 3,
+	                                     Level := 3,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                100403:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 3,
+	                                     Level := 4,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                100503:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 3,
+	                                     Level := 5,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                100603:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 3,
+	                                     Level := 6,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                100703:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 3,
+	                                     Level := 7,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                100803:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 3,
+	                                     Level := 8,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3101 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                    //CNV 2
+	                110103:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 3,
+	                                     Level := 1,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                110203:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 3,
+	                                     Level := 2,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                110303:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 3,
+	                                     Level := 3,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                110403:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 3,
+	                                     Level := 4,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                110503:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 3,
+	                                     Level := 5,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                110603:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 3,
+	                                     Level := 6,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                110703:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 3,
+	                                     Level := 7,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                110803:
+	                    "Feed_BCNV_Cnv2(1)"( System_No := 3,
+	                                     Level := 8,
+	                                     Light_Guard_IO:="LIGHT GUARDS C3201 - CH1",
+	                                     Light_Guard_Bypass=>"Light_Guard_Bypass(3)",
+	                                     System_Busy:="System_3_Busy");
+	                    //SYSTEM 4
+	                    //CNV 2
+	                100104:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 4,
+	                                     Level := 1,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_4_Busy");
+	                100204:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 4,
+	                                     Level := 2,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_4_Busy");
+	                100304:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 4,
+	                                     Level := 3,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_4_Busy");
+	                100404:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 4,
+	                                     Level := 4,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_4_Busy");
+	                100504:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 4,
+	                                     Level := 5,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_4_Busy");
+	                100604:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 4,
+	                                     Level := 6,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_4_Busy");
+	                100704:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 4,
+	                                     Level := 7,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_4_Busy");
+	                100804:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 4,
+	                                     Level := 8,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_4_Busy");
+	                    //SYSTEM 5
+	                120005:
+	                    "Feed_ECNV(1)"( System_No := 5);
+	                    //CNV 2
+	                100105:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 5,
+	                                     Level := 1,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_5_Busy");
+	                100205:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 5,
+	                                     Level := 2,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_5_Busy");
+	                100305:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 5,
+	                                     Level := 3,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_5_Busy");
+	                100405:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 5,
+	                                     Level := 4,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_5_Busy");
+	                100505:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 5,
+	                                     Level := 5,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_5_Busy");
+	                100605:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 5,
+	                                     Level := 6,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_5_Busy");
+	                100705:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 5,
+	                                     Level := 7,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_5_Busy");
+	                100805:
+	                    "Feed_BCNV_Cnv1(1)"( System_No := 5,
+	                                     Level := 8,
+	                                     Light_Guard_IO:=TRUE,
+	                                     Light_Guard_Bypass=>#No_Light_Guard,
+	                                     System_Busy:="System_5_Busy");
+	            END_CASE;
+	        END_IF;
+	    END_REGION
+	END_REGION
+	
+	
+	//RESET CHARGE BITS
+	#T_Reset_Charge.TON(IN := "Screen_DB".Charge_VTD OR "Screen_DB".Charge_Cnv OR "Screen_DB".Charge_VTD_Commands OR "Screen_DB".Charge_Cnv_Commands,
+	                       PT := T#2S);
+	
+	   IF #T_Reset_Charge.Q THEN
+	    "Screen_DB".Charge_VTD := FALSE;
+	    "Screen_DB".Charge_Cnv := FALSE;
+	    "Screen_DB".Charge_VTD_Commands := FALSE;
+	    "Screen_DB".Charge_Cnv_Commands := FALSE;
+	END_IF;
+	
+END_FUNCTION_BLOCK
+

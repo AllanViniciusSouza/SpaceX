@@ -1,0 +1,200 @@
+FUNCTION "LGX_SM_FC"   // FC 13, author 
+
+VAR_OUTPUT
+   Fault_Handshake_Infeed_1 : Bool;
+   Fault_Handshake_Infeed_2 : Bool;
+   Fault_Handshake_Infeed_3 : Bool;
+   Fault_Handshake_Outfeed_1 : Bool;
+   Fault_Handshake_Outfeed_2 : Bool;
+   Fault_Handshake_Outfeed_3 : Bool;
+END_VAR
+
+VAR CONSTANT
+   AUTO_RUNNING : UInt := 0;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+REGION INFEED
+    // 1
+    Handshake_Infeed_FC(Infeed_Stop_Sensor := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Inputs.Right,
+                          Ready_To_Receive := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Instruction.Inbound_Ready AND
+                          NOT "Control_DB".Gate_Station[1].Requested_Access AND NOT "Control_DB".Gate_Station[2].Requested_Access,
+                          Auto_Mode := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Mode = 3,
+                          Transfer_In_Progress := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Running,
+                          DB_LGX_To_SM_Infeed_Ready_To_Send := "DB_Receive_Data_From_Logistex".J1310_Conv_Infeed.LGXReadyToSend,
+                          DB_LGX_To_SM_Infeed_Transfer_In_Progress := "DB_Receive_Data_From_Logistex".J1310_Conv_Infeed.LGXTransferingInProgress,
+                          Fault_Handshake => #Fault_Handshake_Infeed_1,
+                          DB_SM_To_LGX_Infeed_Ready_To_Receive => "DB_Send_Data_To_Logistex".VTD_J1310_INFEED.SPMReadyToReceive,
+                          DB_SM_To_LGX_Infeed_Pallet_Received => "DB_Send_Data_To_Logistex".VTD_J1310_INFEED.SPMTransferingOccupied,
+                          DB_SM_To_LGX_Infeed_Transfer_In_Progress => "DB_Send_Data_To_Logistex".VTD_J1310_INFEED.SPMTransferingInProgress);
+    
+    // 2
+    Handshake_Infeed_FC(Infeed_Stop_Sensor := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Inputs.Right,
+                          Ready_To_Receive := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Instruction.Inbound_Ready AND
+                          NOT "Control_DB".Gate_Station[3].Requested_Access AND NOT "Control_DB".Gate_Station[4].Requested_Access,
+                          Auto_Mode := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Mode = 3,
+                          Transfer_In_Progress := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Running,
+                          DB_LGX_To_SM_Infeed_Ready_To_Send := "DB_Receive_Data_From_Logistex".J1320_Conv_Infeed.LGXReadyToSend,
+                          DB_LGX_To_SM_Infeed_Transfer_In_Progress := "DB_Receive_Data_From_Logistex".J1320_Conv_Infeed.LGXTransferingInProgress,
+                          Fault_Handshake => #Fault_Handshake_Infeed_2,
+                          DB_SM_To_LGX_Infeed_Ready_To_Receive => "DB_Send_Data_To_Logistex".VTD_J1320_INFEED.SPMReadyToReceive,
+                          DB_SM_To_LGX_Infeed_Pallet_Received => "DB_Send_Data_To_Logistex".VTD_J1320_INFEED.SPMTransferingOccupied,
+                          DB_SM_To_LGX_Infeed_Transfer_In_Progress => "DB_Send_Data_To_Logistex".VTD_J1320_INFEED.SPMTransferingInProgress);
+    
+    // 3
+    Handshake_Infeed_FC(Infeed_Stop_Sensor := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Inputs.Right,
+                          Ready_To_Receive := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Instruction.Inbound_Ready AND
+                          NOT "Control_DB".Gate_Station[5].Requested_Access AND NOT "Control_DB".Gate_Station[6].Requested_Access,
+                          Auto_Mode := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Mode = 3,
+                          Transfer_In_Progress := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Running,
+                          DB_LGX_To_SM_Infeed_Ready_To_Send := "DB_Receive_Data_From_Logistex".J1330_Conv_Infeed.LGXReadyToSend,
+                          DB_LGX_To_SM_Infeed_Transfer_In_Progress := "DB_Receive_Data_From_Logistex".J1330_Conv_Infeed.LGXTransferingInProgress,
+                          Fault_Handshake => #Fault_Handshake_Infeed_3,
+                          DB_SM_To_LGX_Infeed_Ready_To_Receive => "DB_Send_Data_To_Logistex".VTD_J1330_INFEED.SPMReadyToReceive,
+                          DB_SM_To_LGX_Infeed_Pallet_Received => "DB_Send_Data_To_Logistex".VTD_J1330_INFEED.SPMTransferingOccupied,
+                          DB_SM_To_LGX_Infeed_Transfer_In_Progress => "DB_Send_Data_To_Logistex".VTD_J1330_INFEED.SPMTransferingInProgress);
+    
+END_REGION ;
+
+REGION OUTFEED
+    // 1
+    Handshake_Outfeed_FC(Auto_Mode := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Mode = 3,
+                           Ready_To_Send := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Instruction.Outbound_Ready,
+                           Conv_Occupied := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Cnv_Occupied,
+                           Transfer_In_Progress := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Running,
+                           DB_LGX_To_SM_Outfeed_Ready_To_Receive := "DB_Receive_Data_From_Logistex".J1310_Conv_Oufeed.LGXReadyToReceive,
+                           Fault_Handshake => #Fault_Handshake_Outfeed_1,
+                           DB_SM_To_LGX_Outfeed_Transfer_In_Progress => "DB_Send_Data_To_Logistex".VTD_J1310_OUTFEED.SPMTransferingInProgress,
+                           DB_SM_To_LGX_Outfeed_Ocuppied => "DB_Send_Data_To_Logistex".VTD_J1310_OUTFEED.SPMTransferingOccupied,
+                           DB_SM_To_LGX_Outfeed_Ready_To_Send => "DB_Send_Data_To_Logistex".VTD_J1310_OUTFEED.SPMReadyToSend);
+    
+    // Pallet tpe
+    IF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Pallet_Type = 1 THEN
+        "DB_Send_Data_To_Logistex".VTD_J1310_OUTFEED.Pallet_ID[23] := 'U';
+    ELSIF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Pallet_Type = 3 THEN
+        "DB_Send_Data_To_Logistex".VTD_J1310_OUTFEED.Pallet_ID[23] := 'E';
+    END_IF;
+    
+    // 2
+    Handshake_Outfeed_FC(Auto_Mode := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Mode = 3,
+                           Ready_To_Send := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Instruction.Outbound_Ready,
+                           Conv_Occupied := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Cnv_Occupied,
+                           Transfer_In_Progress := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Running,
+                           DB_LGX_To_SM_Outfeed_Ready_To_Receive := "DB_Receive_Data_From_Logistex".J1320_Conv_Oufeed.LGXReadyToReceive,
+                           Fault_Handshake => #Fault_Handshake_Outfeed_2,
+                           DB_SM_To_LGX_Outfeed_Transfer_In_Progress => "DB_Send_Data_To_Logistex".VTD_J1320_OUTFEED.SPMTransferingInProgress,
+                           DB_SM_To_LGX_Outfeed_Ocuppied => "DB_Send_Data_To_Logistex".VTD_J1320_OUTFEED.SPMTransferingOccupied,
+                           DB_SM_To_LGX_Outfeed_Ready_To_Send => "DB_Send_Data_To_Logistex".VTD_J1320_OUTFEED.SPMReadyToSend);
+    
+    // Pallet tpe
+    IF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Pallet_Type = 1 THEN
+        "DB_Send_Data_To_Logistex".VTD_J1320_OUTFEED.Pallet_ID[23] := 'U';
+    ELSIF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Pallet_Type = 3 THEN
+        "DB_Send_Data_To_Logistex".VTD_J1320_OUTFEED.Pallet_ID[23] := 'E';
+    END_IF;
+    
+    // 3
+    Handshake_Outfeed_FC(Auto_Mode := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Mode = 3,
+                           Ready_To_Send := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Instruction.Outbound_Ready,
+                           Conv_Occupied := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Cnv_Occupied,
+                           Transfer_In_Progress := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Running,
+                           DB_LGX_To_SM_Outfeed_Ready_To_Receive := "DB_Receive_Data_From_Logistex".J1330_Conv_Oufeed.LGXReadyToReceive,
+                           Fault_Handshake => #Fault_Handshake_Outfeed_3,
+                           DB_SM_To_LGX_Outfeed_Transfer_In_Progress => "DB_Send_Data_To_Logistex".VTD_J1330_OUTFEED.SPMTransferingInProgress,
+                           DB_SM_To_LGX_Outfeed_Ocuppied => "DB_Send_Data_To_Logistex".VTD_J1330_OUTFEED.SPMTransferingOccupied,
+                           DB_SM_To_LGX_Outfeed_Ready_To_Send => "DB_Send_Data_To_Logistex".VTD_J1330_OUTFEED.SPMReadyToSend);
+    
+    // Pallet tpe
+    IF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Pallet_Type = 1 THEN
+        "DB_Send_Data_To_Logistex".VTD_J1330_OUTFEED.Pallet_ID[23] := 'U';
+    ELSIF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Pallet_Type = 3 THEN
+        "DB_Send_Data_To_Logistex".VTD_J1330_OUTFEED.Pallet_ID[23] := 'E';
+    END_IF;
+END_REGION ;
+
+REGION STATUS
+    REGION SEND
+        VTD_Status_Update_FC(
+                               Infeed_Auto_Mode := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Mode = 3,
+                               Infeed_Manual_Mode := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Mode <> 3,
+                               Infeed_Maintenance := "Control_DB".VTD_Sys[1].Mode = 5,
+                               Infeed_Alarm := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Error,
+                               Infeed_Ready := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Instruction.Inbound_Ready,
+                               Outfeed_Auto_Mode := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Mode = 3,
+                               Pallet_ID := "DB_Receive_Data_From_Logistex".J1310_Conv_Infeed.Pallet_ID,
+                               Pallet_ID_Received := "Control_DB".Pallet_ID_Received[1],
+                               SM_To_LGX_VTD_Status => "DB_Send_Data_To_Logistex".VTD_STATUS[1]
+        );
+        
+        VTD_Status_Update_FC(
+                               Infeed_Auto_Mode := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Mode = 3,
+                               Infeed_Manual_Mode := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Mode <> 3,
+                               Infeed_Maintenance := "Control_DB".VTD_Sys[2].Mode = 5,
+                               Infeed_Alarm := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Error,
+                               Infeed_Ready := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Instruction.Inbound_Ready,
+                               Outfeed_Auto_Mode := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Mode = 3,
+                               Pallet_ID := "DB_Receive_Data_From_Logistex".J1320_Conv_Infeed.Pallet_ID,
+                               Pallet_ID_Received := "Control_DB".Pallet_ID_Received[2],
+                               SM_To_LGX_VTD_Status => "DB_Send_Data_To_Logistex".VTD_STATUS[2]
+        );
+        
+        VTD_Status_Update_FC(
+                               Infeed_Auto_Mode := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Mode = 3,
+                               Infeed_Manual_Mode := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Mode <> 3,
+                               Infeed_Maintenance := "Control_DB".VTD_Sys[3].Mode = 5,
+                               Infeed_Alarm := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Error,
+                               Infeed_Ready := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Instruction.Inbound_Ready,
+                               Outfeed_Auto_Mode := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Mode = 3,
+                               Pallet_ID := "DB_Receive_Data_From_Logistex".J1330_Conv_Infeed.Pallet_ID,
+                               Pallet_ID_Received := "Control_DB".Pallet_ID_Received[3],
+                               SM_To_LGX_VTD_Status => "DB_Send_Data_To_Logistex".VTD_STATUS[3]
+        );
+        
+        "DB_Send_Data_To_Logistex".PLC_STATUS.Hardbit := "Clock_1Hz";
+        "DB_Send_Data_To_Logistex".PLC_STATUS."PLC_E-Stop" := "System_DB_1".Error AND "System_DB_2".Error AND "System_DB_3".Error;
+        
+        //Light guard and gate status
+        "DB_Send_Data_To_Logistex".VTD_STATUS[4].%X0 := "Remote_Panel_DB_1".Light_Guards_CX101.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[4].%X1 := "Remote_Panel_DB_2".Light_Guards_CX101.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[4].%X2 := "Remote_Panel_DB_3".Light_Guards_CX101.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[4].%X3 := "Remote_Panel_DB_1".Light_Guards_CX201.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[4].%X4 := "Remote_Panel_DB_2".Light_Guards_CX201.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[4].%X5 := "Remote_Panel_DB_3".Light_Guards_CX201.Q;
+        
+        //Gates
+        "DB_Send_Data_To_Logistex".VTD_STATUS[5].%X0 := "Remote_Panel_DB_1".Gate_1_DB.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[5].%X1 := "Remote_Panel_DB_1".Gate_2_DB.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[5].%X2 := "Remote_Panel_DB_2".Gate_1_DB.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[5].%X3 := "Remote_Panel_DB_2".Gate_2_DB.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[5].%X4 := "Remote_Panel_DB_3".Gate_1_DB.Q;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[5].%X5 := "Remote_Panel_DB_3".Gate_2_DB.Q;
+        
+        //Requested Access
+        "DB_Send_Data_To_Logistex".VTD_STATUS[6].%X0 := "GateAccess_Station_FB_DB_1".CurrentState <> #AUTO_RUNNING OR "GateAccess_Station_FB_DB_2".CurrentState <> #AUTO_RUNNING;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[6].%X1 := "GateAccess_Station_FB_DB_3".CurrentState <> #AUTO_RUNNING OR "GateAccess_Station_FB_DB_4".CurrentState <> #AUTO_RUNNING;
+        "DB_Send_Data_To_Logistex".VTD_STATUS[6].%X2 := "GateAccess_Station_FB_DB_5".CurrentState <> #AUTO_RUNNING OR "GateAccess_Station_FB_DB_6".CurrentState <> #AUTO_RUNNING;
+        
+        //Speed conveyors 
+        "DB_Send_Data_To_Logistex".CONV_SPEED.VTD_J1310_INF_SP := UINT_TO_INT("Settings_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Full_Speed);
+        "DB_Send_Data_To_Logistex".CONV_SPEED.VTD_J1310_OUF_SP := UINT_TO_INT("Settings_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Full_Speed);
+        "DB_Send_Data_To_Logistex".CONV_SPEED.VTD_J1320_INF_SP := UINT_TO_INT("Settings_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Full_Speed);
+        "DB_Send_Data_To_Logistex".CONV_SPEED.VTD_J1320_OUF_SP := UINT_TO_INT("Settings_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Full_Speed);
+        "DB_Send_Data_To_Logistex".CONV_SPEED.VTD_J1330_INF_SP_1 := UINT_TO_INT("Settings_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Full_Speed);
+        "DB_Send_Data_To_Logistex".CONV_SPEED.VTD_J1330_OUF_SP := UINT_TO_INT("Settings_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Full_Speed);
+        
+    END_REGION
+    
+    REGION RECEIVE
+        "LGX_ReadyToReceive_1" := "DB_Receive_Data_From_Logistex".J1310_Conv_Oufeed.LGXTransferingInProgress AND NOT "DB_Receive_Data_From_Logistex".CNV_STATUS[4].%X7; //Running and no error
+        "LGX_ReadyToReceive_2" := "DB_Receive_Data_From_Logistex".J1320_Conv_Oufeed.LGXTransferingInProgress AND NOT "DB_Receive_Data_From_Logistex".CNV_STATUS[5].%X7;
+        "LGX_ReadyToReceive_3" := "DB_Receive_Data_From_Logistex".J1330_Conv_Oufeed.LGXTransferingInProgress AND NOT "DB_Receive_Data_From_Logistex".CNV_STATUS[6].%X7;
+        
+        //Guaranteed Access 
+        "LGX_Secure_Access_1" := "DB_Receive_Data_From_Logistex".CNV_STATUS[7].%X0;
+        "LGX_Secure_Access_2" := "DB_Receive_Data_From_Logistex".CNV_STATUS[7].%X1;
+        "LGX_Secure_Access_3" := "DB_Receive_Data_From_Logistex".CNV_STATUS[7].%X2;
+    END_REGION
+END_REGION ;
+
+END_FUNCTION

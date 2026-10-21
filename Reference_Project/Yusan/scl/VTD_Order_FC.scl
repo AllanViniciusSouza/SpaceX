@@ -1,0 +1,50 @@
+FUNCTION "VTD_Order_FC"   // FC 45, author 
+
+VAR_INPUT
+   i_Sys : UInt;
+   Level : UInt;
+END_VAR
+
+VAR_IN_OUT
+   StepTable_0 : "OrderTable_UDT";
+END_VAR
+
+VAR_TEMP
+   StrSys : String;
+   Concat1 : String;
+   StrLev : String;
+   Concat2 : String;
+   ID : DInt;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+#StrSys := UINT_TO_STRING(#i_Sys);
+// Remove "+"
+IF #StrSys[1] = '+' THEN
+    #StrSys := RIGHT(IN := #StrSys, L := LEN(#StrSys) - 1);
+END_IF;
+
+#StrLev := UINT_TO_STRING(#Level);
+
+// Remove "+"
+IF #StrLev[1] = '+' THEN
+    #StrLev := RIGHT(IN := #StrLev, L := LEN(#StrLev) - 1);
+END_IF;
+               
+// Build ID
+#Concat1 := CONCAT(IN1 := '300', IN2 := #StrLev);
+#Concat2 := CONCAT(IN1 := #Concat1, IN2 := '0');
+#ID := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat2, IN2 := #StrSys));
+
+Feed_Steptable_FC(CurrentTime := "Time".CurrentLocalTime,
+                    Task_Type := 1,
+                    Source_Location := 0,
+                    Destination_Location := #ID,
+                    Pallet_Type := 'C',
+                    Pallet_Alignment := 'N',
+                    Shuttle_ID:=0,
+                    StepTable := #"StepTable_0");
+
+
+END_FUNCTION

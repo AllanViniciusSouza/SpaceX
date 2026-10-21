@@ -1,0 +1,67 @@
+// FB "SAI_IND360Base_AlibiRead" 4  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ID : HW_IO;   // The Profinet Device Hardware Identifier under device properties
+END_VAR
+
+VAR_OUTPUT
+   Done : Bool;   // Read done successfully
+   Error : Bool;   // Error during reading process
+   GrossWeight : Real;
+   TareWeight : Real;
+   NetWeight : Real;
+   TareMode : SInt;   // 0,tare;1;preset tare
+   Unit : SInt;   // Unit: 0-g; 1-kg, 2-lb
+END_VAR
+
+VAR_IN_OUT
+   ePrint : Bool;   // Toggle this bit to execute an ePrint from terminal > PLC
+   RecordNumber : DInt;   // record number which is to be read out from the weighing indicator
+   Get_TransactionNum : Bool;   // Trigger this bit to get the previously read alibi record number.
+   Set_TransactionNum : Bool;   // Trigger this bit to set the alibi record number which is to be read out
+   Get_Alibi : Bool;   // Trigger this bit to read out the alibi transaction record specified by "RecordNum".
+   Alibi_Array : Array[0..44] of Byte;
+END_VAR
+
+VAR
+   RDREC01 : RDREC;
+   RDREC02 : RDREC;
+   WRREC01 : WRREC;
+   WRREC02 : WRREC;
+   UINT : SInt;
+END_VAR
+
+--- Network 1  Title: Read transaction number
+   parts: Contact, RDREC
+   operands: #Get_TransactionNum, #ID, #RecordNumber, #RDREC01.STATUS
+--- Network 2  Title: Read Alibi Record
+   parts: Contact, RDREC
+   operands: #Get_Alibi, #ID, #Alibi_Array, #RDREC02.STATUS
+--- Network 3  Title: Set transaction Number
+   parts: Contact, WRREC
+   operands: #Set_TransactionNum, #ID, #RecordNumber, #WRREC01.STATUS
+--- Network 4  Title: Execute ePrint
+   parts: Contact, Move, WRREC
+   operands: #UINT, #ePrint, #ID, #WRREC02.STATUS
+--- Network 5  Title: Read done successfully
+   parts: Contact, O, RCoil, SCoil
+   operands: #RDREC01.BUSY, #RDREC01.VALID, #RDREC02.BUSY, #RDREC02.VALID, #WRREC01.BUSY, #WRREC01.DONE, #WRREC02.BUSY, #WRREC02.DONE, #Done, #Error, #Get_TransactionNum, #Set_TransactionNum, #Get_Alibi, #ePrint
+--- Network 6  Title: Read failed
+   parts: Contact, O, RCoil, SCoil
+   operands: #RDREC01.ERROR, #RDREC02.ERROR, #WRREC01.ERROR, #WRREC02.ERROR, #Error, #Done, #Get_TransactionNum, #Set_TransactionNum, #Get_Alibi, #ePrint
+--- Network 7  Comment: For Base, RateControl, Tank Vessel:
+Struct(44 Bytes)
+{
+Byte[20]: Date & time; //ASCII String  =>Byte0-19
+Long:     Transaction Number;            =>Byte20-23
+Float32:  Gross Weight;                       =>Byte24-27
+Float32:  Net Weight;                           =>Byte28-31
+Float32:  Tare Weight;                         =>Byte32-35
+Byte:     Tare Mode;                              =>Byte36
+Byte:     Unit;                                          =>Byte37
+Byte[6]:  Not Used;                              =>Byte38-43
+} | Title: Parsing the raw ASCII data into PLC data format for durect read out
+   parts: Move
+   operands: #Alibi_Array, AlibiGross_Byte(3), AlibiGross_Byte(2), AlibiGross_Byte(1), AlibiGross_Byte(0), AlibiGross_Real, #GrossWeight, AlibiNet_Byte(3), AlibiNet_Byte(2), AlibiNet_Byte(1), AlibiNet_Byte(0), AlibiNet_Real, #NetWeight, AlibiTare_Byte(3), AlibiTare_Byte(2), AlibiTare_Byte(1), AlibiTare_Byte(0), AlibiTare_Real, #TareWeight, #TareMode, #Unit
+--- Network 8  

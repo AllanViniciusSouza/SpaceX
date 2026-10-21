@@ -1,0 +1,729 @@
+FUNCTION "Bypass_FC"   // FC 62, author 
+
+VAR CONSTANT
+   AUTO_RUNNING : UInt := 0;
+   RTE_REQUESTED : UInt := 1;
+   SAFE_BYPASS : UInt := 2;
+   SAFE_TO_UNLOCK : UInt := 3;
+   ACCESS_MANUAL_MODE : UInt := 4;
+   READY_TO_RESET : UInt := 5;
+   RESETTING : UInt := 6;
+   READY_TO_RESTART : UInt := 7;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+REGION LIGHT GUARD "Bypass"
+    IF "FirstScan" THEN
+        "MR_Delay_I" := T#1500mS;
+        "MR_Delay_O" := T#1500mS;
+    END_IF;
+    
+    // SYSTEM 1
+    (*IF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Running THEN //Running
+        "Bypass".Remote_Panel_1."Light Guards CX101 - CH1" := TRUE; //Bypass light guard
+        "Light_Guard_Bypass(1)" := FALSE; // Cancel HMI Command
+    ELS*)IF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Error AND "Light_Guard_Bypass(1)" THEN //Error and HMI command ON
+        "Bypass".Remote_Panel_1."Light Guards CX101 - CH1" := TRUE; //Bypass light guard
+    ELSIF NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Running AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Error AND "LIGHT GUARDS C1101 - CH1" THEN //Not Running and No error
+        "Bypass".Remote_Panel_1."Light Guards CX101 - CH1" := FALSE; //Cancel bypass
+    END_IF;
+    
+    (*IF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Running THEN
+        "Bypass".Remote_Panel_1."Light Guards CX201 - CH1" := TRUE;
+        "Light_Guard_Bypass(1)" := FALSE;
+    ELS*)IF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Error AND "Light_Guard_Bypass(1)" THEN
+        "Bypass".Remote_Panel_1."Light Guards CX201 - CH1" := TRUE;
+    ELSIF NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Running AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Error AND "LIGHT GUARDS C1201 - CH1"THEN
+        "Bypass".Remote_Panel_1."Light Guards CX201 - CH1" := FALSE;
+    END_IF;
+    
+    //Request mute
+    //Recognize starting pallet
+    "R_Starting_Pallet_1"(CLK:= "DB_Receive_Data_From_Logistex".CNV_STATUS[1].%X6);
+    IF "R_Starting_Pallet_1".Q AND "DB_Receive_Data_From_Logistex".J1310_Conv_Infeed.LGXTransferingInProgress THEN
+        // Statement section IF
+        "Starting_Pallet_1" := TRUE;
+        
+    ELSIF NOT "DB_Receive_Data_From_Logistex".J1310_Conv_Infeed.LGXTransferingInProgress OR "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Error THEN
+        "Starting_Pallet_1" := FALSE;
+    END_IF; 
+    
+    
+    
+    //Delay to start MR
+    "T_MR_I_1".TON(IN := "DB_Receive_Data_From_Logistex".J1310_Conv_Infeed.LGXTransferingInProgress AND "Starting_Pallet_1",
+                   PT := "MR_Delay_I",
+                   Q => "MR_I_1");
+    
+    //INBOUND MATERIAL SELECTION
+    IF "DB_Receive_Data_From_Logistex".J1310_Conv_Infeed.Pallet_ID[23] = 'U' THEN
+        "Material_Selection_I_1" := FALSE;
+    ELSIF "DB_Receive_Data_From_Logistex".J1310_Conv_Infeed.Pallet_ID[23] = 'E' THEN
+        "Material_Selection_I_1" := TRUE;
+    END_IF;
+    
+    //Delay to start MR
+    "T_MR_O_1".TON(IN := "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.SM_State = 40,
+                   PT := "MR_Delay_O",
+                   Q => "MR_O_1");
+    
+    //OUTBOUND MATERIAL SELECTION
+    IF NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Running AND "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Pallet_Type = 1 THEN
+        "Material_Selection_O_1" := FALSE;
+    ELSIF NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Running AND "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Pallet_Type = 3 THEN
+        "Material_Selection_O_1" := TRUE;
+    END_IF;
+    
+    //SYSTEM 2
+    (*IF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Running THEN
+        "Bypass".Remote_Panel_2."Light Guards CX101 - CH1" := TRUE;
+        "Light_Guard_Bypass(2)" := FALSE;
+    ELS*)IF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Error AND "Light_Guard_Bypass(2)" THEN
+        "Bypass".Remote_Panel_2."Light Guards CX101 - CH1" := TRUE;
+    ELSIF NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Running AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Error AND "LIGHT GUARDS C2101 - CH1" THEN
+        "Bypass".Remote_Panel_2."Light Guards CX101 - CH1" := FALSE;
+    END_IF;
+    
+    (*IF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Running THEN
+        "Bypass".Remote_Panel_2."Light Guards CX201 - CH1" := TRUE;
+        "Light_Guard_Bypass(2)" := FALSE;
+    ELS*)IF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Error AND "Light_Guard_Bypass(2)" THEN
+        "Bypass".Remote_Panel_2."Light Guards CX201 - CH1" := TRUE;
+    ELSIF NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Running AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Error AND "LIGHT GUARDS C2201 - CH1" THEN
+        "Bypass".Remote_Panel_2."Light Guards CX201 - CH1" := FALSE;
+    END_IF;
+        
+    //Request mute
+    //Recognize starting pallet
+    "R_Starting_Pallet_2"(CLK := "DB_Receive_Data_From_Logistex".CNV_STATUS[2].%X6);
+    IF "R_Starting_Pallet_2".Q AND "DB_Receive_Data_From_Logistex".J1320_Conv_Infeed.LGXTransferingInProgress THEN
+        // Statement section IF
+        "Starting_Pallet_2" := TRUE;
+        
+    ELSIF NOT "DB_Receive_Data_From_Logistex".J1320_Conv_Infeed.LGXTransferingInProgress OR "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Error THEN
+        "Starting_Pallet_2" := FALSE;
+    END_IF;
+    
+    //Delay to start MR
+    "T_MR_I_2".TON(IN := "DB_Receive_Data_From_Logistex".J1320_Conv_Infeed.LGXTransferingInProgress AND "Starting_Pallet_2",
+                   PT := "MR_Delay_I",
+                   Q => "MR_I_2");
+    
+    //INBOUND MATERIAL SELECTION
+    IF "DB_Receive_Data_From_Logistex".J1320_Conv_Infeed.Pallet_ID[23] = 'U' THEN
+        "Material_Selection_I_2" := FALSE;
+    ELSIF "DB_Receive_Data_From_Logistex".J1320_Conv_Infeed.Pallet_ID[23] = 'E' THEN
+        "Material_Selection_I_2" := TRUE;
+    END_IF;
+    
+    //Delay to start MR
+    "T_MR_O_2".TON(IN := "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.SM_State = 40,
+                   PT := "MR_Delay_O",
+                   Q => "MR_O_2");
+    
+    //OUTBOUND MATERIAL SELECTION
+    IF NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Running AND "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Pallet_Type = 1 THEN
+        "Material_Selection_O_2" := FALSE;
+    ELSIF NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Running AND "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Pallet_Type = 3 THEN
+        "Material_Selection_O_2" := TRUE;
+    END_IF;
+    
+    //SYSTEM 3
+    (*IF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Running THEN
+        "Bypass".Remote_Panel_3."Light Guards CX101 - CH1" := TRUE;
+        "Light_Guard_Bypass(3)" := FALSE;
+    ELS*)IF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Error AND "Light_Guard_Bypass(3)" THEN
+        "Bypass".Remote_Panel_3."Light Guards CX101 - CH1" := TRUE;
+    ELSIF NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Running AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Error AND "LIGHT GUARDS C3101 - CH1" THEN
+        "Bypass".Remote_Panel_3."Light Guards CX101 - CH1" := FALSE;
+    END_IF;
+    
+    (*IF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Running THEN
+        "Bypass".Remote_Panel_3."Light Guards CX201 - CH1" := TRUE;
+        "Light_Guard_Bypass(3)" := FALSE;
+    ELS*)IF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Error AND "Light_Guard_Bypass(3)" THEN
+        "Bypass".Remote_Panel_3."Light Guards CX201 - CH1" := TRUE;
+    ELSIF NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Running AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Error AND "LIGHT GUARDS C3201 - CH1" THEN
+        "Bypass".Remote_Panel_3."Light Guards CX201 - CH1" := FALSE;
+    END_IF;
+    
+    //Request mute
+    //Recognize starting pallet
+    "R_Starting_Pallet_3"(CLK := "DB_Receive_Data_From_Logistex".CNV_STATUS[3].%X6);
+    IF "R_Starting_Pallet_3".Q AND "DB_Receive_Data_From_Logistex".J1330_Conv_Infeed.LGXTransferingInProgress THEN
+        // Statement section IF
+        "Starting_Pallet_3" := TRUE;
+        
+    ELSIF NOT "DB_Receive_Data_From_Logistex".J1330_Conv_Infeed.LGXTransferingInProgress OR "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Error THEN
+        "Starting_Pallet_3" := FALSE;
+    END_IF;
+    
+    //Delay to start MR
+    "T_MR_I_3".TON(IN := "DB_Receive_Data_From_Logistex".J1330_Conv_Infeed.LGXTransferingInProgress AND "Starting_Pallet_3",
+                   PT := "MR_Delay_I",
+                   Q => "MR_I_3");
+    
+    //INBOUND MATERIAL SELECTION
+    IF "DB_Receive_Data_From_Logistex".J1330_Conv_Infeed.Pallet_ID[23] = 'U' THEN
+        "Material_Selection_I_3" := FALSE;
+    ELSIF "DB_Receive_Data_From_Logistex".J1330_Conv_Infeed.Pallet_ID[23] = 'E' THEN
+        "Material_Selection_I_3" := TRUE;
+    END_IF;
+    
+    //Delay to start MR
+    "T_MR_O_3".TON(IN := "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.SM_State = 40,
+                   PT := "MR_Delay_O",
+                   Q => "MR_O_3");
+    
+    //OUTBOUND MATERIAL SELECTION
+    IF NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Running AND "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Pallet_Type = 1 THEN
+        "Material_Selection_O_3" := FALSE;
+    ELSIF NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Running AND "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Pallet_Type = 3 THEN
+        "Material_Selection_O_3" := TRUE;
+    END_IF;
+END_REGION ;
+
+REGION LIMIT SWITCHES
+    REGION SYSTEM 1
+        IF "VTD_System_Selected_HMI" = 1 THEN
+            //OVERTRAVEL UP
+            IF NOT "OVERTRAVEL UPPER LIMIT - CH1(1)" THEN
+                "Bypass".Remote_Panel_1.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI";
+                "T_Bypass_OUL_1".TON(IN := FALSE,
+                                     PT := T#0S);
+            ELSE
+                "T_Bypass_OUL_1".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OUL_1".Q THEN
+                    "Bypass".Remote_Panel_1.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT UP
+            IF "VTD1 UPPER LIMIT" THEN
+                "Bypass".Remote_Panel_1.Upper_limit := "VTD_Upper_Limet_Bypass_HMI";
+                "T_Bypass_UL_1".TON(IN:=FALSE,
+                                    PT:=T#0S);
+            ELSE
+                "T_Bypass_UL_1".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_UL_1".Q THEN
+                    "Bypass".Remote_Panel_1.Upper_limit := "VTD_Upper_Limet_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT DOWN
+            IF "VTD1 LOWER LIMIT" THEN
+                "Bypass".Remote_Panel_1.Lower_limit := "VTD_Lower_Limit_Bypass_HMI";
+                "T_Bypass_LL_1".TON(IN:=FALSE,
+                                    PT:=T#0S);
+            ELSE
+                "T_Bypass_LL_1".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_LL_1".Q THEN
+                    "Bypass".Remote_Panel_1.Lower_limit := "VTD_Lower_Limit_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //OVERTRAVEL DOWN
+            IF NOT "OVERTRAVEL LOWER LIMIT - CH1(1)" THEN
+                "Bypass".Remote_Panel_1.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI";
+                "T_Bypass_OLL_1".TON(IN:=FALSE,
+                                     PT:=T#0S);
+            ELSE
+                "T_Bypass_OLL_1".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OLL_1".Q THEN
+                    "Bypass".Remote_Panel_1.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //CHAIN SLACK 1
+            IF "Chain Slack 1 - CH1(1)" THEN
+                "Bypass".Remote_Panel_1.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_1.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 2
+            IF "Chain Slack 2 - CH1(1)" THEN
+                "Bypass".Remote_Panel_1.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_1.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 3
+            IF "Chain Slack 3 - CH1(1)" THEN
+                "Bypass".Remote_Panel_1.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_1.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 4
+            IF "Chain Slack 4 - CH1(1)" THEN
+                "Bypass".Remote_Panel_1.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_1.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI" := FALSE;
+            END_IF;
+        END_IF;
+    END_REGION ;
+    
+    REGION SYSTEM 2
+        IF "VTD_System_Selected_HMI" = 2 THEN
+            //OVERTRAVEL UP
+            IF NOT "OVERTRAVEL UPPER LIMIT - CH1(2)" THEN
+                "Bypass".Remote_Panel_2.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI";
+                "T_Bypass_OUL_2".TON(IN := FALSE,
+                                     PT := T#0S);
+            ELSE
+                "T_Bypass_OUL_2".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OUL_2".Q THEN
+                    "Bypass".Remote_Panel_2.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT UP
+            IF "VTD2 UPPER LIMIT" THEN
+                "Bypass".Remote_Panel_2.Upper_limit := "VTD_Upper_Limet_Bypass_HMI";
+                "T_Bypass_UL_2".TON(IN := FALSE,
+                                    PT := T#0S);
+            ELSE
+                "T_Bypass_UL_2".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_UL_2".Q THEN
+                    "Bypass".Remote_Panel_2.Upper_limit := "VTD_Upper_Limet_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT DOWN
+            IF "VTD2 LOWER LIMIT" THEN
+                "Bypass".Remote_Panel_2.Lower_limit := "VTD_Lower_Limit_Bypass_HMI";
+                "T_Bypass_LL_2".TON(IN := FALSE,
+                                    PT := T#0S);
+            ELSE
+                "T_Bypass_LL_2".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_LL_2".Q THEN
+                    "Bypass".Remote_Panel_2.Lower_limit := "VTD_Lower_Limit_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //OVERTRAVEL DOWN
+            IF NOT "OVERTRAVEL LOWER LIMIT - CH1(2)" THEN
+                "Bypass".Remote_Panel_2.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI";
+                "T_Bypass_OLL_2".TON(IN := FALSE,
+                                     PT := T#0S);
+            ELSE
+                "T_Bypass_OLL_2".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OLL_2".Q THEN
+                    "Bypass".Remote_Panel_2.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //CHAIN SLACK 1
+            IF "Chain Slack 1 - CH1(2)" THEN
+                "Bypass".Remote_Panel_2.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_2.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 2
+            IF "Chain Slack 2 - CH1(2)" THEN
+                "Bypass".Remote_Panel_2.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_2.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 3
+            IF "Chain Slack 3 - CH1(2)" THEN
+                "Bypass".Remote_Panel_2.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_2.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 4
+            IF "Chain Slack 4 - CH1(2)" THEN
+                "Bypass".Remote_Panel_2.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_2.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI" := FALSE;
+            END_IF;
+        END_IF;
+    END_REGION ;
+    
+    REGION SYSTEM 3
+        IF "VTD_System_Selected_HMI" = 3 THEN
+            //OVERTRAVEL UP
+            IF NOT "OVERTRAVEL UPPER LIMIT - CH1(3)" THEN
+                "Bypass".Remote_Panel_3.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI";
+                "T_Bypass_OUL_3".TON(IN := FALSE,
+                                     PT := T#0S);
+            ELSE
+                "T_Bypass_OUL_3".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OUL_3".Q THEN
+                    "Bypass".Remote_Panel_3.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT UP
+            IF "VTD3 UPPER LIMIT" THEN
+                "Bypass".Remote_Panel_3.Upper_limit := "VTD_Upper_Limet_Bypass_HMI";
+                "T_Bypass_UL_3".TON(IN := FALSE,
+                                    PT := T#0S);
+            ELSE
+                "T_Bypass_UL_3".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_UL_3".Q THEN
+                    "Bypass".Remote_Panel_3.Upper_limit := "VTD_Upper_Limet_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT DOWN
+            IF "VTD3 LOWER LIMIT" THEN
+                "Bypass".Remote_Panel_3.Lower_limit := "VTD_Lower_Limit_Bypass_HMI";
+                "T_Bypass_LL_3".TON(IN := FALSE,
+                                    PT := T#0S);
+            ELSE
+                "T_Bypass_LL_3".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_LL_3".Q THEN
+                    "Bypass".Remote_Panel_3.Lower_limit := "VTD_Lower_Limit_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //OVERTRAVEL DOWN
+            IF NOT "OVERTRAVEL LOWER LIMIT - CH1(3)" THEN
+                "Bypass".Remote_Panel_3.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI";
+                "T_Bypass_OLL_3".TON(IN := FALSE,
+                                     PT := T#0S);
+            ELSE
+                "T_Bypass_OLL_3".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OLL_3".Q THEN
+                    "Bypass".Remote_Panel_3.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //CHAIN SLACK 1
+            IF "Chain Slack 1 - CH1(3)" THEN
+                "Bypass".Remote_Panel_3.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_3.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 2
+            IF "Chain Slack 2 - CH1(3)" THEN
+                "Bypass".Remote_Panel_3.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_3.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 3
+            IF "Chain Slack 3 - CH1(3)" THEN
+                "Bypass".Remote_Panel_3.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_3.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 4
+            IF "Chain Slack 4 - CH1(3)" THEN
+                "Bypass".Remote_Panel_3.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_3.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI" := FALSE;
+            END_IF;
+        END_IF;
+    END_REGION ;
+    
+    REGION SYSTEM 4
+        IF "VTD_System_Selected_HMI" = 4 THEN
+            //OVERTRAVEL UP
+            IF NOT "OVERTRAVEL UPPER LIMIT - CH1(4)" THEN
+                "Bypass".Remote_Panel_4.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI";
+                "T_Bypass_OUL_4".TON(IN := FALSE,
+                                     PT := T#0S);
+            ELSE
+                "T_Bypass_OUL_4".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OUL_4".Q THEN
+                    "Bypass".Remote_Panel_4.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT UP
+            IF "VTD4 UPPER LIMIT" THEN
+                "Bypass".Remote_Panel_4.Upper_limit := "VTD_Upper_Limet_Bypass_HMI";
+                "T_Bypass_UL_4".TON(IN := FALSE,
+                                    PT := T#0S);
+            ELSE
+                "T_Bypass_UL_4".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_UL_4".Q THEN
+                    "Bypass".Remote_Panel_4.Upper_limit := "VTD_Upper_Limet_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT DOWN
+            IF "VTD4 LOWER LIMIT" THEN
+                "Bypass".Remote_Panel_4.Lower_limit := "VTD_Lower_Limit_Bypass_HMI";
+                "T_Bypass_LL_4".TON(IN := FALSE,
+                                    PT := T#0S);
+            ELSE
+                "T_Bypass_LL_4".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_LL_4".Q THEN
+                    "Bypass".Remote_Panel_4.Lower_limit := "VTD_Lower_Limit_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //OVERTRAVEL DOWN
+            IF NOT "OVERTRAVEL LOWER LIMIT - CH1(4)" THEN
+                "Bypass".Remote_Panel_4.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI";
+                "T_Bypass_OLL_4".TON(IN := FALSE,
+                                     PT := T#0S);
+            ELSE
+                "T_Bypass_OLL_4".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OLL_4".Q THEN
+                    "Bypass".Remote_Panel_4.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //CHAIN SLACK 1
+            IF "Chain Slack 1 - CH1(4)" THEN
+                "Bypass".Remote_Panel_4.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_4.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 2
+            IF "Chain Slack 2 - CH1(4)" THEN
+                "Bypass".Remote_Panel_4.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_4.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 3
+            IF "Chain Slack 3 - CH1(4)" THEN
+                "Bypass".Remote_Panel_4.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_4.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 4
+            IF "Chain Slack 4 - CH1(4)" THEN
+                "Bypass".Remote_Panel_4.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_4.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI" := FALSE;
+            END_IF;
+        END_IF;
+    END_REGION ;
+    
+    REGION SYSTEM 5
+        IF "VTD_System_Selected_HMI" = 5 THEN
+            //OVERTRAVEL UP
+            IF NOT "OVERTRAVEL UPPER LIMIT - CH1(5)" THEN
+                "Bypass".Remote_Panel_5.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI";
+                "T_Bypass_OUL_5".TON(IN := FALSE,
+                                     PT := T#0S);
+            ELSE
+                "T_Bypass_OUL_5".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OUL_5".Q THEN
+                    "Bypass".Remote_Panel_5.Overtravel_Upper_limit := "VTD_Upper_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT UP
+            IF "VTD5 UPPER LIMIT" THEN
+                "Bypass".Remote_Panel_5.Upper_limit := "VTD_Upper_Limet_Bypass_HMI";
+                "T_Bypass_UL_5".TON(IN := FALSE,
+                                    PT := T#0S);
+            ELSE
+                "T_Bypass_UL_5".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_UL_5".Q THEN
+                    "Bypass".Remote_Panel_5.Upper_limit := "VTD_Upper_Limet_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //LIMIT DOWN
+            IF "VTD5 LOWER LIMIT" THEN
+                "Bypass".Remote_Panel_5.Lower_limit := "VTD_Lower_Limit_Bypass_HMI";
+                "T_Bypass_LL_5".TON(IN := FALSE,
+                                    PT := T#0S);
+            ELSE
+                "T_Bypass_LL_5".TON(IN := TRUE,
+                                    PT := T#3S);
+                IF "T_Bypass_LL_5".Q THEN
+                    "Bypass".Remote_Panel_5.Lower_limit := "VTD_Lower_Limit_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //OVERTRAVEL DOWN
+            IF NOT "OVERTRAVEL LOWER LIMIT - CH1(5)" THEN
+                "Bypass".Remote_Panel_5.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI";
+                "T_Bypass_OLL_5".TON(IN := FALSE,
+                                     PT := T#0S);
+            ELSE
+                "T_Bypass_OLL_5".TON(IN := TRUE,
+                                     PT := T#3S);
+                IF "T_Bypass_OLL_5".Q THEN
+                    "Bypass".Remote_Panel_5.Overtravel_Lower_limit := "VTD_Lower_Overtravel_Bypass_HMI" := FALSE;
+                END_IF;
+            END_IF;
+            
+            //CHAIN SLACK 1
+            IF "Chain Slack 1 - CH1(5)" THEN
+                "Bypass".Remote_Panel_5.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_5.Chain_Slack_1 := "Chain_Slack_1_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 2
+            IF "Chain Slack 2 - CH1(5)" THEN
+                "Bypass".Remote_Panel_5.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_5.Chain_Slack_2 := "Chain_Slack_2_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 3
+            IF "Chain Slack 3 - CH1(5)" THEN
+                "Bypass".Remote_Panel_5.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_5.Chain_Slack_3 := "Chain_Slack_3_Bypass_HMI" := FALSE;
+            END_IF;
+            
+            //CHAIN SLACK 4
+            IF "Chain Slack 4 - CH1(5)" THEN
+                "Bypass".Remote_Panel_5.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI";
+            ELSE
+                "Bypass".Remote_Panel_5.Chain_Slack_4 := "Chain_Slack_4_Bypass_HMI" := FALSE;
+            END_IF;
+        END_IF;
+    END_REGION ;
+END_REGION
+
+REGION SAFETY GATES
+        //SYSTEM 1
+        // GATE 1
+        IF "GateAccess_Station_FB_DB_1".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_1".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Remote_Panel_1.Gate_1 := TRUE;
+            "Bypass".Remote_Panel_1.Lock_Secured_1 := TRUE;
+        // ELSE
+        //     "Bypass".Remote_Panel_1.Gate_1 := FALSE;
+        //     "Bypass".Remote_Panel_1.Lock_Secured_1 := FALSE;
+        END_IF;
+        
+        //GATE 2
+        IF "GateAccess_Station_FB_DB_2".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_2".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Remote_Panel_1.Gate_2 := TRUE;
+            "Bypass".Remote_Panel_1.Lock_Secured_2 := TRUE;
+        // ELSE
+        //     "Bypass".Remote_Panel_1.Gate_2 := FALSE;
+        //     "Bypass".Remote_Panel_1.Lock_Secured_2 := FALSE;
+        END_IF;
+        
+        //SYSTEM 2
+        //GATE 1
+        IF "GateAccess_Station_FB_DB_3".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_3".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Remote_Panel_2.Gate_1 := TRUE;
+            "Bypass".Remote_Panel_2.Lock_Secured_1 := TRUE;
+        ELSE
+            "Bypass".Remote_Panel_2.Gate_1 := FALSE;
+            "Bypass".Remote_Panel_2.Lock_Secured_1 := FALSE;
+        END_IF;
+        
+        //GATE 2
+        IF "GateAccess_Station_FB_DB_4".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_4".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Remote_Panel_2.Gate_2 := TRUE;
+            "Bypass".Remote_Panel_2.Lock_Secured_2 := TRUE;
+        ELSE
+            "Bypass".Remote_Panel_2.Gate_2 := FALSE;
+            "Bypass".Remote_Panel_2.Lock_Secured_2 := FALSE;
+        END_IF;
+        
+        //SYSTEM 3
+        //GATE 1
+        IF "GateAccess_Station_FB_DB_5".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_5".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Remote_Panel_3.Gate_1 := TRUE;
+            "Bypass".Remote_Panel_3.Lock_Secured_1 := TRUE;
+        ELSE
+            "Bypass".Remote_Panel_3.Gate_1 := FALSE;
+            "Bypass".Remote_Panel_3.Lock_Secured_1 := FALSE;
+        END_IF;
+        
+        //GATE 2
+        IF "GateAccess_Station_FB_DB_6".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_6".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Remote_Panel_3.Gate_2 := TRUE;
+            "Bypass".Remote_Panel_3.Lock_Secured_2 := TRUE;
+        ELSE
+            "Bypass".Remote_Panel_3.Gate_2 := FALSE;
+            "Bypass".Remote_Panel_3.Lock_Secured_2 := FALSE;
+        END_IF;
+        
+        //SYSTEM 4
+        //GATE 1
+        IF "GateAccess_Station_FB_DB_9".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_9".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Remote_Panel_4.Gate_1 := TRUE;
+            "Bypass".Remote_Panel_4.Lock_Secured_1 := TRUE;
+        ELSE
+            "Bypass".Remote_Panel_4.Gate_1 := FALSE;
+            "Bypass".Remote_Panel_4.Lock_Secured_1 := FALSE;
+        END_IF;
+        
+        //SYSTEM 5
+        //GATE 1
+        IF "GateAccess_Station_FB_DB_10".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_10".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Remote_Panel_5.Gate_1 := TRUE;
+            "Bypass".Remote_Panel_5.Lock_Secured_1 := TRUE;
+        ELSE
+            "Bypass".Remote_Panel_5.Gate_1 := FALSE;
+            "Bypass".Remote_Panel_5.Lock_Secured_1 := FALSE;
+        END_IF;
+        
+        //Left side
+        //LEVEL 1
+        IF "GateAccess_Station_FB_DB_7".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_7".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Main_Panel.Lock_Secured_7 := TRUE;
+        ELSE
+            "Bypass".Main_Panel.Lock_Secured_7 := FALSE;
+        END_IF;
+        
+        //LEVEL 2
+        IF "GateAccess_Station_FB_DB_8".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_8".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Main_Panel.Lock_Secured_8 := TRUE;
+        ELSE
+            "Bypass".Main_Panel.Lock_Secured_8 := FALSE;
+        END_IF;
+        
+        //Right side
+        //LEVEL 1
+        IF "GateAccess_Station_FB_DB_12".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_12".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Main_Panel.Lock_Secured_12 := TRUE;
+        ELSE
+            "Bypass".Main_Panel.Lock_Secured_12 := FALSE;
+        END_IF;
+        
+        //LEVEL 2
+        IF "GateAccess_Station_FB_DB_11".ModeManager.CurrentState > #RTE_REQUESTED AND
+            "GateAccess_Station_FB_DB_11".ModeManager.CurrentState < #READY_TO_RESTART THEN
+            "Bypass".Main_Panel.Lock_Secured_11 := TRUE;
+        ELSE
+            "Bypass".Main_Panel.Lock_Secured_11 := FALSE;
+        END_IF;
+END_REGION;
+END_FUNCTION

@@ -1,0 +1,160 @@
+﻿FUNCTION_BLOCK "VTD_HMI_FB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR 
+      T_Charge {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+   END_VAR
+
+
+BEGIN
+	//CHARGE DATA CHANGING CONVEYORS ID
+	IF "VTD_System_Selected_HMI" <> "VTD_ID_HMI_OLD" THEN
+	    "Screen_DB".Charge_VTD_Commands := TRUE;
+	    "VTD_ID_HMI_OLD" := "VTD_System_Selected_HMI";
+	END_IF;
+	
+	//CHARGE ONCE THE COMMANDS STATUS
+	IF "Screen_DB".Charge_VTD_Commands THEN
+	    CASE "VTD_System_Selected_HMI" OF
+	        1:
+	            "VTD_Mode_Change_HMI" := "Control_DB".VTD_Sys[1].Mode;
+	            "VTD_Enable_HMI" := "Control_DB".VTD_Sys[1].Instruction.Enable;
+	            "LE_Bypass" := "LE_Bypass(1)";
+	            "VTD_Stop_HMI" := "Control_DB".VTD_Sys[1].Instruction.Stop;
+	        2:
+	            "VTD_Mode_Change_HMI" := "Control_DB".VTD_Sys[2].Mode;
+	            "VTD_Enable_HMI" := "Control_DB".VTD_Sys[2].Instruction.Enable;
+	            "LE_Bypass" := "LE_Bypass(2)";
+	            "VTD_Stop_HMI" := "Control_DB".VTD_Sys[2].Instruction.Stop;
+	        3:
+	            "VTD_Mode_Change_HMI" := "Control_DB".VTD_Sys[3].Mode;
+	            "VTD_Enable_HMI" := "Control_DB".VTD_Sys[3].Instruction.Enable;
+	            "LE_Bypass" := "LE_Bypass(3)";
+	            "VTD_Stop_HMI" := "Control_DB".VTD_Sys[3].Instruction.Stop;
+	        4:
+	            "VTD_Mode_Change_HMI" := "Control_DB".VTD_Sys[4].Mode;
+	            "VTD_Enable_HMI" := "Control_DB".VTD_Sys[4].Instruction.Enable;
+	            "LE_Bypass" := "LE_Bypass(4)";
+	            "VTD_Stop_HMI" := "Control_DB".VTD_Sys[4].Instruction.Stop;
+	        5:
+	            "VTD_Mode_Change_HMI" := "Control_DB".VTD_Sys[5].Mode;
+	            "VTD_Enable_HMI" := "Control_DB".VTD_Sys[5].Instruction.Enable;
+	            "LE_Bypass" := "LE_Bypass(5)";
+	            "VTD_Stop_HMI" := "Control_DB".VTD_Sys[5].Instruction.Stop;
+	    END_CASE;
+	    
+	    #T_Charge.TON(IN := TRUE,
+	                  PT := T#500mS);
+	    IF #T_Charge.Q THEN
+	        #T_Charge.TON(IN := FALSE,
+	                      PT := T#0mS);
+	        "Screen_DB".Charge_VTD_Commands := 0;
+	    END_IF;
+	    
+	// CHARGE DATA FROM HMI (AFTER CHARGE DATA)
+	ELSIF "HMI_DB".ScreenNo_Main = 1 AND NOT "Screen_DB".Charge_VTD_Commands THEN
+	    CASE "VTD_System_Selected_HMI" OF
+	        1:
+	            "Feed_VTD_HMI_FC"(Sys_No := 1,
+	                              Rem_Loc_Keys:= "HMI_DB".Rem_Loc_Keys[1].Level,
+	                              Safety_OK := "Remote_Panel_DB_1".Safety_OK,
+	                              BCD_Test_Ok_HMI := "SICK_Lector_DB_1".Test_OK,
+	                              BCD_Error_HMI := "SICK_Lector_DB_1".Error,
+	                              BCD_RdDone := "SICK_Lector_DB_1".RdDone,
+	                              BCD_ReqDone := "SICK_Lector_DB_1".ReqDone,
+	                              BCD_ReqBusy := "SICK_Lector_DB_1".ReqBusy,
+	                              Start_InBarcodeStation := "Start_InBarcodeStation_HMI",
+	                              Sick_Lector_Reseult := "SICK_Lector_DB_1".Barcode_Result,
+	                              Level_Below_Extractor := "VTD_FB_DB_1".LevelBelowExtractor,
+	                              Speed_mm_s := "VTD_FB_DB_1".VTDSpeed_mm_s,
+	                              LE_Bypass := "LE_Bypass(1)",
+	                              BCD_Start_Comm_Test_HMI := "BCD_Test_Comm_HMI(1)",
+	                              BCD_Enable_Trigger_HMI := "BCD_Enable_Trigger_HMI(1)",
+	                              BCD_Disable_Trigger_HMI := "BCD_Disable_Trigger_HMI(1)",
+	                              BCD_Execute_Function := "SICK_Lector_Control_DB_1".Enable_Req,
+	                              System_Busy => "System_1_Busy");
+	            
+	        2:
+	            "Feed_VTD_HMI_FC"(Sys_No := 2,
+	                              Rem_Loc_Keys:="HMI_DB".Rem_Loc_Keys[2].Level,
+	                              Safety_OK := "Remote_Panel_DB_2".Safety_OK,
+	                              BCD_Test_Ok_HMI := "SICK_Lector_DB_2".Test_OK,
+	                              BCD_Error_HMI := "SICK_Lector_DB_2".Error,
+	                              BCD_RdDone := "SICK_Lector_DB_2".RdDone,
+	                              BCD_ReqDone := "SICK_Lector_DB_2".ReqDone,
+	                              BCD_ReqBusy := "SICK_Lector_DB_2".ReqBusy,
+	                              Start_InBarcodeStation := "Start_InBarcodeStation_HMI",
+	                              Sick_Lector_Reseult := "SICK_Lector_DB_2".Barcode_Result,
+	                              Level_Below_Extractor := "VTD_FB_DB_2".LevelBelowExtractor,
+	                              Speed_mm_s := "VTD_FB_DB_2".VTDSpeed_mm_s,
+	                              LE_Bypass := "LE_Bypass(2)",
+	                              BCD_Start_Comm_Test_HMI := "BCD_Test_Comm_HMI(2)",
+	                              BCD_Enable_Trigger_HMI := "BCD_Enable_Trigger_HMI(2)",
+	                              BCD_Disable_Trigger_HMI := "BCD_Disable_Trigger_HMI(2)",
+	                              BCD_Execute_Function := "SICK_Lector_Control_DB_2".Enable_Req,
+	                              System_Busy => "System_2_Busy");
+	        3:
+	            "Feed_VTD_HMI_FC"(Sys_No := 3,
+	                              Rem_Loc_Keys:="HMI_DB".Rem_Loc_Keys[3].Level,
+	                              Safety_OK := "Remote_Panel_DB_3".Safety_OK,
+	                              BCD_Test_Ok_HMI := "SICK_Lector_DB_3".Test_OK,
+	                              BCD_Error_HMI := "SICK_Lector_DB_3".Error,
+	                              BCD_RdDone := "SICK_Lector_DB_3".RdDone,
+	                              BCD_ReqDone := "SICK_Lector_DB_3".ReqDone,
+	                              BCD_ReqBusy := "SICK_Lector_DB_3".ReqBusy,
+	                              Start_InBarcodeStation := "Start_InBarcodeStation_HMI",
+	                              Sick_Lector_Reseult := "SICK_Lector_DB_3".Barcode_Result,
+	                              Level_Below_Extractor := "VTD_FB_DB_3".LevelBelowExtractor,
+	                              Speed_mm_s := "VTD_FB_DB_3".VTDSpeed_mm_s,
+	                              LE_Bypass := "LE_Bypass(3)",
+	                              BCD_Start_Comm_Test_HMI := "BCD_Test_Comm_HMI(3)",
+	                              BCD_Enable_Trigger_HMI := "BCD_Enable_Trigger_HMI(3)",
+	                              BCD_Disable_Trigger_HMI := "BCD_Disable_Trigger_HMI(3)",
+	                              BCD_Execute_Function := "SICK_Lector_Control_DB_3".Enable_Req,
+	                              System_Busy => "System_3_Busy");
+	        4:
+	            "Feed_VTD_HMI_FC"(Sys_No := 4,
+	                              Rem_Loc_Keys:="HMI_DB".Rem_Loc_Keys[4].Level,
+	                              Safety_OK := "Remote_Panel_DB_4".Safety_OK,
+	                              BCD_Test_Ok_HMI := "SICK_Lector_DB_4".Test_OK,
+	                              BCD_Error_HMI := "SICK_Lector_DB_4".Error,
+	                              BCD_RdDone := "SICK_Lector_DB_4".RdDone,
+	                              BCD_ReqDone := "SICK_Lector_DB_4".ReqDone,
+	                              BCD_ReqBusy := "SICK_Lector_DB_4".ReqBusy,
+	                              Start_InBarcodeStation := "Start_InBarcodeStation_HMI",
+	                              Sick_Lector_Reseult := "SICK_Lector_DB_4".Barcode_Result,
+	                              Level_Below_Extractor := "VTD_FB_DB_4".LevelBelowExtractor,
+	                              Speed_mm_s := "VTD_FB_DB_4".VTDSpeed_mm_s,
+	                              LE_Bypass := "LE_Bypass(4)",
+	                              BCD_Start_Comm_Test_HMI := "BCD_Test_Comm_HMI(4)",
+	                              BCD_Enable_Trigger_HMI := "BCD_Enable_Trigger_HMI(4)",
+	                              BCD_Disable_Trigger_HMI := "BCD_Disable_Trigger_HMI(4)",
+	                              BCD_Execute_Function := "SICK_Lector_Control_DB_4".Enable_Req,
+	                              System_Busy => "System_4_Busy");
+	        5:
+	            "Feed_VTD_HMI_FC"(Sys_No := 5,
+	                              Rem_Loc_Keys:="HMI_DB".Rem_Loc_Keys[5].Level,
+	                              Safety_OK := "Remote_Panel_DB_5".Safety_OK,
+	                              BCD_Test_Ok_HMI := "SICK_Lector_DB_5".Test_OK,
+	                              BCD_Error_HMI := "SICK_Lector_DB_5".Error,
+	                              BCD_RdDone := "SICK_Lector_DB_5".RdDone,
+	                              BCD_ReqDone := "SICK_Lector_DB_5".ReqDone,
+	                              BCD_ReqBusy := "SICK_Lector_DB_5".ReqBusy,
+	                              Start_InBarcodeStation := "Start_InBarcodeStation_HMI",
+	                              Sick_Lector_Reseult := "SICK_Lector_DB_5".Barcode_Result,
+	                              Level_Below_Extractor := "VTD_FB_DB_5".LevelBelowExtractor,
+	                              Speed_mm_s := "VTD_FB_DB_5".VTDSpeed_mm_s,
+	                              LE_Bypass := "LE_Bypass(5)",
+	                              BCD_Start_Comm_Test_HMI := "BCD_Test_Comm_HMI(5)",
+	                              BCD_Enable_Trigger_HMI := "BCD_Enable_Trigger_HMI(5)",
+	                              BCD_Disable_Trigger_HMI := "BCD_Disable_Trigger_HMI(5)",
+	                              BCD_Execute_Function := "SICK_Lector_Control_DB_5".Enable_Req,
+	                              System_Busy => "System_5_Busy");
+	    END_CASE;
+	END_IF;
+	
+	
+	
+	
+END_FUNCTION_BLOCK
+

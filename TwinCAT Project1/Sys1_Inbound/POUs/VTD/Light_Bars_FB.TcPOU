@@ -6,6 +6,9 @@ VAR_INPUT
 	VTD_Mode:  UINT;
 	VTD_Speed:  INT;
 	Fault:  BOOL;
+	// Drive enable state of the VTD. Replaces the Siemens "SinaSpeed_VTD_DB_1".EnableAxis
+	// (enable of the former G120 drive). Suggested source: VTD_Control.Motor.stStatus.bOutputStageEnabled (PI 1.2).
+	i_bDriveEnabled:  BOOL;
 END_VAR
 VAR_OUTPUT
 	Animation_B1:  BYTE;
@@ -24,11 +27,13 @@ END_VAR
 IF VTD_Mode = 0 AND NOT Fault THEN // (0)Disabled = No light  
     Animation_B1:= Animation_B2:= 0;
     
-ELSIF VTD_Mode = 1 AND VTD_Speed = 0 AND  NOT Fault AND NOT "SinaSpeed_VTD_DB_1".EnableAxis THEN // (1)Manual= Yellow Stop
+// SIEMENS-LEGACY: ELSIF VTD_Mode = 1 AND VTD_Speed = 0 AND  NOT Fault AND NOT "SinaSpeed_VTD_DB_1".EnableAxis THEN // (1)Manual= Yellow Stop
+ELSIF VTD_Mode = 1 AND VTD_Speed = 0 AND  NOT Fault AND NOT i_bDriveEnabled THEN // (1)Manual= Yellow Stop
     Animation_B1 := Animation_B2 := 1;
     Color_B1 := Color_B2 := 4;
     
-ELSIF VTD_Mode = 1 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND "SinaSpeed_VTD_DB_1".EnableAxis THEN // (1)Manual= Yellow until 33%
+// SIEMENS-LEGACY: ELSIF VTD_Mode = 1 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND "SinaSpeed_VTD_DB_1".EnableAxis THEN // (1)Manual= Yellow until 33%
+ELSIF VTD_Mode = 1 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND i_bDriveEnabled THEN // (1)Manual= Yellow until 33%
     Animation_B1 := Animation_B2 := 2;
     Speed_B1 := Speed_B2 := 2;
     Color_B1 := Color_B2 := 4;
@@ -43,12 +48,14 @@ ELSIF VTD_Mode = 1 AND VTD_Speed > 33 AND VTD_Speed <= 100 AND  NOT Fault THEN /
 //     Speed_B1 := Speed_B2 := 1;
 //     Color_B1 := Color_B2 := 4;
     
-ELSIF VTD_Mode = 2 AND VTD_Speed = 0 AND  NOT Fault AND NOT "SinaSpeed_VTD_DB_1".EnableAxis THEN // (2)Semi-auto = Blue Stop
+// SIEMENS-LEGACY: ELSIF VTD_Mode = 2 AND VTD_Speed = 0 AND  NOT Fault AND NOT "SinaSpeed_VTD_DB_1".EnableAxis THEN // (2)Semi-auto = Blue Stop
+ELSIF VTD_Mode = 2 AND VTD_Speed = 0 AND  NOT Fault AND NOT i_bDriveEnabled THEN // (2)Semi-auto = Blue Stop
     Animation_B1 := Animation_B2 := 1;
     Color_B1 := Color_B2 := 9;
     Speed_B1 := Speed_B2 := 0;
     
-ELSIF VTD_Mode = 2 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND "SinaSpeed_VTD_DB_1".EnableAxis THEN // (2)Semi-auto = Blue until 33%
+// SIEMENS-LEGACY: ELSIF VTD_Mode = 2 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND "SinaSpeed_VTD_DB_1".EnableAxis THEN // (2)Semi-auto = Blue until 33%
+ELSIF VTD_Mode = 2 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND i_bDriveEnabled THEN // (2)Semi-auto = Blue until 33%
     Animation_B1 := Animation_B2 := 2;
     Speed_B1 := Speed_B2 := 2;
     Color_B1 := Color_B2 := 9;
@@ -63,11 +70,13 @@ ELSIF VTD_Mode = 2 AND VTD_Speed > 33 AND VTD_Speed <= 100 AND  NOT Fault THEN /
 //     Speed_B1 := Speed_B2 := 1;
 //     Color_B1 := Color_B2 := 9;
     
-ELSIF VTD_Mode = 3 AND VTD_Speed = 0 AND  NOT Fault AND NOT "SinaSpeed_VTD_DB_1".EnableAxis THEN // (3)Auto = Green Stop
+// SIEMENS-LEGACY: ELSIF VTD_Mode = 3 AND VTD_Speed = 0 AND  NOT Fault AND NOT "SinaSpeed_VTD_DB_1".EnableAxis THEN // (3)Auto = Green Stop
+ELSIF VTD_Mode = 3 AND VTD_Speed = 0 AND  NOT Fault AND NOT i_bDriveEnabled THEN // (3)Auto = Green Stop
     Animation_B1 := Animation_B2 := 1;
     Color_B1 := Color_B2 := 0;
     
-ELSIF VTD_Mode = 3 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND "SinaSpeed_VTD_DB_1".EnableAxis THEN // (3)Auto = Green until 33%
+// SIEMENS-LEGACY: ELSIF VTD_Mode = 3 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND "SinaSpeed_VTD_DB_1".EnableAxis THEN // (3)Auto = Green until 33%
+ELSIF VTD_Mode = 3 AND VTD_Speed > 0 AND VTD_Speed <= 33 AND  NOT Fault AND i_bDriveEnabled THEN // (3)Auto = Green until 33%
     Animation_B1 := Animation_B2 := 2;
     Speed_B1 := Speed_B2 := 2;
     Color_B1 := Color_B2 := 0;

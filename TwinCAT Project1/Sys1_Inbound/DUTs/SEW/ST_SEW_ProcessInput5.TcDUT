@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_SEW_ProcessInput5" Id="{fc541b0b-84e8-471d-8efa-de89ed72c844}">
+    <Declaration><![CDATA[// Raw process input image of a SEW drive running MOVIKIT Velocity with the
+// "5 PD" basic profile, plus the EtherCAT diagnostics of the drive box.
+// Source: SEW manual 33959862, chapters 4.2 and 9.5.
+TYPE ST_SEW_ProcessInput5 :
+STRUCT
+    aWord : ARRAY[1..5] OF UINT; // PI 1..5, raw
+    bWcStateError : BOOL;        // EtherCAT WcState (TRUE = data invalid)
+    uiEcState : UINT;            // EtherCAT InfoData.State (8 = OP)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

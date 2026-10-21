@@ -13,6 +13,13 @@ STRUCT
 	Full_Speed:	UINT;
 	Manual_Speed:	UINT;
 	Safety_stop_Timeout:	UINT;
+
+	// SEW MOVIKIT Velocity scaling (user units from MOVISUITE). 0 = not configured: the conveyor does not move.
+	// Motor.Speed uses the units of Full_Speed / Slow_Speed / Manual_Speed.
+	// Legacy Siemens scaling for reference: Motor.Speed 130 = 1865 rpm (G120 reference speed).
+	rSewSpeedPerUnit:	REAL;     // PO 2 setpoint [user units] per 1 unit of Motor.Speed
+	uiSewAcceleration:	UINT;    // PO 3 acceleration [user units]
+	uiSewDeceleration:	UINT;    // PO 4 deceleration [user units]
 END_STRUCT
 END_TYPE
 ]]></Declaration>

@@ -1,0 +1,13 @@
+FUNCTION "GeneralErros_HMII"   // FC 13, author 
+
+   // RETURN : Void
+BEGIN
+"HMI_DB".GeneralErrors.%X0 := "Control_DB".LCnv_Control[1].Safety_Stop_Cnrl.Error;
+"HMI_DB".GeneralErrors.%X1 := "Control_DB".LCnv_Control[1].Safety_Stop_Cnrl.Error;
+"HMI_DB".GeneralErrors.%X2 := "Control_DB".LCnv_Control[2].Safety_Stop_Cnrl.Error;
+"HMI_DB".GeneralErrors.%X3 := "Control_DB".LCnv_Control[2].Safety_Stop_Cnrl.Error;
+"HMI_DB".GeneralErrors.%X4 := "Control_DB".LCnv_Control[3].Safety_Stop_Cnrl.Error;
+"HMI_DB".GeneralErrors.%X5 := "Control_DB".LCnv_Control[3].Safety_Stop_Cnrl.Error;
+
+"Error" := "System_DB_VTD".Error OR "System_DB_Carousel".Error;
+END_FUNCTION

@@ -1,0 +1,24 @@
+DATA_BLOCK "Barcode_FB_DB_5"   // InstanceDB 329  instance of "Barcode_Station_FB"
+
+VAR_INPUT
+   Sick_Result : String;
+END_VAR
+
+VAR_OUTPUT
+   Counter : UInt;
+END_VAR
+
+VAR_IN_OUT
+   Station_Control : "Barcode_Station_UDT";
+   Auto_Start_Lector : Bool;
+   Auto_Stop_Lector : Bool;
+END_VAR
+
+VAR
+   State : UInt;
+   R_Start_DB : R_TRIG;
+   T_Read_DB : TON_TIME;
+END_VAR
+
+
+// ---- start values (path : type := value)

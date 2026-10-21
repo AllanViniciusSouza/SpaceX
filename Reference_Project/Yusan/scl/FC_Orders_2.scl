@@ -1,0 +1,356 @@
+FUNCTION "FC_Orders_2"   // FC 98, author 
+
+VAR_INPUT
+   Sys : UInt;
+END_VAR
+
+VAR_IN_OUT
+   System : "System_UDT";
+   Auto_Test : "Auto_Test_1";
+   VTD_CurrentOrder : UDInt;
+   Pallet_InOut_CurrentOrder : UDInt;
+   Shuttle_InOut_CurrentOrder : UDInt;
+   System_Busy : Bool;
+END_VAR
+
+VAR_TEMP
+   i : Int;
+   j : Int;
+   EmptyOrder : "OrderTable_UDT";
+END_VAR
+
+   // RETURN : Void
+BEGIN
+IF "HMI_OrderTable".StartRow < 0 THEN
+    "HMI_OrderTable".StartRow := 0;
+END_IF;
+IF "HMI_OrderTable".StartRow > 90 THEN
+    "HMI_OrderTable".StartRow := 90;
+END_IF;
+
+//System - Order Table
+//Place Order manually
+IF "HMI_OrderTable".PlaceOrder_PB AND "HMI_OrderTable".PlacingNewOrder THEN
+    "HMI_OrderTable".PlaceOrder_PB := FALSE;
+    CASE "HMI_OrderTable".Device OF
+            
+        1:
+            "HMI_OrderTable".OrderTable[0].Device := 'VTD';
+        2:
+            "HMI_OrderTable".OrderTable[0].Device := 'Pallet In Out';
+        3:
+            "HMI_OrderTable".OrderTable[0].Device := 'Shuttle In Out';
+    END_CASE;
+    IF "HMI_OrderTable".Device > 9 THEN
+        "HMI_OrderTable".OrderTable[0].OPC_Control.Destination_Location := 0;
+    END_IF;
+    // "System_DB_VTD".OrderSent := "HMI_OrderTable".Device > 0;
+    #System.StepTable[1] := "HMI_OrderTable".OrderTable[0];
+    #System.StepTable[1].OrderNo := -1;
+    #System.StepTable[1].StepNo := -1;
+    #System.StepTable[1].PlaceTime := "Time".CurrentLocalTime;
+    #System.StepTable[1].Status := 'Queued';
+END_IF;
+
+//Pause Order Push Button
+IF "HMI_OrderTable".PauseOrders_PB THEN
+    "HMI_OrderTable".PauseOrders_PB := FALSE;
+    #System.PauseOrders := TRUE;
+END_IF;
+//Resume Order Push Button
+IF "HMI_OrderTable".ResumeOrder_PB THEN
+    "HMI_OrderTable".ResumeOrder_PB := FALSE;
+    #System.ResumeOrders := TRUE;
+END_IF;
+//Cancel Order Push Button
+IF "HMI_OrderTable".CancelOrder_PB THEN
+    "HMI_OrderTable".CancelOrder_PB := FALSE;
+    #System.CancelOrders := TRUE;
+END_IF;
+
+//Cancel This Order Push Button
+IF "HMI_OrderTable".CancelThisOrder_PB THEN
+    "HMI_OrderTable".CancelThisOrder_PB := FALSE;
+    IF "HMI_OrderTable".OrderTable["HMI_OrderTable".PopUp_Index].Status = 'Error' THEN
+        #System.OrderTable["HMI_OrderTable".PopUp_Index].Status := 'Error\Cancel';
+        IF #System.CurrentOrder = "HMI_OrderTable".PopUp_Index THEN
+            #System.CurrentOrder -= 1;
+        END_IF;
+        
+        
+        IF #System.OrderTable["HMI_OrderTable".PopUp_Index + "HMI_OrderTable".StartRow].Device = 'VTD' THEN
+            #VTD_CurrentOrder := 0;
+        ELSIF #System.OrderTable["HMI_OrderTable".PopUp_Index + "HMI_OrderTable".StartRow].Device = 'Pallet In Out' THEN
+            #Pallet_InOut_CurrentOrder := 0;
+        ELSIF #System.OrderTable["HMI_OrderTable".PopUp_Index + "HMI_OrderTable".StartRow].Device = 'Shuttle In Out' THEN
+            #Shuttle_InOut_CurrentOrder := 0;
+        END_IF;
+        
+    END_IF;
+    
+END_IF;
+
+//Copy data
+FOR #i := 1 TO 9 DO
+    #j := "HMI_OrderTable".StartRow + #i;
+    "HMI_OrderTable".Index[#i] := #j;
+    "HMI_OrderTable".OrderTable[#i] := #System.OrderTable[#j];
+    //Color State
+    IF "HMI_OrderTable".OrderTable[#i].Status = 'Queued' THEN
+        "HMI_OrderTable".State[#i] := 1;
+    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Running' THEN
+        "HMI_OrderTable".State[#i] := 2;
+    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Completed' THEN
+        "HMI_OrderTable".State[#i] := 3;
+    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Error' THEN
+        "HMI_OrderTable".State[#i] := 4;
+    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Paused' THEN
+        "HMI_OrderTable".State[#i] := 5;
+    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Canceled' THEN
+        "HMI_OrderTable".State[#i] := 6;
+    ELSIF "HMI_OrderTable".OrderTable[#i].Status = 'Error\Cancel' THEN
+        "HMI_OrderTable".State[#i] := 7;
+    ELSE
+        "HMI_OrderTable".State[#i] := 0;
+    END_IF;
+END_FOR;
+
+IF NOT "HMI_OrderTable".PlacingNewOrder THEN
+    "HMI_OrderTable".Device := 0;
+END_IF;
+
+//Error PopUp Window
+IF "HMI_OrderTable".PopUp_ErrorWindow_Active AND NOT "HMI_OrderTable".PlacingNewOrder THEN
+    "HMI_OrderTable".OrderTable[0] := "HMI_OrderTable".OrderTable["HMI_OrderTable".PopUp_Index];
+    IF "HMI_OrderTable".OrderTable[0].Status = 'Error' THEN
+        "HMI_OrderTable".State[0] := 4;
+    ELSIF "HMI_OrderTable".OrderTable[0].Status = 'Error\Cancel' THEN
+        "HMI_OrderTable".State[0] := 7;
+    ELSE
+        "HMI_OrderTable".State[0] := 0;
+    END_IF;
+ELSIF NOT "HMI_OrderTable".PopUp_ErrorWindow_Active AND NOT "HMI_OrderTable".PlacingNewOrder THEN
+    "HMI_OrderTable".OrderTable[0] := #EmptyOrder;
+END_IF;
+
+REGION Testing area
+    IF ("HMI_Box_Connected_1" = #System.Id OR ("HMI_Box_Connected_1" >= (#System.Id * 10) + 1 AND "HMI_Box_Connected_1" <= (#System.Id * 10) + 8)) OR
+        ("HMI_Box_Connected_2" = #System.Id OR ("HMI_Box_Connected_1" >= (#System.Id * 10) + 1 AND "HMI_Box_Connected_1" <= (#System.Id * 10) + 8))
+    THEN
+        #System_Busy := TRUE;
+    ELSE
+        #System_Busy := FALSE;
+        IF "Comissioning_Var" THEN
+        //Visibilities
+        //Running in auto mode
+        IF #Auto_Test.Running AND NOT #Auto_Test.Manual AND NOT #Auto_Test.Pause THEN
+            "OrderTable_HMI"."Start Test Visibility" := FALSE;
+            "OrderTable_HMI"."Stop Test Visibility" := TRUE;
+            "OrderTable_HMI"."Pause Test Visibility" := TRUE;
+            "OrderTable_HMI"."Resume Visibility" := FALSE;
+            "OrderTable_HMI"."Clear Table Visibility" := FALSE;
+            "OrderTable_HMI"."Manual order Visibility" := FALSE;
+            //Running and paused
+        ELSIF #Auto_Test.Running AND #Auto_Test.Pause AND NOT #Auto_Test.Manual THEN
+            "OrderTable_HMI"."Start Test Visibility" := FALSE;
+            "OrderTable_HMI"."Stop Test Visibility" := TRUE;
+            "OrderTable_HMI"."Pause Test Visibility" := FALSE;
+            "OrderTable_HMI"."Resume Visibility" := TRUE;
+            "OrderTable_HMI"."Clear Table Visibility" := FALSE;
+            "OrderTable_HMI"."Manual order Visibility" := FALSE;
+            //Running and Manual
+        ELSIF #Auto_Test.Manual AND #Auto_Test.Running THEN
+            "OrderTable_HMI"."Start Test Visibility" := FALSE;
+            "OrderTable_HMI"."Stop Test Visibility" := FALSE;
+            "OrderTable_HMI"."Pause Test Visibility" := FALSE;
+            "OrderTable_HMI"."Resume Visibility" := FALSE;
+            "OrderTable_HMI"."Clear Table Visibility" := FALSE;
+            "OrderTable_HMI"."Manual order Visibility" := FALSE;
+            //Manual and not running
+        ELSIF #Auto_Test.Manual AND NOT #Auto_Test.Running THEN
+            "OrderTable_HMI"."Start Test Visibility" := FALSE;
+            "OrderTable_HMI"."Stop Test Visibility" := FALSE;
+            "OrderTable_HMI"."Pause Test Visibility" := FALSE;
+            "OrderTable_HMI"."Resume Visibility" := FALSE;
+            "OrderTable_HMI"."Clear Table Visibility" := FALSE;
+            "OrderTable_HMI"."Manual order Visibility" := TRUE;
+            // not running, in automatic and no error
+        ELSIF #Auto_Test.Automatic AND NOT #Auto_Test.Error AND #Auto_Test.State = 10 THEN
+            "OrderTable_HMI"."Start Test Visibility" := TRUE;
+            "OrderTable_HMI"."Stop Test Visibility" := FALSE;
+            "OrderTable_HMI"."Pause Test Visibility" := FALSE;
+            "OrderTable_HMI"."Resume Visibility" := FALSE;
+            "OrderTable_HMI"."Clear Table Visibility" := TRUE;
+            "OrderTable_HMI"."Manual order Visibility" := TRUE;
+        ELSIF NOT #Auto_Test.Running THEN
+            "OrderTable_HMI"."Clear Table Visibility" := TRUE;
+            "OrderTable_HMI"."Manual order Visibility" := TRUE;
+        END_IF;
+        
+        //PALLET TYPE VISIBILITY
+        IF "OrderTable_HMI"."Pallet Type" = 1 THEN //CHEP
+            "OrderTable_HMI"."Tower 1 Visibility" := FALSE;
+            "OrderTable_HMI"."Tower 2 Visibility" := FALSE;
+            "OrderTable_HMI"."Extractor Visibility" := FALSE;
+        ELSIF "OrderTable_HMI"."Pallet Type" = 2 THEN //EURO
+            "OrderTable_HMI"."Tower 1 Visibility" := TRUE;
+            "OrderTable_HMI"."Tower 2 Visibility" := TRUE;
+            "OrderTable_HMI"."Extractor Visibility" := TRUE;
+        END_IF;
+        
+        IF #Auto_Test.Manual THEN
+            "OrderTable_HMI"."Tower Visibility" := TRUE;
+            "OrderTable_HMI"."Level Visibility" := TRUE;
+            "OrderTable_HMI"."ToExtractor Visibility" := TRUE;
+            "OrderTable_HMI".Auto_Settings_Visibility := FALSE;
+            IF #Auto_Test.Level <> 0 AND NOT #Auto_Test.Running THEN
+                "OrderTable_HMI"."Send VTD Order Visibility" := TRUE;
+            END_IF;
+            IF (("OrderTable_HMI"."Pallet Type" = 1) OR
+                ("OrderTable_HMI"."Pallet Type" = 2 AND "OrderTable_HMI".Tower = 1 AND "OrderTable_HMI"."Tower 1 Pallet Alignment" <> 0 AND "OrderTable_HMI".Transfer_From_To = 2) OR
+                ("OrderTable_HMI"."Pallet Type" = 2 AND "OrderTable_HMI".Tower = 2 AND "OrderTable_HMI"."Tower 1 Pallet Alignment" <> 0 AND "OrderTable_HMI".Transfer_From_To = 2) OR
+                ("OrderTable_HMI"."Pallet Type" = 2 AND "OrderTable_HMI"."Extractor Pallet Alignment" <> 0 AND "OrderTable_HMI".Transfer_From_To = 1))
+                AND
+                "OrderTable_HMI".Tower <> 0 AND "OrderTable_HMI".Transfer_From_To <> 0 AND NOT #Auto_Test.Running THEN
+                "OrderTable_HMI"."Send CNV Order Visibility" := TRUE;
+            ELSE
+                "OrderTable_HMI"."Send CNV Order Visibility" := FALSE;
+            END_IF;
+        ELSE
+            "OrderTable_HMI"."Tower Visibility" := FALSE;
+            "OrderTable_HMI"."Level Visibility" := FALSE;
+            "OrderTable_HMI"."ToExtractor Visibility" := FALSE;
+            "OrderTable_HMI".Auto_Settings_Visibility := TRUE;
+            "OrderTable_HMI"."Send VTD Order Visibility" := FALSE;
+            "OrderTable_HMI"."Send CNV Order Visibility" := FALSE;
+        END_IF;
+        
+        "OrderTable_HMI"."Pallet Type Visibility" := TRUE;
+    ELSE
+        "OrderTable_HMI"."Tower Visibility" := FALSE;
+        "OrderTable_HMI"."Level Visibility" := FALSE;
+        "OrderTable_HMI"."ToExtractor Visibility" := FALSE;
+        "OrderTable_HMI".Auto_Settings_Visibility := FALSE;
+        "OrderTable_HMI"."Send VTD Order Visibility" := FALSE;
+        "OrderTable_HMI"."Send CNV Order Visibility" := FALSE;
+        "OrderTable_HMI"."Pallet Type Visibility" := FALSE;
+        "OrderTable_HMI"."Clear Table Visibility" := TRUE;
+        "OrderTable_HMI"."Manual order Visibility" := FALSE;
+    END_IF;
+    
+        //Buttons actions
+        //START
+        IF "OrderTable_HMI".Start THEN
+            #Auto_Test.Start := TRUE;
+        END_IF;
+        
+        //PAUSE
+        IF "OrderTable_HMI".Pause THEN
+            #Auto_Test.Pause := TRUE;
+        END_IF;
+        
+        //STOP
+        IF "OrderTable_HMI".Stop THEN
+            #Auto_Test.Stop := TRUE;
+        ELSE
+            #Auto_Test.Stop := FALSE;
+        END_IF;
+        
+        //RESUME
+        IF "OrderTable_HMI".Resume THEN
+            #Auto_Test.Pause := FALSE;
+        END_IF;
+        
+        //MANUAL
+        #Auto_Test.Manual := "OrderTable_HMI"."Manual order";
+        
+        //SEND VTD ORDER
+        "R_Send_VTD_Order"(CLK := "OrderTable_HMI"."Send VTD Order");
+        IF "R_Send_VTD_Order".Q THEN
+            #Auto_Test.Send_VTD_Order := TRUE;
+        END_IF;
+        
+        //SEND CNV ORDER
+        "R_Send_CNV_Order"(CLK := "OrderTable_HMI"."Send CNV Order");
+        IF "R_Send_CNV_Order".Q THEN
+            #Auto_Test.Send_CNV_Order := TRUE;
+        END_IF;
+        
+        //TEST SETTINGS
+        //PALLET TYPE
+        IF "OrderTable_HMI"."Pallet Type" = 1 THEN
+            #Auto_Test."Pallet Type" := 'C';
+        ELSIF "OrderTable_HMI"."Pallet Type" = 2 THEN
+            #Auto_Test."Pallet Type" := 'E';
+        ELSE
+            #Auto_Test."Pallet Type" := ' ';
+        END_IF;
+        
+        //PALLET ALIGNMENT TOWER 1
+        IF "OrderTable_HMI"."Tower 1 Pallet Alignment" = 1 AND
+            (("OrderTable_HMI".Transfer_From_To = 2 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+            #Auto_Test."Tower 1 Pallet Alignment" := 'R';
+            #Auto_Test.Pallet_Allignment := 'R';
+        ELSIF "OrderTable_HMI"."Tower 1 Pallet Alignment" = 2 AND
+            (("OrderTable_HMI".Transfer_From_To = 2 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+            #Auto_Test."Tower 1 Pallet Alignment" := 'L';
+            #Auto_Test.Pallet_Allignment := 'L';
+        END_IF;
+        
+        //PALLET ALIGNMENT ECONVEYOR
+        IF "OrderTable_HMI"."Extractor Pallet Alignment" = 1 AND
+            (("OrderTable_HMI".Transfer_From_To = 1 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+            #Auto_Test."Extractor Pallet Alignment" := 'R';
+            #Auto_Test.Pallet_Allignment := 'R';
+        ELSIF "OrderTable_HMI"."Extractor Pallet Alignment" = 2 AND
+            (("OrderTable_HMI".Transfer_From_To = 1 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+            #Auto_Test."Extractor Pallet Alignment" := 'L';
+            #Auto_Test.Pallet_Allignment := 'L';
+        ELSIF "OrderTable_HMI"."Extractor Pallet Alignment" = 3 AND
+            (("OrderTable_HMI".Transfer_From_To = 1 AND #Auto_Test.Manual) OR NOT #Auto_Test.Manual) THEN
+            #Auto_Test."Extractor Pallet Alignment" := 'C';
+            #Auto_Test.Pallet_Allignment := 'C';
+        END_IF;
+        
+        //AUTOMATIC SETTING FOR BUTTON TRANSFER FROM_TO
+        IF NOT "Control_DB".VTD_Sys[#Sys].Running AND "Control_DB".VTD_Sys[#Sys].Current_Level <> 0 THEN
+            IF #Auto_Test.Tower = 1 AND "HMI_DB".ScreenNo_Main = 9 THEN
+                //CNV 1
+                IF "Control_DB".ECnv_Sys[#Sys].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv1.Cnv_Occupied AND
+                    NOT "Control_DB".ECnv_Sys[#Sys].Running AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv1.Running THEN
+                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To := 2;//to buffer
+                ELSIF NOT "Control_DB".ECnv_Sys[#Sys].Cnv_Occupied AND "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv1.Cnv_Occupied AND
+                    NOT "Control_DB".ECnv_Sys[#Sys].Running AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv1.Running THEN
+                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To := 1;//to extractor
+                ELSE
+                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To;
+                END_IF;
+                //CNV 2
+            ELSIF #Auto_Test.Tower = 2 AND "HMI_DB".ScreenNo_Main = 9 THEN   //CNV 2
+                IF "Control_DB".ECnv_Sys[#Sys].Cnv_Occupied AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv2.Cnv_Occupied AND
+                    NOT "Control_DB".ECnv_Sys[#Sys].Running AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv2.Running THEN
+                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To := 2;
+                ELSIF NOT "Control_DB".ECnv_Sys[#Sys].Cnv_Occupied AND "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv2.Cnv_Occupied AND
+                    NOT "Control_DB".ECnv_Sys[#Sys].Running AND NOT "Control_DB".LCnv_Sys[#Sys].Cnv_Level["Control_DB".VTD_Sys[#Sys].Current_Level].Cnv2.Running THEN
+                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To := 1;
+                ELSE
+                    #Auto_Test.Transfer_From_To := "OrderTable_HMI".Transfer_From_To;
+                END_IF;
+            END_IF;
+        END_IF;
+        
+        //LEVELS AND CYCLES
+        #Auto_Test."From level" := "OrderTable_HMI"."From level";
+        #Auto_Test."To level" := "OrderTable_HMI"."To level";
+        #Auto_Test."Testing Time" := "OrderTable_HMI"."Testing Time";
+        #Auto_Test."Numer of cycles" := "OrderTable_HMI"."Numer of cycles";
+        #Auto_Test.Level := "OrderTable_HMI".Level;
+        #Auto_Test.Tower := "OrderTable_HMI".Tower;
+        "OrderTable_HMI"."Time Running" := DINT_TO_UINT(TIME_TO_DINT(#Auto_Test.Time_Runnng) / 60000);
+        "OrderTable_HMI".Actual_Cycle := UINT_TO_BYTE(#Auto_Test.N_Cycles);
+    END_IF;
+END_REGION ;   
+
+
+
+END_FUNCTION

@@ -1,0 +1,350 @@
+FUNCTION_BLOCK "PickConveyor_FB"   // FB 35, author Mertin Coetzee
+
+VAR_INPUT
+   Cnv_Settings : "Pick_Cnv_Settings";
+END_VAR
+
+VAR_IN_OUT
+   SinaSpeed_Chain : SinaSpeed;
+END_VAR
+
+VAR
+   State : UInt;
+   Timer_TC : TON_TIME;
+   Timer_Transfer : TON_TIME;
+   Watchdog : TON_TIME;
+   Transfer_Direction : String;
+   MainSetpoint_Chain : Int;
+   IEC_Timer_0_Instance_1 : TON_TIME;
+   R_TRIG_Instance : R_TRIG;
+END_VAR
+
+VAR_TEMP
+   Execute_Old : Bool;
+   Stop_Old : Bool;
+END_VAR
+
+BEGIN
+"R_TRIG_DB_28"(CLK := "Control_DB".Pick_Station.Instruction.Execute AND NOT #Execute_Old);
+"R_TRIG_DB_29"(CLK := "Control_DB".Pick_Station.Instruction.Stop AND NOT #Stop_Old);
+
+#Execute_Old := "Control_DB".Pick_Station.Instruction.Execute;
+#Stop_Old := "Control_DB".Pick_Station.Instruction.Stop;
+
+"Control_DB".Pick_Station.Enabled := "Control_DB".Pick_Station.Instruction.Enable;
+
+//MODES
+"Control_DB".Pick_Station.Mode := "Control_DB".Pick_Station.Instruction.Mode_Change;
+IF ("Control_DB".Pick_Station.Mode = 1 OR "Control_DB".Pick_Station.Mode = 5) AND NOT "Control_DB".Pick_Station.Error THEN
+    #State := 500;
+END_IF;
+
+#R_TRIG_Instance(CLK := "Control_DB".Pick_Station.Mode = 3);
+IF #R_TRIG_Instance.Q THEN
+    #State := 0;
+END_IF;
+
+(*
+TODO:
+01. Need to add statemachine watchdog - Done
+02. Extractor needs to be on same floor for pallet to be moved in manual passed Rbwd - Done
+03. Complete reset state - Done
+04. Add stop inputs - Done
+05. Need to add variable motor speed, manual needs to be slower. - Done
+06. Need to add cyclic error checking. For odd sensor combinations as well - Partially done
+07. Need to add Shuttle monitor - Done
+08. Need to add Task ID check and start bit check to outbound pallet move. Check direction of pallet movement based on connected Cnv.
+09. Need to add checks for wrong direction of travel - Done
+10. Add checks for unsafe conditions with Cnv_Inputs - Partially Done
+11. Define Error codes - DOne
+12. Add watchdof time to Cnv Settings - Done
+13. Add self-timeout on manual 
+14. For shuttle in place sensor checks take into account extractor floor and safety stopper state
+15. Confirm modes and states are correct (Semi-auto and maintenance as well)
+16. Add the correct transfer process for the logistex-spacemaker pallet handovers.
+
+Mode select is done via the HMI. Might add external mode select switches.
+        
+        Mode select mask:
+        0: Disabled
+        1: Manual
+        2: Semi-Auto
+        3: Auto
+        4: Teach - N/A for Cnv
+        5: Maintenance
+        
+Device ID Format: XXYYZZ    
+XX = Device type   
+    01   VTD
+    10  Cnv_Front_of_VTD
+    11  Cnv_Rear_of_VTD
+    12  Cnv_On_Extractor
+    20  Safety_Stop_Front_of_VTD
+    21  Safety_Stop_Rear_of_VTD
+YY = Floor   
+ZZ = VTD Connected to    
+Example: 110203 Conveyor at the rear of VTD 3 on level 2
+
+Pallet Alignment
+0 = no alignment
+1 = center alignment
+2 = Left
+3 = Right
+
+ Sensor order for the conveyor:
+ Lfwd Lpd1 Lpd2
+  []   []   []
+ ##############################
+ #        Pallet Flow         #
+ #         ------->>          #
+ #                            #
+ #                            #
+ ##############################
+                  []   []   []
+                 Rpd2 Rpd1 Rbwd      
+*)
+
+REGION Cyclic Checks    
+    // Update the pallet type as the Cnv_Inputs are triggered.
+    "Control_DB".Pick_Station.Cnv_Occupied := NOT "Pick Station";
+    
+    // Update the Cnv_Control opbject
+    "Control_DB".Pick_Station.SM_State := #State;
+    "Control_DB".Pick_Station.Stopped := NOT "Control_DB".Pick_Station.Running;
+    IF "Control_DB".Pick_Station.Instruction.Inbound_Ready OR "Control_DB".Pick_Station.Instruction.Outbound_Ready THEN
+        "Control_DB".Pick_Station.Ready_For_Task := TRUE;
+    ELSE
+        "Control_DB".Pick_Station.Ready_For_Task := FALSE;
+    END_IF;
+END_REGION
+
+REGION Auto/Semi auto mode
+    CASE #State OF
+        0: //Initialization
+            "Control_DB".Pick_Station.Instruction.Transfer_Complete := 0;
+            "Control_DB".Pick_Station.Instruction.Transfer_in_Progress := FALSE;
+            "Control_DB".Pick_Station.Running := FALSE;
+            "Control_DB".Pick_Station.Motor.Forward := FALSE;
+            "Control_DB".Pick_Station.Motor.Reverse := FALSE;
+            "Control_DB".Pick_Station.Motor.Speed := 0;
+            #Transfer_Direction := '';
+            #Timer_Transfer(IN := FALSE,
+                            PT := T#0ms);
+            IF "Control_DB".Pick_Station.Enabled AND ("Control_DB".Pick_Station.Mode = 3 OR "Control_DB".Pick_Station.Mode = 2) AND "Control_DB".Pick_Station.Error = 0 THEN
+                #State := 10;
+            END_IF;
+            
+        10: //Standby - Conveyor ready to receive instruction
+            IF ("R_TRIG_DB_28".Q OR "Control_DB".Pick_Station.Instruction.Start_Transfer) THEN
+                //Inbound Transfer
+                IF "Control_DB".Pick_Station.Instruction.Inbound_Ready AND NOT "Control_DB".Pick_Station.Running AND "Control_DB".Pick_Station.Error = 0 THEN
+                    //Check sensors
+                    IF "Control_DB".PopUp_Cnv[4].Inputs."Lift Down" THEN //TO pick station
+                        "Control_DB".Pick_Station.Done := FALSE;
+                        "Control_DB".Pick_Station.Instruction.Transfer_in_Progress := TRUE;
+                        "Control_DB".Pick_Station.Current_Task_ID := "Control_DB".Pick_Station.Instruction.Task_ID;
+                        #State := 30;// Chain Running (Popup Down) 
+                    ELSE
+                        "Control_DB".Pick_Station.Warning := 1; //Cannot transfer from that conveyor
+                    END_IF;
+                    
+                    //Outbound Transfer    
+                ELSIF "Control_DB".Pick_Station.Instruction.Outbound_Ready AND NOT "Control_DB".Pick_Station.Running AND "Control_DB".Pick_Station.Error = 0 THEN
+                    //Check sensors
+                    IF "Control_DB".PopUp_Cnv[1].Inputs."Lift Down"  THEN
+                        "Control_DB".Pick_Station.Done := FALSE;
+                        "Control_DB".Pick_Station.Instruction.Transfer_in_Progress := TRUE;
+                        "Control_DB".Pick_Station.Current_Task_ID := "Control_DB".Pick_Station.Instruction.Task_ID;
+                        #State := 40;
+                    ELSE
+                        "Control_DB".Pick_Station.Warning := 1; //Cannot transfer TO that conveyor
+                    END_IF;
+                ELSE
+                    "Control_DB".Pick_Station.Warning := 0;// No task that can be started, yet start bit has been made true.
+                END_IF;
+            ELSIF "Control_DB".Pick_Station.Instruction.Start_Transfer AND "Control_DB".VTD_Control.Current_Level <> 0 THEN
+                //Extractor not at the correct level
+                Set_Bit_F(Bit := 2,
+                            Bit_Value := 1,
+                            Var := "Control_DB".Pick_Station.Cnv_Errors.Error_Word_3);
+            END_IF;
+            
+        30: // Chain Running (Popup Down)
+            "Control_DB".Pick_Station.Running := TRUE;
+            "Control_DB".Pick_Station.Motor.Forward := TRUE;
+            "Control_DB".Pick_Station.Motor.Speed := #Cnv_Settings.Full_Speed;
+            #Transfer_Direction := 'Foward';
+            
+            IF "R_TRIG_DB_29".Q OR NOT "Pick Station" THEN
+                "Control_DB".Pick_Station.Done := TRUE;
+                "Control_DB".Pick_Station.Motor.Forward := FALSE;
+                "Control_DB".Pick_Station.Motor.Reverse := FALSE;
+                "Control_DB".Pick_Station.Motor.Speed := 0;
+                #Transfer_Direction := '';
+                #State := 0;
+            END_IF;
+            
+            //Monitor the transfer progress
+            #Timer_Transfer(IN := "IEC_Timer_0_DB_21".Q,
+                            PT := UINT_TO_TIME(#Cnv_Settings.Transfer_Time) * 1000);
+            //If the watchdog bites, kill the process
+            IF #Timer_Transfer.Q THEN //14:1 Transfer timed out
+                Set_Bit_F(Bit := 3,
+                            Bit_Value := 1,
+                            Var := "Control_DB".Pick_Station.Cnv_Errors.Error_Word_2);
+            END_IF;
+            
+        40: // Chain Running (Popup Down)
+            "Control_DB".Pick_Station.Running := TRUE;
+            "Control_DB".Pick_Station.Motor.Forward := TRUE;
+            "Control_DB".Pick_Station.Motor.Speed := #Cnv_Settings.Full_Speed;
+            #Transfer_Direction := 'Foward';
+            
+            IF "R_TRIG_DB_29".Q OR "PopUp Conveyor 1 - Pallet sensor" THEN
+                "Control_DB".Pick_Station.Done := TRUE;
+                "Control_DB".Pick_Station.Motor.Forward := FALSE;
+                "Control_DB".Pick_Station.Motor.Reverse := FALSE;
+                "Control_DB".Pick_Station.Motor.Speed := 0;
+                #Transfer_Direction := '';
+                #State := 0;
+            END_IF;
+            
+            //Monitor the transfer progress
+            #Timer_Transfer(IN := "IEC_Timer_0_DB_21".Q,
+                            PT := UINT_TO_TIME(#Cnv_Settings.Transfer_Time) * 1000);
+            //If the watchdog bites, kill the process
+            IF #Timer_Transfer.Q THEN //14:1 Transfer timed out
+                Set_Bit_F(Bit := 3,
+                            Bit_Value := 1,
+                            Var := "Control_DB".Pick_Station.Cnv_Errors.Error_Word_2);
+            END_IF;
+            
+        400: //Error state
+            "Control_DB".Pick_Station.Running := FALSE;
+            "Control_DB".Pick_Station.Motor.Speed := 0;
+            "Control_DB".Pick_Station.Motor.Forward := FALSE;
+            "Control_DB".Pick_Station.Motor.Reverse := FALSE;
+            "Control_DB".Pick_Station.Instruction.Stop := FALSE;
+            "Control_DB".Pick_Station.Instruction.Transfer_in_Progress := FALSE;
+            #Watchdog(IN := FALSE,
+                      PT := T#0S);
+            #Timer_TC(IN := FALSE,
+                      PT := T#0S);
+            #Timer_Transfer(IN := FALSE,
+                            PT := T#0S);
+            #IEC_Timer_0_Instance_1(IN := FALSE,
+                                    PT := T#0S);
+            IF "Control_DB".Pick_Station.Instruction.Reset THEN
+                "Control_DB".Pick_Station.Warning := 0;
+                "Control_DB".Pick_Station.Current_Task_ID := 0;
+                "Control_DB".Pick_Station.Error := FALSE; //Reset the conveyor
+                
+                "Control_DB".Pick_Station.Cnv_Errors.Error_Word_1 := 0;
+                "Control_DB".Pick_Station.Cnv_Errors.Error_Word_2 := 0;
+                "Control_DB".Pick_Station.Cnv_Errors.Error_Word_3 := 0;
+                "Control_DB".Pick_Station.Cnv_Errors.Error_Word_4 := 0;
+                #State := 0;
+            END_IF;
+            
+        500:
+            IF "Control_DB".Pick_Station.Enabled THEN
+                IF "Control_DB".Pick_Station.Instruction.Foward OR "Control_DB".Pick_Station.Instruction.Start_Transfer THEN
+                    "Control_DB".Pick_Station.Motor.Speed := #Cnv_Settings.Manual_Speed;
+                    "Control_DB".Pick_Station.Motor.Forward := TRUE;
+                    "Control_DB".Pick_Station.Running := TRUE;
+                ELSIF "Control_DB".Pick_Station.Instruction.Backward OR "Control_DB".Pick_Station.Instruction.Start_Transfer_Backward THEN
+                    "Control_DB".Pick_Station.Motor.Speed := #Cnv_Settings.Manual_Speed;
+                    "Control_DB".Pick_Station.Motor.Reverse := TRUE;
+                    "Control_DB".Pick_Station.Running := TRUE;
+                ELSE
+                    "Control_DB".Pick_Station.Motor.Speed := 0;
+                    "Control_DB".Pick_Station.Motor.Forward := FALSE;
+                    "Control_DB".Pick_Station.Motor.Reverse := FALSE;
+                    "Control_DB".Pick_Station.Running := FALSE;
+                END_IF;
+            END_IF;
+            
+            IF "Control_DB".Pick_Station.Mode <> 1 AND "Control_DB".Pick_Station.Mode <> 5 THEN
+                #State := 0;
+            END_IF;
+    END_CASE;
+END_REGION
+
+
+
+REGION Cyclic Error Checks
+    IF NOT "Main_Safety_RTG1_DB".SAFETY_OK_CAROUSEL THEN //11:1
+        Set_Bit_F(Bit := 0,
+                    Bit_Value := 1,
+                    Var := "Control_DB".Pick_Station.Cnv_Errors.Error_Word_1);
+    END_IF;
+    
+    IF "Control_DB".Pick_Station.Motor.Error THEN
+        Set_Bit_F(Bit := 0,
+                    Bit_Value := 1,
+                    Var := "Control_DB".Pick_Station.Cnv_Errors.Error_Word_4);
+    END_IF;
+    
+    // go to error state
+    IF "Control_DB".Pick_Station.Cnv_Errors.Error_Word_1 <> 0 OR
+        "Control_DB".Pick_Station.Cnv_Errors.Error_Word_2 <> 0 OR
+        "Control_DB".Pick_Station.Cnv_Errors.Error_Word_3 <> 0 OR
+        "Control_DB".Pick_Station.Cnv_Errors.Error_Word_4 <> 0
+    THEN
+        "Control_DB".Pick_Station.Error := TRUE;
+        #State := 400;
+    END_IF;
+END_REGION
+
+REGION VFD
+    "IEC_Timer_0_DB_21".TON(IN:="LighGuard_Cut-Off Path 01",
+                            PT:=T#3s);
+    
+    "Control_DB".Pick_Station.Motor.Ready := NOT "Control_DB".Pick_Station.Motor.Error;
+        
+    #SinaSpeed_Chain(EnableAxis := ("Control_DB".Pick_Station.Motor.Forward OR "Control_DB".Pick_Station.Motor.Reverse) AND "IEC_Timer_0_DB_21".Q,
+                     AckError := "Control_DB".Pick_Station.Instruction.Reset,
+                         SpeedSp := #MainSetpoint_Chain,
+                         RefSpeed := 1745.0,
+                         HWIDSTW := #Cnv_Settings.G120_Hardware_ID,
+                         HWIDZSW := #Cnv_Settings.G120_Hardware_ID,
+                         AxisEnabled => "Control_DB".Pick_Station.Motor.Status.%X0,
+                         Lockout => "Control_DB".Pick_Station.Motor.Error,
+                         Error => "Control_DB".Pick_Station.Motor.Error);
+        
+        //MAIN SETPOINT
+        IF "Control_DB".Pick_Station.Motor.Reverse AND "IEC_Timer_0_DB_21".Q THEN
+            #MainSetpoint_Chain := (SCALE_X(MIN := 0,
+                                            VALUE := NORM_X(MIN := 0,
+                                                            VALUE := "Control_DB".Pick_Station.Motor.Speed,
+                                                            MAX := 100),
+                                            MAX := 1745.0) * -1);
+        ELSIF "Control_DB".Pick_Station.Motor.Forward AND "IEC_Timer_0_DB_21".Q THEN
+            #MainSetpoint_Chain := SCALE_X(MIN := 0,
+                                           VALUE := NORM_X(MIN := 0,
+                                                           VALUE := "Control_DB".Pick_Station.Motor.Speed,
+                                                           MAX := 100),
+                                           MAX := 1745.0);
+        ELSE
+            #MainSetpoint_Chain := 0;
+        END_IF;
+        
+        REGION Actual Speed
+            IF #MainSetpoint_Chain > 0 THEN
+                "Control_DB".Pick_Station.Motor.Speed_Actual := SCALE_X(MIN := 0,
+                                                                 VALUE := NORM_X(MIN := 0,
+                                                                                 VALUE := #SinaSpeed_Chain.ActVelocity,
+                                                                                 MAX := 1745.0),
+                                                                 MAX := 100);
+            ELSIF #MainSetpoint_Chain < 0 THEN
+                "Control_DB".Pick_Station.Motor.Speed_Actual := SCALE_X(MIN := 0,
+                                                                 VALUE := NORM_X(MIN := 0,
+                                                                                 VALUE := #SinaSpeed_Chain.ActVelocity * -1,
+                                                                                 MAX := 1745.0),
+                                                                 MAX := 100);
+            ELSE
+                "Control_DB".Pick_Station.Motor.Speed_Actual := 0;
+            END_IF;
+        END_REGION
+ END_REGION
+END_FUNCTION_BLOCK

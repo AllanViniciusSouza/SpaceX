@@ -1,0 +1,33 @@
+// FB "SAI_Cyclic_CheckAlive" 28  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   MB_DevStatus : Word;
+END_VAR
+
+VAR_OUTPUT
+   Alive : Bool;
+   HeartBeat : Bool;
+END_VAR
+
+VAR
+   PTrigHeart : Bool;
+   NTrigHeart : Bool;
+   bResetTimer : Bool;
+   IEC_Timer : IEC_TIMER;
+END_VAR
+
+VAR_TEMP
+   DevStatus : "SAI_MB_DeviceStatus";
+END_VAR
+
+--- Network 1  Comment: Gets the cyclic device status - HeartBeat bit | Title: Gets the cyclic device status - HeartBeat bit
+   CALL FC "SAI_Copy"
+   parts: Coil, Contact
+   operands: #MB_DevStatus, #DevStatus, #DevStatus.Heart Beat, #HeartBeat
+--- Network 2  Comment: Alive bit is set to TRUE | Title: Heart Beat bit is toggling; device is connected
+   parts: Coil, Contact, NBox, O, PBox, SCoil
+   operands: #DevStatus.Heart Beat, #PTrigHeart, #NTrigHeart, #Alive, #bResetTimer
+--- Network 3  Comment: Alive bit is reset to FALSE | Title: Heart Beat bit stops toggling; device is disconnected
+   parts: Contact, RCoil, TON
+   operands: #bResetTimer, #Alive

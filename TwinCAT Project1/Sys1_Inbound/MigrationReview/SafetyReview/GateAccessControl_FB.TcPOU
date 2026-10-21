@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="GateAccessControl_FB" Id="{f287bfd7-209e-5927-a39d-8f7c78209f23}" SpecialFunc="None">
+    <Declaration><![CDATA[// MIGRATION DRAFT: not included in PLC compilation.
+// Reference: Reference_Project/GateAccessControl_FB.scl, object GateAccessControl_FB.
+// Types, globals, calls, units and behavior require manual reconciliation.
+// See docs/TIA_Missing_Blocks.md before importing as PLC code.
+// SAFETY REVIEW REQUIRED: not a TwinSAFE implementation.
+FUNCTION_BLOCK GateAccessControl_FB
+
+   VAR_INPUT
+      UnlockPermissive : Bool;
+      FaultResetCmd : Bool;
+      I_G1_GuardOpen : Bool;
+      I_L1_Unlocked : Bool;
+      GateLockedFeedback : Bool;
+      NoEStop : Bool;
+      ResetPulseTime : Time := T#500MS;
+      LockConfirmTimeout : Time := T#300S;
+      UnlockConfirmTimeout : Time := T#300S;
+   END_VAR
+
+   VAR_OUTPUT
+      O_S1_SolenoidEnergise : Bool;
+      GateClosed : Bool;
+      GateFault : Bool;
+      ForceRTE_Request : Bool;
+   END_VAR
+
+   VAR
+      ResetPulse_GuardReset   : TP;
+      LockConfirmTON   : TON;
+      UnlockConfirmTON   : TON;
+      FaultResetCmd_Edge_M   : Bool;
+      FaultResetCmd_Rising : Bool;
+      GateFault_Latch : Bool;
+      WasLockedAndValid : Bool;
+   END_VAR
+]]></Declaration>
+    <Implementation><ST><![CDATA[// MIGRATION DRAFT: not included in PLC compilation.
+// Reference: Reference_Project/GateAccessControl_FB.scl, object GateAccessControl_FB.
+// Types, globals, calls, units and behavior require manual reconciliation.
+// See docs/TIA_Missing_Blocks.md before importing as PLC code.
+// SAFETY REVIEW REQUIRED: not a TwinSAFE implementation.
+GateClosed := NOT I_G1_GuardOpen;
+
+
+
+
+
+
+
+	O_S1_SolenoidEnergise := UnlockPermissive AND NOT GateFault_Latch;
+
+
+
+
+
+
+	LockConfirmTON(IN := NOT O_S1_SolenoidEnergise AND NOT GateLockedFeedback AND GateClosed,
+	                PT := LockConfirmTimeout);
+	IF LockConfirmTON.Q THEN
+	    (*GateFault_Latch := TRUE*);
+	END_IF;
+
+	UnlockConfirmTON(IN := O_S1_SolenoidEnergise AND GateLockedFeedback,
+	                  PT := UnlockConfirmTimeout);
+	IF UnlockConfirmTON.Q THEN
+	    (*GateFault_Latch := TRUE*);
+	END_IF;
+
+
+
+
+
+
+
+
+	IF WasLockedAndValid AND NOT GateLockedFeedback AND NOT UnlockPermissive THEN
+
+	    (*ForceRTE_Request := TRUE*);
+	ELSE
+	    ForceRTE_Request := FALSE;
+	END_IF;
+
+	WasLockedAndValid := GateLockedFeedback;
+
+
+
+
+
+
+
+	FaultResetCmd_Rising := FaultResetCmd AND NOT FaultResetCmd_Edge_M;
+	FaultResetCmd_Edge_M := FaultResetCmd;
+
+	ResetPulse_GuardReset(IN := FaultResetCmd_Rising,
+	                       PT := ResetPulseTime);
+
+	IF FaultResetCmd_Rising
+	    AND NOT LockConfirmTON.Q
+	    AND NOT UnlockConfirmTON.Q
+	    AND GateClosed THEN
+	    GateFault_Latch := FALSE;
+	END_IF;
+
+	GateFault := GateFault_Latch := FALSE;
+]]></ST></Implementation>
+  </POU>
+</TcPlcObject>

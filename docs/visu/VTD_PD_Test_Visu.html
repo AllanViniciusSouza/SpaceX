@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>VTD PD Test Visu</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #ffffff; font-family: "Segoe UI", Arial, sans-serif; color: #1b1b1b; width: 1680px; }
+  .page { padding: 32px 40px 40px; }
+  h1 { font-size: 30px; margin: 0 0 4px; }
+  .sub { font-size: 16px; color: #555; margin-bottom: 20px; }
+
+  /* Visualization canvas mockup (1600 x 900) */
+  .canvas { position: relative; width: 1600px; height: 900px; background: #d4d0c8; border: 2px solid #333; }
+  .abs { position: absolute; }
+  .title { left: 0; top: 0; width: 1600px; height: 56px; background: #1f3a5f; color: #fff; font-size: 24px; font-weight: 700; display: flex; align-items: center; padding-left: 24px; }
+  .banner { left: 0; top: 56px; width: 1600px; height: 34px; background: #ffd54f; font-size: 17px; font-weight: 700; display: flex; align-items: center; padding-left: 24px; color: #5a3d00; }
+  .group { background: #ece9e3; border: 1px solid #888; border-radius: 4px; }
+  .group > .gt { font-size: 15px; font-weight: 700; padding: 6px 12px; background: #c6c2b9; border-bottom: 1px solid #888; }
+  .group.danger { border: 3px solid #c62828; }
+  .group.danger > .gt { background: #c62828; color: #fff; }
+  .row { display: flex; align-items: center; gap: 12px; padding: 7px 14px; font-size: 15px; }
+  .lamp { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; flex: none; }
+  .g { background: radial-gradient(circle at 35% 35%, #b9f6ca, #2e7d32); }
+  .r { background: radial-gradient(circle at 35% 35%, #ffcdd2, #8e8e8e); }
+  .o { background: radial-gradient(circle at 35% 35%, #ffe0b2, #8e8e8e); }
+  .y { background: radial-gradient(circle at 35% 35%, #fff9c4, #8e8e8e); }
+  .off { background: radial-gradient(circle at 35% 35%, #eeeeee, #8e8e8e); }
+  .val { background: #fff; border: 1px solid #777; font-family: Consolas, monospace; font-size: 16px; padding: 3px 8px; text-align: right; }
+  .inp { background: #fffde7; border: 2px solid #f9a825; font-family: Consolas, monospace; font-size: 16px; padding: 3px 8px; text-align: right; }
+  .inp.dis { background: #e0e0e0; border-color: #9e9e9e; color: #777; }
+  .btn { border: 2px solid #555; border-radius: 4px; background: linear-gradient(#fafafa, #cfcfcf); font-size: 16px; font-weight: 700; padding: 10px 18px; text-align: center; }
+  .btn.dis { color: #888; }
+  table.pi { border-collapse: collapse; margin: 8px 14px; font-size: 15px; }
+  table.pi th { text-align: left; font-size: 13px; color: #444; padding: 4px 8px; border-bottom: 1px solid #999; }
+  table.pi td { padding: 5px 8px; border-bottom: 1px solid #d0ccc4; }
+  .bits { display: flex; gap: 6px; padding: 8px 14px 4px; }
+  .bit { display: flex; flex-direction: column; align-items: center; font-size: 12px; gap: 2px; }
+  .bit .lamp { width: 22px; height: 22px; }
+  .big { font-family: Consolas, monospace; font-size: 44px; font-weight: 700; background: #fff; border: 2px solid #555; padding: 6px 16px; text-align: right; }
+  .cap { font-size: 13px; color: #555; }
+
+  /* Callout badges */
+  .n { position: relative; }
+  .abs.n { position: absolute; }
+  .n::before { content: attr(data-n); position: absolute; top: -13px; left: -13px; width: 26px; height: 26px; border-radius: 50%;
+               background: #d81b60; color: #fff; font: 700 14px "Segoe UI", Arial; display: flex; align-items: center; justify-content: center;
+               box-shadow: 0 0 0 2px #fff; z-index: 5; }
+
+  /* Configuration table */
+  h2 { font-size: 24px; margin: 34px 0 6px; }
+  .hint { font-size: 15px; color: #444; margin-bottom: 12px; }
+  table.cfg { border-collapse: collapse; width: 1600px; font-size: 15px; }
+  table.cfg th { background: #1f3a5f; color: #fff; text-align: left; padding: 8px 10px; }
+  table.cfg td { border: 1px solid #c8c8c8; padding: 7px 10px; vertical-align: top; }
+  table.cfg tr:nth-child(even) td { background: #f5f7fa; }
+  table.cfg td.num { text-align: center; }
+  .badge { display: inline-flex; width: 26px; height: 26px; border-radius: 50%; background: #d81b60; color: #fff; font-weight: 700; align-items: center; justify-content: center; }
+  code { font-family: Consolas, monospace; font-size: 14px; background: #eef1f5; padding: 1px 4px; border-radius: 3px; }
+  .warn { color: #b71c1c; font-weight: 700; }
+  .notes { margin-top: 22px; font-size: 15px; border-left: 5px solid #f9a825; background: #fffde7; padding: 12px 18px; width: 1600px; }
+  .notes li { margin: 4px 0; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>VISU_VTD_PD_Test – Visualization layout and object configuration</h1>
+  <div class="sub">Sys1_Inbound · HMI interface GVL_HMI_VTD (filled by FC_VTD_PdHmiUpdateStatus) · Suggested canvas 1600 × 900 · Pink numbers refer to the configuration table below</div>
+
+  <div class="canvas">
+    <div class="abs title n" data-n="1">VTD MOVIPRO – Process Data Test</div>
+    <div class="abs banner n" data-n="2">TEST ONLY – PO 1..8 stay 0 unless "Write enable" is ON. PO 1 (control word) needs a second enable.</div>
+
+    <!-- Communication -->
+    <div class="abs group" style="left:20px; top:105px; width:760px; height:190px;">
+      <div class="gt">Communication</div>
+      <div class="row"><div class="lamp off n" data-n="3"></div>Communication OK (EtherCAT OP and WcState valid)</div>
+      <div class="row"><div class="lamp r n" data-n="4" style="background:radial-gradient(circle at 35% 35%,#eeeeee,#8e8e8e)"></div>WcState error</div>
+      <div class="row"><span>EtherCAT state:</span><span class="val n" data-n="5" style="width:70px">8</span><span class="cap">(1 INIT · 2 PREOP · 4 SAFEOP · 8 OP)</span></div>
+      <div class="row"><span>PI change counter:</span><span class="val n" data-n="6" style="width:140px">12345</span><span class="cap">must keep rising while the drive is powered</span></div>
+    </div>
+
+    <!-- Position -->
+    <div class="abs group" style="left:800px; top:105px; width:780px; height:190px;">
+      <div class="gt">Actual position (DL50 via PI 7 high + PI 8 low)</div>
+      <div class="row" style="padding-top:18px;"><div class="big n" data-n="9" style="width:420px">100000</div>
+        <div class="cap" style="font-size:15px">raw user units<br>unit and scaling pending SEW</div></div>
+    </div>
+
+    <!-- Process inputs -->
+    <div class="abs group" style="left:20px; top:310px; width:760px; height:575px;">
+      <div class="gt">Process inputs (drive → PLC)</div>
+      <table class="pi">
+        <tr><th style="width:70px">Word</th><th style="width:300px">Meaning (MOVISUITE)</th><th style="width:150px">Raw (hex)</th><th style="width:170px">Decoded</th></tr>
+        <tr><td>PI 1</td><td>Status word</td><td><div class="val n" data-n="7">0000</div></td><td><div class="val n" data-n="8">0000</div></td></tr>
+        <tr><td>PI 2</td><td>Actual speed</td><td><div class="val">0000</div></td><td><div class="val">0</div></td></tr>
+        <tr><td>PI 3</td><td>Status / main fault – subfault</td><td><div class="val">0000</div></td><td><div class="val">0000</div></td></tr>
+        <tr><td>PI 4</td><td>Torque</td><td><div class="val">0000</div></td><td><div class="val">0</div></td></tr>
+        <tr><td>PI 5</td><td>Digital inputs</td><td><div class="val">0000</div></td><td><div class="val">0000</div></td></tr>
+        <tr><td>PI 6</td><td>Actual application mode</td><td><div class="val">0000</div></td><td><div class="val">0</div></td></tr>
+        <tr><td>PI 7</td><td>Actual position – high word</td><td><div class="val">0001</div></td><td rowspan="2" style="vertical-align:middle"><div class="val">100000</div></td></tr>
+        <tr><td>PI 8</td><td>Actual position – low word</td><td><div class="val">86A0</div></td></tr>
+      </table>
+      <div class="cap" style="padding:4px 22px;">Bit meanings, units and application mode values pending SEW (MOVIKIT Positioning Drive manual).</div>
+    </div>
+
+    <!-- Status word bits -->
+    <div class="abs group" style="left:800px; top:310px; width:780px; height:92px;">
+      <div class="gt">Status word bits (PI 1)</div>
+      <div class="bits">
+        <div class="bit"><div class="lamp off n" data-n="10"></div>0</div>
+        <div class="bit"><div class="lamp off"></div>1</div><div class="bit"><div class="lamp off"></div>2</div><div class="bit"><div class="lamp off"></div>3</div>
+        <div class="bit"><div class="lamp off"></div>4</div><div class="bit"><div class="lamp off"></div>5</div><div class="bit"><div class="lamp off"></div>6</div>
+        <div class="bit"><div class="lamp off"></div>7</div><div class="bit"><div class="lamp off"></div>8</div><div class="bit"><div class="lamp off"></div>9</div>
+        <div class="bit"><div class="lamp off"></div>10</div><div class="bit"><div class="lamp off"></div>11</div><div class="bit"><div class="lamp off"></div>12</div>
+        <div class="bit"><div class="lamp off"></div>13</div><div class="bit"><div class="lamp off"></div>14</div><div class="bit"><div class="lamp off"></div>15</div>
+      </div>
+    </div>
+
+    <!-- Digital input bits -->
+    <div class="abs group" style="left:800px; top:412px; width:780px; height:92px;">
+      <div class="gt">Digital inputs bits (PI 5)</div>
+      <div class="bits">
+        <div class="bit"><div class="lamp off n" data-n="11"></div>0</div>
+        <div class="bit"><div class="lamp off"></div>1</div><div class="bit"><div class="lamp off"></div>2</div><div class="bit"><div class="lamp off"></div>3</div>
+        <div class="bit"><div class="lamp off"></div>4</div><div class="bit"><div class="lamp off"></div>5</div><div class="bit"><div class="lamp off"></div>6</div>
+        <div class="bit"><div class="lamp off"></div>7</div><div class="bit"><div class="lamp off"></div>8</div><div class="bit"><div class="lamp off"></div>9</div>
+        <div class="bit"><div class="lamp off"></div>10</div><div class="bit"><div class="lamp off"></div>11</div><div class="bit"><div class="lamp off"></div>12</div>
+        <div class="bit"><div class="lamp off"></div>13</div><div class="bit"><div class="lamp off"></div>14</div><div class="bit"><div class="lamp off"></div>15</div>
+      </div>
+    </div>
+
+    <!-- Test write -->
+    <div class="abs group danger" style="left:800px; top:518px; width:780px; height:367px;">
+      <div class="gt">TEST ONLY – Process outputs (PLC → drive)</div>
+      <div class="row" style="gap:18px; padding-top:12px;">
+        <div class="btn n" data-n="12" style="width:200px">Write enable</div>
+        <div class="btn dis n" data-n="13" style="width:270px">Allow control word (PO 1)</div>
+        <span class="val n" data-n="16" style="width:150px">00:00 / 10:00</span>
+      </div>
+      <div class="row" style="gap:28px;">
+        <span style="display:flex;gap:8px;align-items:center"><div class="lamp off n" data-n="14"></div>Test write active</span>
+        <span style="display:flex;gap:8px;align-items:center"><div class="lamp off n" data-n="15"></div>Timeout expired – toggle Write enable</span>
+      </div>
+      <table class="pi" style="margin-top:2px">
+        <tr><th style="width:60px">Word</th><th style="width:200px">Meaning</th><th style="width:110px">Test value</th><th style="width:90px">Sent</th>
+            <th style="width:60px">Word</th><th style="width:200px">Meaning</th><th style="width:110px">Test value</th><th style="width:90px">Sent</th></tr>
+        <tr><td>PO 1</td><td class="warn">Control word</td><td><div class="inp dis n" data-n="17">0</div></td><td><div class="val n" data-n="18">0000</div></td>
+            <td>PO 5</td><td>Digital outputs</td><td><div class="inp">0</div></td><td><div class="val">0000</div></td></tr>
+        <tr><td>PO 2</td><td>Setpoint speed</td><td><div class="inp">0</div></td><td><div class="val">0000</div></td>
+            <td>PO 6</td><td>Setpoint appl. mode</td><td><div class="inp">0</div></td><td><div class="val">0000</div></td></tr>
+        <tr><td>PO 3</td><td>Setpoint accel.</td><td><div class="inp">0</div></td><td><div class="val">0000</div></td>
+            <td>PO 7</td><td>Target pos. high</td><td><div class="inp">0</div></td><td><div class="val">0000</div></td></tr>
+        <tr><td>PO 4</td><td>Setpoint decel.</td><td><div class="inp">0</div></td><td><div class="val">0000</div></td>
+            <td>PO 8</td><td>Target pos. low</td><td><div class="inp">0</div></td><td><div class="val">0000</div></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2>Object configuration</h2>
+  <div class="hint">Prefix <code>S.</code> = <code>GVL_HMI_VTD.stPdStatus.</code> (PLC → HMI) · <code>C.</code> = <code>GVL_HMI_VTD.stPdCommand.</code> (HMI → PLC) · Toolbox names as in TwinCAT 3 XAE (Visualization Toolbox) · Elements marked ×N: build one, then copy and change only the index / bit number.</div>
+  <table class="cfg">
+    <tr><th style="width:44px">#</th><th style="width:210px">Element (Toolbox)</th><th style="width:330px">Texts → Text</th><th style="width:420px">Variable</th><th>Other settings</th></tr>
+    <tr><td class="num"><span class="badge">1</span></td><td>Rectangle</td><td>VTD MOVIPRO – Process Data Test</td><td>–</td><td>Font 24 bold, white · Fill color #1F3A5F</td></tr>
+    <tr><td class="num"><span class="badge">2</span></td><td>Rectangle</td><td>TEST ONLY – PO 1..8 stay 0 unless "Write enable" is ON …</td><td>–</td><td>Fill color yellow #FFD54F · Font bold</td></tr>
+    <tr><td class="num"><span class="badge">3</span></td><td>Lamp (Lamps/Switches/Bitmaps)</td><td>– (Label next to it)</td><td><code>S.bCommunicationOk</code></td><td>Image: Green</td></tr>
+    <tr><td class="num"><span class="badge">4</span></td><td>Lamp</td><td>– (Label next to it)</td><td><code>S.bWcStateError</code></td><td>Image: Red · Link VTD_WcState in XAE first (VTD › WcState › WcState)</td></tr>
+    <tr><td class="num"><span class="badge">5</span></td><td>Text field</td><td><code>%d</code></td><td>Text variables → Text variable: <code>S.uiEcState</code></td><td>Link VTD_EcState in XAE first (VTD › InfoData › State) · 8 = OP</td></tr>
+    <tr><td class="num"><span class="badge">6</span></td><td>Text field</td><td><code>%u</code></td><td><code>S.udiInputChangeCount</code></td><td>Proof that PI data really arrives</td></tr>
+    <tr><td class="num"><span class="badge">7</span></td><td>Text field ×8 (column Raw)</td><td><code>%04X</code></td><td><code>S.aProcessInputRaw[1]</code> … <code>[8]</code></td><td>One element per row; compare with the MOVISUITE process data monitor</td></tr>
+    <tr><td class="num"><span class="badge">8</span></td><td>Text field ×7 (column Decoded)</td><td>PI 1, 3, 5: <code>%04X</code><br>PI 2, 4, 7+8: <code>%d</code><br>PI 6: <code>%u</code></td><td>PI 1 <code>S.wStatusWord</code><br>PI 2 <code>S.iActualSpeedRaw</code><br>PI 3 <code>S.wFaultCode</code><br>PI 4 <code>S.iTorqueRaw</code><br>PI 5 <code>S.wDigitalInputs</code><br>PI 6 <code>S.uiActualApplicationMode</code><br>PI 7+8 <code>S.diActualPositionRaw</code></td><td>Speed and torque shown as signed INT (signedness to confirm with SEW)</td></tr>
+    <tr><td class="num"><span class="badge">9</span></td><td>Rectangle</td><td><code>%d</code></td><td><code>S.diActualPositionRaw</code></td><td>Font Consolas 44 bold · Fill white · Text right aligned · Should change when the carriage moves</td></tr>
+    <tr><td class="num"><span class="badge">10</span></td><td>Lamp ×16</td><td>Label 0 … 15 below each lamp</td><td><code>S.wStatusWord.0</code> … <code>S.wStatusWord.15</code></td><td>Image: Green · Bit access with <code>.n</code> · Replace labels with bit names once SEW confirms them</td></tr>
+    <tr><td class="num"><span class="badge">11</span></td><td>Lamp ×16</td><td>Label 0 … 15</td><td><code>S.wDigitalInputs.0</code> … <code>.15</code></td><td>Image: Yellow</td></tr>
+    <tr><td class="num"><span class="badge">12</span></td><td>Button</td><td>Write enable</td><td>Input configuration → <b>Toggle</b> → <code>C.bTestWriteEnable</code></td><td>Colors → Alarm color: orange · Color variables → Toggle color: <code>C.bTestWriteEnable</code></td></tr>
+    <tr><td class="num"><span class="badge">13</span></td><td>Button</td><td>Allow control word (PO 1)</td><td>Input configuration → <b>Toggle</b> → <code>C.bTestAllowControlWord</code></td><td>Colors → Alarm color: red · Color variables → Toggle color: <code>C.bTestAllowControlWord</code> · State variables → Deactivate inputs: <code>NOT C.bTestWriteEnable</code> · <span class="warn">Keep OFF until SEW confirms the control word bits</span></td></tr>
+    <tr><td class="num"><span class="badge">14</span></td><td>Lamp</td><td>– (Label next to it)</td><td><code>S.bTestWriteActive</code></td><td>Image: Yellow/Orange</td></tr>
+    <tr><td class="num"><span class="badge">15</span></td><td>Lamp</td><td>– (Label next to it)</td><td><code>S.bTestWriteExpired</code></td><td>Image: Red · Toggle Write enable OFF/ON to restart the 10 min window</td></tr>
+    <tr><td class="num"><span class="badge">16</span></td><td>Text field</td><td><code>%t[mm:ss] / 10:00</code></td><td><code>S.tTestWriteElapsed</code></td><td>Elapsed time of the TEST ONLY write window (read only)</td></tr>
+    <tr><td class="num"><span class="badge">17</span></td><td>Text field ×8 (column Test value)</td><td><code>%u</code></td><td><code>C.aTestProcessOutput[1]</code> … <code>[8]</code></td><td>Input configuration → OnMouseClick → <b>Write Variable</b> · Input type: <code>VisuDialogs.Numpad</code> · Min 0 · Max 65535 · Fill light yellow<br><b>PO 1 only:</b> State variables → Deactivate inputs: <code>NOT C.bTestAllowControlWord</code></td></tr>
+    <tr><td class="num"><span class="badge">18</span></td><td>Text field ×8 (column Sent)</td><td><code>%04X</code></td><td><code>S.aProcessOutputSent[1]</code> … <code>[8]</code></td><td>Value really written to the drive; stays 0000 while the write is not active</td></tr>
+  </table>
+
+  <div class="notes">
+    <b>Test day checklist</b>
+    <ul>
+      <li>Before login: link <code>IO_VFDs.VTD_WcState</code> and <code>IO_VFDs.VTD_EcState</code> in XAE, then Activate Configuration.</li>
+      <li>Read-only first: compare items 5–11 with MOVISUITE (Startup › process data monitor). Counter 6 must rise; position 9 must follow the carriage.</li>
+      <li>Target position for PO 7/8: high word = position DIV 65536, low word = position MOD 65536 (positive values). Example 100000 → PO 7 = 1, PO 8 = 34464 (16#86A0).</li>
+      <li class="warn">Do not enable item 13 (control word) before SEW confirms the MOVIKIT Positioning Drive control word bits. Vertical axis: verify brake and stop behaviour first.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

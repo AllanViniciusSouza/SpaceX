@@ -1,0 +1,125 @@
+FUNCTION "SICK_GetValue"   // FC 10, author SICKAG
+
+VAR_INPUT
+   iTelegramLength : UInt;   // Length of the source telegram
+   iValueLength : USInt;   // ASCII length of the value [1..8] = Fix length | [0]= Variable
+   arrData : Array[0..499] of Byte;   // Data record (contains the whole CoLa telegram)
+END_VAR
+
+VAR_OUTPUT
+   nValue : DWord;   // Read value
+   nErrorCode : Word;   // Error code
+END_VAR
+
+VAR_IN_OUT
+   iPosition : UInt;   // Position offset of the value before and after (starting from 0)
+END_VAR
+
+VAR_TEMP
+   iLoop : Int;   // Temporarily variable
+   iSegmentLength : UInt;   // Length of the segement
+   nTemp : DWord;   // Temporarily variable
+END_VAR
+
+   // RETURN : Void
+BEGIN
+(*===========================================================================================
+Name:   SICK_GetValue
+Author: SICK AG
+=============================================================================================
+Description: 
+This function is for internal use only. The function gets the selected Hex-value string out 
+of the CoLa-Telegram and convert it into a hexadecimal number. 
+
+=============================================================================================
+Error codes:
+16#0000 = No error
+16#0001 = Invaild telegram length   
+16#0002 = Invalid position index 
+16#0003 = Invalid value length
+16#0004 = Invalid segment length 
+16#0005 = ASCII character is not in a hexadecimal format             
+                                                                      
+=============================================================================================
+Version history:
+Date       | Version | created under               | Author  | Remark
+---------------------------------------------------------------------------------------------
+30/01/2014 | V1.0    | TIA Portal V12 SP1 Update 2 | SICK AG | Initial version
+============================================================================================*)
+
+(*===================================== INITIALISATION =====================================*)
+#iSegmentLength:= 0;
+#nValue:= 16#0000_0000;
+#nErrorCode:= 16#0000;
+
+(*======================================= READ VALUE =======================================*)
+(*Check telegram length*)
+IF #iTelegramLength <=0 OR #iTelegramLength > 500 THEN
+  #nErrorCode:= 16#0001; (*Error: Invaild telegram length*)
+  RETURN;
+END_IF;
+
+(*Check current position of the value*)
+IF #iPosition > (#iTelegramLength-1) THEN
+  #nErrorCode:= 16#0002; (*Error: Invalid position index*)
+  RETURN;
+END_IF;
+
+(*Check value length*)
+IF #iValueLength >8 THEN
+  #nErrorCode:= 16#0003; (*Error: Invalid value length*)
+  RETURN;
+END_IF;
+
+(*Get a value with a variable length (ends with a ' ' or [ETX]*)
+IF #iValueLength = 0 THEN
+  FOR #iLoop:= UINT_TO_INT(#iPosition) TO UINT_TO_INT(#iTelegramLength-1) DO
+    (*Check if a blank or a [ETX] is detected*)
+    IF (#arrData[#iLoop] =' ') OR (#arrData[#iLoop] ='$03') THEN
+      EXIT;
+    END_IF;
+    
+    (*Length of the current value segement*)
+    #iSegmentLength:= #iSegmentLength+1;
+  END_FOR;
+  
+(*Get a value with a fixed character length [1..8]*)
+ELSE
+  #iSegmentLength:= #iValueLength;
+END_IF;
+
+(*Check if the segment length is valid*)
+IF (#iSegmentLength >8) OR (#iSegmentLength =0) THEN
+  #nErrorCode:= 16#0004; (*Error: Invalid segment length*)
+  RETURN;
+END_IF;
+
+(*Convert ASCII string into a hexadecimal number*)
+FOR #iLoop:= UINT_TO_INT(#iPosition) TO UINT_TO_INT(#iPosition+#iSegmentLength-1) DO
+  (*ACSII value = [0..9]*)
+  IF #arrData[#iLoop] >='0' AND #arrData[#iLoop] <='9' THEN
+    #nTemp:= #arrData[#iLoop]-48;
+  (*ASCII value = [A..F]*) 
+  ELSIF #arrData[#iLoop] >='A' AND #arrData[#iLoop] <='F' THEN
+    #nTemp:= #arrData[#iLoop]-55;
+  (*ASCII value = [a..f]*)
+  ELSIF #arrData[#iLoop] >='a' AND #arrData[#iLoop] <='f' THEN
+    #nTemp:= #arrData[#iLoop]-87;    
+  ELSE
+    #nErrorCode:= 16#0005; (*Error: ASCII character is not in a hexadecimal format *)
+    RETURN;
+  END_IF;
+  
+  (*Create hexadecimal number*)
+  #nValue:= SHL(IN:= #nValue, N:= 4);
+  #nValue:= #nValue+#nTemp;
+END_FOR;
+
+(*Set the position of the next element in the telegram*)
+IF #iValueLength = 0 THEN
+  #iPosition:= #iPosition+#iSegmentLength+1; (*With blank character*)
+ELSE
+  #iPosition:= #iPosition+#iSegmentLength; (*Without blank character*)
+END_IF;
+
+END_FUNCTION

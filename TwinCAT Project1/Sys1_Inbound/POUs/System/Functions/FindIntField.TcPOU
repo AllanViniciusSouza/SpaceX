@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FindIntField" Id="{08b8be28-dd5e-40a3-8585-6f98ef4035d5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FindIntField : INT
+VAR_INPUT
+    FieldName : STRING(254);
+    JsonStr : STRING(254);
+END_VAR
+VAR_OUTPUT
+    Valid : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation><ST><![CDATA[FindIntField := FindINTFieldFragmented(FieldName := FieldName, Str1 := JsonStr, Str2 := '', Valid => Valid);
+]]></ST></Implementation>
+  </POU>
+</TcPlcObject>

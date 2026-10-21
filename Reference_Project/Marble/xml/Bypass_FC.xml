@@ -1,0 +1,3332 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-19T18:35:53.766818Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FC ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input" />
+  <Section Name="Output" />
+  <Section Name="InOut" />
+  <Section Name="Temp" />
+  <Section Name="Constant">
+    <Member Name="AUTO_RUNNING" Datatype="UInt" Accessibility="Public">
+      <StartValue>0</StartValue>
+    </Member>
+    <Member Name="RTE_REQUESTED" Datatype="UInt" Accessibility="Public">
+      <StartValue>1</StartValue>
+    </Member>
+    <Member Name="SAFE_BYPASS" Datatype="UInt" Accessibility="Public">
+      <StartValue>2</StartValue>
+    </Member>
+    <Member Name="SAFE_TO_UNLOCK" Datatype="UInt" Accessibility="Public">
+      <StartValue>3</StartValue>
+    </Member>
+    <Member Name="ACCESS_MANUAL_MODE" Datatype="UInt" Accessibility="Public">
+      <StartValue>4</StartValue>
+    </Member>
+    <Member Name="READY_TO_RESET" Datatype="UInt" Accessibility="Public">
+      <StartValue>5</StartValue>
+    </Member>
+    <Member Name="RESETTING" Datatype="UInt" Accessibility="Public">
+      <StartValue>6</StartValue>
+    </Member>
+    <Member Name="READY_TO_RESTART" Datatype="UInt" Accessibility="Public">
+      <StartValue>7</StartValue>
+    </Member>
+  </Section>
+  <Section Name="Return">
+    <Member Name="Ret_Val" Datatype="Void" Accessibility="Public" />
+  </Section>
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>Bypass_FC</Name>
+      <Namespace />
+      <Number>62</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <LineComment Inserted="false" NoClosingBracket="false" UId="21">
+    <Text UId="22"> REGION LIGHT GUARD "Bypass"</Text>
+  </LineComment>
+  <NewLine Num="1" UId="23" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="24">
+    <Text UId="25">     //SYSTEM 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="26" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="27">
+    <Text UId="28">     IF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Running THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="29" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="30">
+    <Text UId="31">         "Bypass".Remote_Panel_1."Light Guards CX101 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="32" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="33">
+    <Text UId="34">         "Light_Guard_Bypass(1)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="35" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="36">
+    <Text UId="37">     ELSIF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Error AND "Light_Guard_Bypass(1)" THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="38" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="39">
+    <Text UId="40">         "Bypass".Remote_Panel_1."Light Guards CX101 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="41" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="42">
+    <Text UId="43">     ELSIF NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Running AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Error THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="44" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="45">
+    <Text UId="46">         "Bypass".Remote_Panel_1."Light Guards CX101 - CH1" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="47" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="48">
+    <Text UId="49">         "Light_Guard_Bypass(1)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="50" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="51">
+    <Text UId="52">     ELSIF "LIGHT GUARDS C1101 - CH1" AND "LIGHT GUARDS C1201 - CH1" THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="53" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="54">
+    <Text UId="55">         "Light_Guard_Bypass(1)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="56" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="57">
+    <Text UId="58">     ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="59" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="60">
+    <Text UId="61">         "Bypass".Remote_Panel_1."Light Guards CX101 - CH1" := "Light_Guard_Bypass(1)";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="62" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="63">
+    <Text UId="64">     END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="65" />
+  <Blank Num="4" UId="66" />
+  <NewLine Num="1" UId="67" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="68">
+    <Text UId="69">     IF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Running THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="70" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="71">
+    <Text UId="72">         "Bypass".Remote_Panel_1."Light Guards CX201 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="73" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="74">
+    <Text UId="75">         "Light_Guard_Bypass(1)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="76" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="77">
+    <Text UId="78">     ELSIF "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Error AND "Light_Guard_Bypass(1)" THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="79" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="80">
+    <Text UId="81">         "Bypass".Remote_Panel_1."Light Guards CX201 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="82" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="83">
+    <Text UId="84">     ELSIF NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Running AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Error THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="85" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="86">
+    <Text UId="87">         "Bypass".Remote_Panel_1."Light Guards CX201 - CH1" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="88" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="89">
+    <Text UId="90">         "Light_Guard_Bypass(1)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="91" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="92">
+    <Text UId="93">     ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="94" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="95">
+    <Text UId="96">         "Bypass".Remote_Panel_1."Light Guards CX201 - CH1" := "Light_Guard_Bypass(1)";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="97" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="98">
+    <Text UId="99">     END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="100" />
+  <Blank Num="4" UId="101" />
+  <NewLine Num="1" UId="102" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="103">
+    <Text UId="104">     //SYSTEM 2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="105" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="106">
+    <Text UId="107">     IF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Running THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="108" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="109">
+    <Text UId="110">         "Bypass".Remote_Panel_2."Light Guards CX101 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="111" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="112">
+    <Text UId="113">         "Light_Guard_Bypass(2)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="114" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="115">
+    <Text UId="116">     ELSIF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Error AND "Light_Guard_Bypass(2)" THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="117" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="118">
+    <Text UId="119">         "Bypass".Remote_Panel_2."Light Guards CX101 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="120" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="121">
+    <Text UId="122">     ELSIF NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Running AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Error THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="123" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="124">
+    <Text UId="125">         "Bypass".Remote_Panel_2."Light Guards CX101 - CH1" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="126" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="127">
+    <Text UId="128">         "Light_Guard_Bypass(2)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="129" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="130">
+    <Text UId="131">     ELSIF "LIGHT GUARDS C2101 - CH1" AND "LIGHT GUARDS C2201 - CH1" THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="132" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="133">
+    <Text UId="134">         "Light_Guard_Bypass(2)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="135" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="136">
+    <Text UId="137">     ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="138" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="139">
+    <Text UId="140">         "Bypass".Remote_Panel_2."Light Guards CX101 - CH1" := "Light_Guard_Bypass(2)";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="141" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="142">
+    <Text UId="143">     END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="144" />
+  <Blank Num="4" UId="145" />
+  <NewLine Num="1" UId="146" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="147">
+    <Text UId="148">     IF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Running THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="149" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="150">
+    <Text UId="151">         "Bypass".Remote_Panel_2."Light Guards CX201 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="152" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="153">
+    <Text UId="154">         "Light_Guard_Bypass(2)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="155" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="156">
+    <Text UId="157">     ELSIF "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Error AND "Light_Guard_Bypass(2)" THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="158" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="159">
+    <Text UId="160">         "Bypass".Remote_Panel_2."Light Guards CX201 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="161" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="162">
+    <Text UId="163">     ELSIF NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Running AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Error THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="164" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="165">
+    <Text UId="166">         "Bypass".Remote_Panel_2."Light Guards CX201 - CH1" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="167" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="168">
+    <Text UId="169">         "Light_Guard_Bypass(1)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="170" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="171">
+    <Text UId="172">     ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="173" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="174">
+    <Text UId="175">         "Bypass".Remote_Panel_2."Light Guards CX201 - CH1" := "Light_Guard_Bypass(2)";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="176" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="177">
+    <Text UId="178">     END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="179" />
+  <Blank Num="4" UId="180" />
+  <NewLine Num="1" UId="181" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="182">
+    <Text UId="183">     //SYSTEM 3</Text>
+  </LineComment>
+  <NewLine Num="1" UId="184" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="185">
+    <Text UId="186">     IF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Running THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="187" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="188">
+    <Text UId="189">         "Bypass".Remote_Panel_3."Light Guards CX101 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="190" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="191">
+    <Text UId="192">         "Light_Guard_Bypass(3)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="193" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="194">
+    <Text UId="195">     ELSIF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Error AND "Light_Guard_Bypass(3)" THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="196" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="197">
+    <Text UId="198">         "Bypass".Remote_Panel_3."Light Guards CX101 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="199" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="200">
+    <Text UId="201">     ELSIF NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Running AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Error THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="202" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="203">
+    <Text UId="204">         "Bypass".Remote_Panel_3."Light Guards CX101 - CH1" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="205" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="206">
+    <Text UId="207">         "Light_Guard_Bypass(1)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="208" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="209">
+    <Text UId="210">     ELSIF "LIGHT GUARDS C3101 - CH1" AND "LIGHT GUARDS C3201 - CH1" THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="211" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="212">
+    <Text UId="213">         "Light_Guard_Bypass(3)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="214" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="215">
+    <Text UId="216">     ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="217" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="218">
+    <Text UId="219">         "Bypass".Remote_Panel_3."Light Guards CX101 - CH1" := "Light_Guard_Bypass(3)";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="220" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="221">
+    <Text UId="222">     END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="223" />
+  <Blank Num="4" UId="224" />
+  <NewLine Num="1" UId="225" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="226">
+    <Text UId="227">     IF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Running THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="228" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="229">
+    <Text UId="230">         "Bypass".Remote_Panel_3."Light Guards CX201 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="231" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="232">
+    <Text UId="233">         "Light_Guard_Bypass(3)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="234" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="235">
+    <Text UId="236">     ELSIF "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Error AND "Light_Guard_Bypass(3)" THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="237" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="238">
+    <Text UId="239">         "Bypass".Remote_Panel_3."Light Guards CX201 - CH1" := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="240" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="241">
+    <Text UId="242">     ELSIF NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Running AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Error THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="243" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="244">
+    <Text UId="245">         "Bypass".Remote_Panel_3."Light Guards CX201 - CH1" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="246" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="247">
+    <Text UId="248">         "Light_Guard_Bypass(1)" := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="249" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="250">
+    <Text UId="251">     ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="252" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="253">
+    <Text UId="254">         "Bypass".Remote_Panel_3."Light Guards CX201 - CH1" := "Light_Guard_Bypass(3)";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="255" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="256">
+    <Text UId="257">     END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="258" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="259">
+    <Text UId="260"> END_REGION ;</Text>
+  </LineComment>
+  <NewLine Num="2" UId="261" />
+  <Token Text="REGION" UId="262" />
+  <Blank Num="1" UId="263" />
+  <Text UId="264">LIMIT SWITCHES</Text>
+  <NewLine Num="1" UId="265" />
+  <Blank Num="4" UId="266" />
+  <Token Text="REGION" UId="267" />
+  <Blank Num="1" UId="268" />
+  <Text UId="269">SYSTEM 1</Text>
+  <NewLine Num="1" UId="270" />
+  <Blank Num="8" UId="271" />
+  <Token Text="IF" UId="272" />
+  <Blank Num="1" UId="273" />
+  <Access Scope="GlobalVariable" UId="274">
+    <Symbol UId="275">
+      <Component Name="VTD_System_Selected_HMI" UId="276">
+        <BooleanAttribute Name="HasQuotes" UId="277">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="278" />
+  <Token Text="=" UId="279" />
+  <Blank Num="1" UId="280" />
+  <Access Scope="LiteralConstant" UId="281">
+    <Constant UId="282">
+      <ConstantValue UId="284">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="285" />
+  <Token Text="THEN" UId="286" />
+  <NewLine Num="1" UId="287" />
+  <Blank Num="12" UId="288" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="289">
+    <Text UId="290">OVERTRAVEL UP</Text>
+  </LineComment>
+  <NewLine Num="1" UId="291" />
+  <Blank Num="12" UId="292" />
+  <Token Text="IF" UId="293" />
+  <Blank Num="1" UId="294" />
+  <Token Text="NOT" UId="295" />
+  <Blank Num="1" UId="296" />
+  <Access Scope="GlobalVariable" UId="297">
+    <Symbol UId="298">
+      <Component Name="OVERTRAVEL UPPER LIMIT - CH1(1)" UId="299" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="300" />
+  <Token Text="THEN" UId="301" />
+  <NewLine Num="1" UId="302" />
+  <Blank Num="16" UId="303" />
+  <Access Scope="GlobalVariable" UId="304">
+    <Symbol UId="305">
+      <Component Name="Bypass" UId="306">
+        <BooleanAttribute Name="HasQuotes" UId="307">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="308" />
+      <Component Name="Remote_Panel_1" UId="309" />
+      <Token Text="." UId="310" />
+      <Component Name="Overtravel_Upper_limit" UId="311" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="312" />
+  <Token Text=":=" UId="313" />
+  <Blank Num="1" UId="314" />
+  <Access Scope="GlobalVariable" UId="315">
+    <Symbol UId="316">
+      <Component Name="VTD_Upper_Overtravel_Bypass_HMI" UId="317">
+        <BooleanAttribute Name="HasQuotes" UId="318">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="319" />
+  <NewLine Num="1" UId="320" />
+  <Blank Num="16" UId="321" />
+  <Access Scope="GlobalVariable" UId="322">
+    <Symbol UId="323">
+      <Component Name="T_Bypass_OUL_1" UId="324">
+        <BooleanAttribute Name="HasQuotes" UId="325">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="326" />
+  <Access Scope="Call" UId="327">
+    <Instruction Name="TON" UId="328">
+      <Token Text="(" UId="329" />
+      <Parameter Name="IN" UId="330">
+        <Blank Num="1" UId="331" />
+        <Token Text=":=" UId="332" />
+        <Blank Num="1" UId="333" />
+        <Access Scope="LiteralConstant" UId="334">
+          <Constant UId="335">
+            <ConstantValue UId="337">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="338" />
+      <NewLine Num="1" UId="339" />
+      <Blank Num="37" UId="340" />
+      <Parameter Name="PT" UId="341">
+        <Blank Num="1" UId="342" />
+        <Token Text=":=" UId="343" />
+        <Blank Num="1" UId="344" />
+        <Access Scope="TypedConstant" UId="345">
+          <Constant UId="346">
+            <ConstantValue UId="347">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="348" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="349" />
+  <NewLine Num="1" UId="350" />
+  <Blank Num="12" UId="351" />
+  <Token Text="ELSE" UId="352" />
+  <NewLine Num="1" UId="353" />
+  <Blank Num="16" UId="354" />
+  <Access Scope="GlobalVariable" UId="355">
+    <Symbol UId="356">
+      <Component Name="T_Bypass_OUL_1" UId="357">
+        <BooleanAttribute Name="HasQuotes" UId="358">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="359" />
+  <Access Scope="Call" UId="360">
+    <Instruction Name="TON" UId="361">
+      <Token Text="(" UId="362" />
+      <Parameter Name="IN" UId="363">
+        <Blank Num="1" UId="364" />
+        <Token Text=":=" UId="365" />
+        <Blank Num="1" UId="366" />
+        <Access Scope="LiteralConstant" UId="367">
+          <Constant UId="368">
+            <ConstantValue UId="370">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="371" />
+      <NewLine Num="1" UId="372" />
+      <Blank Num="37" UId="373" />
+      <Parameter Name="PT" UId="374">
+        <Blank Num="1" UId="375" />
+        <Token Text=":=" UId="376" />
+        <Blank Num="1" UId="377" />
+        <Access Scope="TypedConstant" UId="378">
+          <Constant UId="379">
+            <ConstantValue UId="380">T#3S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="381" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="382" />
+  <NewLine Num="1" UId="383" />
+  <Blank Num="16" UId="384" />
+  <Token Text="IF" UId="385" />
+  <Blank Num="1" UId="386" />
+  <Access Scope="GlobalVariable" UId="387">
+    <Symbol UId="388">
+      <Component Name="T_Bypass_OUL_1" UId="389">
+        <BooleanAttribute Name="HasQuotes" UId="390">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="391" />
+      <Component Name="Q" UId="392" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="393" />
+  <Token Text="THEN" UId="394" />
+  <NewLine Num="1" UId="395" />
+  <Blank Num="20" UId="396" />
+  <Access Scope="GlobalVariable" UId="397">
+    <Symbol UId="398">
+      <Component Name="Bypass" UId="399">
+        <BooleanAttribute Name="HasQuotes" UId="400">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="401" />
+      <Component Name="Remote_Panel_1" UId="402" />
+      <Token Text="." UId="403" />
+      <Component Name="Overtravel_Upper_limit" UId="404" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="405" />
+  <Token Text=":=" UId="406" />
+  <Blank Num="1" UId="407" />
+  <Access Scope="GlobalVariable" UId="408">
+    <Symbol UId="409">
+      <Component Name="VTD_Upper_Overtravel_Bypass_HMI" UId="410">
+        <BooleanAttribute Name="HasQuotes" UId="411">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="412" />
+  <Token Text=":=" UId="413" />
+  <Blank Num="1" UId="414" />
+  <Access Scope="LiteralConstant" UId="415">
+    <Constant UId="416">
+      <ConstantValue UId="418">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="419" />
+  <NewLine Num="1" UId="420" />
+  <Blank Num="16" UId="421" />
+  <Token Text="END_IF" UId="422" />
+  <Token Text=";" UId="423" />
+  <NewLine Num="1" UId="424" />
+  <Blank Num="12" UId="425" />
+  <Token Text="END_IF" UId="426" />
+  <Token Text=";" UId="427" />
+  <NewLine Num="1" UId="428" />
+  <Blank Num="12" UId="429" />
+  <NewLine Num="1" UId="430" />
+  <Blank Num="12" UId="431" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="432">
+    <Text UId="433">LIMIT UP</Text>
+  </LineComment>
+  <NewLine Num="1" UId="434" />
+  <Blank Num="12" UId="435" />
+  <Token Text="IF" UId="436" />
+  <Blank Num="1" UId="437" />
+  <Access Scope="GlobalVariable" UId="438">
+    <Symbol UId="439">
+      <Component Name="VTD1 UPPER LIMIT" UId="440" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="441" />
+  <Token Text="THEN" UId="442" />
+  <NewLine Num="1" UId="443" />
+  <Blank Num="16" UId="444" />
+  <Access Scope="GlobalVariable" UId="445">
+    <Symbol UId="446">
+      <Component Name="Bypass" UId="447">
+        <BooleanAttribute Name="HasQuotes" UId="448">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="449" />
+      <Component Name="Remote_Panel_1" UId="450" />
+      <Token Text="." UId="451" />
+      <Component Name="Upper_limit" UId="452" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="453" />
+  <Token Text=":=" UId="454" />
+  <Blank Num="1" UId="455" />
+  <Access Scope="GlobalVariable" UId="456">
+    <Symbol UId="457">
+      <Component Name="VTD_Upper_Limet_Bypass_HMI" UId="458">
+        <BooleanAttribute Name="HasQuotes" UId="459">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="460" />
+  <NewLine Num="1" UId="461" />
+  <Blank Num="16" UId="462" />
+  <Access Scope="GlobalVariable" UId="463">
+    <Symbol UId="464">
+      <Component Name="T_Bypass_UL_1" UId="465">
+        <BooleanAttribute Name="HasQuotes" UId="466">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="467" />
+  <Access Scope="Call" UId="468">
+    <Instruction Name="TON" UId="469">
+      <Token Text="(" UId="470" />
+      <Parameter Name="IN" UId="471">
+        <Token Text=":=" UId="472" />
+        <Access Scope="LiteralConstant" UId="473">
+          <Constant UId="474">
+            <ConstantValue UId="476">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="477" />
+      <NewLine Num="1" UId="478" />
+      <Blank Num="36" UId="479" />
+      <Parameter Name="PT" UId="480">
+        <Token Text=":=" UId="481" />
+        <Access Scope="TypedConstant" UId="482">
+          <Constant UId="483">
+            <ConstantValue UId="484">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="485" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="486" />
+  <NewLine Num="1" UId="487" />
+  <Blank Num="12" UId="488" />
+  <Token Text="ELSE" UId="489" />
+  <NewLine Num="1" UId="490" />
+  <Blank Num="16" UId="491" />
+  <Access Scope="GlobalVariable" UId="492">
+    <Symbol UId="493">
+      <Component Name="T_Bypass_UL_1" UId="494">
+        <BooleanAttribute Name="HasQuotes" UId="495">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="496" />
+  <Access Scope="Call" UId="497">
+    <Instruction Name="TON" UId="498">
+      <Token Text="(" UId="499" />
+      <Parameter Name="IN" UId="500">
+        <Blank Num="1" UId="501" />
+        <Token Text=":=" UId="502" />
+        <Blank Num="1" UId="503" />
+        <Access Scope="LiteralConstant" UId="504">
+          <Constant UId="505">
+            <ConstantValue UId="507">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="508" />
+      <NewLine Num="1" UId="509" />
+      <Blank Num="36" UId="510" />
+      <Parameter Name="PT" UId="511">
+        <Blank Num="1" UId="512" />
+        <Token Text=":=" UId="513" />
+        <Blank Num="1" UId="514" />
+        <Access Scope="TypedConstant" UId="515">
+          <Constant UId="516">
+            <ConstantValue UId="517">T#3S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="518" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="519" />
+  <NewLine Num="1" UId="520" />
+  <Blank Num="16" UId="521" />
+  <Token Text="IF" UId="522" />
+  <Blank Num="1" UId="523" />
+  <Access Scope="GlobalVariable" UId="524">
+    <Symbol UId="525">
+      <Component Name="T_Bypass_UL_1" UId="526">
+        <BooleanAttribute Name="HasQuotes" UId="527">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="528" />
+      <Component Name="Q" UId="529" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="530" />
+  <Token Text="THEN" UId="531" />
+  <NewLine Num="1" UId="532" />
+  <Blank Num="20" UId="533" />
+  <Access Scope="GlobalVariable" UId="534">
+    <Symbol UId="535">
+      <Component Name="Bypass" UId="536">
+        <BooleanAttribute Name="HasQuotes" UId="537">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="538" />
+      <Component Name="Remote_Panel_1" UId="539" />
+      <Token Text="." UId="540" />
+      <Component Name="Upper_limit" UId="541" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="542" />
+  <Token Text=":=" UId="543" />
+  <Blank Num="1" UId="544" />
+  <Access Scope="GlobalVariable" UId="545">
+    <Symbol UId="546">
+      <Component Name="VTD_Upper_Limet_Bypass_HMI" UId="547">
+        <BooleanAttribute Name="HasQuotes" UId="548">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="549" />
+  <Token Text=":=" UId="550" />
+  <Blank Num="1" UId="551" />
+  <Access Scope="LiteralConstant" UId="552">
+    <Constant UId="553">
+      <ConstantValue UId="555">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="556" />
+  <NewLine Num="1" UId="557" />
+  <Blank Num="16" UId="558" />
+  <Token Text="END_IF" UId="559" />
+  <Token Text=";" UId="560" />
+  <NewLine Num="1" UId="561" />
+  <Blank Num="12" UId="562" />
+  <Token Text="END_IF" UId="563" />
+  <Token Text=";" UId="564" />
+  <NewLine Num="1" UId="565" />
+  <Blank Num="12" UId="566" />
+  <NewLine Num="1" UId="567" />
+  <Blank Num="12" UId="568" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="569">
+    <Text UId="570">LIMIT DOWN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="571" />
+  <Blank Num="12" UId="572" />
+  <Token Text="IF" UId="573" />
+  <Blank Num="1" UId="574" />
+  <Access Scope="GlobalVariable" UId="575">
+    <Symbol UId="576">
+      <Component Name="VTD1 LOWER LIMIT" UId="577" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="578" />
+  <Token Text="THEN" UId="579" />
+  <NewLine Num="1" UId="580" />
+  <Blank Num="16" UId="581" />
+  <Access Scope="GlobalVariable" UId="582">
+    <Symbol UId="583">
+      <Component Name="Bypass" UId="584">
+        <BooleanAttribute Name="HasQuotes" UId="585">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="586" />
+      <Component Name="Remote_Panel_1" UId="587" />
+      <Token Text="." UId="588" />
+      <Component Name="Lower_limit" UId="589" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="590" />
+  <Token Text=":=" UId="591" />
+  <Blank Num="1" UId="592" />
+  <Access Scope="GlobalVariable" UId="593">
+    <Symbol UId="594">
+      <Component Name="VTD_Lower_Limit_Bypass_HMI" UId="595">
+        <BooleanAttribute Name="HasQuotes" UId="596">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="597" />
+  <NewLine Num="1" UId="598" />
+  <Blank Num="16" UId="599" />
+  <Access Scope="GlobalVariable" UId="600">
+    <Symbol UId="601">
+      <Component Name="T_Bypass_LL_1" UId="602">
+        <BooleanAttribute Name="HasQuotes" UId="603">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="604" />
+  <Access Scope="Call" UId="605">
+    <Instruction Name="TON" UId="606">
+      <Token Text="(" UId="607" />
+      <Parameter Name="IN" UId="608">
+        <Token Text=":=" UId="609" />
+        <Access Scope="LiteralConstant" UId="610">
+          <Constant UId="611">
+            <ConstantValue UId="613">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="614" />
+      <NewLine Num="1" UId="615" />
+      <Blank Num="36" UId="616" />
+      <Parameter Name="PT" UId="617">
+        <Token Text=":=" UId="618" />
+        <Access Scope="TypedConstant" UId="619">
+          <Constant UId="620">
+            <ConstantValue UId="621">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="622" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="623" />
+  <NewLine Num="1" UId="624" />
+  <Blank Num="12" UId="625" />
+  <Token Text="ELSE" UId="626" />
+  <NewLine Num="1" UId="627" />
+  <Blank Num="16" UId="628" />
+  <Access Scope="GlobalVariable" UId="629">
+    <Symbol UId="630">
+      <Component Name="T_Bypass_LL_1" UId="631">
+        <BooleanAttribute Name="HasQuotes" UId="632">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="633" />
+  <Access Scope="Call" UId="634">
+    <Instruction Name="TON" UId="635">
+      <Token Text="(" UId="636" />
+      <Parameter Name="IN" UId="637">
+        <Blank Num="1" UId="638" />
+        <Token Text=":=" UId="639" />
+        <Blank Num="1" UId="640" />
+        <Access Scope="LiteralConstant" UId="641">
+          <Constant UId="642">
+            <ConstantValue UId="644">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="645" />
+      <NewLine Num="1" UId="646" />
+      <Blank Num="36" UId="647" />
+      <Parameter Name="PT" UId="648">
+        <Blank Num="1" UId="649" />
+        <Token Text=":=" UId="650" />
+        <Blank Num="1" UId="651" />
+        <Access Scope="TypedConstant" UId="652">
+          <Constant UId="653">
+            <ConstantValue UId="654">T#3S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="655" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="656" />
+  <NewLine Num="1" UId="657" />
+  <Blank Num="16" UId="658" />
+  <Token Text="IF" UId="659" />
+  <Blank Num="1" UId="660" />
+  <Access Scope="GlobalVariable" UId="661">
+    <Symbol UId="662">
+      <Component Name="T_Bypass_LL_1" UId="663">
+        <BooleanAttribute Name="HasQuotes" UId="664">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="665" />
+      <Component Name="Q" UId="666" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="667" />
+  <Token Text="THEN" UId="668" />
+  <NewLine Num="1" UId="669" />
+  <Blank Num="20" UId="670" />
+  <Access Scope="GlobalVariable" UId="671">
+    <Symbol UId="672">
+      <Component Name="Bypass" UId="673">
+        <BooleanAttribute Name="HasQuotes" UId="674">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="675" />
+      <Component Name="Remote_Panel_1" UId="676" />
+      <Token Text="." UId="677" />
+      <Component Name="Lower_limit" UId="678" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="679" />
+  <Token Text=":=" UId="680" />
+  <Blank Num="1" UId="681" />
+  <Access Scope="GlobalVariable" UId="682">
+    <Symbol UId="683">
+      <Component Name="VTD_Lower_Limit_Bypass_HMI" UId="684">
+        <BooleanAttribute Name="HasQuotes" UId="685">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="686" />
+  <Token Text=":=" UId="687" />
+  <Blank Num="1" UId="688" />
+  <Access Scope="LiteralConstant" UId="689">
+    <Constant UId="690">
+      <ConstantValue UId="692">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="693" />
+  <NewLine Num="1" UId="694" />
+  <Blank Num="16" UId="695" />
+  <Token Text="END_IF" UId="696" />
+  <Token Text=";" UId="697" />
+  <NewLine Num="1" UId="698" />
+  <Blank Num="12" UId="699" />
+  <Token Text="END_IF" UId="700" />
+  <Token Text=";" UId="701" />
+  <NewLine Num="1" UId="702" />
+  <Blank Num="12" UId="703" />
+  <NewLine Num="1" UId="704" />
+  <Blank Num="12" UId="705" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="706">
+    <Text UId="707">OVERTRAVEL DOWN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="708" />
+  <Blank Num="12" UId="709" />
+  <Token Text="IF" UId="710" />
+  <Blank Num="1" UId="711" />
+  <Token Text="NOT" UId="712" />
+  <Blank Num="1" UId="713" />
+  <Access Scope="GlobalVariable" UId="714">
+    <Symbol UId="715">
+      <Component Name="OVERTRAVEL LOWER LIMIT - CH1(1)" UId="716" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="717" />
+  <Token Text="THEN" UId="718" />
+  <NewLine Num="1" UId="719" />
+  <Blank Num="16" UId="720" />
+  <Access Scope="GlobalVariable" UId="721">
+    <Symbol UId="722">
+      <Component Name="Bypass" UId="723">
+        <BooleanAttribute Name="HasQuotes" UId="724">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="725" />
+      <Component Name="Remote_Panel_1" UId="726" />
+      <Token Text="." UId="727" />
+      <Component Name="Overtravel_Lower_limit" UId="728" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="729" />
+  <Token Text=":=" UId="730" />
+  <Blank Num="1" UId="731" />
+  <Access Scope="GlobalVariable" UId="732">
+    <Symbol UId="733">
+      <Component Name="VTD_Lower_Overtravel_Bypass_HMI" UId="734">
+        <BooleanAttribute Name="HasQuotes" UId="735">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="736" />
+  <NewLine Num="1" UId="737" />
+  <Blank Num="16" UId="738" />
+  <Access Scope="GlobalVariable" UId="739">
+    <Symbol UId="740">
+      <Component Name="T_Bypass_OLL_1" UId="741">
+        <BooleanAttribute Name="HasQuotes" UId="742">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="743" />
+  <Access Scope="Call" UId="744">
+    <Instruction Name="TON" UId="745">
+      <Token Text="(" UId="746" />
+      <Parameter Name="IN" UId="747">
+        <Token Text=":=" UId="748" />
+        <Access Scope="LiteralConstant" UId="749">
+          <Constant UId="750">
+            <ConstantValue UId="752">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="753" />
+      <NewLine Num="1" UId="754" />
+      <Blank Num="37" UId="755" />
+      <Parameter Name="PT" UId="756">
+        <Token Text=":=" UId="757" />
+        <Access Scope="TypedConstant" UId="758">
+          <Constant UId="759">
+            <ConstantValue UId="760">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="761" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="762" />
+  <NewLine Num="1" UId="763" />
+  <Blank Num="12" UId="764" />
+  <Token Text="ELSE" UId="765" />
+  <NewLine Num="1" UId="766" />
+  <Blank Num="16" UId="767" />
+  <Access Scope="GlobalVariable" UId="768">
+    <Symbol UId="769">
+      <Component Name="T_Bypass_OLL_1" UId="770">
+        <BooleanAttribute Name="HasQuotes" UId="771">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="772" />
+  <Access Scope="Call" UId="773">
+    <Instruction Name="TON" UId="774">
+      <Token Text="(" UId="775" />
+      <Parameter Name="IN" UId="776">
+        <Blank Num="1" UId="777" />
+        <Token Text=":=" UId="778" />
+        <Blank Num="1" UId="779" />
+        <Access Scope="LiteralConstant" UId="780">
+          <Constant UId="781">
+            <ConstantValue UId="783">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="784" />
+      <NewLine Num="1" UId="785" />
+      <Blank Num="37" UId="786" />
+      <Parameter Name="PT" UId="787">
+        <Blank Num="1" UId="788" />
+        <Token Text=":=" UId="789" />
+        <Blank Num="1" UId="790" />
+        <Access Scope="TypedConstant" UId="791">
+          <Constant UId="792">
+            <ConstantValue UId="793">T#3S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="794" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="795" />
+  <NewLine Num="1" UId="796" />
+  <Blank Num="16" UId="797" />
+  <Token Text="IF" UId="798" />
+  <Blank Num="1" UId="799" />
+  <Access Scope="GlobalVariable" UId="800">
+    <Symbol UId="801">
+      <Component Name="T_Bypass_OLL_1" UId="802">
+        <BooleanAttribute Name="HasQuotes" UId="803">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="804" />
+      <Component Name="Q" UId="805" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="806" />
+  <Token Text="THEN" UId="807" />
+  <NewLine Num="1" UId="808" />
+  <Blank Num="20" UId="809" />
+  <Access Scope="GlobalVariable" UId="810">
+    <Symbol UId="811">
+      <Component Name="Bypass" UId="812">
+        <BooleanAttribute Name="HasQuotes" UId="813">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="814" />
+      <Component Name="Remote_Panel_1" UId="815" />
+      <Token Text="." UId="816" />
+      <Component Name="Overtravel_Lower_limit" UId="817" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="818" />
+  <Token Text=":=" UId="819" />
+  <Blank Num="1" UId="820" />
+  <Access Scope="GlobalVariable" UId="821">
+    <Symbol UId="822">
+      <Component Name="VTD_Lower_Overtravel_Bypass_HMI" UId="823">
+        <BooleanAttribute Name="HasQuotes" UId="824">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="825" />
+  <Token Text=":=" UId="826" />
+  <Blank Num="1" UId="827" />
+  <Access Scope="LiteralConstant" UId="828">
+    <Constant UId="829">
+      <ConstantValue UId="831">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="832" />
+  <NewLine Num="1" UId="833" />
+  <Blank Num="16" UId="834" />
+  <Token Text="END_IF" UId="835" />
+  <Token Text=";" UId="836" />
+  <NewLine Num="1" UId="837" />
+  <Blank Num="12" UId="838" />
+  <Token Text="END_IF" UId="839" />
+  <Token Text=";" UId="840" />
+  <NewLine Num="1" UId="841" />
+  <Blank Num="12" UId="842" />
+  <NewLine Num="1" UId="843" />
+  <Blank Num="12" UId="844" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="845">
+    <Text UId="846">CHAIN SLACK 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="847" />
+  <Blank Num="12" UId="848" />
+  <Token Text="IF" UId="849" />
+  <Blank Num="1" UId="850" />
+  <Access Scope="GlobalVariable" UId="851">
+    <Symbol UId="852">
+      <Component Name="Chain Slack 1 - CH1(1)" UId="853" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="854" />
+  <Token Text="THEN" UId="855" />
+  <NewLine Num="1" UId="856" />
+  <Blank Num="16" UId="857" />
+  <Access Scope="GlobalVariable" UId="858">
+    <Symbol UId="859">
+      <Component Name="Bypass" UId="860">
+        <BooleanAttribute Name="HasQuotes" UId="861">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="862" />
+      <Component Name="Remote_Panel_1" UId="863" />
+      <Token Text="." UId="864" />
+      <Component Name="Chain_Slack_1" UId="865" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="866" />
+  <Token Text=":=" UId="867" />
+  <Blank Num="1" UId="868" />
+  <Access Scope="GlobalVariable" UId="869">
+    <Symbol UId="870">
+      <Component Name="Chain_Slack_1_Bypass_HMI" UId="871">
+        <BooleanAttribute Name="HasQuotes" UId="872">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="873" />
+  <NewLine Num="1" UId="874" />
+  <Blank Num="12" UId="875" />
+  <Token Text="ELSE" UId="876" />
+  <NewLine Num="1" UId="877" />
+  <Blank Num="16" UId="878" />
+  <Access Scope="GlobalVariable" UId="879">
+    <Symbol UId="880">
+      <Component Name="Bypass" UId="881">
+        <BooleanAttribute Name="HasQuotes" UId="882">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="883" />
+      <Component Name="Remote_Panel_1" UId="884" />
+      <Token Text="." UId="885" />
+      <Component Name="Chain_Slack_1" UId="886" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="887" />
+  <Token Text=":=" UId="888" />
+  <Blank Num="1" UId="889" />
+  <Access Scope="GlobalVariable" UId="890">
+    <Symbol UId="891">
+      <Component Name="Chain_Slack_1_Bypass_HMI" UId="892">
+        <BooleanAttribute Name="HasQuotes" UId="893">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="894" />
+  <Token Text=":=" UId="895" />
+  <Blank Num="1" UId="896" />
+  <Access Scope="LiteralConstant" UId="897">
+    <Constant UId="898">
+      <ConstantValue UId="900">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="901" />
+  <NewLine Num="1" UId="902" />
+  <Blank Num="12" UId="903" />
+  <Token Text="END_IF" UId="904" />
+  <Token Text=";" UId="905" />
+  <NewLine Num="1" UId="906" />
+  <Blank Num="12" UId="907" />
+  <NewLine Num="1" UId="908" />
+  <Blank Num="12" UId="909" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="910">
+    <Text UId="911">CHAIN SLACK 2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="912" />
+  <Blank Num="12" UId="913" />
+  <Token Text="IF" UId="914" />
+  <Blank Num="1" UId="915" />
+  <Access Scope="GlobalVariable" UId="916">
+    <Symbol UId="917">
+      <Component Name="Chain Slack 2 - CH1(1)" UId="918" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="919" />
+  <Token Text="THEN" UId="920" />
+  <NewLine Num="1" UId="921" />
+  <Blank Num="16" UId="922" />
+  <Access Scope="GlobalVariable" UId="923">
+    <Symbol UId="924">
+      <Component Name="Bypass" UId="925">
+        <BooleanAttribute Name="HasQuotes" UId="926">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="927" />
+      <Component Name="Remote_Panel_1" UId="928" />
+      <Token Text="." UId="929" />
+      <Component Name="Chain_Slack_2" UId="930" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="931" />
+  <Token Text=":=" UId="932" />
+  <Blank Num="1" UId="933" />
+  <Access Scope="GlobalVariable" UId="934">
+    <Symbol UId="935">
+      <Component Name="Chain_Slack_2_Bypass_HMI" UId="936">
+        <BooleanAttribute Name="HasQuotes" UId="937">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="938" />
+  <NewLine Num="1" UId="939" />
+  <Blank Num="12" UId="940" />
+  <Token Text="ELSE" UId="941" />
+  <NewLine Num="1" UId="942" />
+  <Blank Num="16" UId="943" />
+  <Access Scope="GlobalVariable" UId="944">
+    <Symbol UId="945">
+      <Component Name="Bypass" UId="946">
+        <BooleanAttribute Name="HasQuotes" UId="947">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="948" />
+      <Component Name="Remote_Panel_1" UId="949" />
+      <Token Text="." UId="950" />
+      <Component Name="Chain_Slack_2" UId="951" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="952" />
+  <Token Text=":=" UId="953" />
+  <Blank Num="1" UId="954" />
+  <Access Scope="GlobalVariable" UId="955">
+    <Symbol UId="956">
+      <Component Name="Chain_Slack_2_Bypass_HMI" UId="957">
+        <BooleanAttribute Name="HasQuotes" UId="958">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="959" />
+  <Token Text=":=" UId="960" />
+  <Blank Num="1" UId="961" />
+  <Access Scope="LiteralConstant" UId="962">
+    <Constant UId="963">
+      <ConstantValue UId="965">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="966" />
+  <NewLine Num="1" UId="967" />
+  <Blank Num="12" UId="968" />
+  <Token Text="END_IF" UId="969" />
+  <Token Text=";" UId="970" />
+  <NewLine Num="1" UId="971" />
+  <Blank Num="12" UId="972" />
+  <NewLine Num="1" UId="973" />
+  <Blank Num="12" UId="974" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="975">
+    <Text UId="976">CHAIN SLACK 3</Text>
+  </LineComment>
+  <NewLine Num="1" UId="977" />
+  <Blank Num="12" UId="978" />
+  <Token Text="IF" UId="979" />
+  <Blank Num="1" UId="980" />
+  <Access Scope="GlobalVariable" UId="981">
+    <Symbol UId="982">
+      <Component Name="Chain Slack 3 - CH1(1)" UId="983" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="984" />
+  <Token Text="THEN" UId="985" />
+  <NewLine Num="1" UId="986" />
+  <Blank Num="16" UId="987" />
+  <Access Scope="GlobalVariable" UId="988">
+    <Symbol UId="989">
+      <Component Name="Bypass" UId="990">
+        <BooleanAttribute Name="HasQuotes" UId="991">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="992" />
+      <Component Name="Remote_Panel_1" UId="993" />
+      <Token Text="." UId="994" />
+      <Component Name="Chain_Slack_3" UId="995" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="996" />
+  <Token Text=":=" UId="997" />
+  <Blank Num="1" UId="998" />
+  <Access Scope="GlobalVariable" UId="999">
+    <Symbol UId="1000">
+      <Component Name="Chain_Slack_3_Bypass_HMI" UId="1001">
+        <BooleanAttribute Name="HasQuotes" UId="1002">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1003" />
+  <NewLine Num="1" UId="1004" />
+  <Blank Num="12" UId="1005" />
+  <Token Text="ELSE" UId="1006" />
+  <NewLine Num="1" UId="1007" />
+  <Blank Num="16" UId="1008" />
+  <Access Scope="GlobalVariable" UId="1009">
+    <Symbol UId="1010">
+      <Component Name="Bypass" UId="1011">
+        <BooleanAttribute Name="HasQuotes" UId="1012">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1013" />
+      <Component Name="Remote_Panel_1" UId="1014" />
+      <Token Text="." UId="1015" />
+      <Component Name="Chain_Slack_3" UId="1016" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1017" />
+  <Token Text=":=" UId="1018" />
+  <Blank Num="1" UId="1019" />
+  <Access Scope="GlobalVariable" UId="1020">
+    <Symbol UId="1021">
+      <Component Name="Chain_Slack_3_Bypass_HMI" UId="1022">
+        <BooleanAttribute Name="HasQuotes" UId="1023">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1024" />
+  <Token Text=":=" UId="1025" />
+  <Blank Num="1" UId="1026" />
+  <Access Scope="LiteralConstant" UId="1027">
+    <Constant UId="1028">
+      <ConstantValue UId="1030">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1031" />
+  <NewLine Num="1" UId="1032" />
+  <Blank Num="12" UId="1033" />
+  <Token Text="END_IF" UId="1034" />
+  <Token Text=";" UId="1035" />
+  <NewLine Num="1" UId="1036" />
+  <Blank Num="12" UId="1037" />
+  <NewLine Num="1" UId="1038" />
+  <Blank Num="12" UId="1039" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1040">
+    <Text UId="1041">CHAIN SLACK 4</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1042" />
+  <Blank Num="12" UId="1043" />
+  <Token Text="IF" UId="1044" />
+  <Blank Num="1" UId="1045" />
+  <Access Scope="GlobalVariable" UId="1046">
+    <Symbol UId="1047">
+      <Component Name="Chain Slack 4 - CH1(1)" UId="1048" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1049" />
+  <Token Text="THEN" UId="1050" />
+  <NewLine Num="1" UId="1051" />
+  <Blank Num="16" UId="1052" />
+  <Access Scope="GlobalVariable" UId="1053">
+    <Symbol UId="1054">
+      <Component Name="Bypass" UId="1055">
+        <BooleanAttribute Name="HasQuotes" UId="1056">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1057" />
+      <Component Name="Remote_Panel_1" UId="1058" />
+      <Token Text="." UId="1059" />
+      <Component Name="Chain_Slack_4" UId="1060" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1061" />
+  <Token Text=":=" UId="1062" />
+  <Blank Num="1" UId="1063" />
+  <Access Scope="GlobalVariable" UId="1064">
+    <Symbol UId="1065">
+      <Component Name="Chain_Slack_4_Bypass_HMI" UId="1066">
+        <BooleanAttribute Name="HasQuotes" UId="1067">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1068" />
+  <NewLine Num="1" UId="1069" />
+  <Blank Num="12" UId="1070" />
+  <Token Text="ELSE" UId="1071" />
+  <NewLine Num="1" UId="1072" />
+  <Blank Num="16" UId="1073" />
+  <Access Scope="GlobalVariable" UId="1074">
+    <Symbol UId="1075">
+      <Component Name="Bypass" UId="1076">
+        <BooleanAttribute Name="HasQuotes" UId="1077">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1078" />
+      <Component Name="Remote_Panel_1" UId="1079" />
+      <Token Text="." UId="1080" />
+      <Component Name="Chain_Slack_4" UId="1081" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1082" />
+  <Token Text=":=" UId="1083" />
+  <Blank Num="1" UId="1084" />
+  <Access Scope="GlobalVariable" UId="1085">
+    <Symbol UId="1086">
+      <Component Name="Chain_Slack_4_Bypass_HMI" UId="1087">
+        <BooleanAttribute Name="HasQuotes" UId="1088">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1089" />
+  <Token Text=":=" UId="1090" />
+  <Blank Num="1" UId="1091" />
+  <Access Scope="LiteralConstant" UId="1092">
+    <Constant UId="1093">
+      <ConstantValue UId="1095">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1096" />
+  <NewLine Num="1" UId="1097" />
+  <Blank Num="12" UId="1098" />
+  <Token Text="END_IF" UId="1099" />
+  <Token Text=";" UId="1100" />
+  <NewLine Num="1" UId="1101" />
+  <Blank Num="8" UId="1102" />
+  <Token Text="END_IF" UId="1103" />
+  <Token Text=";" UId="1104" />
+  <NewLine Num="1" UId="1105" />
+  <Blank Num="4" UId="1106" />
+  <Token Text="END_REGION" UId="1107" />
+  <Blank Num="1" UId="1108" />
+  <Text UId="1109">;</Text>
+  <NewLine Num="1" UId="1110" />
+  <Blank Num="4" UId="1111" />
+  <NewLine Num="1" UId="1112" />
+  <Blank Num="4" UId="1113" />
+  <Token Text="REGION" UId="1114" />
+  <Blank Num="1" UId="1115" />
+  <Text UId="1116">SYSTEM 2</Text>
+  <NewLine Num="1" UId="1117" />
+  <Blank Num="8" UId="1118" />
+  <Token Text="IF" UId="1119" />
+  <Blank Num="1" UId="1120" />
+  <Access Scope="GlobalVariable" UId="1121">
+    <Symbol UId="1122">
+      <Component Name="VTD_System_Selected_HMI" UId="1123">
+        <BooleanAttribute Name="HasQuotes" UId="1124">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1125" />
+  <Token Text="=" UId="1126" />
+  <Blank Num="1" UId="1127" />
+  <Access Scope="LiteralConstant" UId="1128">
+    <Constant UId="1129">
+      <ConstantValue UId="1131">2</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="1132" />
+  <Token Text="THEN" UId="1133" />
+  <NewLine Num="1" UId="1134" />
+  <Blank Num="12" UId="1135" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1136">
+    <Text UId="1137">OVERTRAVEL UP</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1138" />
+  <Blank Num="12" UId="1139" />
+  <Token Text="IF" UId="1140" />
+  <Blank Num="1" UId="1141" />
+  <Token Text="NOT" UId="1142" />
+  <Blank Num="1" UId="1143" />
+  <Access Scope="GlobalVariable" UId="1144">
+    <Symbol UId="1145">
+      <Component Name="OVERTRAVEL UPPER LIMIT - CH1(2)" UId="1146" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1147" />
+  <Token Text="THEN" UId="1148" />
+  <NewLine Num="1" UId="1149" />
+  <Blank Num="16" UId="1150" />
+  <Access Scope="GlobalVariable" UId="1151">
+    <Symbol UId="1152">
+      <Component Name="Bypass" UId="1153">
+        <BooleanAttribute Name="HasQuotes" UId="1154">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1155" />
+      <Component Name="Remote_Panel_2" UId="1156" />
+      <Token Text="." UId="1157" />
+      <Component Name="Overtravel_Upper_limit" UId="1158" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1159" />
+  <Token Text=":=" UId="1160" />
+  <Blank Num="1" UId="1161" />
+  <Access Scope="GlobalVariable" UId="1162">
+    <Symbol UId="1163">
+      <Component Name="VTD_Upper_Overtravel_Bypass_HMI" UId="1164">
+        <BooleanAttribute Name="HasQuotes" UId="1165">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1166" />
+  <NewLine Num="1" UId="1167" />
+  <Blank Num="16" UId="1168" />
+  <Access Scope="GlobalVariable" UId="1169">
+    <Symbol UId="1170">
+      <Component Name="T_Bypass_OUL_2" UId="1171">
+        <BooleanAttribute Name="HasQuotes" UId="1172">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="1173" />
+  <Access Scope="Call" UId="1174">
+    <Instruction Name="TON" UId="1175">
+      <Token Text="(" UId="1176" />
+      <Parameter Name="IN" UId="1177">
+        <Blank Num="1" UId="1178" />
+        <Token Text=":=" UId="1179" />
+        <Blank Num="1" UId="1180" />
+        <Access Scope="LiteralConstant" UId="1181">
+          <Constant UId="1182">
+            <ConstantValue UId="1184">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1185" />
+      <NewLine Num="1" UId="1186" />
+      <Blank Num="37" UId="1187" />
+      <Parameter Name="PT" UId="1188">
+        <Blank Num="1" UId="1189" />
+        <Token Text=":=" UId="1190" />
+        <Blank Num="1" UId="1191" />
+        <Access Scope="TypedConstant" UId="1192">
+          <Constant UId="1193">
+            <ConstantValue UId="1194">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1195" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1196" />
+  <NewLine Num="1" UId="1197" />
+  <Blank Num="12" UId="1198" />
+  <Token Text="ELSE" UId="1199" />
+  <NewLine Num="1" UId="1200" />
+  <Blank Num="16" UId="1201" />
+  <Access Scope="GlobalVariable" UId="1202">
+    <Symbol UId="1203">
+      <Component Name="T_Bypass_OUL_2" UId="1204">
+        <BooleanAttribute Name="HasQuotes" UId="1205">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="1206" />
+  <Access Scope="Call" UId="1207">
+    <Instruction Name="TON" UId="1208">
+      <Token Text="(" UId="1209" />
+      <Parameter Name="IN" UId="1210">
+        <Blank Num="1" UId="1211" />
+        <Token Text=":=" UId="1212" />
+        <Blank Num="1" UId="1213" />
+        <Access Scope="LiteralConstant" UId="1214">
+          <Constant UId="1215">
+            <ConstantValue UId="1217">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1218" />
+      <NewLine Num="1" UId="1219" />
+      <Blank Num="37" UId="1220" />
+      <Parameter Name="PT" UId="1221">
+        <Blank Num="1" UId="1222" />
+        <Token Text=":=" UId="1223" />
+        <Blank Num="1" UId="1224" />
+        <Access Scope="TypedConstant" UId="1225">
+          <Constant UId="1226">
+            <ConstantValue UId="1227">T#3S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1228" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1229" />
+  <NewLine Num="1" UId="1230" />
+  <Blank Num="16" UId="1231" />
+  <Token Text="IF" UId="1232" />
+  <Blank Num="1" UId="1233" />
+  <Access Scope="GlobalVariable" UId="1234">
+    <Symbol UId="1235">
+      <Component Name="T_Bypass_OUL_2" UId="1236">
+        <BooleanAttribute Name="HasQuotes" UId="1237">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1238" />
+      <Component Name="Q" UId="1239" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1240" />
+  <Token Text="THEN" UId="1241" />
+  <NewLine Num="1" UId="1242" />
+  <Blank Num="20" UId="1243" />
+  <Access Scope="GlobalVariable" UId="1244">
+    <Symbol UId="1245">
+      <Component Name="Bypass" UId="1246">
+        <BooleanAttribute Name="HasQuotes" UId="1247">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1248" />
+      <Component Name="Remote_Panel_2" UId="1249" />
+      <Token Text="." UId="1250" />
+      <Component Name="Overtravel_Upper_limit" UId="1251" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1252" />
+  <Token Text=":=" UId="1253" />
+  <Blank Num="1" UId="1254" />
+  <Access Scope="GlobalVariable" UId="1255">
+    <Symbol UId="1256">
+      <Component Name="VTD_Upper_Overtravel_Bypass_HMI" UId="1257">
+        <BooleanAttribute Name="HasQuotes" UId="1258">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1259" />
+  <Token Text=":=" UId="1260" />
+  <Blank Num="1" UId="1261" />
+  <Access Scope="LiteralConstant" UId="1262">
+    <Constant UId="1263">
+      <ConstantValue UId="1265">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1266" />
+  <NewLine Num="1" UId="1267" />
+  <Blank Num="16" UId="1268" />
+  <Token Text="END_IF" UId="1269" />
+  <Token Text=";" UId="1270" />
+  <NewLine Num="1" UId="1271" />
+  <Blank Num="12" UId="1272" />
+  <Token Text="END_IF" UId="1273" />
+  <Token Text=";" UId="1274" />
+  <NewLine Num="1" UId="1275" />
+  <Blank Num="12" UId="1276" />
+  <NewLine Num="1" UId="1277" />
+  <Blank Num="12" UId="1278" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1279">
+    <Text UId="1280">LIMIT UP</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1281" />
+  <Blank Num="12" UId="1282" />
+  <Token Text="IF" UId="1283" />
+  <Blank Num="1" UId="1284" />
+  <Access Scope="GlobalVariable" UId="1285">
+    <Symbol UId="1286">
+      <Component Name="VTD2 UPPER LIMIT" UId="1287" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1288" />
+  <Token Text="THEN" UId="1289" />
+  <NewLine Num="1" UId="1290" />
+  <Blank Num="16" UId="1291" />
+  <Access Scope="GlobalVariable" UId="1292">
+    <Symbol UId="1293">
+      <Component Name="Bypass" UId="1294">
+        <BooleanAttribute Name="HasQuotes" UId="1295">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1296" />
+      <Component Name="Remote_Panel_2" UId="1297" />
+      <Token Text="." UId="1298" />
+      <Component Name="Upper_limit" UId="1299" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1300" />
+  <Token Text=":=" UId="1301" />
+  <Blank Num="1" UId="1302" />
+  <Access Scope="GlobalVariable" UId="1303">
+    <Symbol UId="1304">
+      <Component Name="VTD_Upper_Limet_Bypass_HMI" UId="1305">
+        <BooleanAttribute Name="HasQuotes" UId="1306">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1307" />
+  <NewLine Num="1" UId="1308" />
+  <Blank Num="16" UId="1309" />
+  <Access Scope="GlobalVariable" UId="1310">
+    <Symbol UId="1311">
+      <Component Name="T_Bypass_UL_2" UId="1312">
+        <BooleanAttribute Name="HasQuotes" UId="1313">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="1314" />
+  <Access Scope="Call" UId="1315">
+    <Instruction Name="TON" UId="1316">
+      <Token Text="(" UId="1317" />
+      <Parameter Name="IN" UId="1318">
+        <Blank Num="1" UId="1319" />
+        <Token Text=":=" UId="1320" />
+        <Blank Num="1" UId="1321" />
+        <Access Scope="LiteralConstant" UId="1322">
+          <Constant UId="1323">
+            <ConstantValue UId="1325">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1326" />
+      <NewLine Num="1" UId="1327" />
+      <Blank Num="36" UId="1328" />
+      <Parameter Name="PT" UId="1329">
+        <Blank Num="1" UId="1330" />
+        <Token Text=":=" UId="1331" />
+        <Blank Num="1" UId="1332" />
+        <Access Scope="TypedConstant" UId="1333">
+          <Constant UId="1334">
+            <ConstantValue UId="1335">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1336" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1337" />
+  <NewLine Num="1" UId="1338" />
+  <Blank Num="12" UId="1339" />
+  <Token Text="ELSE" UId="1340" />
+  <NewLine Num="1" UId="1341" />
+  <Blank Num="16" UId="1342" />
+  <Access Scope="GlobalVariable" UId="1343">
+    <Symbol UId="1344">
+      <Component Name="T_Bypass_UL_2" UId="1345">
+        <BooleanAttribute Name="HasQuotes" UId="1346">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="1347" />
+  <Access Scope="Call" UId="1348">
+    <Instruction Name="TON" UId="1349">
+      <Token Text="(" UId="1350" />
+      <Parameter Name="IN" UId="1351">
+        <Blank Num="1" UId="1352" />
+        <Token Text=":=" UId="1353" />
+        <Blank Num="1" UId="1354" />
+        <Access Scope="LiteralConstant" UId="1355">
+          <Constant UId="1356">
+            <ConstantValue UId="1358">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1359" />
+      <NewLine Num="1" UId="1360" />
+      <Blank Num="36" UId="1361" />
+      <Parameter Name="PT" UId="1362">
+        <Blank Num="1" UId="1363" />
+        <Token Text=":=" UId="1364" />
+        <Blank Num="1" UId="1365" />
+        <Access Scope="TypedConstant" UId="1366">
+          <Constant UId="1367">
+            <ConstantValue UId="1368">T#3S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1369" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1370" />
+  <NewLine Num="1" UId="1371" />
+  <Blank Num="16" UId="1372" />
+  <Token Text="IF" UId="1373" />
+  <Blank Num="1" UId="1374" />
+  <Access Scope="GlobalVariable" UId="1375">
+    <Symbol UId="1376">
+      <Component Name="T_Bypass_UL_2" UId="1377">
+        <BooleanAttribute Name="HasQuotes" UId="1378">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1379" />
+      <Component Name="Q" UId="1380" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1381" />
+  <Token Text="THEN" UId="1382" />
+  <NewLine Num="1" UId="1383" />
+  <Blank Num="20" UId="1384" />
+  <Access Scope="GlobalVariable" UId="1385">
+    <Symbol UId="1386">
+      <Component Name="Bypass" UId="1387">
+        <BooleanAttribute Name="HasQuotes" UId="1388">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1389" />
+      <Component Name="Remote_Panel_2" UId="1390" />
+      <Token Text="." UId="1391" />
+      <Component Name="Upper_limit" UId="1392" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1393" />
+  <Token Text=":=" UId="1394" />
+  <Blank Num="1" UId="1395" />
+  <Access Scope="GlobalVariable" UId="1396">
+    <Symbol UId="1397">
+      <Component Name="VTD_Upper_Limet_Bypass_HMI" UId="1398">
+        <BooleanAttribute Name="HasQuotes" UId="1399">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1400" />
+  <Token Text=":=" UId="1401" />
+  <Blank Num="1" UId="1402" />
+  <Access Scope="LiteralConstant" UId="1403">
+    <Constant UId="1404">
+      <ConstantValue UId="1406">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1407" />
+  <NewLine Num="1" UId="1408" />
+  <Blank Num="16" UId="1409" />
+  <Token Text="END_IF" UId="1410" />
+  <Token Text=";" UId="1411" />
+  <NewLine Num="1" UId="1412" />
+  <Blank Num="12" UId="1413" />
+  <Token Text="END_IF" UId="1414" />
+  <Token Text=";" UId="1415" />
+  <NewLine Num="1" UId="1416" />
+  <Blank Num="12" UId="1417" />
+  <NewLine Num="1" UId="1418" />
+  <Blank Num="12" UId="1419" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1420">
+    <Text UId="1421">LIMIT DOWN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1422" />
+  <Blank Num="12" UId="1423" />
+  <Token Text="IF" UId="1424" />
+  <Blank Num="1" UId="1425" />
+  <Access Scope="GlobalVariable" UId="1426">
+    <Symbol UId="1427">
+      <Component Name="VTD2 LOWER LIMIT" UId="1428" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1429" />
+  <Token Text="THEN" UId="1430" />
+  <NewLine Num="1" UId="1431" />
+  <Blank Num="16" UId="1432" />
+  <Access Scope="GlobalVariable" UId="1433">
+    <Symbol UId="1434">
+      <Component Name="Bypass" UId="1435">
+        <BooleanAttribute Name="HasQuotes" UId="1436">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1437" />
+      <Component Name="Remote_Panel_2" UId="1438" />
+      <Token Text="." UId="1439" />
+      <Component Name="Lower_limit" UId="1440" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1441" />
+  <Token Text=":=" UId="1442" />
+  <Blank Num="1" UId="1443" />
+  <Access Scope="GlobalVariable" UId="1444">
+    <Symbol UId="1445">
+      <Component Name="VTD_Lower_Limit_Bypass_HMI" UId="1446">
+        <BooleanAttribute Name="HasQuotes" UId="1447">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1448" />
+  <NewLine Num="1" UId="1449" />
+  <Blank Num="16" UId="1450" />
+  <Access Scope="GlobalVariable" UId="1451">
+    <Symbol UId="1452">
+      <Component Name="T_Bypass_LL_2" UId="1453">
+        <BooleanAttribute Name="HasQuotes" UId="1454">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="1455" />
+  <Access Scope="Call" UId="1456">
+    <Instruction Name="TON" UId="1457">
+      <Token Text="(" UId="1458" />
+      <Parameter Name="IN" UId="1459">
+        <Blank Num="1" UId="1460" />
+        <Token Text=":=" UId="1461" />
+        <Blank Num="1" UId="1462" />
+        <Access Scope="LiteralConstant" UId="1463">
+          <Constant UId="1464">
+            <ConstantValue UId="1466">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1467" />
+      <NewLine Num="1" UId="1468" />
+      <Blank Num="36" UId="1469" />
+      <Parameter Name="PT" UId="1470">
+        <Blank Num="1" UId="1471" />
+        <Token Text=":=" UId="1472" />
+        <Blank Num="1" UId="1473" />
+        <Access Scope="TypedConstant" UId="1474">
+          <Constant UId="1475">
+            <ConstantValue UId="1476">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1477" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1478" />
+  <NewLine Num="1" UId="1479" />
+  <Blank Num="12" UId="1480" />
+  <Token Text="ELSE" UId="1481" />
+  <NewLine Num="1" UId="1482" />
+  <Blank Num="16" UId="1483" />
+  <Access Scope="GlobalVariable" UId="1484">
+    <Symbol UId="1485">
+      <Component Name="T_Bypass_LL_2" UId="1486">
+        <BooleanAttribute Name="HasQuotes" UId="1487">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="1488" />
+  <Access Scope="Call" UId="1489">
+    <Instruction Name="TON" UId="1490">
+      <Token Text="(" UId="1491" />
+      <Parameter Name="IN" UId="1492">
+        <Blank Num="1" UId="1493" />
+        <Token Text=":=" UId="1494" />
+        <Blank Num="1" UId="1495" />
+        <Access Scope="LiteralConstant" UId="1496">
+          <Constant UId="1497">
+            <ConstantValue UId="1499">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1500" />
+      <NewLine Num="1" UId="1501" />
+      <Blank Num="36" UId="1502" />
+      <Parameter Name="PT" UId="1503">
+        <Blank Num="1" UId="1504" />
+        <Token Text=":=" UId="1505" />
+        <Blank Num="1" UId="1506" />
+        <Access Scope="TypedConstant" UId="1507">
+          <Constant UId="1508">
+            <ConstantValue UId="1509">T#3S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1510" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1511" />
+  <NewLine Num="1" UId="1512" />
+  <Blank Num="16" UId="1513" />
+  <Token Text="IF" UId="1514" />
+  <Blank Num="1" UId="1515" />
+  <Access Scope="GlobalVariable" UId="1516">
+    <Symbol UId="1517">
+      <Component Name="T_Bypass_LL_2" UId="1518">
+        <BooleanAttribute Name="HasQuotes" UId="1519">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1520" />
+      <Component Name="Q" UId="1521" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1522" />
+  <Token Text="THEN" UId="1523" />
+  <NewLine Num="1" UId="1524" />
+  <Blank Num="20" UId="1525" />
+  <Access Scope="GlobalVariable" UId="1526">
+    <Symbol UId="1527">
+      <Component Name="Bypass" UId="1528">
+        <BooleanAttribute Name="HasQuotes" UId="1529">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1530" />
+      <Component Name="Remote_Panel_2" UId="1531" />
+      <Token Text="." UId="1532" />
+      <Component Name="Lower_limit" UId="1533" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1534" />
+  <Token Text=":=" UId="1535" />
+  <Blank Num="1" UId="1536" />
+  <Access Scope="GlobalVariable" UId="1537">
+    <Symbol UId="1538">
+      <Component Name="VTD_Lower_Limit_Bypass_HMI" UId="1539">
+        <BooleanAttribute Name="HasQuotes" UId="1540">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1541" />
+  <Token Text=":=" UId="1542" />
+  <Blank Num="1" UId="1543" />
+  <Access Scope="LiteralConstant" UId="1544">
+    <Constant UId="1545">
+      <ConstantValue UId="1547">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1548" />
+  <NewLine Num="1" UId="1549" />
+  <Blank Num="16" UId="1550" />
+  <Token Text="END_IF" UId="1551" />
+  <Token Text=";" UId="1552" />
+  <NewLine Num="1" UId="1553" />
+  <Blank Num="12" UId="1554" />
+  <Token Text="END_IF" UId="1555" />
+  <Token Text=";" UId="1556" />
+  <NewLine Num="1" UId="1557" />
+  <Blank Num="12" UId="1558" />
+  <NewLine Num="1" UId="1559" />
+  <Blank Num="12" UId="1560" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1561">
+    <Text UId="1562">OVERTRAVEL DOWN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1563" />
+  <Blank Num="12" UId="1564" />
+  <Token Text="IF" UId="1565" />
+  <Blank Num="1" UId="1566" />
+  <Token Text="NOT" UId="1567" />
+  <Blank Num="1" UId="1568" />
+  <Access Scope="GlobalVariable" UId="1569">
+    <Symbol UId="1570">
+      <Component Name="OVERTRAVEL LOWER LIMIT - CH1(2)" UId="1571" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1572" />
+  <Token Text="THEN" UId="1573" />
+  <NewLine Num="1" UId="1574" />
+  <Blank Num="16" UId="1575" />
+  <Access Scope="GlobalVariable" UId="1576">
+    <Symbol UId="1577">
+      <Component Name="Bypass" UId="1578">
+        <BooleanAttribute Name="HasQuotes" UId="1579">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1580" />
+      <Component Name="Remote_Panel_2" UId="1581" />
+      <Token Text="." UId="1582" />
+      <Component Name="Overtravel_Lower_limit" UId="1583" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1584" />
+  <Token Text=":=" UId="1585" />
+  <Blank Num="1" UId="1586" />
+  <Access Scope="GlobalVariable" UId="1587">
+    <Symbol UId="1588">
+      <Component Name="VTD_Lower_Overtravel_Bypass_HMI" UId="1589">
+        <BooleanAttribute Name="HasQuotes" UId="1590">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1591" />
+  <NewLine Num="1" UId="1592" />
+  <Blank Num="16" UId="1593" />
+  <Access Scope="GlobalVariable" UId="1594">
+    <Symbol UId="1595">
+      <Component Name="T_Bypass_OLL_2" UId="1596">
+        <BooleanAttribute Name="HasQuotes" UId="1597">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="1598" />
+  <Access Scope="Call" UId="1599">
+    <Instruction Name="TON" UId="1600">
+      <Token Text="(" UId="1601" />
+      <Parameter Name="IN" UId="1602">
+        <Blank Num="1" UId="1603" />
+        <Token Text=":=" UId="1604" />
+        <Blank Num="1" UId="1605" />
+        <Access Scope="LiteralConstant" UId="1606">
+          <Constant UId="1607">
+            <ConstantValue UId="1609">FALSE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1610" />
+      <NewLine Num="1" UId="1611" />
+      <Blank Num="37" UId="1612" />
+      <Parameter Name="PT" UId="1613">
+        <Blank Num="1" UId="1614" />
+        <Token Text=":=" UId="1615" />
+        <Blank Num="1" UId="1616" />
+        <Access Scope="TypedConstant" UId="1617">
+          <Constant UId="1618">
+            <ConstantValue UId="1619">T#0S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1620" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1621" />
+  <NewLine Num="1" UId="1622" />
+  <Blank Num="12" UId="1623" />
+  <Token Text="ELSE" UId="1624" />
+  <NewLine Num="1" UId="1625" />
+  <Blank Num="16" UId="1626" />
+  <Access Scope="GlobalVariable" UId="1627">
+    <Symbol UId="1628">
+      <Component Name="T_Bypass_OLL_2" UId="1629">
+        <BooleanAttribute Name="HasQuotes" UId="1630">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text="." UId="1631" />
+  <Access Scope="Call" UId="1632">
+    <Instruction Name="TON" UId="1633">
+      <Token Text="(" UId="1634" />
+      <Parameter Name="IN" UId="1635">
+        <Blank Num="1" UId="1636" />
+        <Token Text=":=" UId="1637" />
+        <Blank Num="1" UId="1638" />
+        <Access Scope="LiteralConstant" UId="1639">
+          <Constant UId="1640">
+            <ConstantValue UId="1642">TRUE</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="1643" />
+      <NewLine Num="1" UId="1644" />
+      <Blank Num="37" UId="1645" />
+      <Parameter Name="PT" UId="1646">
+        <Blank Num="1" UId="1647" />
+        <Token Text=":=" UId="1648" />
+        <Blank Num="1" UId="1649" />
+        <Access Scope="TypedConstant" UId="1650">
+          <Constant UId="1651">
+            <ConstantValue UId="1652">T#3S</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="1653" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="1654" />
+  <NewLine Num="1" UId="1655" />
+  <Blank Num="16" UId="1656" />
+  <Token Text="IF" UId="1657" />
+  <Blank Num="1" UId="1658" />
+  <Access Scope="GlobalVariable" UId="1659">
+    <Symbol UId="1660">
+      <Component Name="T_Bypass_OLL_2" UId="1661">
+        <BooleanAttribute Name="HasQuotes" UId="1662">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1663" />
+      <Component Name="Q" UId="1664" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1665" />
+  <Token Text="THEN" UId="1666" />
+  <NewLine Num="1" UId="1667" />
+  <Blank Num="20" UId="1668" />
+  <Access Scope="GlobalVariable" UId="1669">
+    <Symbol UId="1670">
+      <Component Name="Bypass" UId="1671">
+        <BooleanAttribute Name="HasQuotes" UId="1672">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1673" />
+      <Component Name="Remote_Panel_2" UId="1674" />
+      <Token Text="." UId="1675" />
+      <Component Name="Overtravel_Lower_limit" UId="1676" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1677" />
+  <Token Text=":=" UId="1678" />
+  <Blank Num="1" UId="1679" />
+  <Access Scope="GlobalVariable" UId="1680">
+    <Symbol UId="1681">
+      <Component Name="VTD_Lower_Overtravel_Bypass_HMI" UId="1682">
+        <BooleanAttribute Name="HasQuotes" UId="1683">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1684" />
+  <Token Text=":=" UId="1685" />
+  <Blank Num="1" UId="1686" />
+  <Access Scope="LiteralConstant" UId="1687">
+    <Constant UId="1688">
+      <ConstantValue UId="1690">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1691" />
+  <NewLine Num="1" UId="1692" />
+  <Blank Num="16" UId="1693" />
+  <Token Text="END_IF" UId="1694" />
+  <Token Text=";" UId="1695" />
+  <NewLine Num="1" UId="1696" />
+  <Blank Num="12" UId="1697" />
+  <Token Text="END_IF" UId="1698" />
+  <Token Text=";" UId="1699" />
+  <NewLine Num="1" UId="1700" />
+  <Blank Num="12" UId="1701" />
+  <NewLine Num="1" UId="1702" />
+  <Blank Num="12" UId="1703" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1704">
+    <Text UId="1705">CHAIN SLACK 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1706" />
+  <Blank Num="12" UId="1707" />
+  <Token Text="IF" UId="1708" />
+  <Blank Num="1" UId="1709" />
+  <Access Scope="GlobalVariable" UId="1710">
+    <Symbol UId="1711">
+      <Component Name="Chain Slack 1 - CH1(2)" UId="1712" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1713" />
+  <Token Text="THEN" UId="1714" />
+  <NewLine Num="1" UId="1715" />
+  <Blank Num="16" UId="1716" />
+  <Access Scope="GlobalVariable" UId="1717">
+    <Symbol UId="1718">
+      <Component Name="Bypass" UId="1719">
+        <BooleanAttribute Name="HasQuotes" UId="1720">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1721" />
+      <Component Name="Remote_Panel_2" UId="1722" />
+      <Token Text="." UId="1723" />
+      <Component Name="Chain_Slack_1" UId="1724" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1725" />
+  <Token Text=":=" UId="1726" />
+  <Blank Num="1" UId="1727" />
+  <Access Scope="GlobalVariable" UId="1728">
+    <Symbol UId="1729">
+      <Component Name="Chain_Slack_1_Bypass_HMI" UId="1730">
+        <BooleanAttribute Name="HasQuotes" UId="1731">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1732" />
+  <NewLine Num="1" UId="1733" />
+  <Blank Num="12" UId="1734" />
+  <Token Text="ELSE" UId="1735" />
+  <NewLine Num="1" UId="1736" />
+  <Blank Num="16" UId="1737" />
+  <Access Scope="GlobalVariable" UId="1738">
+    <Symbol UId="1739">
+      <Component Name="Bypass" UId="1740">
+        <BooleanAttribute Name="HasQuotes" UId="1741">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1742" />
+      <Component Name="Remote_Panel_2" UId="1743" />
+      <Token Text="." UId="1744" />
+      <Component Name="Chain_Slack_1" UId="1745" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1746" />
+  <Token Text=":=" UId="1747" />
+  <Blank Num="1" UId="1748" />
+  <Access Scope="GlobalVariable" UId="1749">
+    <Symbol UId="1750">
+      <Component Name="Chain_Slack_1_Bypass_HMI" UId="1751">
+        <BooleanAttribute Name="HasQuotes" UId="1752">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1753" />
+  <Token Text=":=" UId="1754" />
+  <Blank Num="1" UId="1755" />
+  <Access Scope="LiteralConstant" UId="1756">
+    <Constant UId="1757">
+      <ConstantValue UId="1759">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1760" />
+  <NewLine Num="1" UId="1761" />
+  <Blank Num="12" UId="1762" />
+  <Token Text="END_IF" UId="1763" />
+  <Token Text=";" UId="1764" />
+  <NewLine Num="1" UId="1765" />
+  <Blank Num="12" UId="1766" />
+  <NewLine Num="1" UId="1767" />
+  <Blank Num="12" UId="1768" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1769">
+    <Text UId="1770">CHAIN SLACK 2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1771" />
+  <Blank Num="12" UId="1772" />
+  <Token Text="IF" UId="1773" />
+  <Blank Num="1" UId="1774" />
+  <Access Scope="GlobalVariable" UId="1775">
+    <Symbol UId="1776">
+      <Component Name="Chain Slack 2 - CH1(2)" UId="1777" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1778" />
+  <Token Text="THEN" UId="1779" />
+  <NewLine Num="1" UId="1780" />
+  <Blank Num="16" UId="1781" />
+  <Access Scope="GlobalVariable" UId="1782">
+    <Symbol UId="1783">
+      <Component Name="Bypass" UId="1784">
+        <BooleanAttribute Name="HasQuotes" UId="1785">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1786" />
+      <Component Name="Remote_Panel_2" UId="1787" />
+      <Token Text="." UId="1788" />
+      <Component Name="Chain_Slack_2" UId="1789" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1790" />
+  <Token Text=":=" UId="1791" />
+  <Blank Num="1" UId="1792" />
+  <Access Scope="GlobalVariable" UId="1793">
+    <Symbol UId="1794">
+      <Component Name="Chain_Slack_2_Bypass_HMI" UId="1795">
+        <BooleanAttribute Name="HasQuotes" UId="1796">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1797" />
+  <NewLine Num="1" UId="1798" />
+  <Blank Num="12" UId="1799" />
+  <Token Text="ELSE" UId="1800" />
+  <NewLine Num="1" UId="1801" />
+  <Blank Num="16" UId="1802" />
+  <Access Scope="GlobalVariable" UId="1803">
+    <Symbol UId="1804">
+      <Component Name="Bypass" UId="1805">
+        <BooleanAttribute Name="HasQuotes" UId="1806">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1807" />
+      <Component Name="Remote_Panel_2" UId="1808" />
+      <Token Text="." UId="1809" />
+      <Component Name="Chain_Slack_2" UId="1810" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1811" />
+  <Token Text=":=" UId="1812" />
+  <Blank Num="1" UId="1813" />
+  <Access Scope="GlobalVariable" UId="1814">
+    <Symbol UId="1815">
+      <Component Name="Chain_Slack_2_Bypass_HMI" UId="1816">
+        <BooleanAttribute Name="HasQuotes" UId="1817">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1818" />
+  <Token Text=":=" UId="1819" />
+  <Blank Num="1" UId="1820" />
+  <Access Scope="LiteralConstant" UId="1821">
+    <Constant UId="1822">
+      <ConstantValue UId="1824">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1825" />
+  <NewLine Num="1" UId="1826" />
+  <Blank Num="12" UId="1827" />
+  <Token Text="END_IF" UId="1828" />
+  <Token Text=";" UId="1829" />
+  <NewLine Num="1" UId="1830" />
+  <Blank Num="12" UId="1831" />
+  <NewLine Num="1" UId="1832" />
+  <Blank Num="12" UId="1833" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1834">
+    <Text UId="1835">CHAIN SLACK 3</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1836" />
+  <Blank Num="12" UId="1837" />
+  <Token Text="IF" UId="1838" />
+  <Blank Num="1" UId="1839" />
+  <Access Scope="GlobalVariable" UId="1840">
+    <Symbol UId="1841">
+      <Component Name="Chain Slack 3 - CH1(2)" UId="1842" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1843" />
+  <Token Text="THEN" UId="1844" />
+  <NewLine Num="1" UId="1845" />
+  <Blank Num="16" UId="1846" />
+  <Access Scope="GlobalVariable" UId="1847">
+    <Symbol UId="1848">
+      <Component Name="Bypass" UId="1849">
+        <BooleanAttribute Name="HasQuotes" UId="1850">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1851" />
+      <Component Name="Remote_Panel_2" UId="1852" />
+      <Token Text="." UId="1853" />
+      <Component Name="Chain_Slack_3" UId="1854" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1855" />
+  <Token Text=":=" UId="1856" />
+  <Blank Num="1" UId="1857" />
+  <Access Scope="GlobalVariable" UId="1858">
+    <Symbol UId="1859">
+      <Component Name="Chain_Slack_3_Bypass_HMI" UId="1860">
+        <BooleanAttribute Name="HasQuotes" UId="1861">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1862" />
+  <NewLine Num="1" UId="1863" />
+  <Blank Num="12" UId="1864" />
+  <Token Text="ELSE" UId="1865" />
+  <NewLine Num="1" UId="1866" />
+  <Blank Num="16" UId="1867" />
+  <Access Scope="GlobalVariable" UId="1868">
+    <Symbol UId="1869">
+      <Component Name="Bypass" UId="1870">
+        <BooleanAttribute Name="HasQuotes" UId="1871">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1872" />
+      <Component Name="Remote_Panel_2" UId="1873" />
+      <Token Text="." UId="1874" />
+      <Component Name="Chain_Slack_3" UId="1875" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1876" />
+  <Token Text=":=" UId="1877" />
+  <Blank Num="1" UId="1878" />
+  <Access Scope="GlobalVariable" UId="1879">
+    <Symbol UId="1880">
+      <Component Name="Chain_Slack_3_Bypass_HMI" UId="1881">
+        <BooleanAttribute Name="HasQuotes" UId="1882">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1883" />
+  <Token Text=":=" UId="1884" />
+  <Blank Num="1" UId="1885" />
+  <Access Scope="LiteralConstant" UId="1886">
+    <Constant UId="1887">
+      <ConstantValue UId="1889">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1890" />
+  <NewLine Num="1" UId="1891" />
+  <Blank Num="12" UId="1892" />
+  <Token Text="END_IF" UId="1893" />
+  <Token Text=";" UId="1894" />
+  <NewLine Num="1" UId="1895" />
+  <Blank Num="12" UId="1896" />
+  <NewLine Num="1" UId="1897" />
+  <Blank Num="12" UId="1898" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1899">
+    <Text UId="1900">CHAIN SLACK 4</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1901" />
+  <Blank Num="12" UId="1902" />
+  <Token Text="IF" UId="1903" />
+  <Blank Num="1" UId="1904" />
+  <Access Scope="GlobalVariable" UId="1905">
+    <Symbol UId="1906">
+      <Component Name="Chain Slack 4 - CH1(2)" UId="1907" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1908" />
+  <Token Text="THEN" UId="1909" />
+  <NewLine Num="1" UId="1910" />
+  <Blank Num="16" UId="1911" />
+  <Access Scope="GlobalVariable" UId="1912">
+    <Symbol UId="1913">
+      <Component Name="Bypass" UId="1914">
+        <BooleanAttribute Name="HasQuotes" UId="1915">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1916" />
+      <Component Name="Remote_Panel_2" UId="1917" />
+      <Token Text="." UId="1918" />
+      <Component Name="Chain_Slack_4" UId="1919" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1920" />
+  <Token Text=":=" UId="1921" />
+  <Blank Num="1" UId="1922" />
+  <Access Scope="GlobalVariable" UId="1923">
+    <Symbol UId="1924">
+      <Component Name="Chain_Slack_4_Bypass_HMI" UId="1925">
+        <BooleanAttribute Name="HasQuotes" UId="1926">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="1927" />
+  <NewLine Num="1" UId="1928" />
+  <Blank Num="12" UId="1929" />
+  <Token Text="ELSE" UId="1930" />
+  <NewLine Num="1" UId="1931" />
+  <Blank Num="16" UId="1932" />
+  <Access Scope="GlobalVariable" UId="1933">
+    <Symbol UId="1934">
+      <Component Name="Bypass" UId="1935">
+        <BooleanAttribute Name="HasQuotes" UId="1936">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1937" />
+      <Component Name="Remote_Panel_2" UId="1938" />
+      <Token Text="." UId="1939" />
+      <Component Name="Chain_Slack_4" UId="1940" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1941" />
+  <Token Text=":=" UId="1942" />
+  <Blank Num="1" UId="1943" />
+  <Access Scope="GlobalVariable" UId="1944">
+    <Symbol UId="1945">
+      <Component Name="Chain_Slack_4_Bypass_HMI" UId="1946">
+        <BooleanAttribute Name="HasQuotes" UId="1947">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1948" />
+  <Token Text=":=" UId="1949" />
+  <Blank Num="1" UId="1950" />
+  <Access Scope="LiteralConstant" UId="1951">
+    <Constant UId="1952">
+      <ConstantValue UId="1954">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="1955" />
+  <NewLine Num="1" UId="1956" />
+  <Blank Num="12" UId="1957" />
+  <Token Text="END_IF" UId="1958" />
+  <Token Text=";" UId="1959" />
+  <NewLine Num="1" UId="1960" />
+  <Blank Num="8" UId="1961" />
+  <Token Text="END_IF" UId="1962" />
+  <Token Text=";" UId="1963" />
+  <NewLine Num="1" UId="1964" />
+  <Blank Num="4" UId="1965" />
+  <Token Text="END_REGION" UId="1966" />
+  <Blank Num="1" UId="1967" />
+  <Text UId="1968">;</Text>
+  <NewLine Num="1" UId="1969" />
+  <Token Text="END_REGION" UId="1970" />
+  <NewLine Num="2" UId="1971" />
+  <Token Text="REGION" UId="1972" />
+  <Blank Num="1" UId="1973" />
+  <Text UId="1974">SAFETY GATES</Text>
+  <NewLine Num="1" UId="1975" />
+  <Blank Num="8" UId="1976" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1977">
+    <Text UId="1978">SYSTEM 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1979" />
+  <Blank Num="8" UId="1980" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="1981">
+    <Text UId="1982"> GATE 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="1983" />
+  <Blank Num="8" UId="1984" />
+  <Token Text="IF" UId="1985" />
+  <Blank Num="1" UId="1986" />
+  <Access Scope="GlobalVariable" UId="1987">
+    <Symbol UId="1988">
+      <Component Name="GateAccess_Station_FB_DB_1" UId="1989">
+        <BooleanAttribute Name="HasQuotes" UId="1990">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="1991" />
+      <Component Name="ModeManager" UId="1992" />
+      <Token Text="." UId="1993" />
+      <Component Name="CurrentState" UId="1994" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="1995" />
+  <Token Text="&gt;" UId="1996" />
+  <Blank Num="1" UId="1997" />
+  <Access Scope="LocalConstant" UId="1998">
+    <Constant Name="RTE_REQUESTED" UId="1999" />
+  </Access>
+  <Blank Num="1" UId="2002" />
+  <Token Text="AND" UId="2003" />
+  <NewLine Num="1" UId="2004" />
+  <Blank Num="12" UId="2005" />
+  <Access Scope="GlobalVariable" UId="2006">
+    <Symbol UId="2007">
+      <Component Name="GateAccess_Station_FB_DB_1" UId="2008">
+        <BooleanAttribute Name="HasQuotes" UId="2009">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2010" />
+      <Component Name="ModeManager" UId="2011" />
+      <Token Text="." UId="2012" />
+      <Component Name="CurrentState" UId="2013" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2014" />
+  <Token Text="&lt;" UId="2015" />
+  <Blank Num="1" UId="2016" />
+  <Access Scope="LocalConstant" UId="2017">
+    <Constant Name="READY_TO_RESTART" UId="2018" />
+  </Access>
+  <Blank Num="1" UId="2021" />
+  <Token Text="THEN" UId="2022" />
+  <NewLine Num="1" UId="2023" />
+  <Blank Num="12" UId="2024" />
+  <Access Scope="GlobalVariable" UId="2025">
+    <Symbol UId="2026">
+      <Component Name="Bypass" UId="2027">
+        <BooleanAttribute Name="HasQuotes" UId="2028">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2029" />
+      <Component Name="Remote_Panel_1" UId="2030" />
+      <Token Text="." UId="2031" />
+      <Component Name="Gate_1" UId="2032" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2033" />
+  <Token Text=":=" UId="2034" />
+  <Blank Num="1" UId="2035" />
+  <Access Scope="LiteralConstant" UId="2036">
+    <Constant UId="2037">
+      <ConstantValue UId="2039">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2040" />
+  <NewLine Num="1" UId="2041" />
+  <Blank Num="12" UId="2042" />
+  <Access Scope="GlobalVariable" UId="2043">
+    <Symbol UId="2044">
+      <Component Name="Bypass" UId="2045">
+        <BooleanAttribute Name="HasQuotes" UId="2046">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2047" />
+      <Component Name="Remote_Panel_1" UId="2048" />
+      <Token Text="." UId="2049" />
+      <Component Name="Lock_Secured_1" UId="2050" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2051" />
+  <Token Text=":=" UId="2052" />
+  <Blank Num="1" UId="2053" />
+  <Access Scope="LiteralConstant" UId="2054">
+    <Constant UId="2055">
+      <ConstantValue UId="2057">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2058" />
+  <NewLine Num="1" UId="2059" />
+  <Blank Num="8" UId="2060" />
+  <Token Text="ELSE" UId="2061" />
+  <NewLine Num="1" UId="2062" />
+  <Blank Num="12" UId="2063" />
+  <Access Scope="GlobalVariable" UId="2064">
+    <Symbol UId="2065">
+      <Component Name="Bypass" UId="2066">
+        <BooleanAttribute Name="HasQuotes" UId="2067">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2068" />
+      <Component Name="Remote_Panel_1" UId="2069" />
+      <Token Text="." UId="2070" />
+      <Component Name="Gate_1" UId="2071" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2072" />
+  <Token Text=":=" UId="2073" />
+  <Blank Num="1" UId="2074" />
+  <Access Scope="LiteralConstant" UId="2075">
+    <Constant UId="2076">
+      <ConstantValue UId="2078">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2079" />
+  <NewLine Num="1" UId="2080" />
+  <Blank Num="12" UId="2081" />
+  <Access Scope="GlobalVariable" UId="2082">
+    <Symbol UId="2083">
+      <Component Name="Bypass" UId="2084">
+        <BooleanAttribute Name="HasQuotes" UId="2085">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2086" />
+      <Component Name="Remote_Panel_1" UId="2087" />
+      <Token Text="." UId="2088" />
+      <Component Name="Lock_Secured_1" UId="2089" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2090" />
+  <Token Text=":=" UId="2091" />
+  <Blank Num="1" UId="2092" />
+  <Access Scope="LiteralConstant" UId="2093">
+    <Constant UId="2094">
+      <ConstantValue UId="2096">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2097" />
+  <NewLine Num="1" UId="2098" />
+  <Blank Num="8" UId="2099" />
+  <Token Text="END_IF" UId="2100" />
+  <Token Text=";" UId="2101" />
+  <NewLine Num="1" UId="2102" />
+  <Blank Num="8" UId="2103" />
+  <NewLine Num="1" UId="2104" />
+  <Blank Num="8" UId="2105" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2106">
+    <Text UId="2107">GATE 2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2108" />
+  <Blank Num="8" UId="2109" />
+  <Token Text="IF" UId="2110" />
+  <Blank Num="1" UId="2111" />
+  <Access Scope="GlobalVariable" UId="2112">
+    <Symbol UId="2113">
+      <Component Name="GateAccess_Station_FB_DB_2" UId="2114">
+        <BooleanAttribute Name="HasQuotes" UId="2115">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2116" />
+      <Component Name="ModeManager" UId="2117" />
+      <Token Text="." UId="2118" />
+      <Component Name="CurrentState" UId="2119" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2120" />
+  <Token Text="&gt;" UId="2121" />
+  <Blank Num="1" UId="2122" />
+  <Access Scope="LocalConstant" UId="2123">
+    <Constant Name="RTE_REQUESTED" UId="2124" />
+  </Access>
+  <Blank Num="1" UId="2127" />
+  <Token Text="AND" UId="2128" />
+  <NewLine Num="1" UId="2129" />
+  <Blank Num="12" UId="2130" />
+  <Access Scope="GlobalVariable" UId="2131">
+    <Symbol UId="2132">
+      <Component Name="GateAccess_Station_FB_DB_2" UId="2133">
+        <BooleanAttribute Name="HasQuotes" UId="2134">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2135" />
+      <Component Name="ModeManager" UId="2136" />
+      <Token Text="." UId="2137" />
+      <Component Name="CurrentState" UId="2138" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2139" />
+  <Token Text="&lt;" UId="2140" />
+  <Blank Num="1" UId="2141" />
+  <Access Scope="LocalConstant" UId="2142">
+    <Constant Name="READY_TO_RESTART" UId="2143" />
+  </Access>
+  <Blank Num="1" UId="2146" />
+  <Token Text="THEN" UId="2147" />
+  <NewLine Num="1" UId="2148" />
+  <Blank Num="12" UId="2149" />
+  <Access Scope="GlobalVariable" UId="2150">
+    <Symbol UId="2151">
+      <Component Name="Bypass" UId="2152">
+        <BooleanAttribute Name="HasQuotes" UId="2153">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2154" />
+      <Component Name="Remote_Panel_1" UId="2155" />
+      <Token Text="." UId="2156" />
+      <Component Name="Gate_2" UId="2157" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2158" />
+  <Token Text=":=" UId="2159" />
+  <Blank Num="1" UId="2160" />
+  <Access Scope="LiteralConstant" UId="2161">
+    <Constant UId="2162">
+      <ConstantValue UId="2164">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2165" />
+  <NewLine Num="1" UId="2166" />
+  <Blank Num="12" UId="2167" />
+  <Access Scope="GlobalVariable" UId="2168">
+    <Symbol UId="2169">
+      <Component Name="Bypass" UId="2170">
+        <BooleanAttribute Name="HasQuotes" UId="2171">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2172" />
+      <Component Name="Remote_Panel_1" UId="2173" />
+      <Token Text="." UId="2174" />
+      <Component Name="Lock_Secured_2" UId="2175" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2176" />
+  <Token Text=":=" UId="2177" />
+  <Blank Num="1" UId="2178" />
+  <Access Scope="LiteralConstant" UId="2179">
+    <Constant UId="2180">
+      <ConstantValue UId="2182">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2183" />
+  <NewLine Num="1" UId="2184" />
+  <Blank Num="8" UId="2185" />
+  <Token Text="ELSE" UId="2186" />
+  <NewLine Num="1" UId="2187" />
+  <Blank Num="12" UId="2188" />
+  <Access Scope="GlobalVariable" UId="2189">
+    <Symbol UId="2190">
+      <Component Name="Bypass" UId="2191">
+        <BooleanAttribute Name="HasQuotes" UId="2192">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2193" />
+      <Component Name="Remote_Panel_1" UId="2194" />
+      <Token Text="." UId="2195" />
+      <Component Name="Gate_2" UId="2196" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2197" />
+  <Token Text=":=" UId="2198" />
+  <Blank Num="1" UId="2199" />
+  <Access Scope="LiteralConstant" UId="2200">
+    <Constant UId="2201">
+      <ConstantValue UId="2203">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2204" />
+  <NewLine Num="1" UId="2205" />
+  <Blank Num="12" UId="2206" />
+  <Access Scope="GlobalVariable" UId="2207">
+    <Symbol UId="2208">
+      <Component Name="Bypass" UId="2209">
+        <BooleanAttribute Name="HasQuotes" UId="2210">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2211" />
+      <Component Name="Remote_Panel_1" UId="2212" />
+      <Token Text="." UId="2213" />
+      <Component Name="Lock_Secured_2" UId="2214" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2215" />
+  <Token Text=":=" UId="2216" />
+  <Blank Num="1" UId="2217" />
+  <Access Scope="LiteralConstant" UId="2218">
+    <Constant UId="2219">
+      <ConstantValue UId="2221">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2222" />
+  <NewLine Num="1" UId="2223" />
+  <Blank Num="8" UId="2224" />
+  <Token Text="END_IF" UId="2225" />
+  <Token Text=";" UId="2226" />
+  <NewLine Num="1" UId="2227" />
+  <Blank Num="8" UId="2228" />
+  <NewLine Num="1" UId="2229" />
+  <Blank Num="8" UId="2230" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2231">
+    <Text UId="2232">SYSTEM 2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2233" />
+  <Blank Num="8" UId="2234" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2235">
+    <Text UId="2236">GATE 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2237" />
+  <Blank Num="8" UId="2238" />
+  <Token Text="IF" UId="2239" />
+  <Blank Num="1" UId="2240" />
+  <Access Scope="GlobalVariable" UId="2241">
+    <Symbol UId="2242">
+      <Component Name="GateAccess_Station_FB_DB_3" UId="2243">
+        <BooleanAttribute Name="HasQuotes" UId="2244">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2245" />
+      <Component Name="ModeManager" UId="2246" />
+      <Token Text="." UId="2247" />
+      <Component Name="CurrentState" UId="2248" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2249" />
+  <Token Text="&gt;" UId="2250" />
+  <Blank Num="1" UId="2251" />
+  <Access Scope="LocalConstant" UId="2252">
+    <Constant Name="RTE_REQUESTED" UId="2253" />
+  </Access>
+  <Blank Num="1" UId="2256" />
+  <Token Text="AND" UId="2257" />
+  <NewLine Num="1" UId="2258" />
+  <Blank Num="12" UId="2259" />
+  <Access Scope="GlobalVariable" UId="2260">
+    <Symbol UId="2261">
+      <Component Name="GateAccess_Station_FB_DB_3" UId="2262">
+        <BooleanAttribute Name="HasQuotes" UId="2263">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2264" />
+      <Component Name="ModeManager" UId="2265" />
+      <Token Text="." UId="2266" />
+      <Component Name="CurrentState" UId="2267" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2268" />
+  <Token Text="&lt;" UId="2269" />
+  <Blank Num="1" UId="2270" />
+  <Access Scope="LocalConstant" UId="2271">
+    <Constant Name="READY_TO_RESTART" UId="2272" />
+  </Access>
+  <Blank Num="1" UId="2275" />
+  <Token Text="THEN" UId="2276" />
+  <NewLine Num="1" UId="2277" />
+  <Blank Num="12" UId="2278" />
+  <Access Scope="GlobalVariable" UId="2279">
+    <Symbol UId="2280">
+      <Component Name="Bypass" UId="2281">
+        <BooleanAttribute Name="HasQuotes" UId="2282">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2283" />
+      <Component Name="Remote_Panel_2" UId="2284" />
+      <Token Text="." UId="2285" />
+      <Component Name="Gate_1" UId="2286" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2287" />
+  <Token Text=":=" UId="2288" />
+  <Blank Num="1" UId="2289" />
+  <Access Scope="LiteralConstant" UId="2290">
+    <Constant UId="2291">
+      <ConstantValue UId="2293">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2294" />
+  <NewLine Num="1" UId="2295" />
+  <Blank Num="12" UId="2296" />
+  <Access Scope="GlobalVariable" UId="2297">
+    <Symbol UId="2298">
+      <Component Name="Bypass" UId="2299">
+        <BooleanAttribute Name="HasQuotes" UId="2300">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2301" />
+      <Component Name="Remote_Panel_2" UId="2302" />
+      <Token Text="." UId="2303" />
+      <Component Name="Lock_Secured_1" UId="2304" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2305" />
+  <Token Text=":=" UId="2306" />
+  <Blank Num="1" UId="2307" />
+  <Access Scope="LiteralConstant" UId="2308">
+    <Constant UId="2309">
+      <ConstantValue UId="2311">TRUE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2312" />
+  <NewLine Num="1" UId="2313" />
+  <Blank Num="8" UId="2314" />
+  <Token Text="ELSE" UId="2315" />
+  <NewLine Num="1" UId="2316" />
+  <Blank Num="12" UId="2317" />
+  <Access Scope="GlobalVariable" UId="2318">
+    <Symbol UId="2319">
+      <Component Name="Bypass" UId="2320">
+        <BooleanAttribute Name="HasQuotes" UId="2321">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2322" />
+      <Component Name="Remote_Panel_2" UId="2323" />
+      <Token Text="." UId="2324" />
+      <Component Name="Gate_1" UId="2325" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2326" />
+  <Token Text=":=" UId="2327" />
+  <Blank Num="1" UId="2328" />
+  <Access Scope="LiteralConstant" UId="2329">
+    <Constant UId="2330">
+      <ConstantValue UId="2332">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2333" />
+  <NewLine Num="1" UId="2334" />
+  <Blank Num="12" UId="2335" />
+  <Access Scope="GlobalVariable" UId="2336">
+    <Symbol UId="2337">
+      <Component Name="Bypass" UId="2338">
+        <BooleanAttribute Name="HasQuotes" UId="2339">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="2340" />
+      <Component Name="Remote_Panel_2" UId="2341" />
+      <Token Text="." UId="2342" />
+      <Component Name="Lock_Secured_1" UId="2343" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="2344" />
+  <Token Text=":=" UId="2345" />
+  <Blank Num="1" UId="2346" />
+  <Access Scope="LiteralConstant" UId="2347">
+    <Constant UId="2348">
+      <ConstantValue UId="2350">FALSE</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="2351" />
+  <NewLine Num="1" UId="2352" />
+  <Blank Num="8" UId="2353" />
+  <Token Text="END_IF" UId="2354" />
+  <Token Text=";" UId="2355" />
+  <NewLine Num="1" UId="2356" />
+  <Blank Num="8" UId="2357" />
+  <NewLine Num="1" UId="2358" />
+  <Blank Num="8" UId="2359" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2360">
+    <Text UId="2361"> //GATE 2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2362" />
+  <Blank Num="8" UId="2363" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2364">
+    <Text UId="2365"> IF "GateAccess_Station_FB_DB_4".ModeManager.CurrentState &gt; #RTE_REQUESTED AND</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2366" />
+  <Blank Num="8" UId="2367" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2368">
+    <Text UId="2369">     "GateAccess_Station_FB_DB_4".ModeManager.CurrentState &lt; #READY_TO_RESTART THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2370" />
+  <Blank Num="8" UId="2371" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2372">
+    <Text UId="2373">     "Bypass".Remote_Panel_2.Gate_2 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2374" />
+  <Blank Num="8" UId="2375" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2376">
+    <Text UId="2377">     "Bypass".Remote_Panel_2.Lock_Secured_2 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2378" />
+  <Blank Num="8" UId="2379" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2380">
+    <Text UId="2381"> ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2382" />
+  <Blank Num="8" UId="2383" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2384">
+    <Text UId="2385">     "Bypass".Remote_Panel_2.Gate_2 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2386" />
+  <Blank Num="8" UId="2387" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2388">
+    <Text UId="2389">     "Bypass".Remote_Panel_2.Lock_Secured_2 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2390" />
+  <Blank Num="8" UId="2391" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2392">
+    <Text UId="2393"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2394" />
+  <Blank Num="8" UId="2395" />
+  <NewLine Num="1" UId="2396" />
+  <Blank Num="8" UId="2397" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2398">
+    <Text UId="2399"> //SYSTEM 3</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2400" />
+  <Blank Num="8" UId="2401" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2402">
+    <Text UId="2403"> //GATE 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2404" />
+  <Blank Num="8" UId="2405" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2406">
+    <Text UId="2407"> IF "GateAccess_Station_FB_DB_5".ModeManager.CurrentState &gt; #RTE_REQUESTED AND</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2408" />
+  <Blank Num="8" UId="2409" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2410">
+    <Text UId="2411">     "GateAccess_Station_FB_DB_5".ModeManager.CurrentState &lt; #READY_TO_RESTART THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2412" />
+  <Blank Num="8" UId="2413" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2414">
+    <Text UId="2415">     "Bypass".Remote_Panel_3.Gate_1 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2416" />
+  <Blank Num="8" UId="2417" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2418">
+    <Text UId="2419">     "Bypass".Remote_Panel_3.Lock_Secured_1 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2420" />
+  <Blank Num="8" UId="2421" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2422">
+    <Text UId="2423"> ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2424" />
+  <Blank Num="8" UId="2425" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2426">
+    <Text UId="2427">     "Bypass".Remote_Panel_3.Gate_1 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2428" />
+  <Blank Num="8" UId="2429" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2430">
+    <Text UId="2431">     "Bypass".Remote_Panel_3.Lock_Secured_1 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2432" />
+  <Blank Num="8" UId="2433" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2434">
+    <Text UId="2435"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2436" />
+  <Blank Num="8" UId="2437" />
+  <NewLine Num="1" UId="2438" />
+  <Blank Num="8" UId="2439" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2440">
+    <Text UId="2441"> //GATE 2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2442" />
+  <Blank Num="8" UId="2443" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2444">
+    <Text UId="2445"> IF "GateAccess_Station_FB_DB_6".ModeManager.CurrentState &gt; #RTE_REQUESTED AND</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2446" />
+  <Blank Num="8" UId="2447" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2448">
+    <Text UId="2449">     "GateAccess_Station_FB_DB_6".ModeManager.CurrentState &lt; #READY_TO_RESTART THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2450" />
+  <Blank Num="8" UId="2451" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2452">
+    <Text UId="2453">     "Bypass".Remote_Panel_3.Gate_2 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2454" />
+  <Blank Num="8" UId="2455" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2456">
+    <Text UId="2457">     "Bypass".Remote_Panel_3.Lock_Secured_2 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2458" />
+  <Blank Num="8" UId="2459" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2460">
+    <Text UId="2461"> ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2462" />
+  <Blank Num="8" UId="2463" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2464">
+    <Text UId="2465">     "Bypass".Remote_Panel_3.Gate_2 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2466" />
+  <Blank Num="8" UId="2467" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2468">
+    <Text UId="2469">     "Bypass".Remote_Panel_3.Lock_Secured_2 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2470" />
+  <Blank Num="8" UId="2471" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2472">
+    <Text UId="2473"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2474" />
+  <Blank Num="8" UId="2475" />
+  <NewLine Num="1" UId="2476" />
+  <Blank Num="8" UId="2477" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2478">
+    <Text UId="2479"> //SYSTEM 4</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2480" />
+  <Blank Num="8" UId="2481" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2482">
+    <Text UId="2483"> //GATE 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2484" />
+  <Blank Num="8" UId="2485" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2486">
+    <Text UId="2487"> IF "GateAccess_Station_FB_DB_9".ModeManager.CurrentState &gt; #RTE_REQUESTED AND</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2488" />
+  <Blank Num="8" UId="2489" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2490">
+    <Text UId="2491">     "GateAccess_Station_FB_DB_9".ModeManager.CurrentState &lt; #READY_TO_RESTART THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2492" />
+  <Blank Num="8" UId="2493" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2494">
+    <Text UId="2495">     "Bypass".Remote_Panel_4.Gate_1 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2496" />
+  <Blank Num="8" UId="2497" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2498">
+    <Text UId="2499">     "Bypass".Remote_Panel_4.Lock_Secured_1 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2500" />
+  <Blank Num="8" UId="2501" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2502">
+    <Text UId="2503"> ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2504" />
+  <Blank Num="8" UId="2505" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2506">
+    <Text UId="2507">     "Bypass".Remote_Panel_4.Gate_1 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2508" />
+  <Blank Num="8" UId="2509" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2510">
+    <Text UId="2511">     "Bypass".Remote_Panel_4.Lock_Secured_1 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2512" />
+  <Blank Num="8" UId="2513" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2514">
+    <Text UId="2515"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2516" />
+  <Blank Num="8" UId="2517" />
+  <NewLine Num="1" UId="2518" />
+  <Blank Num="8" UId="2519" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2520">
+    <Text UId="2521"> //SYSTEM 5</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2522" />
+  <Blank Num="8" UId="2523" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2524">
+    <Text UId="2525"> //GATE 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2526" />
+  <Blank Num="8" UId="2527" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2528">
+    <Text UId="2529"> IF "GateAccess_Station_FB_DB_10".ModeManager.CurrentState &gt; #RTE_REQUESTED AND</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2530" />
+  <Blank Num="8" UId="2531" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2532">
+    <Text UId="2533">     "GateAccess_Station_FB_DB_10".ModeManager.CurrentState &lt; #READY_TO_RESTART THEN</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2534" />
+  <Blank Num="8" UId="2535" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2536">
+    <Text UId="2537">     "Bypass".Remote_Panel_5.Gate_1 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2538" />
+  <Blank Num="8" UId="2539" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2540">
+    <Text UId="2541">     "Bypass".Remote_Panel_5.Lock_Secured_1 := TRUE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2542" />
+  <Blank Num="8" UId="2543" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2544">
+    <Text UId="2545"> ELSE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2546" />
+  <Blank Num="8" UId="2547" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2548">
+    <Text UId="2549">     "Bypass".Remote_Panel_5.Gate_1 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2550" />
+  <Blank Num="8" UId="2551" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2552">
+    <Text UId="2553">     "Bypass".Remote_Panel_5.Lock_Secured_1 := FALSE;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2554" />
+  <Blank Num="8" UId="2555" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="2556">
+    <Text UId="2557"> END_IF;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="2558" />
+  <Token Text="END_REGION" UId="2559" />
+  <Text UId="2560">;</Text>
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FC>
+</Document>

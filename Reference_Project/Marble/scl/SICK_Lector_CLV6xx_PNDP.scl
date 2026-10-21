@@ -1,0 +1,771 @@
+FUNCTION_BLOCK "SICK_Lector_CLV6xx_PNDP"   // FB 72, author SICKAG
+
+VAR_INPUT
+   HWInputIdent : HW_IO;   // Hardware identification number of the input module
+   HWInputLength : USInt;   // Size of the input module
+   HWOutputIdent : HW_IO;   // Hardware identification number of the output module
+   HWOutputLength : USInt;   // Size of the output module
+   CANId : USInt;   // CAN ID (0= Master / No CAN network)
+   TOut : Time := T#10s;   // Time out
+   Req : Bool;   // A positive edge starts the request
+   TriggerOn : Bool;   // Select: Trigger On to open the reading gate via a SW-Trigger command
+   TriggerOff : Bool;   // Select: Trigger Off to close the reading gate via a SW-Trigger command
+   Matchcode : Bool;   // Select: Matchcode (details at #Data)
+   SavePermanent : Bool;   // Select: Save permanent
+   ComTest : Bool;   // Select: Communication test
+   FreeCommand : Bool;   // Select: Free command (details at #Data)
+END_VAR
+
+VAR_OUTPUT
+   RdDone : Bool;   // Positive edge: A reading result sent by the device was received
+   ReqDone : Bool;   // Request done
+   ReqBusy : Bool;   // Request in process
+   Error : Bool;   // Error detected
+   Errorcode : DWord;   // Error code (see documentation)
+END_VAR
+
+VAR_IN_OUT
+   Data : "ST_SICK_Lector_CLV6xx";   // Command arguments and result outputs of the FB actions
+END_VAR
+
+VAR
+   bTriggerReq : Bool;   // Rising edge detection
+   bTriggerReqMem : Bool;   // Rising edge detection
+   bTriggerDone : Bool;   // Rising edge detection
+   bTriggerDoneMem : Bool;   // Rising edge detection
+   bTriggerError : Bool;   // Rising edge detection
+   bTriggerErrorMem : Bool;   // Rising edge detection
+   bCanActive : Bool;   // CAN-Bus active flag
+   bDeviceState : Bool;   // Current device state (True= Edit-Mode | False= Run-Mode)
+   bEnforceLogout : Bool;   // Logout enforced
+   bReqBusyMem : Bool;   // Backup variable
+   iStep : USInt;   // Currrent FB step
+   iCommandIndex : Int;   // Command index
+   iCommandLength : UInt;   // Length of the command that should be send
+   iRecordSize : UInt;   // Length of the record array
+   iCommandSize : UInt;   // Length of the command array
+   iReadingResultSize : UInt;   // Length of the reading result array
+   iIndex : UInt;   // Index variable
+   nTempErrorCode : DWord;   // Temporarily error code
+   nLogoutErrorCode : DWord;   // Temporarily error code
+   arrSelection : Array[0..5] of Bool;   // input bit selection
+   arrCommand : Array[0..499] of Byte;   // Contains the transmitted CoLa command
+   arrRecord : Array[0..499] of Byte;   // Contains the received telegram
+   fbTimeout : TON_TIME;   // Instance: Timer on delay (Time out)
+   fbCCom : "SICK_CCOMM_PNDP";   // Instance: CoLa communication block
+END_VAR
+
+VAR_TEMP
+   iTemp1 : Int;   // Temporarily variable
+   iTemp2 : UDInt;   // Temporarily variable
+   iTemp3 : UDInt;   // Temporarily variable
+   nFncValue : DWord;   // Get/Set function value
+   nFncErrorCode : Word;   // Get/Set function error code
+END_VAR
+
+BEGIN
+(*===========================================================================================
+Name:   SICK_Lector_CLV6xx_PNDP 
+Author: SICK AG
+=============================================================================================
+Description: 
+This function block is used for a communication between a SICK Lector6xx / SICK CLV6xx
+code reader and a Siemens S7-1200/S7-1500 PLC via PROFINET/PROFIBUS.                         
+
+=============================================================================================
+Features:        
+- Receive reading results of the device, triggered by a command, fieldbus or by a hardware 
+  switch. The content of the result can be modified in the "Output Format" option in the
+  SOPAS engineeringtool.                                           
+- Open and close a reading gate (software trigger via command)
+- Set a new Matchcode evaluation condition 
+- Save all device parameters permanent                                                  
+- Communication test
+- Send a free defined CoLa-A telegram and receive the result
+- All commands can also be used in a SICK CAN-Bus network
+                                                                                                                                                               
+=============================================================================================
+Version history:
+Date       | Version | Author  | Remark
+---------------------------------------------------------------------------------------------
+21/02/2014 | V1.0    | SICK AG | Initial version
+07/08/2014 | V1.1    | SICK AG | Replace R_TRIG function 
+24/10/2017 | V1.2    | SICK AG | Avoid initialization warnings which occurs using TIA V13 or higher
+============================================================================================*)
+
+(*===================================== INITIALISATION =====================================*)
+#iRecordSize:= 500;         (*Length of the arrRecord array*)
+#iCommandSize:= 500;        (*Length of the arrCommand array*)
+#iReadingResultSize:= 200;  (*Length of the reading result array*)
+
+(*Rising edge detection*)
+#bTriggerReq:= #Req AND NOT #bTriggerReqMem;
+#bTriggerReqMem:= #Req;
+#bTriggerDone:= #fbCCom.ReqDone AND NOT #bTriggerDoneMem;
+#bTriggerDoneMem:= #fbCCom.ReqDone;
+#bTriggerError:= #fbCCom.Error AND NOT #bTriggerErrorMem;
+#bTriggerErrorMem:= #fbCCom.Error;
+
+(*Reset the read done flag every cycle*)
+#RdDone:= false;
+
+
+(*===================================== ERROR HANDLING =====================================*)
+(* bDeviceState  |  bEnforceLogout  |  Action
+       FALSE     |      FALSE       |  Errorcode = Errorcode from last plc cycle
+       FALSE     |      TRUE        |  Errorcode = Logout error
+       TRUE      |      FALSE       |  Enforce "Logout" command
+       TRUE      |      TRUE        |  Errorcode = Logout not possible + Reason*)
+IF #nTempErrorCode <>16#0000_0000 THEN
+  
+  (*Enfore "Logout" command*)
+  IF #bDeviceState AND NOT #bEnforceLogout THEN
+    #bEnforceLogout:= true;
+    #iCommandIndex:= 11;                  (*Logout*)
+    #nLogoutErrorCode:= #nTempErrorCode;  (*Save current error code*)
+    #nTempErrorCode:= 16#0000_0000;       (*Clear currenr error variable*)
+    #iStep:= 4;                           (*Create command*)
+    
+  (*Logout can not be ensured*)
+  ELSIF #bDeviceState AND #bEnforceLogout THEN
+    #Errorcode.%W1:= #nTempErrorCode.%W0;  
+    #Errorcode.%W0:= 16#0017;  (*Error: Logout can not be ensured (please check the device state)*)
+  
+  (*Errorcode = Errorcode from the last plc cycle or logout error*)
+  ELSE
+    #Errorcode:= #nTempErrorCode;
+  END_IF;
+  
+  (*Update FB status*)
+  IF #nTempErrorCode <> 16#0000_0000 THEN
+    #ReqDone:= false;
+    #ReqBusy:= false;
+    #bReqBusyMem:= false;
+    #Error:= true;
+    #nTempErrorCode:= 16#0000_0000;
+    #nLogoutErrorCode:= 16#0000_0000;
+    #iStep:= 0;
+    RETURN;
+  END_IF;
+END_IF;
+
+(*Time out detection*)
+#fbTimeout(IN:= #bReqBusyMem, PT:= #TOut);
+IF #fbTimeout.Q THEN
+  #nTempErrorCode:= 16#0000_0010; (*Error: Time out*)
+END_IF;
+
+(*Check if a device error is detected: 'sFA XX'*)
+IF #bTriggerDone AND ((NOT #bCanActive AND
+  #arrRecord[0] = 's' AND
+  #arrRecord[1] = 'F' AND
+  #arrRecord[2] = 'A') OR (#bCanActive AND
+  #arrRecord[0] = 's' AND
+  #arrRecord[12] = 'F' AND
+  #arrRecord[13] = 'A')) THEN
+  
+  (*Get the position of the error code*)
+  IF #bCanActive THEN
+    #iIndex:= 15;
+  ELSE
+    #iIndex:= 4;
+  END_IF;
+    
+  SICK_GetValue(iTelegramLength:= INT_TO_UINT(#fbCCom.ReqLength),
+                  iValueLength:= 0,
+                  nValue=> #nFncValue,
+                  nErrorCode=> #nFncErrorCode,
+                  iPosition:= #iIndex,
+                  arrData:= #arrRecord);
+  
+  IF #nFncErrorCode = 16#0000 THEN
+    #nTempErrorCode.%W1:= DWORD_TO_WORD(#nFncValue);
+    #nTempErrorCode.%W0:= 16#0011; (*Error: Device error*)
+  ELSE
+    #nTempErrorCode.%W1:= #nFncErrorCode;
+    #nTempErrorCode.%W0:= 16#0012; (*Error: SICK_GetValue error*)      
+  END_IF;
+END_IF;
+
+(*Error detected*)
+IF #nTempErrorCode <>16#0000_0000 THEN
+  RETURN;
+END_IF;
+
+
+(*================================= START REQUEST (STEP 1) =================================*)
+IF NOT #bReqBusyMem AND #bTriggerReq THEN
+  #ReqDone:= false;
+  #ReqBusy:= true;
+  #bReqBusyMem:= true;
+  #Error:= false;
+  #Errorcode:= 16#0000_0000;
+  #bDeviceState:= false;
+  #bEnforceLogout:= false;
+  
+  (*Save the current bit selection for the job*)
+  #arrSelection[0]:= #TriggerOn;
+  #arrSelection[1]:= #TriggerOff;
+  #arrSelection[2]:= #Matchcode;
+  #arrSelection[3]:= #SavePermanent;
+  #arrSelection[4]:= #ComTest;
+  #arrSelection[5]:= #FreeCommand;
+  
+  (*Check CAN-ID*)
+  IF #CANId > 63 THEN
+    #nTempErrorCode:= 16#0000_0014; (*Error invalid CAN Id*)  
+  ELSIF #CANId = 0 THEN
+    #bCanActive:= false;
+    #iStep:= 3; (*Check parameter input*)
+  ELSE
+    #bCanActive:= true;
+    #iStep:= 2; (*Add CAN identifier*)
+  END_IF;
+END_IF;
+
+
+(*=============================== ADD CAN IDENTIFIER (STEP 2) ==============================*)
+IF #iStep =2 THEN
+  Strg_TO_Chars(Strg:= 's{ 00 01 ', pChars:= 0, Cnt=> #iIndex, Chars:=#arrCommand);
+  
+  SICK_SetValue(bAddBlank:= false,
+                  nValue:= #CANId,
+                  arrData=> #arrCommand,
+                  nErrorCode=> #nFncErrorCode,
+                  iPosition:= #iIndex);
+  IF #nFncErrorCode <> 16#0000 THEN
+    #nTempErrorCode.%W1:= #nFncErrorCode;
+    #nTempErrorCode.%W0:= 16#0013; (*Error: SICK_SetValue error*)
+  ELSE
+    #arrCommand[#iIndex]:= '}';
+    #iStep:= 3; (*Check parameter input*)
+  END_IF;
+END_IF;
+
+
+(*============================= CHECK PARAMETER INPUT (STEP 3) =============================*)
+IF #iStep =3 THEN
+  #iTemp1:= 0; (*Counts up the active bit selection*)
+  
+  (*Command: Trigger On*)
+  IF #arrSelection[0] THEN
+    #iTemp1:= #iTemp1+1;
+    #iCommandIndex:= 0; (*Send a "Trigger On" command*)
+  END_IF;
+  
+  (*Command: Trigger Off*)
+  IF #arrSelection[1] THEN
+    #iTemp1:= #iTemp1+1;
+    #iCommandIndex:= 1; (*Send a "Trigger Off" command*)
+  END_IF;
+  
+  (*Command: Matchcode*)
+  IF #arrSelection[2] THEN
+    #iTemp1:= #iTemp1+1;
+    
+    IF #Data.Matchcode.sName = '' THEN
+      #nTempErrorCode:= 16#0000_0022; (*Error: Matchcode name is empty*)
+    ELSIF #Data.Matchcode.nCodeType <='$20' OR #Data.Matchcode.nCodeType > '$7E' THEN
+      #nTempErrorCode:= 16#0000_0023; (*Error: Invalid code type*)
+    END_IF;
+    
+    #iCommandIndex:= 10; (*Send a "Login" command*)
+  END_IF;
+  
+  (*Command: Save permanent*)
+  IF #arrSelection[3] THEN 
+    #iTemp1:= #iTemp1+1;
+    #iCommandIndex:= 10; (*Send a "Login" command*)  
+  END_IF;
+  
+  (*Command: Communication test*)
+  IF #arrSelection[4] THEN
+    #iTemp1:= #iTemp1+1;
+    #iCommandIndex:= 4; (*Send a "Comm Test" command*)
+  END_IF;
+  
+  (*Command: Free command*)
+  IF #arrSelection[5] THEN
+    #iTemp1:= #iTemp1+1;
+    
+    (*Check length*)
+    IF #bCanActive THEN
+      #iTemp2:= INT_TO_UDINT(LEN(#Data.FreeCommand.sCommand))+11;
+    ELSE
+      #iTemp2:= INT_TO_UDINT(LEN(#Data.FreeCommand.sCommand));
+    END_IF;
+    
+    IF (LEN(#Data.FreeCommand.sCommand) <=0) OR (#iTemp2 > #iCommandSize) THEN
+      #nTempErrorCode:= 16#0000_0020; (*Error: Invalid free command length*)
+    END_IF;
+     
+    #iCommandIndex:= 5; (*Send a "Free Command" command*)
+  END_IF;
+  
+  (*Check bit sum of the command selection*)
+  IF #iTemp1 <>1 THEN
+    #nTempErrorCode:= 16#0000_0015; (*Error: More than one or no parameter selected*)   
+  END_IF;
+  
+  (*Check if a error was detected*)
+  IF #nTempErrorCode = 16#0000_0000 THEN
+    #iStep:= 4; (*Create CoLa command*)
+  END_IF;
+END_IF;
+
+
+(*============================== CREATE COLA COMMAND (STEP 4) ==============================*)
+IF #iStep =4 THEN
+  CASE #iCommandIndex OF
+    
+  (*Create "Trigger On" command*)
+  0:  IF #bCanActive THEN
+        Strg_TO_Chars(Strg:= 'MN mTCgateon', pChars:= 12, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3)+12;
+      ELSE
+        Strg_TO_Chars(Strg:= 'sMN mTCgateon', pChars:= 0, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3);
+      END_IF;
+      #iStep:= 5; (*Send command*)
+   
+  (*Create "Trigger Off" command*)
+  1:  IF #bCanActive THEN
+        Strg_TO_Chars(Strg:= 'MN mTCgateoff', pChars:= 12, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3)+12;
+      ELSE
+        Strg_TO_Chars(Strg:= 'sMN mTCgateoff', pChars:= 0, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3);
+      END_IF;
+      #iStep:= 5; (*Send command*)
+      
+  (*Create "Matchcode" command*)
+  2:  IF #bCanActive THEN
+        Strg_TO_Chars(Strg:= 'MN mEVSetMatchCode 00 ', pChars:= 12, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iIndex:= UDINT_TO_UINT(#iTemp3+12);
+      ELSE
+        Strg_TO_Chars(Strg:= 'sMN mEVSetMatchCode 00 ', pChars:= 0, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iIndex:= UDINT_TO_UINT(#iTemp3);
+      END_IF;
+      
+      (*Add matchcode name*)
+      Strg_TO_Chars(Strg:= CONCAT(IN1:= 'name="', IN2:= #Data.Matchcode.sName), pChars:= #iIndex, Cnt=> #iTemp3, Chars:=#arrCommand);
+      #iIndex:= #iIndex+UDINT_TO_UINT(#iTemp3);
+      
+      (*Add codeType*)
+      Strg_TO_Chars(Strg:= '" codeType="', pChars:= #iIndex, Cnt=> #iTemp3, Chars:=#arrCommand);
+      #iIndex:= #iIndex+UDINT_TO_UINT(#iTemp3);
+      IF #Data.Matchcode.nCodeType = '*' THEN
+        Strg_TO_Chars(Strg:= 'dontCare', pChars:= #iIndex, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iIndex:= #iIndex+UDINT_TO_UINT(#iTemp3);
+      ELSE
+        #arrCommand[#iIndex]:= #Data.Matchcode.nCodeType;
+        #iIndex:= #iIndex+1;
+      END_IF;
+
+      (*Add Min/Max length*)
+      Strg_TO_Chars(Strg:= '" length="', pChars:= #iIndex, Cnt=> #iTemp3, Chars:=#arrCommand);
+      #iIndex:= #iIndex+UDINT_TO_UINT(#iTemp3);
+      IF #Data.Matchcode.iMinMaxLength = 0 THEN
+        Strg_TO_Chars(Strg:= 'dontCare', pChars:= #iIndex, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iIndex:= #iIndex+UDINT_TO_UINT(#iTemp3);
+      ELSE
+        #arrCommand[#iIndex]:= ((#Data.Matchcode.iMinMaxLength/100) MOD 10)+16#30;     
+        #arrCommand[#iIndex+1]:= ((#Data.Matchcode.iMinMaxLength/10) MOD 10)+16#30;
+        #arrCommand[#iIndex+2]:= (#Data.Matchcode.iMinMaxLength MOD 10)+16#30;
+        #iIndex:= #iIndex+3;
+      END_IF;
+      
+      (*Add content*)
+      Strg_TO_Chars(Strg:= CONCAT(IN1:= '" content="', IN2:= #Data.Matchcode.sContent), pChars:= #iIndex, Cnt=> #iTemp3, Chars:=#arrCommand);
+      #iIndex:= #iIndex+UDINT_TO_UINT(#iTemp3);
+      #arrCommand[#iIndex]:= '"';
+      
+
+      (*Overwrite the matchcode length*)
+      IF #bCanActive THEN
+        #nFncValue:= #iIndex-33;      (*Length of the #Matchcode command*)
+        #iCommandLength:= #iIndex+1;  (*Length of the whole CoLa command*)
+        #iIndex:= 31;                 (*Startindex of the matchcode length*)
+      ELSE
+        #nFncValue:= #iIndex-22;      (*Length of the #Matchcode command*)
+        #iCommandLength:= #iIndex+1;  (*Length of the whole CoLa command*)
+        #iIndex:= 20;                 (*Startindex of the matchcode length*)
+      END_IF;
+      
+      SICK_SetValue(bAddBlank:= false,
+                      nValue:= #nFncValue,
+                      arrData=> #arrCommand,
+                      nErrorCode=> #nFncErrorCode,
+                      iPosition:=#iIndex);
+      IF #nFncErrorCode <> 16#0000 THEN
+        #nTempErrorCode.%W1:= #nFncErrorCode;
+        #nTempErrorCode.%W0:= 16#0013; (*Error: SICK_SetValue error*)
+      ELSE
+        #iStep:= 5; (*Send command*)
+      END_IF;
+      
+  (*Create "Save Permanent" command*)   
+  3:  IF #bCanActive THEN
+        Strg_TO_Chars(Strg:= 'MN mEEwriteall', pChars:= 12, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3+12);
+      ELSE
+        Strg_TO_Chars(Strg:= 'sMN mEEwriteall', pChars:= 0, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3);
+      END_IF;
+      #iStep:= 5; (*Send command*)
+     
+  (*Create "Communication Test" command*)
+  4:  IF #bCanActive THEN
+        Strg_TO_Chars(Strg:= 'RI0', pChars:= 12, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3)+12;
+      ELSE
+        Strg_TO_Chars(Strg:= 'sRI0', pChars:= 0, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3);
+      END_IF;
+      #iStep:= 5; (*Send command*)
+          
+  (*Create "Free Command"*)
+  5:  IF #bCanActive THEN
+        Strg_TO_Chars(Strg:= DELETE(IN:= #Data.FreeCommand.sCommand, L:=1, P:=1), pChars:= 12, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3)+12;
+      ELSE
+        Strg_TO_Chars(Strg:= #Data.FreeCommand.sCommand, pChars:= 0, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3);
+      END_IF;
+      #iStep:= 5; (*Send command*)
+  
+  (*Create "Login" command*)
+  10: IF #bCanActive THEN
+        Strg_TO_Chars(Strg:= 'MN SetAccessMode 03 F4724744', pChars:= 12, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3)+12;
+      ELSE
+        Strg_TO_Chars(Strg:= 'sMN SetAccessMode 03 F4724744', pChars:= 0, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3);
+      END_IF;
+      #iStep:= 5; (*Send command*)
+  
+  (*Create "Logout" command*)
+  11: IF #bCanActive THEN
+        Strg_TO_Chars(Strg:= 'MN Run', pChars:= 12, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3)+12;
+      ELSE
+        Strg_TO_Chars(Strg:= 'sMN Run', pChars:= 0, Cnt=> #iTemp3, Chars:=#arrCommand);
+        #iCommandLength:= UDINT_TO_UINT(#iTemp3);
+      END_IF;
+      #iStep:= 5; (*Send command*)
+      
+    END_CASE;
+END_IF;
+
+
+(*=============================== SEND COLA COMMAND (STEP 5) ===============================*)
+IF #iStep =5 THEN
+  IF NOT #fbCCom.ReqBusy AND NOT #bTriggerDone AND NOT #bTriggerError THEN
+    #fbCCom.Req:= true;
+    #iStep:= 6; (*Wait for the command answer*)
+  END_IF;
+END_IF;
+
+
+(*========================== WAIT FOR THE COMMAND ANSWER (STEP 6) ==========================*)
+IF #iStep =6 THEN
+  (*Communication error*)
+  IF #bTriggerError THEN
+    #nTempErrorCode:= #fbCCom.Errorcode; (*Error: Communication error*)
+  
+    (*Communication done*)
+  ELSIF #bTriggerDone THEN
+    #iStep:= 7; (*Check the command answer*)
+  END_IF;
+END_IF;
+
+
+(*============================= CHECK COMMAND RESPONSE (STEP 7) ============================*)
+IF #iStep =7 THEN
+  CASE #iCommandIndex OF
+  
+  (*Check "Trigger On" response*)
+  0:  IF #bCanActive THEN
+        IF #arrRecord[0] = 's' AND
+          #arrRecord[12] = 'A' AND
+          #arrRecord[13] = 'N' AND
+          #arrRecord[22] = 'o' AND
+          #arrRecord[23] = 'n' AND
+          #arrRecord[24] = ' ' AND
+          #arrRecord[25] = '1' THEN
+         
+          #iStep:= 8; (*Action performed*)
+        ELSE
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)                    
+        END_IF;
+      ELSE
+        IF #arrRecord[0] = 's' AND
+          #arrRecord[1] = 'A' AND
+          #arrRecord[2] = 'N' AND
+          #arrRecord[11] = 'o' AND
+          #arrRecord[12] = 'n' AND
+          #arrRecord[13] = ' ' AND
+          #arrRecord[14] = '1' THEN
+          
+          #iStep:= 8; (*Action performed*)
+        ELSE
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)        
+        END_IF;
+      END_IF;
+      
+  (*Check "Trigger Off" response*)
+  1:  IF #bCanActive THEN
+        IF #arrRecord[0] = 's' AND
+          #arrRecord[12] = 'A' AND
+          #arrRecord[13] = 'N' AND
+          #arrRecord[22] = 'o' AND
+          #arrRecord[23] = 'f' AND
+          #arrRecord[24] = 'f' AND
+          #arrRecord[25] = ' ' AND
+          #arrRecord[26] = '1' THEN
+          
+          #iStep:= 8; (*Action performed*)
+        ELSE
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      ELSE
+        IF #arrRecord[0] = 's' AND
+          #arrRecord[1] = 'A' AND
+          #arrRecord[2] = 'N' AND
+          #arrRecord[11] = 'o' AND
+          #arrRecord[12] = 'f' AND
+          #arrRecord[13] = 'f' AND
+          #arrRecord[14] = ' ' AND
+          #arrRecord[15] = '1' THEN
+          
+          #iStep:= 8; (*Action performed*)
+        ELSE  
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      END_IF;
+      
+  (*Check "Matchcode" response*)
+  2:  IF #bCanActive THEN
+        IF NOT(#arrRecord[0] = 's' AND
+          #arrRecord[12] = 'A' AND
+          #arrRecord[13] = 'N' AND
+          #arrRecord[27] = 'o' AND
+          #arrRecord[28] = 'd' AND
+          #arrRecord[29] = 'e' AND
+          #arrRecord[30] = ' ' AND
+          #arrRecord[31] = '1') THEN
+
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      ELSE
+        IF NOT(#arrRecord[0] = 's' AND
+          #arrRecord[1] = 'A' AND
+          #arrRecord[2] = 'N' AND
+          #arrRecord[16] = 'o' AND
+          #arrRecord[17] = 'd' AND
+          #arrRecord[18] = 'e' AND
+          #arrRecord[19] = ' ' AND
+          #arrRecord[20] = '1') THEN
+
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      END_IF;
+
+      IF #nTempErrorCode = 0 THEN
+        #iCommandIndex:= 11; (*Logout*)
+        #iStep:= 4;         (*Create command*)
+      END_IF;    
+      
+  (*Check "Save Permanent" response*)
+  3:  IF #bCanActive THEN
+        IF NOT(#arrRecord[0] = 's' AND
+          #arrRecord[12] = 'A' AND
+          #arrRecord[13] = 'N' AND
+          #arrRecord[23] = 'a' AND
+          #arrRecord[24] = 'l' AND
+          #arrRecord[25] = 'l' AND
+          #arrRecord[26] = ' ' AND
+          #arrRecord[27] = '1') THEN
+          
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      ELSE
+        IF NOT(#arrRecord[0] = 's' AND
+          #arrRecord[1] = 'A' AND
+          #arrRecord[2] = 'N' AND
+          #arrRecord[12] = 'a' AND
+          #arrRecord[13] = 'l' AND
+          #arrRecord[14] = 'l' AND
+          #arrRecord[15] = ' ' AND
+          #arrRecord[16] = '1') THEN
+          
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      END_IF;
+      
+      IF #nTempErrorCode = 0 THEN
+        #iCommandIndex:= 11; (*Logout*)
+        #iStep:= 4;         (*Create command*)
+      END_IF;
+      
+  (*Check "Communication Test" response*)
+  4:  IF #bCanActive THEN
+        IF #arrRecord[0] = 's' AND
+          #arrRecord[12] = 'R' AND
+          #arrRecord[13] = 'A' AND
+          #arrRecord[14] = ' ' THEN
+          
+          #iStep:= 8; (*Action performed*)
+        ELSE
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      ELSE
+        IF #arrRecord[0] = 's' AND
+          #arrRecord[1] = 'R' AND
+          #arrRecord[2] = 'A' AND
+          #arrRecord[3] = ' ' THEN
+          
+          #iStep:= 8; (*Action performed*)
+        ELSE  
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      END_IF;
+  
+  (*Check "Free command" response*)
+  5:  IF #fbCCom.ReqLength <= MAX_LEN(#Data.FreeCommand.sResult) THEN 
+        Chars_TO_Strg(Chars:= #arrRecord, pChars:= 0, Cnt:= INT_TO_UINT(#fbCCom.ReqLength),Strg=> #Data.FreeCommand.sResult);
+        #iStep:= 8; (*Action performed*)
+      ELSE
+        #nTempErrorCode:= 16#0000_0021; (*Error: Free command result > Result string*)
+      END_IF;
+
+  (*Check "Login" response*)
+  10:  IF #bCanActive THEN
+        IF NOT(#arrRecord[0] = 's' AND
+          #arrRecord[12] = 'A' AND
+          #arrRecord[13] = 'N' AND
+          #arrRecord[24] = 'M' AND
+          #arrRecord[25] = 'o' AND
+          #arrRecord[26] = 'd' AND
+          #arrRecord[27] = 'e' AND
+          #arrRecord[28] = ' ' AND
+          #arrRecord[29] = '1') THEN
+          
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      ELSE
+        IF NOT(#arrRecord[0] = 's' AND
+          #arrRecord[1] = 'A' AND
+          #arrRecord[2] = 'N' AND
+          #arrRecord[13] = 'M' AND
+          #arrRecord[14] = 'o' AND
+          #arrRecord[15] = 'd' AND
+          #arrRecord[16] = 'e' AND
+          #arrRecord[17] = ' ' AND
+          #arrRecord[18] = '1') THEN
+ 
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      END_IF;
+      
+      IF #nTempErrorCode = 0 THEN
+        IF #arrSelection[2] THEN
+          #iCommandIndex:= 2; (*Matchcode*)
+          #iStep:= 4;         (*Create command*)
+        ELSIF #arrSelection[3] THEN
+          #iCommandIndex:= 3; (*Save permanent*)
+          #iStep:= 4;         (*Create command*)       
+        END_IF;
+        #bDeviceState:= true; (*Edit-Mode active*)
+      END_IF;
+      
+  (*Check "Logout" response*)
+  11:  IF #bCanActive THEN
+        IF #arrRecord[0] = 's' AND
+          #arrRecord[12] = 'A' AND
+          #arrRecord[13] = 'N' AND
+          #arrRecord[14] = ' ' AND
+          #arrRecord[15] = 'R' AND
+          #arrRecord[16] = 'u' AND
+          #arrRecord[17] = 'n' AND
+          #arrRecord[18] = ' ' AND
+          #arrRecord[19] = '1' THEN
+          
+          #bDeviceState:= false; (*Run-Mode active*)
+          #iStep:= 8; (*Action performed*)
+        ELSE
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      ELSE
+        IF #arrRecord[0] = 's' AND
+          #arrRecord[1] = 'A' AND
+          #arrRecord[2] = 'N' AND
+          #arrRecord[3] = ' ' AND
+          #arrRecord[4] = 'R' AND
+          #arrRecord[5] = 'u' AND
+          #arrRecord[6] = 'n' AND
+          #arrRecord[7] = ' ' AND
+          #arrRecord[8] = '1' THEN
+          
+          #bDeviceState:= false; (*Run-Mode active*)
+          #iStep:= 8; (*Action performed*)
+        ELSE  
+          #nTempErrorCode:= 16#0000_0016; (*Error: Invalid device answer*)          
+        END_IF;
+      END_IF;
+  END_CASE;
+END_IF;
+
+
+(*================================ ACTION PERFORMED (STEP 8) ===============================*)
+IF #iStep =8 THEN
+  IF #bEnforceLogout THEN
+    #nTempErrorCode:= #nLogoutErrorCode;
+  ELSE
+    #ReqDone:= true;
+    #ReqBusy:= false;
+    #bReqBusyMem:= false;
+    #iStep:= 0;
+  END_IF;
+END_IF;
+
+
+(*====================================== COMMUNICATION =====================================*)
+#fbCCom(HWInputIdent:= #HWInputIdent,
+        HWInputLength:= #HWInputLength,
+        HWOutputIdent:= #HWOutputIdent,
+        HWOutputLength:= #HWOutputLength,
+        TOut:= #TOut+T#1s,
+        CommandLength:= #iCommandLength,
+        arrCommand:= #arrCommand,
+        arrRecord:= #arrRecord);
+
+(*Reset the request flag every cycle*)
+#fbCCom.Req:= false;
+
+(*Read result error*)
+IF #fbCCom.RdLength <0 AND #fbCCom.RdDone THEN
+  #Data.ReadingResult.iLength:= -1; (*Error: Reading result longer than record array*)
+  FOR #iTemp1:= 1 TO UINT_TO_INT(#iReadingResultSize) DO
+    #Data.ReadingResult.arrResult[#iTemp1]:= 16#00;
+  END_FOR;
+
+(*Handling of the reading result*)
+ELSIF #fbCCom.RdDone THEN
+  IF #fbCCom.RdLength > #iReadingResultSize THEN
+    #Data.ReadingResult.iLength:= -1; (*Error: Reading result longer than reading result array*)
+    FOR #iTemp1:= 1 TO UINT_TO_INT(#iReadingResultSize) DO
+      #Data.ReadingResult.arrResult[#iTemp1]:= 16#00;
+    END_FOR;
+  ELSE
+    MOVE_BLK(IN:= #arrRecord[0], COUNT:= INT_TO_UINT(#fbCCom.RdLength), OUT=> #Data.ReadingResult.arrResult[1]);
+    IF (#Data.ReadingResult.iCounter >=255) THEN
+      #Data.ReadingResult.iCounter:= 0;
+    ELSE
+      #Data.ReadingResult.iCounter:= #Data.ReadingResult.iCounter+1;
+    END_IF;
+    #Data.ReadingResult.iLength:= #fbCCom.RdLength;
+    #RdDone:= true;
+  END_IF;
+END_IF;
+END_FUNCTION_BLOCK

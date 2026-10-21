@@ -1,0 +1,47 @@
+// FB "SAI_IND_WriteDigitalOutputs" 3  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ID : HW_IO;
+   Output1 : Bool;
+   Output2 : Bool;
+   Output3 : Bool;
+   Output4 : Bool;
+   Output5 : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Done : Bool;
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Write : Bool;
+END_VAR
+
+VAR
+   Step : Int;
+   Writing : Bool;
+   WritePre : Bool;
+   BusyNTrig : Bool;
+   WRREC : WRREC;
+END_VAR
+
+VAR_TEMP
+   Length : UInt;
+END_VAR
+
+--- Network 1  Comment: Initializes DONE and ERROR output bits | Title: Initialization
+   parts: Contact, Move, PBox, RCoil, SCoil
+   operands: #Write, #WritePre, #Step, #Writing, #Error, #Done
+--- Network 2  Comment: Write the selected discrete output(s) into the transmitter (1-byte; Index=16#4433).
+bit 0: Discrete output #1
+bit 1: Discrete output #2
+bit 2: Discrete output #3
+bit 3: Discrete output #4
+bit 4: Discrete output #5 | Title: Sequence
+   parts: Coil, Contact, Eq, Move, NContact, WRREC
+   operands: #Writing, #Step, #WRREC.BUSY, #WRREC.REQ, #Output1, #Output2, #Output3, #Output4, #Output5, #ID, #WRREC.DONE, #WRREC.ERROR, #WRREC.STATUS, #BusyNTrig
+--- Network 3  Comment: Set the ERROR bit to TRUE during write error | Title: Error Handling
+   parts: Contact, Eq, RCoil, SCoil
+   operands: #Writing, #Step, #WRREC.DONE, #Done, #WRREC.ERROR, #Error, #Write

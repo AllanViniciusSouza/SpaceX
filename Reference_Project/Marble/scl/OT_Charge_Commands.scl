@@ -1,0 +1,16 @@
+FUNCTION "OT_Charge_Commands"   // FC 52, author 
+
+VAR_IN_OUT
+   Auto_Test : "Auto_Test";
+END_VAR
+
+   // RETURN : Void
+BEGIN
+"OrderTable_HMI"."Manual order" := #Auto_Test.Manual;
+"OrderTable_HMI"."From level" := #Auto_Test."From level";
+"OrderTable_HMI"."To level" := #Auto_Test."To level";
+"OrderTable_HMI"."Testing Time" := #Auto_Test."Testing Time";
+"OrderTable_HMI"."Numer of cycles" := #Auto_Test."Numer of cycles";
+"OrderTable_HMI".Level := UINT_TO_BYTE(#Auto_Test.Level);
+
+END_FUNCTION

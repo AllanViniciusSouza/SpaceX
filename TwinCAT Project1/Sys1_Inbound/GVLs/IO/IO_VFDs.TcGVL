@@ -3,7 +3,42 @@
   <GVL Name="IO_VFDs" Id="{9aff624f-d785-43b7-bbb2-8323195aaf84}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
-	
+	FSoE_Slave_CMD AT%I*:WORD;
+	FSoE_Slave_CRC_0 AT%I*:WORD;
+	FSoE_Slave_CRC_1 AT%I*:WORD;
+	FSoE_Slave_CRC_2 AT%I*:WORD;
+
+    // VTD (MOVI-C MOVIPRO) / Module 1 (Standard 8 PD), MOVIKIT Positioning Drive.
+    // Raw 16-bit UINT data, as defined in SpaceX.tsproj; no scaling or decoding.
+    // Link each variable to the channel with the same number in TwinCAT XAE.
+    // Word meanings from MOVISUITE; bit meanings and units still pending SEW.
+
+    // Drive -> PLC: Inputs 8 PD / PDO 16#1A02 / object 16#7002.
+    // Read only by FC Inputs, into Control.VTD_Sys[1].Motor.stProcessInput.
+    VTD_PI_01 AT %I* : UINT; // PI 1, 16#7002:01 - Status word
+    VTD_PI_02 AT %I* : UINT; // PI 2, 16#7002:02 - Actual speed
+    VTD_PI_03 AT %I* : UINT; // PI 3, 16#7002:03 - Status/main fault - subfault
+    VTD_PI_04 AT %I* : UINT; // PI 4, 16#7002:04 - Torque
+    VTD_PI_05 AT %I* : UINT; // PI 5, 16#7002:05 - Digital inputs
+    VTD_PI_06 AT %I* : UINT; // PI 6, 16#7002:06 - Actual application mode
+    VTD_PI_07 AT %I* : UINT; // PI 7, 16#7002:07 - Actual position high word (DL50)
+    VTD_PI_08 AT %I* : UINT; // PI 8, 16#7002:08 - Actual position low word (DL50)
+
+    // PLC -> drive: Outputs 8 PD / PDO 16#1602 / object 16#6002.
+    // Written only by FC Outputs, from Control.VTD_Sys[1].Motor.aProcessOutput.
+    VTD_PO_01 AT %Q* : UINT; // PO 1, 16#6002:01 - Control word
+    VTD_PO_02 AT %Q* : UINT; // PO 2, 16#6002:02 - Setpoint speed
+    VTD_PO_03 AT %Q* : UINT; // PO 3, 16#6002:03 - Setpoint acceleration
+    VTD_PO_04 AT %Q* : UINT; // PO 4, 16#6002:04 - Setpoint deceleration
+    VTD_PO_05 AT %Q* : UINT; // PO 5, 16#6002:05 - Digital outputs
+    VTD_PO_06 AT %Q* : UINT; // PO 6, 16#6002:06 - Setpoint application mode
+    VTD_PO_07 AT %Q* : UINT; // PO 7, 16#6002:07 - Target position high word
+    VTD_PO_08 AT %Q* : UINT; // PO 8, 16#6002:08 - Target position low word
+
+    // EtherCAT diagnostics of the VTD box. Not linked yet: link manually in XAE.
+    // Read only by FC Inputs.
+    VTD_WcState AT %I* : BOOL; // VTD > WcState > WcState (TRUE = data invalid)
+    VTD_EcState AT %I* : UINT; // VTD > InfoData > State (8 = OP)
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

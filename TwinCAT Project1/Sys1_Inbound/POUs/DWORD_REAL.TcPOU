@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="DWORD_REAL" Id="{3eeec4f5-1109-42fd-92a3-638c2f036ac8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION DWORD_REAL : REAL
+VAR_INPUT
+	b0 : BYTE;
+    b1 : BYTE;
+    b2 : BYTE;
+    b3 : BYTE;
+END_VAR
+VAR
+	uValue : U_DWORD_REAL1;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// uValue.dw :=
+//     DWORD(b0)
+//     OR SHL(DWORD(b1), 8)
+//     OR SHL(DWORD(b2), 16)
+//     OR SHL(DWORD(b3), 24);
+// 
+// DWORD_REAL := uValue.dw;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,13 @@
+FUNCTION "VTD_Charge_Settings_1"   // FC 58, author 
+
+VAR_INPUT
+   HMI_Box : UInt;
+   Sys_No : UInt;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+"PopUps_DB_1"."VTD_Settings"[#HMI_Box] := "Settings_DB".VTD_Sys[#Sys_No];
+"PopUps_DB_1"."Shuttle_MQTT_Settings" := "Settings_DB".Shuttle_MQTT;
+
+END_FUNCTION

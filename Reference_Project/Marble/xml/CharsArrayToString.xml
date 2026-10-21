@@ -1,0 +1,481 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-19T18:37:37.7406348Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FC ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input">
+    <Member Name="Lenght" Datatype="Int" Accessibility="Public" />
+    <Member Name="CharsArray" Datatype="Array[1..16] of Char" Accessibility="Public" />
+  </Section>
+  <Section Name="Output" />
+  <Section Name="InOut" />
+  <Section Name="Temp">
+    <Member Name="tempStr_1" Datatype="String" />
+    <Member Name="foundPos" Datatype="Int" />
+    <Member Name="i" Datatype="Int" />
+  </Section>
+  <Section Name="Constant" />
+  <Section Name="Return">
+    <Member Name="Ret_Val" Datatype="String" Accessibility="Public" />
+  </Section>
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>CharsArrayToString</Name>
+      <Namespace />
+      <Number>27</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <Access Scope="LocalVariable" UId="21">
+    <Symbol UId="22">
+      <Component Name="tempStr_1" UId="23" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="24" />
+  <Token Text=":=" UId="25" />
+  <Blank Num="1" UId="26" />
+  <Access Scope="LiteralConstant" UId="27">
+    <Constant UId="28">
+      <ConstantValue UId="30">''</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="31" />
+  <NewLine Num="1" UId="32" />
+  <Token Text="FOR" UId="33" />
+  <Blank Num="1" UId="34" />
+  <Access Scope="LocalVariable" UId="35">
+    <Symbol UId="36">
+      <Component Name="i" UId="37" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="38" />
+  <Token Text=":=" UId="39" />
+  <Blank Num="1" UId="40" />
+  <Access Scope="LiteralConstant" UId="41">
+    <Constant UId="42">
+      <ConstantValue UId="44">1</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="45" />
+  <Token Text="TO" UId="46" />
+  <Blank Num="1" UId="47" />
+  <Access Scope="Call" UId="48">
+    <Instruction Name="MIN" UId="49">
+      <Token Text="(" UId="50" />
+      <Parameter Name="IN1" UId="51">
+        <Blank Num="1" UId="52" />
+        <Token Text=":=" UId="53" />
+        <Blank Num="1" UId="54" />
+        <Access Scope="LocalVariable" UId="55">
+          <Symbol UId="56">
+            <Component Name="Lenght" UId="57" />
+          </Symbol>
+        </Access>
+        <Blank Num="1" UId="58" />
+        <Token Text="-" UId="59" />
+        <Blank Num="1" UId="60" />
+        <Access Scope="LiteralConstant" UId="61">
+          <Constant UId="62">
+            <ConstantValue UId="64">1</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="65" />
+      <Blank Num="1" UId="66" />
+      <Parameter Name="IN2" UId="67">
+        <Blank Num="1" UId="68" />
+        <Token Text=":=" UId="69" />
+        <Blank Num="1" UId="70" />
+        <Access Scope="LiteralConstant" UId="71">
+          <Constant UId="72">
+            <ConstantValue UId="74">16</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="76" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="77" />
+  <Token Text="DO" UId="78" />
+  <NewLine Num="1" UId="79" />
+  <Blank Num="4" UId="80" />
+  <Token Text="IF" UId="81" />
+  <Blank Num="1" UId="82" />
+  <Access Scope="LocalVariable" UId="83">
+    <Symbol UId="84">
+      <Component Name="CharsArray" UId="85">
+        <Token Text="[" UId="86" />
+        <Access Scope="LocalVariable" UId="87">
+          <Symbol UId="88">
+            <Component Name="i" UId="89" />
+          </Symbol>
+        </Access>
+        <Token Text="]" UId="90" />
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="91" />
+  <Token Text="&lt;&gt;" UId="92" />
+  <Blank Num="1" UId="93" />
+  <Access Scope="LiteralConstant" UId="94">
+    <Constant UId="95">
+      <ConstantValue UId="97">'$00'</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="98" />
+  <Token Text="THEN" UId="99" />
+  <NewLine Num="1" UId="100" />
+  <Blank Num="8" UId="101" />
+  <Access Scope="LocalVariable" UId="102">
+    <Symbol UId="103">
+      <Component Name="tempStr_1" UId="104" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="105" />
+  <Token Text=":=" UId="106" />
+  <Blank Num="1" UId="107" />
+  <Access Scope="Call" UId="108">
+    <Instruction Name="CONCAT" UId="109">
+      <Token Text="(" UId="110" />
+      <Parameter Name="IN1" UId="111">
+        <Blank Num="1" UId="112" />
+        <Token Text=":=" UId="113" />
+        <Blank Num="1" UId="114" />
+        <Access Scope="LocalVariable" UId="115">
+          <Symbol UId="116">
+            <Component Name="tempStr_1" UId="117" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="118" />
+      <Blank Num="1" UId="119" />
+      <Parameter Name="IN2" UId="120">
+        <Blank Num="1" UId="121" />
+        <Token Text=":=" UId="122" />
+        <Blank Num="1" UId="123" />
+        <Access Scope="Call" UId="124">
+          <Instruction Name="CHAR_TO_STRING" UId="125">
+            <Token Text="(" UId="126" />
+            <NamelessParameter UId="127">
+              <Access Scope="LocalVariable" UId="128">
+                <Symbol UId="129">
+                  <Component Name="CharsArray" UId="130">
+                    <Token Text="[" UId="131" />
+                    <Access Scope="LocalVariable" UId="132">
+                      <Symbol UId="133">
+                        <Component Name="i" UId="134" />
+                      </Symbol>
+                    </Access>
+                    <Token Text="]" UId="135" />
+                  </Component>
+                </Symbol>
+              </Access>
+            </NamelessParameter>
+            <Token Text=")" UId="137" />
+          </Instruction>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="139" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="140" />
+  <NewLine Num="1" UId="141" />
+  <Blank Num="4" UId="142" />
+  <Token Text="END_IF" UId="143" />
+  <Token Text=";" UId="144" />
+  <NewLine Num="1" UId="145" />
+  <Token Text="END_FOR" UId="146" />
+  <Token Text=";" UId="147" />
+  <NewLine Num="2" UId="148" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="149">
+    <Text UId="150"> Remove '$00'</Text>
+  </LineComment>
+  <NewLine Num="1" UId="151" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="152">
+    <Text UId="153"> string 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="154" />
+  <Access Scope="LocalVariable" UId="155">
+    <Symbol UId="156">
+      <Component Name="foundPos" UId="157" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="158" />
+  <Token Text=":=" UId="159" />
+  <Blank Num="1" UId="160" />
+  <Access Scope="Call" UId="161">
+    <Instruction Name="FIND" UId="162">
+      <Token Text="(" UId="163" />
+      <Parameter Name="IN1" UId="164">
+        <Blank Num="1" UId="165" />
+        <Token Text=":=" UId="166" />
+        <Blank Num="1" UId="167" />
+        <Access Scope="LocalVariable" UId="168">
+          <Symbol UId="169">
+            <Component Name="tempStr_1" UId="170" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="171" />
+      <Blank Num="1" UId="172" />
+      <Parameter Name="IN2" UId="173">
+        <Blank Num="1" UId="174" />
+        <Token Text=":=" UId="175" />
+        <Blank Num="1" UId="176" />
+        <Access Scope="LiteralConstant" UId="177">
+          <Constant UId="178">
+            <ConstantValue UId="180">'$00'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="182" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="183" />
+  <NewLine Num="1" UId="184" />
+  <Token Text="WHILE" UId="185" />
+  <Blank Num="1" UId="186" />
+  <Access Scope="LocalVariable" UId="187">
+    <Symbol UId="188">
+      <Component Name="foundPos" UId="189" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="190" />
+  <Token Text="&gt;" UId="191" />
+  <Blank Num="1" UId="192" />
+  <Access Scope="LiteralConstant" UId="193">
+    <Constant UId="194">
+      <ConstantValue UId="196">0</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="197" />
+  <Token Text="DO" UId="198" />
+  <NewLine Num="1" UId="199" />
+  <Blank Num="4" UId="200" />
+  <Access Scope="LocalVariable" UId="201">
+    <Symbol UId="202">
+      <Component Name="tempStr_1" UId="203" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="204" />
+  <Token Text=":=" UId="205" />
+  <Blank Num="1" UId="206" />
+  <Access Scope="Call" UId="207">
+    <Instruction Name="REPLACE" UId="208">
+      <Token Text="(" UId="209" />
+      <Parameter Name="IN1" UId="210">
+        <Blank Num="1" UId="211" />
+        <Token Text=":=" UId="212" />
+        <Blank Num="1" UId="213" />
+        <Access Scope="LocalVariable" UId="214">
+          <Symbol UId="215">
+            <Component Name="tempStr_1" UId="216" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="217" />
+      <Blank Num="1" UId="218" />
+      <Parameter Name="IN2" UId="219">
+        <Blank Num="1" UId="220" />
+        <Token Text=":=" UId="221" />
+        <Blank Num="1" UId="222" />
+        <Access Scope="LiteralConstant" UId="223">
+          <Constant UId="224">
+            <ConstantValue UId="226">''</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="227" />
+      <Blank Num="1" UId="228" />
+      <Parameter Name="P" UId="229">
+        <Blank Num="1" UId="230" />
+        <Token Text=":=" UId="231" />
+        <Blank Num="1" UId="232" />
+        <Access Scope="LocalVariable" UId="233">
+          <Symbol UId="234">
+            <Component Name="foundPos" UId="235" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="236" />
+      <Blank Num="1" UId="237" />
+      <Parameter Name="L" UId="238">
+        <Blank Num="1" UId="239" />
+        <Token Text=":=" UId="240" />
+        <Blank Num="1" UId="241" />
+        <Access Scope="LiteralConstant" UId="242">
+          <Constant UId="243">
+            <ConstantValue UId="245">1</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="247" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="248" />
+  <NewLine Num="1" UId="249" />
+  <Blank Num="4" UId="250" />
+  <Access Scope="LocalVariable" UId="251">
+    <Symbol UId="252">
+      <Component Name="foundPos" UId="253" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="254" />
+  <Token Text=":=" UId="255" />
+  <Blank Num="1" UId="256" />
+  <Access Scope="Call" UId="257">
+    <Instruction Name="FIND" UId="258">
+      <Token Text="(" UId="259" />
+      <Parameter Name="IN1" UId="260">
+        <Blank Num="1" UId="261" />
+        <Token Text=":=" UId="262" />
+        <Blank Num="1" UId="263" />
+        <Access Scope="LocalVariable" UId="264">
+          <Symbol UId="265">
+            <Component Name="tempStr_1" UId="266" />
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="267" />
+      <Blank Num="1" UId="268" />
+      <Parameter Name="IN2" UId="269">
+        <Blank Num="1" UId="270" />
+        <Token Text=":=" UId="271" />
+        <Blank Num="1" UId="272" />
+        <Access Scope="LiteralConstant" UId="273">
+          <Constant UId="274">
+            <ConstantValue UId="276">'$00'</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="278" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="279" />
+  <NewLine Num="1" UId="280" />
+  <Token Text="END_WHILE" UId="281" />
+  <Token Text=";" UId="282" />
+  <NewLine Num="2" UId="283" />
+  <Access Scope="LocalVariable" UId="284">
+    <Symbol UId="285">
+      <Component Name="CharsArrayToString" UId="286" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="287" />
+  <Token Text=":=" UId="288" />
+  <Blank Num="1" UId="289" />
+  <Access Scope="LocalVariable" UId="290">
+    <Symbol UId="291">
+      <Component Name="tempStr_1" UId="292" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="293" />
+  <NewLine Num="1" UId="294" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FC>
+</Document>

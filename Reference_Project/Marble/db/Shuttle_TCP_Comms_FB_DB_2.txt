@@ -1,0 +1,32 @@
+DATA_BLOCK "Shuttle_TCP_Comms_FB_DB_2"   // InstanceDB 340  instance of "Shuttle_TCP_Comms"
+
+VAR_INPUT
+   Enable : Bool;
+   E-stop : Bool;
+   TCP_Configuration : "LCom_typeConfig";
+   Shuttle_No : UInt;
+END_VAR
+
+VAR_OUTPUT
+   Connected : Bool;
+   Busy : Bool;
+   Status : Word;
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   TCP_Diag : "LCom_typeDiagnostics";
+   LCom_Communication_DB : "LCom_Communication_FB";
+END_VAR
+
+VAR
+   SendBuffer : Array[0..6] of Byte;
+   ReceiveBuffer : Array[0..1] of Byte;
+   Send : Bool;
+   SendDataLength : USInt;
+   Sending : Bool;
+   T_Send_DB : TON_TIME;
+END_VAR
+
+
+// ---- start values (path : type := value)

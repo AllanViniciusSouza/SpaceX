@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Inputs" Id="{525cd7f4-1656-4c5b-948f-d7927a91132e}" SpecialFunc="None">
+    <Declaration><![CDATA[// Input mapping: the only place where PLC IO inputs are read.
+// Copies IO GVL variables to internal variables (GVL Control). One region per device.
+// Called first in MAIN.
+FUNCTION Inputs : BOOL
+VAR_INPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{region "Chargers - PROFINET (EL6633)"}
+// TODO: unfinished, kept disabled so the project builds. Before enabling:
+//  - confirm the charger byte order and REAL representation (DWORD_REAL body is commented out)
+//  - Control.Charger_Level is ARRAY[2..6]; index [1] is out of range
+//  - IO_Chargers.Inputs_1 is not linked in SpaceX.tsproj
+// Original line, unchanged:
+// Control.Charger_Level[1].Output_Voltage :=  DWORD_REAL(b0:= IO_Chargers.Inputs_1[0],b1:=IO_Chargers.Inputs_1[1],b2:=IO_Chargers.Inputs_1[2],b3:=IO_Chargers.Inputs_1[3],
+{endregion}
+
+{region "VTD 1 - MOVIPRO process inputs (SEW Standard 8 PD)"}
+Control.VTD_Sys[1].Motor.stProcessInput.aWord[1] := IO_VFDs.VTD_PI_01; // Status word
+Control.VTD_Sys[1].Motor.stProcessInput.aWord[2] := IO_VFDs.VTD_PI_02; // Actual speed
+Control.VTD_Sys[1].Motor.stProcessInput.aWord[3] := IO_VFDs.VTD_PI_03; // Status/main fault - subfault
+Control.VTD_Sys[1].Motor.stProcessInput.aWord[4] := IO_VFDs.VTD_PI_04; // Torque
+Control.VTD_Sys[1].Motor.stProcessInput.aWord[5] := IO_VFDs.VTD_PI_05; // Digital inputs
+Control.VTD_Sys[1].Motor.stProcessInput.aWord[6] := IO_VFDs.VTD_PI_06; // Actual application mode
+Control.VTD_Sys[1].Motor.stProcessInput.aWord[7] := IO_VFDs.VTD_PI_07; // Actual position high word
+Control.VTD_Sys[1].Motor.stProcessInput.aWord[8] := IO_VFDs.VTD_PI_08; // Actual position low word
+
+Control.VTD_Sys[1].Motor.stProcessInput.bWcStateError := IO_VFDs.VTD_WcState;
+Control.VTD_Sys[1].Motor.stProcessInput.uiEcState := IO_VFDs.VTD_EcState;
+{endregion}
+
+Inputs := TRUE;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

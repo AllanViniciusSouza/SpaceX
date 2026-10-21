@@ -1,0 +1,52 @@
+// FB "Main_Safety_RTG1" 1  language F_FBD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR
+   Safety_OK : Bool;
+END_VAR
+
+VAR_TEMP
+   HMI_1_Estop_Pressed_1 : Bool;
+   HMI_1_Estop_Pressed_2 : Bool;
+   HMI_2_Estop_Pressed_1 : Bool;
+   HMI_2_Estop_Pressed_2 : Bool;
+   HMI_1_Reset_Comiss_1 : Bool;
+   HMI_1_Reset_Comiss_2 : Bool;
+   HMI_2_Reset_Comiss_1 : Bool;
+   HMI_2_Reset_Comiss_2 : Bool;
+END_VAR
+
+--- Network 1  Title: HMI 1 EMERGENCY BUTTON AND RESET COMISSIONING
+   CALL FC "HMI_SAFETY_FC"
+   operands: HMI_Box_Connected_1, Screen_DB_1.Reset_Comissioning, PLC_HMI - HMI 1 Estop, PLC_HMI - Profinet_Error_HMI 1, #HMI_1_Estop_Pressed_1, #HMI_1_Estop_Pressed_2, #HMI_1_Reset_Comiss_1, #HMI_1_Reset_Comiss_2
+--- Network 2  Title: HMI 2 EMERGENCY BUTTON AND RESET COMISSIONING
+   CALL FC "HMI_SAFETY_FC"
+   operands: HMI_Box_Connected_2, Screen_DB_1.Reset_Comissioning, PLC_HMI - HMI 2 Estop, PLC_HMI - Profinet_Error_HMI 2, #HMI_2_Estop_Pressed_1, #HMI_2_Estop_Pressed_2, #HMI_2_Reset_Comiss_1, #HMI_2_Reset_Comiss_2
+--- Network 3  Title: Remote Panel 1
+   CALL FB "Remote_Panel"  instance "Remote_Panel_DB_1"
+   parts: A, O
+   operands: OVERTRAVEL LOWER LIMIT - CH1(1), OVERTRAVEL UPPER LIMIT - CH1(1), E-STOP (CABINET) - CH1(1), #HMI_1_Estop_Pressed_1, #HMI_2_Estop_Pressed_1, RESET (CABINET)(1), Reset_Comissioning, #HMI_1_Reset_Comiss_1, #HMI_2_Reset_Comiss_1, Chain Slack 1 - CH1(1), Chain Slack 2 - CH1(1), Chain Slack 3 - CH1(1), Chain Slack 4 - CH1(1), LIGHT GUARD 1 - CH1(1), LIGHT GUARD 2 - CH1(1), SAFETY_GATE_1_CH1(1), SAFETY_GATE_2_CH1(1), Lock_1_Estop_CH1, Lock_2_Estop_CH1, Lock_1_Closed_CH1, Lock_2_Closed_CH1, E-STOP L1 - CH1(1), E-STOP L2 - CH1(1), E-STOP L3 - CH1(1), E-STOP L4 - CH1(1), E-STOP L5 - CH1(1), E-STOP L6 - CH1(1), Bypass_Safe.Remote_Panel_1, STO VTD - CH1(1), STO VTD - CH2(1)
+--- Network 4  Title: Remote Panel 2
+   CALL FB "Remote_Panel"  instance "Remote_Panel_DB_2"
+   parts: A, O
+   operands: OVERTRAVEL LOWER LIMIT - CH1(2), OVERTRAVEL UPPER LIMIT - CH1(2), E-STOP (CABINET) - CH1(2), #HMI_1_Estop_Pressed_2, #HMI_2_Estop_Pressed_2, RESET (CABINET)(2), Reset_Comissioning, #HMI_1_Reset_Comiss_2, #HMI_2_Reset_Comiss_2, Chain Slack 1 - CH1(2), Chain Slack 2 - CH1(2), Chain Slack 3 - CH1(2), Chain Slack 4 - CH1(2), LIGHT GUARD 1 - CH1(2), LIGHT GUARD 2 - CH1(2), SAFETY_GATE_1_CH1(2), SAFETY_GATE_2_CH1(2), Lock_3_Estop_CH1, Lock_3_Closed_CH1, E-STOP L1 - CH1(2), E-STOP L2 - CH1(2), E-STOP L3 - CH1(2), E-STOP L4 - CH1(2), E-STOP L5 - CH1(2), E-STOP L6 - CH1(2), Bypass_Safe.Remote_Panel_2, STO VTD - CH1(2), STO VTD - CH2(2)
+--- Network 5  Title: ESTOP LEVEL PANELS
+   parts: A, Coil
+   operands: Remote_Panel_DB_1.L1_OK, Remote_Panel_DB_2.L1_OK, L1_Estop, Shuttle_EStop_All, L1_OK, Remote_Panel_DB_1.L2_OK, Remote_Panel_DB_2.L2_OK, L2_Estop, L2_OK, Remote_Panel_DB_1.L3_OK, Remote_Panel_DB_2.L3_OK, L3_Estop, L3_OK, Remote_Panel_DB_1.L4_OK, Remote_Panel_DB_2.L4_OK, L4_Estop, L4_OK, Remote_Panel_DB_1.L5_OK, Remote_Panel_DB_2.L5_OK, L5_Estop, L5_OK, Remote_Panel_DB_1.L6_OK, Remote_Panel_DB_2.L6_OK, L6_Estop, L6_OK
+--- Network 6  Title: LOCKS
+   CALL FB "F_Lock_FB"  instance "F_Lock_FB_DB_1"
+   CALL FB "F_Lock_FB"  instance "F_Lock_FB_DB_2"
+   CALL FB "F_Lock_FB"  instance "F_Lock_FB_DB_3"
+   operands: Lock_1_Closed_CH1, Lock_1_Closed_CH2, Lock_1_Estop_CH1, Lock_1_Estop_CH2, Remote_Panel_DB_1.ACK, Lock_1_Reset_Input1, Lock_1_Reset_Input2, Lock_1_Reset_Input3, Lock_1_Reset_Input4, Lock_2_Closed_CH1, Lock_2_Closed_CH2, Lock_2_Estop_CH1, Lock_2_Estop_CH2, Lock_2_Reset_Input1, Lock_2_Reset_Input2, Lock_2_Reset_Input3, Lock_2_Reset_Input4, Lock_3_Closed_CH1, Lock_3_Closed_CH2, Lock_3_Estop_CH1, Lock_3_Estop_CH2, Remote_Panel_DB_2.ACK, Lock_3_Reset_Input1, Lock_3_Reset_Input2, Lock_3_Reset_Input3, Lock_3_Reset_Input4
+--- Network 7  Title: Safety OK
+   parts: A, Coil
+   operands: Remote_Panel_DB_1.Safety_OK, Remote_Panel_DB_2.Safety_OK, #Safety_OK
+--- Network 8  Title: Bypass assignments
+   CALL FC "Bypass assignments_1"
+   CALL FC "Bypass assignments_2"
+--- Network 9  Title: ACK
+   parts: ACK_GL, O
+   operands: Remote_Panel_DB_1.ACK, Remote_Panel_DB_2.ACK
+--- Network 10  Title: RESET PLC HMI
+   parts: Coil, O
+   operands: Remote_Panel_DB_1.ACK, Remote_Panel_DB_2.ACK, RESET 1 PLC HMI, RESET 2 PLC HMI

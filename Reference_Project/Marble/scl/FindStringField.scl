@@ -1,0 +1,51 @@
+FUNCTION "FindStringField"   // FC 19, author 
+
+VAR_INPUT
+   FieldName : String;
+   JsonStr : String;
+END_VAR
+
+VAR_TEMP
+   searchStr : String;
+   foundPos : Int;
+   resultStr : String;
+   quotePos1 : Int;
+   quotePos2 : Int;
+END_VAR
+
+   // RETURN : String
+BEGIN
+// Sets search pattern → ex: '"loadstate":'
+#searchStr := CONCAT(IN1 := '"', IN2 := #FieldName);
+#searchStr := CONCAT(IN1 := #searchStr, IN2 := '" :');
+
+// Search in JSON
+#foundPos := FIND(IN1 := #JsonStr, IN2 := #searchStr);
+
+IF #foundPos > 0 THEN
+    // Finds first quote after field
+    #quotePos1 := FIND(IN1 := MID(IN := #JsonStr, P := #foundPos + LEN(#searchStr), L := 20), IN2 := '"');
+    
+    IF #quotePos1 > 0 THEN
+        // Finds second quote after the first
+        #quotePos2 := FIND(
+                           IN1 := MID(IN := #JsonStr, P := #foundPos + LEN(IN := #searchStr) + #quotePos1, L := 10),
+                           IN2 := '"'
+        );
+        
+        IF #quotePos2 > 0 THEN
+            #resultStr := MID(
+                              IN := #JsonStr,
+                              P := #foundPos + LEN(#searchStr) + #quotePos1,
+                              L := #quotePos2 - 1
+            );
+            #FindStringField := #resultStr;
+            RETURN;
+        END_IF;
+    END_IF;
+END_IF;
+
+// If not found, returns empty string
+#FindStringField := '';
+
+END_FUNCTION

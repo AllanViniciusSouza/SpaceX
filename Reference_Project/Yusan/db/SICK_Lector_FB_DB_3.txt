@@ -1,0 +1,59 @@
+DATA_BLOCK "SICK_Lector_FB_DB_3"   // InstanceDB 74  instance of "SICK_Lector_CLV6xx_PNDP"
+
+VAR_INPUT
+   HWInputIdent : HW_IO;
+   HWInputLength : USInt;
+   HWOutputIdent : HW_IO;
+   HWOutputLength : USInt;
+   CANId : USInt;
+   TOut : Time;
+   Req : Bool;
+   TriggerOn : Bool;
+   TriggerOff : Bool;
+   Matchcode : Bool;
+   SavePermanent : Bool;
+   ComTest : Bool;
+   FreeCommand : Bool;
+END_VAR
+
+VAR_OUTPUT
+   RdDone : Bool;
+   ReqDone : Bool;
+   ReqBusy : Bool;
+   Error : Bool;
+   Errorcode : DWord;
+END_VAR
+
+VAR_IN_OUT
+   Data : "ST_SICK_Lector_CLV6xx";
+END_VAR
+
+VAR
+   bTriggerReq : Bool;
+   bTriggerReqMem : Bool;
+   bTriggerDone : Bool;
+   bTriggerDoneMem : Bool;
+   bTriggerError : Bool;
+   bTriggerErrorMem : Bool;
+   bCanActive : Bool;
+   bDeviceState : Bool;
+   bEnforceLogout : Bool;
+   bReqBusyMem : Bool;
+   iStep : USInt;
+   iCommandIndex : Int;
+   iCommandLength : UInt;
+   iRecordSize : UInt;
+   iCommandSize : UInt;
+   iReadingResultSize : UInt;
+   iIndex : UInt;
+   nTempErrorCode : DWord;
+   nLogoutErrorCode : DWord;
+   arrSelection : Array[0..5] of Bool;
+   arrCommand : Array[0..499] of Byte;
+   arrRecord : Array[0..499] of Byte;
+   fbTimeout : TON_TIME;
+   fbCCom : "SICK_CCOMM_PNDP";
+END_VAR
+
+
+// ---- start values (path : type := value)

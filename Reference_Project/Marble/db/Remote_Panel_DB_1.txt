@@ -1,0 +1,69 @@
+DATA_BLOCK "Remote_Panel_DB_1"   // InstanceDB 8  instance of "Remote_Panel"
+
+VAR_INPUT
+   ID : Int;
+   Overtravel_Lower_limit : Bool;
+   Overtravel_Upper_limit : Bool;
+   Estop : Bool;
+   Reset : Bool;
+   Chain_Slack_1 : Bool;
+   Chain_Slack_2 : Bool;
+   Chain_Slack_3 : Bool;
+   Chain_Slack_4 : Bool;
+   Light Guards 1 : Bool;
+   Light Guards 2 : Bool;
+   Gate_1 : Bool;
+   Gate_2 : Bool;
+   EStop_Lock_1 : Bool;
+   EStop_Lock_2 : Bool;
+   Lock_Secured_1 : Bool;
+   Lock_Secured_2 : Bool;
+   EStop Level 1 : Bool;
+   EStop Level 2 : Bool;
+   EStop Level 3 : Bool;
+   EStop Level 4 : Bool;
+   EStop Level 5 : Bool;
+   EStop Level 6 : Bool;
+   Bypass : "F_Bypass_RemotePanel";
+END_VAR
+
+VAR_OUTPUT
+   Safety_OK : Bool;
+   Bypass_Warning : Bool;
+   STO VTD - CH1 : Bool;
+   STO VTD - CH2 : Bool;
+   ACK : Bool;
+   L1_OK : Bool;
+   L2_OK : Bool;
+   L3_OK : Bool;
+   L4_OK : Bool;
+   L5_OK : Bool;
+   L6_OK : Bool;
+END_VAR
+
+VAR
+   Overtravel_Lower_Limit_DB : ESTOP1;
+   Overtravel_Upper_Limit_DB : ESTOP1;
+   Estop_Cabinet_DB : ESTOP1;
+   Chain_Slack_1_DB : ESTOP1;
+   Chain_Slack_2_DB : ESTOP1;
+   Chain_Slack_3_DB : ESTOP1;
+   Chain_Slack_4_DB : ESTOP1;
+   Light_Guards 1 : ESTOP1;
+   Light_Guards 2 : ESTOP1;
+   Gate_1_DB : ESTOP1;
+   Gate_2_DB : ESTOP1;
+   EStop_Lock_1_DB : ESTOP1;
+   EStop_Lock_2_DB : ESTOP1;
+   Lock_Secured_1_DB : ESTOP1;
+   Lock_Secured_2_DB : ESTOP1;
+   EStop Level 1_DB : ESTOP1;
+   EStop Level 2_DB : ESTOP1;
+   EStop Level 3_DB : ESTOP1;
+   EStop Level 4_DB : ESTOP1;
+   EStop Level 5_DB : ESTOP1;
+   EStop Level 6_DB : ESTOP1;
+END_VAR
+
+
+// ---- start values (path : type := value)

@@ -1,0 +1,60 @@
+DATA_BLOCK "SICK_AFx60_DB_3"   // InstanceDB 317  instance of "FB_SICK_AFx60_PN"
+
+VAR_INPUT
+   ID : HW_IO;
+   TOut : Time;
+   Req : Bool;
+   RW : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Done : Bool;
+   Busy : Bool;
+   Error : Bool;
+   Errorcode : "ST_SICK_AFx60_Error";
+END_VAR
+
+VAR_IN_OUT
+   Data : "ST_SICK_AFx60";
+END_VAR
+
+VAR
+   bTriggerReq : Bool;
+   bTriggerReqMem : Bool;
+   bTriggerReadDone : Bool;
+   bTriggerReadDoneMem : Bool;
+   bTriggerReadError : Bool;
+   bTriggerReadErrorMem : Bool;
+   bTriggerWriteDone : Bool;
+   bTriggerWriteDoneMem : Bool;
+   bTriggerWriteError : Bool;
+   bTriggerWriteErrorMem : Bool;
+   bRWMem : Bool;
+   bBusyMem : Bool;
+   iStep : USInt;
+   iReqReference : USInt;
+   iIndex : Int;
+   iCommandIndex : Int;
+   fbTimeout : TON_TIME;
+   fbReadRec : RDREC;
+   fbWriteRec : WRREC;
+   stTempErrorCode : "ST_SICK_AFx60_Error";
+   stRead : Struct
+      bDone : Bool;
+      bBusy : Bool;
+      bError : Bool;
+      nStatus : DWord;
+   END_STRUCT;
+   stWrite : Struct
+      bDone : Bool;
+      bBusy : Bool;
+      bError : Bool;
+      nStatus : DWord;
+   END_STRUCT;
+   arrCommandQueue : Array[0..31] of Struct;
+   arrSelection : Array[0..31] of Bool;
+   arrRecord : Array[0..254] of Byte;
+END_VAR
+
+
+// ---- start values (path : type := value)

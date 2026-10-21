@@ -1,0 +1,79 @@
+DATA_BLOCK "System_Unit_1"   // InstanceDB 131  instance of "Order_Table_FB_Carousel"
+
+VAR_INPUT
+   System_Selected : Bool;
+   AutoMan_Switch : Bool;
+   CurrentTime : String;
+   CurrentDTL : DTL;
+   Watchdog : "Watchdog_Settings_UDT";
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Entry : "Inbound_Cnv_Control_UDT";
+   Cnv_PopUp_1 : "PopUp_Cnv_Control";
+   WeighingStation : "Stations_DB_UDT";
+   ProfileStation : "Stations_DB_UDT";
+   Cnv_PopUp_2 : "PopUp_Cnv_Control";
+   Cnv_PopUp_3 : "PopUp_Cnv_Control";
+   Cnv_PopUp_4 : "PopUp_Cnv_Control";
+   Cnv_Exit : "Outbound_Cnv_Control";
+   System : "System_UDT";
+   Control_OPC_Ua : "WMS_OPC_UA";
+END_VAR
+
+VAR
+   RTR_ITP1_CurrentOrder : UDInt;
+   RTR_P1P2_CurrentOrder : UDInt;
+   RTR_P3P4_CurrentOrder : UDInt;
+   RTR_P4TO_CurrentOrder : UDInt;
+   Roller_To_Roller_CurrentOrder : UDInt;
+   Chain_To_Chain_CurrentOrder : UDInt;
+   Pop4_To_PickSt_CurrentOrder : UDInt;
+   PickSt_To_Pop1_CurrentOrder : UDInt;
+   WeighingStation_CurrentOrder : UDInt;
+   ProfileStation_CurrentOrder : UDInt;
+   Roller_To_RollerDoneRTrig : R_TRIG;
+   RTR_ITP1DoneRTrig : R_TRIG;
+   RTR_P1P2DoneRTrig : R_TRIG;
+   RTR_P3P4DoneRTrig : R_TRIG;
+   RTR_P4TODoneRTrig : R_TRIG;
+   Chain_To_ChainDoneRTrig : R_TRIG;
+   Pop4_To_PickSt_DoneRTrig : R_TRIG;
+   PickSt_To_Pop1_DoneRTrig : R_TRIG;
+   WeighingStationDoneRTrig : R_TRIG;
+   ProfileStationDoneRTrig : R_TRIG;
+   PalletRefused_1_RTig : R_TRIG;
+   ErrorRTrig : R_TRIG;
+   CancelRTrig : R_TRIG;
+   PauseRTrig : R_TRIG;
+   ResumeRTrig : R_TRIG;
+   Clear_Store : R_TRIG;
+   Clear_Retrieve : R_TRIG;
+   Canceling : Bool;
+   RTR_ITP1_WatchdogTimer : TON_TIME;
+   RTR_P1P2_WatchdogTimer : TON_TIME;
+   RTR_P3P4_WatchdogTimer : TON_TIME;
+   RTR_P4TO_WatchdogTimer : TON_TIME;
+   Roller_To_Roller_WatchdogTimer : TON_TIME;
+   Chain_To_Chain_WatchdogTimer : TON_TIME;
+   Pop4_To_PickWatchdogTimer : TON_TIME;
+   PickSt_To_Pop1WatchdogTimer : TON_TIME;
+   WeighingStation_WatchdogTimer : TON_TIME;
+   ProfileStation_WatchdogTimer : TON_TIME;
+   Roller_To_Roller_WatchdogStart : Bool;
+   RTR_ITP1_WatchdogStart : Bool;
+   RTR_P1P2_WatchdogStart : Bool;
+   RTR_P3P4_WatchdogStart : Bool;
+   RTR_P4TO_WatchdogStart : Bool;
+   Chain_To_Chain_WatchdogStart : Bool;
+   Pop4_To_PickWatchdogStart : Bool;
+   PickSt_To_Pop1WatchdogStart : Bool;
+   WeighingStation_WatchdogStart : Bool;
+   ProfileStation_WatchdogStart : Bool;
+   dummy : Int;
+   dummy_1 : Bool;
+   dummy_3 : Bool;
+END_VAR
+
+
+// ---- start values (path : type := value)

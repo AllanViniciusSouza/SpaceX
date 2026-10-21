@@ -1,0 +1,39 @@
+DATA_BLOCK "C3107_FB_DB"   // InstanceDB 84  instance of "Buffer_Conveyor_FB"
+
+VAR_INPUT
+   Cnv_Settings : "Buffer_Cnv_Settings";
+   VTD_Level : UInt;
+   Safety_OK_Delayed : Bool;
+   Safety_OK : Bool;
+   CNV_In_Out : Bool;
+   LGX_ReadyToSend : Bool;
+   LGX_ReadyToReceive : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Control : "Buffer_Cnv_Control";
+   SinaSpeed : SinaSpeed;
+END_VAR
+
+VAR
+   State : UInt;
+   Timer_Transfer : TON_TIME;
+   Watchdog : TON_TIME;
+   Transfer_Direction : String;
+   MainSetpoint : Int;
+   T_Outbound_DB : TON_TIME;
+   R_TRIG_Instance : R_TRIG;
+   R_Start_DB : R_TRIG;
+   R_Stop_DB : R_TRIG;
+   ID_Decoded : "ID_Decoded";
+   ID_Decoded_From : "ID_Decoded";
+   ID_Decoded_To : "ID_Decoded";
+   R_Slow : R_TRIG;
+   T_Ramp : TON_TIME;
+   T_Ramp_In : Bool;
+   HMI_Reset : Bool;
+   TCheck_PalletType : TON_TIME;
+END_VAR
+
+
+// ---- start values (path : type := value)

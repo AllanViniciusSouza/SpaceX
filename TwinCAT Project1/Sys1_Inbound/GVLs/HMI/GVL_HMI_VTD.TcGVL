@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_HMI_VTD" Id="{62e9adc2-9028-41fa-81dd-ee10d8b4bc12}">
+    <Declaration><![CDATA[// HMI interface of the VTD. The visualization uses only these variables;
+// it must not access IO GVLs or FB instances directly.
+{attribute 'qualified_only'}
+VAR_GLOBAL
+    // Screen "Visualization" - process data test (TEST ONLY)
+    stPdStatus : ST_VTD_PdHmiStatus;   // PLC -> HMI, written by FC_VTD_PdHmiUpdateStatus
+    stPdCommand : ST_VTD_PdHmiCommand; // HMI -> PLC, read by MAIN (TEST ONLY)
+
+    // Screen "VTD_ManualTest" - manual control (TEST ONLY)
+    stManualCommand : ST_VTD_ManualHmiCommand; // HMI -> PLC, read and partly written back by FB_VTD_ManualControl
+    stManualStatus : ST_VTD_ManualHmiStatus;   // PLC -> HMI, written by MAIN
+
+    // Screen "VTD" - operation
+    stStatus : ST_HMI_VtdStatus;     // PLC -> HMI (TODO: FC_VtdHmiUpdate after the Control refactor)
+    stCommand : ST_HMI_VtdCommand;   // HMI -> PLC
+END_VAR
+
+VAR_GLOBAL PERSISTENT
+    stManualSettings : ST_VTD_ManualSettings;  // HMI <-> PLC, test settings kept over a restart
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

@@ -1,0 +1,26 @@
+DATA_BLOCK "OPC_Control_FB_DB_1"   // InstanceDB 17  instance of "OPC_Control_FB"
+
+VAR_INPUT
+   Id : UInt;
+   All_In_Automatic : Bool;
+   VTD_Error : Bool;
+   OPC_Enable : Bool;
+   Clear_OrderTable : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Error_ID : Word;
+END_VAR
+
+VAR
+   Source_Location : "ID_Decoded";
+   Destination_Location : "ID_Decoded";
+   State_Main : UInt;
+   State_VTD : UInt;
+   State_Shuttle : UInt;
+   State_CNV : UInt;
+   T_Wait_Report_Done : TON_TIME;
+END_VAR
+
+
+// ---- start values (path : type := value)

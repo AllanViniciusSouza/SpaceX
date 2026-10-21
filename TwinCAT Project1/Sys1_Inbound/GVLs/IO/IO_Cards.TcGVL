@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="IO_Cards" Id="{1ae707b7-bb9a-4cd2-af2c-0476b860e240}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	// Source: INBOUND VTD ELECTRICAL DRAWING_9_17_26.pdf, sheets 24.0-27.0.
+	// Local PLC rack cards only. Remote module signals belong in a separate IO_Remote GVL.
+	// Channel comments identify physical terminals, not PLC process-image offsets.
+	// AT %I* / AT %Q* declarations require individual channel links in TwinCAT XAE.
+	// Spare outputs are reserved; do not use them in control logic.
+
+	// DI-01 (EL1809) - card 23.0-1, sheet 24.0.
+	// Existing REDUNDANCY_OK_8PS1 name retained; the drawing identifies redundancy module 8RS1.
+	REDUNDANCY_OK_8PS1 AT %I* : BOOL; // DI-01 CH01 | Wire 24.01 | 8RS1 redundancy OK
+	HANDHELD_HMI_KEY_SWITCH_1_NO AT %I* : BOOL; // DI-01 CH02 | Wire 24.02
+	HANDHELD_HMI_KEY_SWITCH_2_NO AT %I* : BOOL; // DI-01 CH03 | Wire 24.03
+	HANDHELD_HMI_CONNECTED AT %I* : BOOL; // DI-01 CH04 | Wire 24.04
+	LM3_4_FAULT AT %I* : BOOL; // DI-01 CH05 | Wire 24.05
+	LM5_6_FAULT AT %I* : BOOL; // DI-01 CH06 | Wire 24.06
+	LM7_8_FAULT AT %I* : BOOL; // DI-01 CH07 | Wire 24.07
+	LM9_FAULT AT %I* : BOOL; // DI-01 CH08 | Wire 24.08
+	LM10_FAULT AT %I* : BOOL; // DI-01 CH09 | Wire 24.09
+	LM11_FAULT AT %I* : BOOL; // DI-01 CH10 | Wire 24.10
+	LM12_FAULT AT %I* : BOOL; // DI-01 CH11 | Wire 24.11
+	LM13_14_FAULT AT %I* : BOOL; // DI-01 CH12 | Wire 24.12
+	LM15_FAULT AT %I* : BOOL; // DI-01 CH13 | Wire 24.13
+	
+	LM16_FAULT AT %I* : BOOL; // DI-01 CH14 | Wire 24.14
+	_8PS1_OUT_100 AT %I* : BOOL; // DI-01 CH15 | Wire 24.15
+	_8PS1_DC_OK AT %I* : BOOL; // DI-01 CH16 | Wire 24.16
+
+	// DI-02 (EL1809) - card 23.0-2, sheet 25.0.
+	BACKUP_SIGNAL_BU AT %I* : BOOL; // DI-02 CH01 | Wire 25.01
+	TROUBLE_SIGNAL_TR AT %I* : BOOL; // DI-02 CH02 | Wire 25.02
+	BATTERY_LOW_SIGNAL_BL AT %I* : BOOL; // DI-02 CH03 | Wire 25.03
+	BATTERY_REPLACEMENT_WB AT %I* : BOOL; // DI-02 CH04 | Wire 25.04
+	_8PS2_100 AT %I* : BOOL; // DI-02 CH05 | Wire 25.05
+	_8PS2_DC_OK AT %I* : BOOL; // DI-02 CH06 | Wire 25.06
+	_8PS3_100 AT %I* : BOOL; // DI-02 CH07 | Wire 25.07
+	_8PS3_DC_OK AT %I* : BOOL; // DI-02 CH08 | Wire 25.08
+	LM100_FAULT AT %I* : BOOL; // DI-02 CH09 | Wire 25.09
+	LM101_FAULT AT %I* : BOOL; // DI-02 CH10 | Wire 25.10
+	LM102_FAULT AT %I* : BOOL; // DI-02 CH11 | Wire 25.11
+	LM103_FAULT AT %I* : BOOL; // DI-02 CH12 | Wire 25.12
+	LM104_FAULT AT %I* : BOOL; // DI-02 CH13 | Wire 25.13
+	LM105_FAULT AT %I* : BOOL; // DI-02 CH14 | Wire 25.14
+	LM106_FAULT AT %I* : BOOL; // DI-02 CH15 | Wire 25.15
+	LM107_FAULT AT %I* : BOOL; // DI-02 CH16 | Wire 25.16
+
+	// DO-01 (EL2809) - card 23.0-3, sheet 26.0.
+	LM3_16_SET_RESET AT %Q* : BOOL; // DO-01 CH01 | Wire 26.01 | Relay 26CR1
+	_50K50_BEACON_INDICATOR_RED AT %Q* : BOOL; // DO-01 CH02 | Wire 26.02 | Relay 26CR2
+	_50K50_BEACON_INDICATOR_YELLOW AT %Q* : BOOL; // DO-01 CH03 | Wire 26.03 | Relay 26CR3
+	_50K50_BEACON_INDICATOR_GREEN AT %Q* : BOOL; // DO-01 CH04 | Wire 26.04 | Relay 26CR4
+	_50K50_BEACON_BUZZER AT %Q* : BOOL; // DO-01 CH05 | Wire 26.05 | Relay 26CR5
+	LM100_107_SET_RESET AT %Q* : BOOL; // DO-01 CH06 | Wire 26.06 | Relay 26CR6
+	BYPASS_1_FROM_DIGITAL_PLC_OUTPUT AT %Q* : BOOL; // DO-01 CH07 | Wire 26.07 | Relay 26CR7 | Existing safety-interface signal; no bypass logic added
+	BYPASS_2_FROM_DIGITAL_PLC_OUTPUT AT %Q* : BOOL; // DO-01 CH08 | Wire 26.08 | Relay 26CR8 | Existing safety-interface signal; no bypass logic added
+	BUZZER AT %Q* : BOOL; // DO-01 CH09 | Wire 26.09 | Relay 26CR9
+	DO_01_SPARE_CH10 AT %Q* : BOOL; // DO-01 CH10 | Wire 26.10 | Relay 26CR10 | Spare
+	DO_01_SPARE_CH11 AT %Q* : BOOL; // DO-01 CH11 | Wire 26.11 | Relay 26CR11 | Spare
+	DO_01_SPARE_CH12 AT %Q* : BOOL; // DO-01 CH12 | Wire 26.12 | Relay 26CR12 | Spare
+	DO_01_SPARE_CH13 AT %Q* : BOOL; // DO-01 CH13 | Wire 26.13 | Relay 26CR13 | Spare
+	DO_01_SPARE_CH14 AT %Q* : BOOL; // DO-01 CH14 | Wire 26.14 | Relay 26CR14 | Spare
+	DO_01_SPARE_CH15 AT %Q* : BOOL; // DO-01 CH15 | Wire 26.15 | Relay 26CR15 | Spare
+	DO_01_SPARE_CH16 AT %Q* : BOOL; // DO-01 CH16 | Wire 26.16 | Relay 26CR16 | Spare
+
+	// DO-02 (EL2809) - card 23.0-4, sheet 27.0.
+	// UPS control uses CH15/CH16. CH01-CH14 are spare.
+	DO_02_SPARE_CH01 AT %Q* : BOOL; // DO-02 CH01 | Wire 27.01 | Relay 27CR1 | Spare
+	DO_02_SPARE_CH02 AT %Q* : BOOL; // DO-02 CH02 | Wire 27.02 | Relay 27CR2 | Spare
+	DO_02_SPARE_CH03 AT %Q* : BOOL; // DO-02 CH03 | Wire 27.03 | Relay 27CR3 | Spare
+	DO_02_SPARE_CH04 AT %Q* : BOOL; // DO-02 CH04 | Wire 27.04 | Relay 27CR4 | Spare
+	DO_02_SPARE_CH05 AT %Q* : BOOL; // DO-02 CH05 | Wire 27.05 | Relay 27CR5 | Spare
+	DO_02_SPARE_CH06 AT %Q* : BOOL; // DO-02 CH06 | Wire 27.06 | Relay 27CR6 | Spare
+	DO_02_SPARE_CH07 AT %Q* : BOOL; // DO-02 CH07 | Wire 27.07 | Relay 27CR7 | Spare
+	DO_02_SPARE_CH08 AT %Q* : BOOL; // DO-02 CH08 | Wire 27.08 | Relay 27CR8 | Spare
+	DO_02_SPARE_CH09 AT %Q* : BOOL; // DO-02 CH09 | Wire 27.09 | Relay 27CR9 | Spare
+	DO_02_SPARE_CH10 AT %Q* : BOOL; // DO-02 CH10 | Drawing labels wire 27.27 and relay 27CR27; verify drawing tag. | Spare
+	DO_02_SPARE_CH11 AT %Q* : BOOL; // DO-02 CH11 | Wire 27.11 | Relay 27CR11 | Spare
+	DO_02_SPARE_CH12 AT %Q* : BOOL; // DO-02 CH12 | Wire 27.12 | Relay 27CR12 | Spare
+	DO_02_SPARE_CH13 AT %Q* : BOOL; // DO-02 CH13 | Wire 27.13 | Relay 27CR13 | Spare
+	DO_02_SPARE_CH14 AT %Q* : BOOL; // DO-02 CH14 | Wire 27.14 | Relay 27CR14 | Spare
+	_8BPS1_REMOTE_ON_OFF AT %Q* : BOOL; // DO-02 CH15 | Wire 27.15 | Relay 27CR15
+	_8BPS1_BACKUP_STOP AT %Q* : BOOL; // DO-02 CH16 | Wire 27.16 | Relay 27CR16
+
+	// Existing safety-related declarations below are preserved for compatibility.
+	// These standard PLC BOOLs do not implement a safety function.
+	// Their relationship to validated TwinSAFE diagnostics must be reviewed before use.
+	// See docs/IO_Cards_Review.md for the complete EL1918/EL2912 drawing inventory.
+	//FDI-01 (EL1918) - SAFETY INPUTS 23.0-6
+	EMERGENCY_STOP_ON_DOOR_CH1 AT%I*:BOOL;
+	EMERGENCY_STOP_ON_DOOR_CH2 AT%I*:BOOL;
+	EMERGENCY_STOP_ON_HMI AT%I*:BOOL;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

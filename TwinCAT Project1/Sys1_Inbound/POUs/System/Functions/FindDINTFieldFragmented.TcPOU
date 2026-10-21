@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FindDINTFieldFragmented" Id="{68f4d5b4-03bb-4a20-a3a3-00c10aa3cd34}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FindDINTFieldFragmented : DINT
+VAR_INPUT
+    FieldName : STRING(254);
+    Str1 : STRING(254);
+    Str2 : STRING(254);
+END_VAR
+VAR_OUTPUT
+    Valid : BOOL;
+END_VAR
+VAR
+    token : STRING(32);
+    value : DINT;
+    found : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation><ST><![CDATA[// Search complete fields in the reference's overlapping windows.
+// Arbitrary concatenation of overlapping windows would corrupt payload data.
+// A field split across both windows without a complete copy is rejected.
+FindDINTFieldFragmented := -9999;
+Valid := FALSE;
+found := FC_TIAScalarToken(FieldName := FieldName, JsonStr := Str1, Token => token);
+IF NOT found THEN
+    found := FC_TIAScalarToken(FieldName := FieldName, JsonStr := Str2, Token => token);
+END_IF;
+IF NOT found THEN RETURN; END_IF;
+Valid := FC_TIAParseDINT(Token := token, Value => value);
+IF Valid THEN FindDINTFieldFragmented := value; END_IF;
+]]></ST></Implementation>
+  </POU>
+</TcPlcObject>

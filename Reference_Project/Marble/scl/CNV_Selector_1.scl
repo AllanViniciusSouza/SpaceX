@@ -1,0 +1,101 @@
+FUNCTION "CNV_Selector_1"   // FC 60, author 
+
+VAR_INPUT
+   Sys_No : UInt;
+   Zone : UInt;
+   CNV1_2_Selected : UInt;
+END_VAR
+
+VAR_OUTPUT
+   ID : DInt;
+   ID(1) : DInt;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+//CNV SCREEN SELECTION
+CASE #Sys_No OF
+    0:
+        #ID := 0;
+        #"ID(1)" := 0;
+        
+    1://SYSTEM 1
+        CASE #Zone OF
+            12: //LEVEL 2
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+            13: //LEVEL 3
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+            14: //LEVEL 4
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+            15: //LEVEL 5
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+            16: //LEVEL 6
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+        END_CASE;
+        
+    2://SYSTEM 2
+        CASE #Zone OF
+            12: //LEVEL 2
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+            13: //LEVEL 3
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+            14: //LEVEL 4
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+            15: //LEVEL 5
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+            16: //LEVEL 6
+                "CNV_ID_HMI(1)" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv1.ID; //CNV 1
+                IF "CVTD_CNV2_Selected" = 1 THEN
+                    "CNV_ID_HMI" := "Settings_DB".ECnv_Sys[#Sys_No].ID; // EXTRACTOR CONVEYOR
+                ELSIF "CVTD_CNV2_Selected" = 2 THEN
+                    "CNV_ID_HMI" := "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[#Zone MOD 10].Cnv2.ID; //CNV 2
+                END_IF;
+        END_CASE;
+END_CASE;
+
+END_FUNCTION

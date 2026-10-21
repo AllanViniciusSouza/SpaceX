@@ -1,0 +1,2872 @@
+FUNCTION "Errors_Warings"   // FC 26, author 
+
+VAR_TEMP
+   ReturnValue : Word;
+   Devices : Array[0..1023] of Bool;
+   i : UInt;
+END_VAR
+
+VAR CONSTANT
+   AUTO_RUNNING : UInt := 0;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+REGION Profinet Device Errors
+    #ReturnValue := DeviceStates(LADDR := "Local1~PROFINET_IO-System",
+                                 MODE := 5, // Mode 5 = a problem has occurred
+                                 STATE := #Devices);
+    IF #ReturnValue = 0 THEN
+        // IF #Devices[0] THEN // Main System Error
+        //     "Errors_Profinet_1".%X0 := TRUE;
+        // END_IF;
+        
+        IF #Devices[1] THEN // Main Panel IO 
+            "Errors_Profinet_1".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[2] THEN // Switch 1_0 
+            "Errors_Profinet_1".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[3] THEN // Switch 2_0 
+            "Errors_Profinet_1".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[4] THEN // Switch 1_1 
+            "Errors_Profinet_1".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[5] THEN // Turck 1
+            "Errors_Profinet_1".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[6] THEN // Switch 2_1 
+            "Errors_Profinet_1".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[7] THEN // Remote IO 1 
+            "Errors_Profinet_1".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[8] THEN // Interface ET200AL 
+            "Errors_Profinet_1".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[9] THEN // Safety IO ET_200eco 1 System 1
+            "Errors_Profinet_1".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[10] THEN // WLAN 5
+            "Errors_Profinet_1".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[11] THEN // VTD 1
+            "Errors_Profinet_1".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[12] THEN // Linear Encoder 1 
+            "Errors_Profinet_1".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[13] THEN // Switch Panel 1
+            "Errors_Profinet_1".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[14] THEN // VTD Conveyor 1 
+            "Errors_Profinet_1".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[15] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv1.Motor.Error THEN // C1101 
+            "Errors_Profinet_1".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[16] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv1.Motor.Error THEN // C1102 
+            "Errors_Profinet_2".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[17] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv1.Motor.Error THEN // C1103 
+            "Errors_Profinet_2".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[18] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv1.Motor.Error THEN // C1104 
+            "Errors_Profinet_2".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[19] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv1.Motor.Error THEN // C1105 
+            "Errors_Profinet_2".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[20] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv1.Motor.Error THEN // C1106 
+            "Errors_Profinet_2".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[21] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv1.Motor.Error THEN // C1108 
+            "Errors_Profinet_2".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[22] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[1].Cnv2.Motor.Error THEN // C1201 
+            "Errors_Profinet_2".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[23] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[2].Cnv2.Motor.Error THEN // C1202 
+            "Errors_Profinet_2".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[24] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[3].Cnv2.Motor.Error THEN // C1203 
+            "Errors_Profinet_2".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[25] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[4].Cnv2.Motor.Error THEN // C1204 
+            "Errors_Profinet_2".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[26] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[5].Cnv2.Motor.Error THEN // C1205 
+            "Errors_Profinet_2".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[27] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[6].Cnv2.Motor.Error THEN // C1206 
+            "Errors_Profinet_2".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[28] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv2.Motor.Error THEN // C1207 
+            "Errors_Profinet_2".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[29] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[8].Cnv2.Motor.Error THEN // C1208 
+            "Errors_Profinet_2".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[30] AND NOT "Control_DB".LCnv_Sys[1].Cnv_Level[7].Cnv1.Motor.Error THEN // C1107 
+            "Errors_Profinet_2".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[31] THEN // Absolute Encoder 1 
+            "Errors_Profinet_2".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[32] THEN // Barcode Reader 1 
+            "Errors_Profinet_3".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[33] THEN // WLAN 10
+            "Errors_Profinet_3".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[34] THEN // WLAN 4
+            "Errors_Profinet_3".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[35] THEN // Switch 1_2 
+            "Errors_Profinet_3".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[36] THEN // Switch Panel 2
+            "Errors_Profinet_3".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[37] THEN // Switch 2_2 
+            "Errors_Profinet_3".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[38] THEN // Remote IO 2 
+            "Errors_Profinet_3".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[39] THEN // Interface ET200AL 2 
+            "Errors_Profinet_3".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[40] THEN // Charger Panel 1 
+            "Errors_Profinet_3".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[41] THEN // Linear Encoder 2 
+            "Errors_Profinet_3".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[42] THEN // Turck 2 
+            "Errors_Profinet_3".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[43] THEN // Absolute Encoder 2 
+            "Errors_Profinet_3".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[44] THEN // Barcode Reader 2 
+            "Errors_Profinet_3".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[45] THEN // VTD 2 
+            "Errors_Profinet_3".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[46] THEN // VTD Conveyor 2 
+            "Errors_Profinet_3".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[47] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv1.Motor.Error THEN // C2101 
+            "Errors_Profinet_3".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[48] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv1.Motor.Error THEN // C2102 
+            "Errors_Profinet_4".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[49] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv1.Motor.Error THEN // C2103 
+            "Errors_Profinet_4".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[50] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv1.Motor.Error THEN // C2104 
+            "Errors_Profinet_4".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[51] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv1.Motor.Error THEN // C2106 
+            "Errors_Profinet_4".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[52] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv1.Motor.Error THEN // C2107 
+            "Errors_Profinet_4".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[53] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv1.Motor.Error THEN // C2105 
+            "Errors_Profinet_4".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[54] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv1.Motor.Error THEN // C2108 
+            "Errors_Profinet_4".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[55] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[1].Cnv2.Motor.Error THEN // C2201 
+            "Errors_Profinet_4".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[56] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[2].Cnv2.Motor.Error THEN // C2202 
+            "Errors_Profinet_4".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[57] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[3].Cnv2.Motor.Error THEN // C2203 
+            "Errors_Profinet_4".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[58] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[4].Cnv2.Motor.Error THEN // C2204 
+            "Errors_Profinet_4".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[59] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[5].Cnv2.Motor.Error THEN // C2205 
+            "Errors_Profinet_4".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[60] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[6].Cnv2.Motor.Error THEN // C2206 
+            "Errors_Profinet_4".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[61] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[7].Cnv2.Motor.Error THEN // C2207 
+            "Errors_Profinet_4".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[62] AND NOT "Control_DB".LCnv_Sys[2].Cnv_Level[8].Cnv2.Motor.Error THEN // C2208 
+            "Errors_Profinet_4".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[63] THEN // WLAN 44 
+            "Errors_Profinet_4".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[64] THEN // Switch 1_3 
+            "Errors_Profinet_5".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[65] THEN // Switch Panel 3
+            "Errors_Profinet_5".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[66] THEN // Switch 2_3 
+            "Errors_Profinet_5".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[67] THEN // Remote IO 3 
+            "Errors_Profinet_5".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[68] THEN // Interface 3
+            "Errors_Profinet_5".%X4 := #Devices[68];
+        END_IF;
+        
+        IF #Devices[69] THEN // Charger Panel 2
+            "Errors_Profinet_5".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[70] THEN // Linear Encoder 3 
+            "Errors_Profinet_5".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[71] THEN // Turck 3 
+            "Errors_Profinet_5".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[72] THEN // Absolute Encoder 3 
+            "Errors_Profinet_5".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[73] THEN // Barcode Reader 3 
+            "Errors_Profinet_5".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[74] THEN // VTD 3 
+            "Errors_Profinet_5".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[75] THEN // VTD Conveyor 3 
+            "Errors_Profinet_5".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[76] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv1.Motor.Error THEN // C3101 
+            "Errors_Profinet_5".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[77] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv1.Motor.Error THEN // C3102 
+            "Errors_Profinet_5".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[78] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv1.Motor.Error THEN // C3103 
+            "Errors_Profinet_5".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[79] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv1.Motor.Error THEN // C3104 
+            "Errors_Profinet_5".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[80] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv1.Motor.Error THEN // C3105 
+            "Errors_Profinet_6".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[81] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv1.Motor.Error THEN // C3106 
+            "Errors_Profinet_6".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[82] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv1.Motor.Error THEN // C3107 
+            "Errors_Profinet_6".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[83] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv1.Motor.Error THEN // C3108 
+            "Errors_Profinet_6".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[84] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[1].Cnv2.Motor.Error THEN // C3201 
+            "Errors_Profinet_6".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[85] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[2].Cnv2.Motor.Error THEN // C3202 
+            "Errors_Profinet_6".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[86] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[3].Cnv2.Motor.Error THEN // C3203 
+            "Errors_Profinet_6".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[87] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[4].Cnv2.Motor.Error THEN // C3204 
+            "Errors_Profinet_6".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[88] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[5].Cnv2.Motor.Error THEN // C3205 
+            "Errors_Profinet_6".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[89] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[6].Cnv2.Motor.Error THEN // C3206 
+            "Errors_Profinet_6".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[90] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[7].Cnv2.Motor.Error THEN // C3207 
+            "Errors_Profinet_6".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[91] AND NOT "Control_DB".LCnv_Sys[3].Cnv_Level[8].Cnv2.Motor.Error THEN // C3208 
+            "Errors_Profinet_6".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[92] THEN // WLAN 55
+            "Errors_Profinet_6".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[93] THEN // Switch 1_4 
+            "Errors_Profinet_6".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[94] THEN // WLAN 3
+            "Errors_Profinet_6".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[95] THEN // Switch 2_4 
+            "Errors_Profinet_6".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[96] THEN // Remote IO 4 
+            "Errors_Profinet_7".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[97] THEN // Interface 4 
+            "Errors_Profinet_7".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[98] THEN // Charger Panel 3
+            "Errors_Profinet_7".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[99] THEN // Linear Encoder 4 
+            "Errors_Profinet_7".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[100] THEN // Turck 4 
+            "Errors_Profinet_7".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[101] THEN // Absolute Encoder 4 
+            "Errors_Profinet_7".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[102] THEN // Barcode Reader 4 
+            "Errors_Profinet_7".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[103] THEN // VTD 4 
+            "Errors_Profinet_7".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[104] THEN // VTD Conveyor 4 
+            "Errors_Profinet_7".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[105] AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level[1].Cnv1.Motor.Error THEN // C4101 
+            "Errors_Profinet_7".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[106] AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level[2].Cnv1.Motor.Error THEN // C4102 
+            "Errors_Profinet_7".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[107] AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level[3].Cnv1.Motor.Error THEN // C4103 
+            "Errors_Profinet_7".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[108] AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level[4].Cnv1.Motor.Error THEN // C4104 
+            "Errors_Profinet_7".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[109] AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level[5].Cnv1.Motor.Error THEN // C4105 
+            "Errors_Profinet_7".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[110] AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level[6].Cnv1.Motor.Error THEN // C4106 
+            "Errors_Profinet_7".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[111] AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level[7].Cnv1.Motor.Error THEN // C4107 
+            "Errors_Profinet_7".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[112] AND NOT "Control_DB".LCnv_Sys[4].Cnv_Level[8].Cnv1.Motor.Error THEN // C4108 
+            "Errors_Profinet_8".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[113] THEN // WLAN 6 
+            "Errors_Profinet_8".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[114] THEN // Switch 1_5 
+            "Errors_Profinet_8".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[115] THEN // WLAN 2
+            "Errors_Profinet_8".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[116] THEN // Switch 2_5 
+            "Errors_Profinet_8".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[117] THEN // Remote IO 5 
+            "Errors_Profinet_8".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[118] THEN // Interface 5 
+            "Errors_Profinet_8".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[119] THEN // Charger Panel 4 
+            "Errors_Profinet_8".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[120] THEN // Linear Encoder 5 
+            "Errors_Profinet_8".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[121] THEN // Turck 5 
+            "Errors_Profinet_8".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[122] THEN // Absolute Encoder 5 
+            "Errors_Profinet_8".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[123] THEN // Barcode Reader 5 
+            "Errors_Profinet_8".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[124] THEN // VTD 5 
+            "Errors_Profinet_8".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[125] THEN // VTD Conveyor 5 
+            "Errors_Profinet_8".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[126] AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level[1].Cnv1.Motor.Error THEN // C5101 
+            "Errors_Profinet_8".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[127] AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level[2].Cnv1.Motor.Error THEN // C5102 
+            "Errors_Profinet_8".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[128] AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level[3].Cnv1.Motor.Error THEN // C5103 
+            "Errors_Profinet_9".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[129] AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level[4].Cnv1.Motor.Error THEN // C5104 
+            "Errors_Profinet_9".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[130] AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level[5].Cnv1.Motor.Error THEN // C5105 
+            "Errors_Profinet_9".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[131] AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level[6].Cnv1.Motor.Error THEN // C5106 
+            "Errors_Profinet_9".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[132] AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level[7].Cnv1.Motor.Error THEN // C5107 
+            "Errors_Profinet_9".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[133] AND NOT "Control_DB".LCnv_Sys[5].Cnv_Level[8].Cnv1.Motor.Error THEN // C5108 
+            "Errors_Profinet_9".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[134] THEN // WLAN 9 
+            "Errors_Profinet_9".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[135] THEN // Charger Panel 5
+            "Errors_Profinet_9".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[136] THEN // Charger Panel 6
+            "Errors_Profinet_9".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[137] THEN // Charger Panel 7
+            "Errors_Profinet_9".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[138] THEN // Charger Panel 8
+            "Errors_Profinet_9".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[139] THEN // Safety IO ET_200eco 2 System 1
+            "Errors_Profinet_9".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[140] THEN // Safety IO ET_200eco 3 System 1
+            "Errors_Profinet_9".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[141] THEN // Safety IO ET_200eco 4 System 1
+            "Errors_Profinet_9".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[142] THEN // Safety IO ET_200eco 1 System 2
+            "Errors_Profinet_9".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[143] THEN // Safety IO ET_200eco 2 System 2
+            "Errors_Profinet_9".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[144] THEN // Safety IO ET_200eco 3 System 2
+            "Errors_Profinet_10".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[145] THEN // Safety IO ET_200eco 4 System 2
+            "Errors_Profinet_10".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[146] THEN // Safety IO ET_200eco 1 System 3
+            "Errors_Profinet_10".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[147] THEN // Safety IO ET_200eco 2 System 3
+            "Errors_Profinet_10".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[148] THEN // Safety IO ET_200eco 3 System 3
+            "Errors_Profinet_10".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[149] THEN // Safety IO ET_200eco 4 System 3
+            "Errors_Profinet_10".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[150] THEN // Safety IO ET_200eco 1 System 4
+            "Errors_Profinet_10".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[151] THEN // Safety IO ET_200eco 2 System 4
+            "Errors_Profinet_10".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[152] THEN // Safety IO ET_200eco 3 System 4
+            "Errors_Profinet_10".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[153] THEN // Safety IO ET_200eco 4 System 4
+            "Errors_Profinet_10".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[154] THEN // Safety IO ET_200eco 1 System 5
+            "Errors_Profinet_10".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[155] THEN // Safety IO ET_200eco 2 System 5
+            "Errors_Profinet_10".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[156] THEN // Safety IO ET_200eco 3 System 5
+            "Errors_Profinet_10".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[157] THEN // Safety IO ET_200eco 4 System 5
+            "Errors_Profinet_10".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[158] THEN // Idem lock 1
+            "Errors_Profinet_11".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[159] THEN // Idem lock 2
+            "Errors_Profinet_11".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[160] THEN // Idem lock 3
+            "Errors_Profinet_11".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[161] THEN // Idem lock 4
+            "Errors_Profinet_11".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[162] THEN // Idem lock 5
+            "Errors_Profinet_11".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[163] THEN // Idem lock 6
+            "Errors_Profinet_11".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[164] THEN // Idem lock 7
+            "Errors_Profinet_11".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[165] THEN // Idem lock 8
+            "Errors_Profinet_11".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[166] THEN // Idem lock 9
+            "Errors_Profinet_11".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[167] THEN // Idem lock 10
+            "Errors_Profinet_11".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[168] THEN // Idem lock 11
+            "Errors_Profinet_11".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[169] THEN // Idem lock 12
+            "Errors_Profinet_11".%X9 := TRUE;
+        END_IF;
+    END_IF;
+    
+    REGION HMI 1 CONNECTION
+        "Errors_Profinet_10".%X14 := "PLC_HMI - Profinet_Error_HMI 1";
+
+        "R_HMI_1_Connection"(CLK := "PLC_HMI - Profinet_Error_HMI 1");
+        
+        IF "R_HMI_1_Connection".Q AND "HMI_Box_Connected_1" <> 0 THEN
+            "HMI_Box_Connected_1" := 0;
+        END_IF;
+    END_REGION;   
+    
+    REGION HMI 2 CONNECTION
+        "Errors_Profinet_10".%X15 := "PLC_HMI - Profinet_Error_HMI 2";
+        
+        "R_HMI_2_Connection"(CLK := "PLC_HMI - Profinet_Error_HMI 2");
+        
+        IF "R_HMI_2_Connection".Q AND "HMI_Box_Connected_2" <> 0 THEN
+            "HMI_Box_Connected_2" := 0;
+        END_IF;
+    END_REGION ;
+END_REGION
+
+REGION SUPPLY FEEDBACKS
+    REGION MAIN PANEL
+        IF NOT "SCA 1002 REMOTE PANEL SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X0 := TRUE;
+        END_IF;
+        
+        IF NOT "SCA 2002 REMOTE PANEL SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "SCA 3002 REMOTE PANEL SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "SCA 4001 REMOTE PANEL SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "SCA 5001 REMOTE PANEL SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X4 := TRUE;
+        END_IF;
+        
+        IF "SW1 SWITCH PANEL SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X5 := TRUE;
+        END_IF;
+        
+        IF "SW2 SWITCH PANEL SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X6 := TRUE;
+        END_IF;
+        
+        IF "SW3 SWITCH PANEL SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X7 := TRUE;
+        END_IF;
+        
+        IF NOT "60TA1 PSU 24V OK FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "60TA2 PSU 24V OK FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "441FC1 CHARGER PANEL 1 SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X10 := TRUE;
+        END_IF;
+        
+        IF NOT "441FC2 CHARGER PANEL 2 SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X11 := TRUE;
+        END_IF;
+        
+        IF NOT "441FC3 CHARGER PANEL 3 SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X12 := TRUE;
+        END_IF;
+        
+        IF NOT "41FC1 COOLING FAN MCB FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X13 := TRUE;
+        END_IF;
+        
+        IF NOT "62TA1 PSU 48V OK FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X14 := TRUE;
+        END_IF;
+        
+        IF NOT "CHARGER PANELS 4,5,6,7,8 SUPPLY FEEDBACK" THEN
+            "Erros_Supply_Feedback_1".%X15 := TRUE;
+        END_IF;
+    END_REGION
+    
+    REGION REMOTE PANEL 1
+        IF NOT "C1101 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X0 := TRUE;
+        END_IF;
+        
+        IF NOT "C1102 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "C1103 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "C1104 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "C1105 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "C1106 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "C1107 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "C1108 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X7 := TRUE;
+        END_IF;
+        
+        IF NOT "C1201 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "C1202 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "C1203 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X10 := TRUE;
+        END_IF;
+        
+        IF NOT "C1204 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X11 := TRUE;
+        END_IF;
+        
+        IF NOT "C1205 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X12 := TRUE;
+        END_IF;
+        
+        IF NOT "C1206 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X13 := TRUE;
+        END_IF;
+        
+        IF NOT "C1207 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X14 := TRUE;
+        END_IF;
+        
+        IF NOT "C1208 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_2".%X15 := TRUE;
+        END_IF;
+        
+        IF NOT "CVTD1 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X0 := TRUE;
+        END_IF;
+        
+        IF NOT "VTD1 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET 24V PSU CIRCUIT BREAKER FEEDBACK(1)" THEN
+            "Erros_Supply_Feedback_3".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET COOLING FAN CIRCUIT BREAKER FEEDBACK(1)" THEN
+            "Erros_Supply_Feedback_3".%X3 := TRUE;
+        END_IF;
+    END_REGION
+    
+    REGION REMOTE PANEL 2
+        IF NOT "C2101 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "C2102 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "C2103 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "C2104 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X7 := TRUE;
+        END_IF;
+        
+        IF NOT "C2105 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "C2106 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "C2107 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X10 := TRUE;
+        END_IF;
+        
+        IF NOT "C2108 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X11 := TRUE;
+        END_IF;
+        
+        IF NOT "C2201 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X12 := TRUE;
+        END_IF;
+        
+        IF NOT "C2202 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X13 := TRUE;
+        END_IF;
+        
+        IF NOT "C2203 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X14 := TRUE;
+        END_IF;
+        
+        IF NOT "C2204 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_3".%X15 := TRUE;
+        END_IF;
+        
+        IF NOT "C2205 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X0 := TRUE;
+        END_IF;
+        
+        IF NOT "C2206 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "C2207 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "C2208 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "CVTD2 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "VTD2 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET 24V PSU CIRCUIT BREAKER FEEDBACK(2)" THEN
+            "Erros_Supply_Feedback_4".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET COOLING FAN CIRCUIT BREAKER FEEDBACK(2)" THEN
+            "Erros_Supply_Feedback_4".%X7 := TRUE;
+        END_IF;
+    END_REGION
+    
+    REGION REMOTE PANEL 3
+        IF NOT "C3101 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "C3102 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "C3103 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X10 := TRUE;
+        END_IF;
+        
+        IF NOT "C3104 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X11 := TRUE;
+        END_IF;
+        
+        IF NOT "C3105 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X12 := TRUE;
+        END_IF;
+        
+        IF NOT "C3106 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X13 := TRUE;
+        END_IF;
+        
+        IF NOT "C3107 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X14 := TRUE;
+        END_IF;
+        
+        IF NOT "C3108 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_4".%X15 := TRUE;
+        END_IF;
+        
+        IF NOT "C3201 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X0 := TRUE;
+        END_IF;
+        
+        IF NOT "C3202 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "C3203 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "C3204 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "C3205 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "C3206 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "C3207 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "C3208 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X7 := TRUE;
+        END_IF;
+        
+        IF NOT "CVTD3 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "VTD3 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET 24V PSU CIRCUIT BREAKER FEEDBACK(3)" THEN
+            "Erros_Supply_Feedback_5".%X10 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET COOLING FAN CIRCUIT BREAKER FEEDBACK(3)" THEN
+            "Erros_Supply_Feedback_5".%X11 := TRUE;
+        END_IF;
+    END_REGION
+    
+    REGION REMOTE PANEL 4
+        IF NOT "C4101 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X12 := TRUE;
+        END_IF;
+        
+        IF NOT "C4102 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X13 := TRUE;
+        END_IF;
+        
+        IF NOT "C4103 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X14 := TRUE;
+        END_IF;
+        
+        IF NOT "C4104 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_5".%X15 := TRUE;
+        END_IF;
+        
+        IF NOT "C4105 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X0 := TRUE;
+        END_IF;
+        
+        IF NOT "C4106 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "C4107 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "C4108 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "CVTD4 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "VTD4 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET 24V PSU CIRCUIT BREAKER FEEDBACK(4)" THEN
+            "Erros_Supply_Feedback_6".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET COOLING FAN CIRCUIT BREAKER FEEDBACK(4)" THEN
+            "Erros_Supply_Feedback_6".%X7 := TRUE;
+        END_IF;
+    END_REGION
+    
+    REGION REMOTE PANEL 5
+        IF NOT "C5101 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "C5102 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "C5103 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X10 := TRUE;
+        END_IF;
+        
+        IF NOT "C5104 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X11 := TRUE;
+        END_IF;
+        
+        IF NOT "C5105 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X12 := TRUE;
+        END_IF;
+        
+        IF NOT "C5106 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X13 := TRUE;
+        END_IF;
+        
+        IF NOT "C5107 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X14 := TRUE;
+        END_IF;
+        
+        IF NOT "C5108 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_6".%X15 := TRUE;
+        END_IF;
+        
+        IF NOT "CVTD5 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_7".%X0 := TRUE;
+        END_IF;
+        
+        IF NOT "VTD5 CIRCUIT BREAKER FEEDBACK" THEN
+            "Erros_Supply_Feedback_7".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET 24V PSU CIRCUIT BREAKER FEEDBACK(5)" THEN
+            "Erros_Supply_Feedback_7".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "CABINET COOLING FAN CIRCUIT BREAKER FEEDBACK(5)" THEN
+            "Erros_Supply_Feedback_7".%X3 := TRUE;
+        END_IF;
+    END_REGION
+END_REGION
+
+REGION E-STOP
+    IF NOT "EMERGENCY STOP (CABINET) - CH1" THEN //MAIN PANEL
+        "Estop_Error_Word_1".%X0 := TRUE;
+    END_IF;
+    
+    REGION SYSTEM 1
+        IF NOT "E-STOP (CABINET) - CH1(1)" THEN //REMOTE PANEL 1
+            "Estop_Error_Word_1".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1"."EStop Level 1" THEN //LEVEL PANEL 1 
+            "Estop_Error_Word_1".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1"."EStop Level 2" THEN //LEVEL PANEL 2
+            "Estop_Error_Word_1".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1"."EStop Level 3" THEN //LEVEL PANEL 3
+            "Estop_Error_Word_1".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1"."EStop Level 4" THEN //LEVEL PANEL 4
+            "Estop_Error_Word_1".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1"."EStop Level 5" THEN //LEVEL PANEL 5
+            "Estop_Error_Word_1".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1"."EStop Level 6" THEN //LEVEL PANEL 6
+            "Estop_Error_Word_1".%X7 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1"."EStop Level 7" THEN //LEVEL PANEL 7
+            "Estop_Error_Word_1".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1"."EStop Level 8" THEN //LEVEL PANEL 8
+            "Estop_Error_Word_1".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1".EStop_Lock_1 THEN //LOCK 1
+            "Estop_Error_Word_1".%X10 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_1".EStop_Lock_2 THEN //LOCK 2
+            "Estop_Error_Word_1".%X11 := TRUE;
+        END_IF;
+    END_REGION ;
+    
+    REGION SYSTEM 2
+        IF NOT "E-STOP (CABINET) - CH1(2)" THEN //REMOTE PANEL 2
+            "Estop_Error_Word_2".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2"."EStop Level 1" THEN //LEVEL PANEL 1 
+            "Estop_Error_Word_2".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2"."EStop Level 2" THEN //LEVEL PANEL 2
+            "Estop_Error_Word_2".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2"."EStop Level 3" THEN //LEVEL PANEL 3
+            "Estop_Error_Word_2".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2"."EStop Level 4" THEN //LEVEL PANEL 4
+            "Estop_Error_Word_2".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2"."EStop Level 5" THEN //LEVEL PANEL 5
+            "Estop_Error_Word_2".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2"."EStop Level 6" THEN //LEVEL PANEL 6
+            "Estop_Error_Word_2".%X7 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2"."EStop Level 7" THEN //LEVEL PANEL 7
+            "Estop_Error_Word_2".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2"."EStop Level 8" THEN //LEVEL PANEL 8
+            "Estop_Error_Word_2".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2".EStop_Lock_1 THEN //LOCK 1
+            "Estop_Error_Word_2".%X10 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_2".EStop_Lock_2 THEN //LOCK 2
+            "Estop_Error_Word_2".%X11 := TRUE;
+        END_IF;
+    END_REGION ;
+    
+    REGION SYSTEM 3
+        IF NOT "E-STOP (CABINET) - CH1(3)" THEN //REMOTE PANEL 3
+            "Estop_Error_Word_3".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3"."EStop Level 1" THEN //LEVEL PANEL 1 
+            "Estop_Error_Word_3".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3"."EStop Level 2" THEN //LEVEL PANEL 2
+            "Estop_Error_Word_3".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3"."EStop Level 3" THEN //LEVEL PANEL 3
+            "Estop_Error_Word_3".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3"."EStop Level 4" THEN //LEVEL PANEL 4
+            "Estop_Error_Word_3".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3"."EStop Level 5" THEN //LEVEL PANEL 5
+            "Estop_Error_Word_3".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3"."EStop Level 6" THEN //LEVEL PANEL 6
+            "Estop_Error_Word_3".%X7 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3"."EStop Level 7" THEN //LEVEL PANEL 7
+            "Estop_Error_Word_3".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3"."EStop Level 8" THEN //LEVEL PANEL 8
+            "Estop_Error_Word_3".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3".EStop_Lock_1 THEN //LOCK 1
+            "Estop_Error_Word_3".%X10 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_3".EStop_Lock_2 THEN //LOCK 2
+            "Estop_Error_Word_3".%X11 := TRUE;
+        END_IF;
+    END_REGION ;
+    
+    REGION SYSTEM 4
+        IF NOT "E-STOP (CABINET) - CH1(4)" THEN //REMOTE PANEL 4
+            "Estop_Error_Word_4".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_4"."EStop Level 1" THEN //LEVEL PANEL 1 
+            "Estop_Error_Word_4".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_4"."EStop Level 2" THEN //LEVEL PANEL 2
+            "Estop_Error_Word_4".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_4"."EStop Level 3" THEN //LEVEL PANEL 3
+            "Estop_Error_Word_4".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_4"."EStop Level 4" THEN //LEVEL PANEL 4
+            "Estop_Error_Word_4".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_4"."EStop Level 5" THEN //LEVEL PANEL 5
+            "Estop_Error_Word_4".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_4"."EStop Level 6" THEN //LEVEL PANEL 6
+            "Estop_Error_Word_4".%X7 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_4"."EStop Level 7" THEN //LEVEL PANEL 7
+            "Estop_Error_Word_4".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_4"."EStop Level 8" THEN //LEVEL PANEL 8
+            "Estop_Error_Word_4".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_4".EStop_Lock_1 THEN //LOCK 1
+            "Estop_Error_Word_4".%X10 := TRUE;
+        END_IF;
+    END_REGION ;
+    
+    REGION SYSTEM 5
+        IF NOT "E-STOP (CABINET) - CH1(5)" THEN //REMOTE PANEL 5
+            "Estop_Error_Word_5".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_5"."EStop Level 1" THEN //LEVEL PANEL 1 
+            "Estop_Error_Word_5".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_5"."EStop Level 2" THEN //LEVEL PANEL 2
+            "Estop_Error_Word_5".%X3 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_5"."EStop Level 3" THEN //LEVEL PANEL 3
+            "Estop_Error_Word_5".%X4 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_5"."EStop Level 4" THEN //LEVEL PANEL 4
+            "Estop_Error_Word_5".%X5 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_5"."EStop Level 5" THEN //LEVEL PANEL 5
+            "Estop_Error_Word_5".%X6 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_5"."EStop Level 6" THEN //LEVEL PANEL 6
+            "Estop_Error_Word_5".%X7 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_5"."EStop Level 7" THEN //LEVEL PANEL 7
+            "Estop_Error_Word_5".%X8 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_5"."EStop Level 8" THEN //LEVEL PANEL 8
+            "Estop_Error_Word_5".%X9 := TRUE;
+        END_IF;
+        
+        IF NOT "Remote_Panel_DB_5".EStop_Lock_1 THEN //LOCK 1
+            "Estop_Error_Word_5".%X10 := TRUE;
+        END_IF;
+    END_REGION ;
+    
+    REGION IDEM LOCK
+        IF NOT "F_Lock_FB_DB_7".EStop_CH1 THEN //Left level 1
+            "Estop_Error_Word_6".%X0 := TRUE;
+        END_IF;
+        
+        IF NOT "F_Lock_FB_DB_8".EStop_CH1 THEN //Left level 2
+            "Estop_Error_Word_6".%X1 := TRUE;
+        END_IF;
+        
+        IF NOT "F_Lock_FB_DB_11".EStop_CH1 THEN //Right level 2
+            "Estop_Error_Word_6".%X2 := TRUE;
+        END_IF;
+        
+        IF NOT "F_Lock_FB_DB_12".EStop_CH1 THEN //Right level 1
+            "Estop_Error_Word_6".%X3 := TRUE;
+        END_IF;
+    END_REGION
+END_REGION;
+
+REGION Sick Barcode
+    REGION System 1
+        IF "SICK_Lector_DB_1".Errorcode = 16#0000_0001 THEN //Timeout (SICK_CCOM_PNDP) 
+            "Sick Lector_Error code 1".%X0 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0002 THEN //Invalid module length (input)
+            "Sick Lector_Error code 1".%X1 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0003 THEN //Invalid module length (output)
+            "Sick Lector_Error code 1".%X2 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0004 THEN //DPWR_DAT error 
+            "Sick Lector_Error code 1".%X3 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0005 THEN //DPRD_DAT error 
+            "Sick Lector_Error code 1".%X4 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode > 16#0000_0006 AND "SICK_Lector_DB_1".Errorcode < 16#0000_0009 THEN //Communication error 
+            "Sick Lector_Error code 1".%X5 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0010 THEN //Timeout (SICK_CCOM_PNDP)
+            "Sick Lector_Error code 1".%X6 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0011 THEN //Device error 
+            "Sick Lector_Error code 1".%X7 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0012 THEN //SICK_GetValue error 
+            "Sick Lector_Error code 1".%X8 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0013 THEN //SICK_SetValue error
+            "Sick Lector_Error code 1".%X9 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0014 THEN //#CANId > 63 
+            "Sick Lector_Error code 1".%X10 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0015 THEN //No module function selected, OR more than one module function selected
+            "Sick Lector_Error code 1".%X11 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0016 THEN //Invalid command response received
+            "Sick Lector_Error code 1".%X12 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0017 THEN //Change not possible in "RUN mode".
+            "Sick Lector_Error code 1".%X13 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0020 THEN //FreeCommand.sCommand > arrCommand (500 bytes)
+            "Sick Lector_Error code 1".%X14 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0021 THEN //Response to free command > result string(FreeCommand.sResult[100 characters])
+            "Sick Lector_Error code 1".%X15 := TRUE;
+        ELSIF "SICK_Lector_DB_1".Errorcode = 16#0000_0022 THEN //String length Match - code.sName =0
+            "Sick Lector_Error code 1_2".%X0 := TRUE;
+        END_IF;
+    END_REGION
+    REGION System 2
+        IF "SICK_Lector_DB_2".Errorcode = 16#0000_0001 THEN //Timeout (SICK_CCOM_PNDP) 
+            "Sick Lector_Error code 2".%X0 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0002 THEN //Invalid module length (input)
+            "Sick Lector_Error code 2".%X1 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0003 THEN //Invalid module length (output)
+            "Sick Lector_Error code 2".%X2 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0004 THEN //DPWR_DAT error 
+            "Sick Lector_Error code 2".%X3 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0005 THEN //DPRD_DAT error 
+            "Sick Lector_Error code 2".%X4 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode > 16#0000_0006 AND "SICK_Lector_DB_2".Errorcode < 16#0000_0009 THEN //Communication error 
+            "Sick Lector_Error code 2".%X5 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0010 THEN //Timeout (SICK_CCOM_PNDP)
+            "Sick Lector_Error code 2".%X6 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0011 THEN //Device error 
+            "Sick Lector_Error code 2".%X7 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0012 THEN //SICK_GetValue error 
+            "Sick Lector_Error code 2".%X8 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0013 THEN //SICK_SetValue error
+            "Sick Lector_Error code 2".%X9 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0014 THEN //#CANId > 63 
+            "Sick Lector_Error code 2".%X10 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0015 THEN //No module function selected, OR more than one module function selected
+            "Sick Lector_Error code 2".%X11 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0016 THEN //Invalid command response received
+            "Sick Lector_Error code 2".%X12 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0017 THEN //Change not possible in "RUN mode".
+            "Sick Lector_Error code 2".%X13 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0020 THEN //FreeCommand.sCommand > arrCommand (500 bytes)
+            "Sick Lector_Error code 2".%X14 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0021 THEN //Response to free command > result string(FreeCommand.sResult[100 characters])
+            "Sick Lector_Error code 2".%X15 := TRUE;
+        ELSIF "SICK_Lector_DB_2".Errorcode = 16#0000_0022 THEN //String length Match - code.sName =0
+            "Sick Lector_Error code 2_2".%X0 := TRUE;
+        END_IF;
+    END_REGION
+    REGION System 3
+        IF "SICK_Lector_DB_3".Errorcode = 16#0000_0001 THEN //Timeout (SICK_CCOM_PNDP) 
+            "Sick Lector_Error code 3".%X0 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0002 THEN //Invalid module length (input)
+            "Sick Lector_Error code 3".%X1 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0003 THEN //Invalid module length (output)
+            "Sick Lector_Error code 3".%X2 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0004 THEN //DPWR_DAT error 
+            "Sick Lector_Error code 3".%X3 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0005 THEN //DPRD_DAT error 
+            "Sick Lector_Error code 3".%X4 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode > 16#0000_0006 AND "SICK_Lector_DB_3".Errorcode < 16#0000_0009 THEN //Communication error 
+            "Sick Lector_Error code 3".%X5 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0010 THEN //Timeout (SICK_CCOM_PNDP)
+            "Sick Lector_Error code 3".%X6 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0011 THEN //Device error 
+            "Sick Lector_Error code 3".%X7 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0012 THEN //SICK_GetValue error 
+            "Sick Lector_Error code 3".%X8 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0013 THEN //SICK_SetValue error
+            "Sick Lector_Error code 3".%X9 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0014 THEN //#CANId > 63 
+            "Sick Lector_Error code 3".%X10 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0015 THEN //No module function selected, OR more than one module function selected
+            "Sick Lector_Error code 3".%X11 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0016 THEN //Invalid command response received
+            "Sick Lector_Error code 3".%X12 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0017 THEN //Change not possible in "RUN mode".
+            "Sick Lector_Error code 3".%X13 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0020 THEN //FreeCommand.sCommand > arrCommand (500 bytes)
+            "Sick Lector_Error code 3".%X14 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0021 THEN //Response to free command > result string(FreeCommand.sResult[100 characters])
+            "Sick Lector_Error code 3".%X15 := TRUE;
+        ELSIF "SICK_Lector_DB_3".Errorcode = 16#0000_0022 THEN //String length Match - code.sName =0
+            "Sick Lector_Error code 3_2".%X0 := TRUE;
+        END_IF;
+    END_REGION
+    REGION System 4
+        IF "SICK_Lector_DB_4".Errorcode = 16#0000_0001 THEN //Timeout (SICK_CCOM_PNDP) 
+            "Sick Lector_Error code 3".%X0 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0002 THEN //Invalid module length (input)
+            "Sick Lector_Error code 3".%X1 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0003 THEN //Invalid module length (output)
+            "Sick Lector_Error code 4".%X2 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0004 THEN //DPWR_DAT error 
+            "Sick Lector_Error code 4".%X3 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0005 THEN //DPRD_DAT error 
+            "Sick Lector_Error code 4".%X4 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode > 16#0000_0006 AND "SICK_Lector_DB_4".Errorcode < 16#0000_0009 THEN //Communication error 
+            "Sick Lector_Error code 4".%X5 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0010 THEN //Timeout (SICK_CCOM_PNDP)
+            "Sick Lector_Error code 4".%X6 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0011 THEN //Device error 
+            "Sick Lector_Error code 4".%X7 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0012 THEN //SICK_GetValue error 
+            "Sick Lector_Error code 4".%X8 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0013 THEN //SICK_SetValue error
+            "Sick Lector_Error code 4".%X9 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0014 THEN //#CANId > 63 
+            "Sick Lector_Error code 4".%X10 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0015 THEN //No module function selected, OR more than one module function selected
+            "Sick Lector_Error code 4".%X11 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0016 THEN //Invalid command response received
+            "Sick Lector_Error code 4".%X12 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0017 THEN //Change not possible in "RUN mode".
+            "Sick Lector_Error code 4".%X13 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0020 THEN //FreeCommand.sCommand > arrCommand (500 bytes)
+            "Sick Lector_Error code 4".%X14 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0021 THEN //Response to free command > result string(FreeCommand.sResult[100 characters])
+            "Sick Lector_Error code 4".%X15 := TRUE;
+        ELSIF "SICK_Lector_DB_4".Errorcode = 16#0000_0022 THEN //String length Match - code.sName =0
+            "Sick Lector_Error code 4_2".%X0 := TRUE;
+        END_IF;
+    END_REGION
+    REGION System 5
+        IF "SICK_Lector_DB_5".Errorcode = 16#0000_0001 THEN //Timeout (SICK_CCOM_PNDP) 
+            "Sick Lector_Error code 5".%X0 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0002 THEN //Invalid module length (input)
+            "Sick Lector_Error code 5".%X1 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0003 THEN //Invalid module length (output)
+            "Sick Lector_Error code 5".%X2 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0004 THEN //DPWR_DAT error 
+            "Sick Lector_Error code 5".%X3 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0005 THEN //DPRD_DAT error 
+            "Sick Lector_Error code 5".%X4 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode > 16#0000_0006 AND "SICK_Lector_DB_5".Errorcode < 16#0000_0009 THEN //Communication error 
+            "Sick Lector_Error code 5".%X5 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0010 THEN //Timeout (SICK_CCOM_PNDP)
+            "Sick Lector_Error code 5".%X6 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0011 THEN //Device error 
+            "Sick Lector_Error code 5".%X7 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0012 THEN //SICK_GetValue error 
+            "Sick Lector_Error code 5".%X8 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0013 THEN //SICK_SetValue error
+            "Sick Lector_Error code 5".%X9 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0014 THEN //#CANId > 63 
+            "Sick Lector_Error code 5".%X10 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0015 THEN //No module function selected, OR more than one module function selected
+            "Sick Lector_Error code 5".%X11 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0016 THEN //Invalid command response received
+            "Sick Lector_Error code 5".%X12 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0017 THEN //Change not possible in "RUN mode".
+            "Sick Lector_Error code 5".%X13 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0020 THEN //FreeCommand.sCommand > arrCommand (500 bytes)
+            "Sick Lector_Error code 5".%X14 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0021 THEN //Response to free command > result string(FreeCommand.sResult[100 characters])
+            "Sick Lector_Error code 5".%X15 := TRUE;
+        ELSIF "SICK_Lector_DB_5".Errorcode = 16#0000_0022 THEN //String length Match - code.sName =0
+            "Sick Lector_Error code 5_2".%X0 := TRUE;
+        END_IF;
+    END_REGION
+END_REGION
+
+REGION Linear Encoder
+    FOR #i := 1 TO 5 DO
+        IF "Control_DB".VTD_Sys[#i].Inputs.LE_Status.%X0 THEN //Error present
+            IF "Control_DB".VTD_Sys[#i].Inputs.LE_Position = 1 THEN //Reader tilted 180°
+                IF #i = 1 THEN
+                    "Linear Encoder_Device Errors 1".%X0 := TRUE;
+                ELSIF #i = 2 THEN
+                    "Linear Encoder_Device Errors 2".%X0 := TRUE;
+                ELSIF #i = 3 THEN
+                    "Linear Encoder_Device Errors 3".%X0 := TRUE;
+                ELSIF #i = 4 THEN
+                    "Linear Encoder_Device Errors 4".%X0 := TRUE;
+                ELSIF #i = 5 THEN
+                    "Linear Encoder_Device Errors 5".%X0 := TRUE;
+                END_IF;
+            ELSIF "Control_DB".VTD_Sys[#i].Inputs.LE_Position = 2 THEN // No clear position can be determined (difference between codes is too great, code distance incorrect, etc.)
+                IF #i = 1 THEN
+                    "Linear Encoder_Device Errors 1".%X1 := TRUE;
+                ELSIF #i = 2 THEN
+                    "Linear Encoder_Device Errors 2".%X1 := TRUE;
+                ELSIF #i = 3 THEN
+                    "Linear Encoder_Device Errors 3".%X1 := TRUE;
+                ELSIF #i = 4 THEN
+                    "Linear Encoder_Device Errors 4".%X1 := TRUE;
+                ELSIF #i = 5 THEN
+                    "Linear Encoder_Device Errors 5".%X1 := TRUE;
+                END_IF;
+            ELSIF "Control_DB".VTD_Sys[#i].Inputs.LE_Position = 1000 THEN //Internal error
+                IF #i = 1 THEN
+                    "Linear Encoder_Device Errors 1".%X2 := TRUE;
+                ELSIF #i = 2 THEN
+                    "Linear Encoder_Device Errors 2".%X2 := TRUE;
+                ELSIF #i = 3 THEN
+                    "Linear Encoder_Device Errors 3".%X2 := TRUE;
+                ELSIF #i = 4 THEN
+                    "Linear Encoder_Device Errors 4".%X2 := TRUE;
+                ELSIF #i = 5 THEN
+                    "Linear Encoder_Device Errors 5".%X2 := TRUE;
+                END_IF;
+            ELSIF "Control_DB".VTD_Sys[#i].Inputs.LE_Status.%X1 THEN // No position information/OUT
+                IF #i = 1 THEN
+                    "Linear Encoder_Device Errors 1".%X3 := TRUE;
+                ELSIF #i = 2 THEN
+                    "Linear Encoder_Device Errors 2".%X3 := TRUE;
+                ELSIF #i = 3 THEN
+                    "Linear Encoder_Device Errors 3".%X3 := TRUE;
+                ELSIF #i = 4 THEN
+                    "Linear Encoder_Device Errors 4".%X3 := TRUE;
+                ELSIF #i = 5 THEN
+                    "Linear Encoder_Device Errors 5".%X3 := TRUE;
+                END_IF;
+            ELSIF "Control_DB".VTD_Sys[#i].Inputs.LE_Status.%X0 THEN //Error present
+                IF #i = 1 THEN
+                    "Linear Encoder_Device Errors 1".%X4 := TRUE;
+                ELSIF #i = 2 THEN
+                    "Linear Encoder_Device Errors 2".%X4 := TRUE;
+                ELSIF #i = 3 THEN
+                    "Linear Encoder_Device Errors 3".%X4 := TRUE;
+                ELSIF #i = 4 THEN
+                    "Linear Encoder_Device Errors 4".%X4 := TRUE;
+                ELSIF #i = 5 THEN
+                    "Linear Encoder_Device Errors 5".%X4 := TRUE;
+                END_IF;
+            ELSE//NO ERROR
+                IF #i = 1 THEN
+                    "Linear Encoder_Device Errors 1" := 0;
+                ELSIF #i = 2 THEN
+                    "Linear Encoder_Device Errors 2" := 0;
+                ELSIF #i = 3 THEN
+                    "Linear Encoder_Device Errors 3" := 0;
+                ELSIF #i = 4 THEN
+                    "Linear Encoder_Device Errors 4" := 0;
+                ELSIF #i = 5 THEN
+                    "Linear Encoder_Device Errors 5" := 0;
+                END_IF;
+            END_IF;
+            
+            //WARNINGS
+            IF "Control_DB".VTD_Sys[#i].Inputs.LE_Status.%X2 THEN // Warnign present
+                IF #i = 1 THEN
+                    "Linear Encoder_Warnings 1".%X0 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X0; //Code with non-PXV content found
+                    "Linear Encoder_Warnings 1".%X1 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X1; //Reader too close to code tape
+                    "Linear Encoder_Warnings 1".%X2 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X2; //Reader too far from code tape
+                    "Linear Encoder_Warnings 1".%X3 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X3; //Y position too large; the sensor is just before OUT
+                    "Linear Encoder_Warnings 1".%X4 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X4; //Y position too small; the sensor is just before OUT
+                    "Linear Encoder_Warnings 1".%X5 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X5; //The reader is rotated or tilted in relation to the code tape
+                    "Linear Encoder_Warnings 1".%X6 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X6; // Low level of code contrast
+                    "Linear Encoder_Warnings 1".%X7 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X7; //Repair tape detected
+                    "Linear Encoder_Warnings 1".%X8 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X8; //Temperature too high
+                ELSIF #i = 2 THEN
+                    "Linear Encoder_Warnings 2".%X0 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X0; //Code with non-PXV content found
+                    "Linear Encoder_Warnings 2".%X1 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X1; //Reader too close to code tape
+                    "Linear Encoder_Warnings 2".%X2 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X2; //Reader too far from code tape
+                    "Linear Encoder_Warnings 2".%X3 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X3; //Y position too large; the sensor is just before OUT
+                    "Linear Encoder_Warnings 2".%X4 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X4; //Y position too small; the sensor is just before OUT
+                    "Linear Encoder_Warnings 2".%X5 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X5; //The reader is rotated or tilted in relation to the code tape
+                    "Linear Encoder_Warnings 2".%X6 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X6; // Low level of code contrast
+                    "Linear Encoder_Warnings 2".%X7 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X7; //Repair tape detected
+                    "Linear Encoder_Warnings 2".%X8 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X8; //Temperature too high
+                ELSIF #i = 3 THEN
+                    "Linear Encoder_Warnings 3".%X0 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X0; //Code with non-PXV content found
+                    "Linear Encoder_Warnings 3".%X1 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X1; //Reader too close to code tape
+                    "Linear Encoder_Warnings 3".%X2 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X2; //Reader too far from code tape
+                    "Linear Encoder_Warnings 3".%X3 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X3; //Y position too large; the sensor is just before OUT
+                    "Linear Encoder_Warnings 3".%X4 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X4; //Y position too small; the sensor is just before OUT
+                    "Linear Encoder_Warnings 3".%X5 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X5; //The reader is rotated or tilted in relation to the code tape
+                    "Linear Encoder_Warnings 3".%X6 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X6; // Low level of code contrast
+                    "Linear Encoder_Warnings 3".%X7 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X7; //Repair tape detected
+                    "Linear Encoder_Warnings 3".%X8 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X8; //Temperature too high
+                ELSIF #i = 4 THEN
+                    "Linear Encoder_Warnings 4".%X0 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X0; //Code with non-PXV content found
+                    "Linear Encoder_Warnings 4".%X1 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X1; //Reader too close to code tape
+                    "Linear Encoder_Warnings 4".%X2 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X2; //Reader too far from code tape
+                    "Linear Encoder_Warnings 4".%X3 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X3; //Y position too large; the sensor is just before OUT
+                    "Linear Encoder_Warnings 4".%X4 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X4; //Y position too small; the sensor is just before OUT
+                    "Linear Encoder_Warnings 4".%X5 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X5; //The reader is rotated or tilted in relation to the code tape
+                    "Linear Encoder_Warnings 4".%X6 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X6; // Low level of code contrast
+                    "Linear Encoder_Warnings 4".%X7 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X7; //Repair tape detected
+                    "Linear Encoder_Warnings 4".%X8 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X8; //Temperature too high
+                ELSIF #i = 5 THEN
+                    "Linear Encoder_Warnings 5".%X0 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X0; //Code with non-PXV content found
+                    "Linear Encoder_Warnings 5".%X1 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X1; //Reader too close to code tape
+                    "Linear Encoder_Warnings 5".%X2 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X2; //Reader too far from code tape
+                    "Linear Encoder_Warnings 5".%X3 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X3; //Y position too large; the sensor is just before OUT
+                    "Linear Encoder_Warnings 5".%X4 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X4; //Y position too small; the sensor is just before OUT
+                    "Linear Encoder_Warnings 5".%X5 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X5; //The reader is rotated or tilted in relation to the code tape
+                    "Linear Encoder_Warnings 5".%X6 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X6; // Low level of code contrast
+                    "Linear Encoder_Warnings 5".%X7 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X7; //Repair tape detected
+                    "Linear Encoder_Warnings 5".%X8 := "Control_DB".VTD_Sys[#i].Inputs.LE_Warnings.%X8; //Temperature too high
+                END_IF;
+            END_IF;
+        END_IF;
+    END_FOR;
+END_REGION
+
+REGION Light Guard
+    IF NOT "Remote_Panel_DB_1".Mute_LG_1_DB.Q_Safety_release_1 THEN //SYSTEM 1 INBOUND
+        "Errors_Word_LightGuard_1".%X0 := TRUE;
+    END_IF;
+    
+    IF NOT "Remote_Panel_DB_1".Mute_LG_2_DB.Q_Safety_release_1 THEN //SYSTEM 1 OUTBOUND
+        "Errors_Word_LightGuard_1".%X1 := TRUE;
+    END_IF;
+    
+    IF NOT "Remote_Panel_DB_2".Mute_LG_1_DB.Q_Safety_release_1 THEN //SYSTEM 2 INBOUND
+        "Errors_Word_LightGuard_1".%X2 := TRUE;
+    END_IF;
+    
+    IF NOT "Remote_Panel_DB_2".Mute_LG_2_DB.Q_Safety_release_1 THEN //SYSTEM 2 OUTBOUND
+        "Errors_Word_LightGuard_1".%X3 := TRUE;
+    END_IF;
+    
+    IF NOT "Remote_Panel_DB_3".Mute_LG_1_DB.Q_Safety_release_1 THEN //SYSTEM 3 INBOUND
+        "Errors_Word_LightGuard_1".%X4 := TRUE;
+    END_IF;
+    
+    IF NOT "Remote_Panel_DB_3".Mute_LG_2_DB.Q_Safety_release_1 THEN //SYSTEM 3 OUTBOUND
+        "Errors_Word_LightGuard_1".%X5 := TRUE;
+    END_IF;
+END_REGION
+
+REGION SHUTTLES
+    "Errors_Word_Shuttles_1".%X0 := "TCP_IP_Shuttle_DB_1".error;
+    "Errors_Word_Shuttles_1".%X1 := "TCP_IP_Shuttle_DB_2".error;
+    "Errors_Word_Shuttles_1".%X2 := "TCP_IP_Shuttle_DB_3".error;
+    "Errors_Word_Shuttles_1".%X3 := "TCP_IP_Shuttle_DB_4".error;
+    "Errors_Word_Shuttles_1".%X4 := "TCP_IP_Shuttle_DB_5".error;
+    "Errors_Word_Shuttles_1".%X5 := "TCP_IP_Shuttle_DB_6".error;
+    "Errors_Word_Shuttles_1".%X6 := "TCP_IP_Shuttle_DB_7".error;
+    "Errors_Word_Shuttles_1".%X7 := "TCP_IP_Shuttle_DB_8".error;
+    "Errors_Word_Shuttles_1".%X8 := "TCP_IP_Shuttle_DB_9".error;
+    "Errors_Word_Shuttles_1".%X9 := "TCP_IP_Shuttle_DB_10".error;
+    "Errors_Word_Shuttles_1".%X10 := "TCP_IP_Shuttle_DB_11".error;
+    "Errors_Word_Shuttles_1".%X11 := "TCP_IP_Shuttle_DB_12".error;
+    "Errors_Word_Shuttles_1".%X12 := "TCP_IP_Shuttle_DB_13".error;
+    "Errors_Word_Shuttles_1".%X13 := "TCP_IP_Shuttle_DB_14".error;
+    "Errors_Word_Shuttles_1".%X14 := "TCP_IP_Shuttle_DB_15".error;
+    "Errors_Word_Shuttles_1".%X15 := "TCP_IP_Shuttle_DB_16".error;
+    "Errors_Word_Shuttles_2".%X0 := "TCP_IP_Shuttle_DB_17".error;
+    "Errors_Word_Shuttles_2".%X1 := "TCP_IP_Shuttle_DB_18".error;
+    "Errors_Word_Shuttles_2".%X2 := "TCP_IP_Shuttle_DB_19".error;
+    "Errors_Word_Shuttles_2".%X3 := "TCP_IP_Shuttle_DB_20".error;
+    "Errors_Word_Shuttles_2".%X4 := "TCP_IP_Shuttle_DB_21".error;
+    "Errors_Word_Shuttles_2".%X5 := "TCP_IP_Shuttle_DB_22".error;
+    "Errors_Word_Shuttles_2".%X6 := "TCP_IP_Shuttle_DB_23".error;
+    
+    "Warning_Word_Shuttles_1".%X0 := NOT "TCP_IP_Shuttle_DB_1".connected;
+    "Warning_Word_Shuttles_1".%X1 := NOT "TCP_IP_Shuttle_DB_2".connected;
+    "Warning_Word_Shuttles_1".%X2 := NOT "TCP_IP_Shuttle_DB_3".connected;
+    "Warning_Word_Shuttles_1".%X3 := NOT "TCP_IP_Shuttle_DB_4".connected;
+    "Warning_Word_Shuttles_1".%X4 := NOT "TCP_IP_Shuttle_DB_5".connected;
+    "Warning_Word_Shuttles_1".%X5 := NOT "TCP_IP_Shuttle_DB_6".connected;
+    "Warning_Word_Shuttles_1".%X6 := NOT "TCP_IP_Shuttle_DB_7".connected;
+    "Warning_Word_Shuttles_1".%X7 := NOT "TCP_IP_Shuttle_DB_8".connected;
+    "Warning_Word_Shuttles_1".%X8 := NOT "TCP_IP_Shuttle_DB_9".connected;
+    "Warning_Word_Shuttles_1".%X9 := NOT "TCP_IP_Shuttle_DB_10".connected;
+    "Warning_Word_Shuttles_1".%X10 := NOT "TCP_IP_Shuttle_DB_11".connected;
+    "Warning_Word_Shuttles_1".%X11 := NOT "TCP_IP_Shuttle_DB_12".connected;
+    "Warning_Word_Shuttles_1".%X12 := NOT "TCP_IP_Shuttle_DB_13".connected;
+    "Warning_Word_Shuttles_1".%X13 := NOT "TCP_IP_Shuttle_DB_14".connected;
+    "Warning_Word_Shuttles_1".%X14 := NOT "TCP_IP_Shuttle_DB_15".connected;
+    "Warning_Word_Shuttles_1".%X15 := NOT "TCP_IP_Shuttle_DB_16".connected;
+    "Warning_Word_Shuttles_2".%X0 := NOT "TCP_IP_Shuttle_DB_17".connected;
+    "Warning_Word_Shuttles_2".%X1 := NOT "TCP_IP_Shuttle_DB_18".connected;
+    "Warning_Word_Shuttles_2".%X2 := NOT "TCP_IP_Shuttle_DB_19".connected;
+    "Warning_Word_Shuttles_2".%X3 := NOT "TCP_IP_Shuttle_DB_20".connected;
+    "Warning_Word_Shuttles_2".%X4 := NOT "TCP_IP_Shuttle_DB_21".connected;
+    "Warning_Word_Shuttles_2".%X5 := NOT "TCP_IP_Shuttle_DB_22".connected;
+    "Warning_Word_Shuttles_2".%X6 := NOT "TCP_IP_Shuttle_DB_23".connected;
+END_REGION;
+
+REGION GATES
+    "Errors_Word_Gates_1".%X0 := NOT "GATE_SENSOR_1_CH1(1)" AND NOT "Bypass".Remote_Panel_1.Gate_1;
+    "Errors_Word_Gates_1".%X1 := NOT "GATE_SENSOR_2_CH1(1)" AND NOT "Bypass".Remote_Panel_1.Gate_2;
+    "Errors_Word_Gates_1".%X2 := NOT "GATE_SENSOR_1_CH1(2)" AND NOT "Bypass".Remote_Panel_2.Gate_1;
+    "Errors_Word_Gates_1".%X3 := NOT "GATE_SENSOR_2_CH1(2)" AND NOT "Bypass".Remote_Panel_2.Gate_2;
+    "Errors_Word_Gates_1".%X4 := NOT "GATE_SENSOR_1_CH1(3)" AND NOT "Bypass".Remote_Panel_3.Gate_1;
+    "Errors_Word_Gates_1".%X5 := NOT "GATE_SENSOR_2_CH1(3)" AND NOT "Bypass".Remote_Panel_3.Gate_2;
+    "Errors_Word_Gates_1".%X6 := NOT "GATE_SENSOR_CH1(4)" AND NOT "Bypass".Remote_Panel_4.Gate_1;
+    "Errors_Word_Gates_1".%X7 := NOT "GATE_SENSOR_CH1(5)" AND NOT "Bypass".Remote_Panel_5.Gate_1;
+    
+    "Errors_Word_Gates_1".%X8 := "GateAccess_Station_FB_DB_1".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_1".Lock_Closed_CH1;
+    "Errors_Word_Gates_1".%X9 := "GateAccess_Station_FB_DB_2".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_2".Lock_Closed_CH1;
+    "Errors_Word_Gates_1".%X10 := "GateAccess_Station_FB_DB_3".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_3".Lock_Closed_CH1;
+    "Errors_Word_Gates_1".%X11 := "GateAccess_Station_FB_DB_4".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_4".Lock_Closed_CH1;
+    "Errors_Word_Gates_1".%X12 := "GateAccess_Station_FB_DB_5".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_5".Lock_Closed_CH1;
+    "Errors_Word_Gates_1".%X13 := "GateAccess_Station_FB_DB_6".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_6".Lock_Closed_CH1;
+    "Errors_Word_Gates_1".%X14 := "GateAccess_Station_FB_DB_7".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_7".Lock_Closed_CH1;
+    "Errors_Word_Gates_1".%X15 := "GateAccess_Station_FB_DB_8".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_8".Lock_Closed_CH1;
+    "Errors_Word_Gates_2".%X0 := "GateAccess_Station_FB_DB_9".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_9".Lock_Closed_CH1;
+    "Errors_Word_Gates_2".%X1 := "GateAccess_Station_FB_DB_10".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_10".Lock_Closed_CH1;
+    "Errors_Word_Gates_2".%X2 := "GateAccess_Station_FB_DB_11".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_11".Lock_Closed_CH1;
+    "Errors_Word_Gates_2".%X3 := "GateAccess_Station_FB_DB_12".CurrentState <> #AUTO_RUNNING OR NOT "F_Lock_FB_DB_12".Lock_Closed_CH1;
+END_REGION
+
+REGION LOGISTEX CONVEYORS
+    "Errors_Word_Logistex".%X0 := "DB_Receive_Data_From_Logistex".CNV_STATUS[1].%X7; //System 1 - Inbound conveyor 1103 in error
+    "Errors_Word_Logistex".%X1 := "DB_Receive_Data_From_Logistex".CNV_STATUS[2].%X7; //System 2 - Inbound conveyor 1105 in error
+    "Errors_Word_Logistex".%X2 := "DB_Receive_Data_From_Logistex".CNV_STATUS[3].%X7; //System 3 - Inbound conveyor 1107 in error
+    "Errors_Word_Logistex".%X3 := "DB_Receive_Data_From_Logistex".CNV_STATUS[4].%X7; //System 1 - Outbound conveyor 1407 in error
+    "Errors_Word_Logistex".%X4 := "DB_Receive_Data_From_Logistex".CNV_STATUS[5].%X7; //System 2 - Outbound conveyor 1403 in error
+    "Errors_Word_Logistex".%X5 := "DB_Receive_Data_From_Logistex".CNV_STATUS[6].%X7; //System 3 - Outbound conveyor 1401 in error
+END_REGION
+
+REGION OPC CONTROL ERRORS
+    //OPC Control in ertror state
+    "Erros_Word_OPC_1".%X0 := "OPC_Control_FB_DB_1".Error_ID.%X0;
+    "Erros_Word_OPC_2".%X0 := "OPC_Control_FB_DB_2".Error_ID.%X0;
+    "Erros_Word_OPC_3".%X0 := "OPC_Control_FB_DB_3".Error_ID.%X0;
+    "Erros_Word_OPC_4".%X0 := "OPC_Control_FB_DB_4".Error_ID.%X0;
+    "Erros_Word_OPC_5".%X0 := "OPC_Control_FB_DB_5".Error_ID.%X0;
+    
+    //OPC VTD Move to floor 
+    "Erros_Word_OPC_1".%X6 := "OPC_Control_FB_DB_1".Error_ID.%X6;
+    "Erros_Word_OPC_2".%X6 := "OPC_Control_FB_DB_2".Error_ID.%X6;
+    "Erros_Word_OPC_3".%X6 := "OPC_Control_FB_DB_3".Error_ID.%X6;
+    "Erros_Word_OPC_4".%X6 := "OPC_Control_FB_DB_4".Error_ID.%X6;
+    "Erros_Word_OPC_5".%X6 := "OPC_Control_FB_DB_5".Error_ID.%X6;
+    
+    //OPC Shuttle In_Out
+    "Erros_Word_OPC_1".%X7 := "OPC_Control_FB_DB_1".Error_ID.%X7;
+    "Erros_Word_OPC_2".%X7 := "OPC_Control_FB_DB_2".Error_ID.%X7;
+    "Erros_Word_OPC_3".%X7 := "OPC_Control_FB_DB_3".Error_ID.%X7;
+    "Erros_Word_OPC_4".%X7 := "OPC_Control_FB_DB_4".Error_ID.%X7;
+    "Erros_Word_OPC_5".%X7 := "OPC_Control_FB_DB_5".Error_ID.%X7;
+    
+    //OPC Pallet In_Out
+    "Erros_Word_OPC_1".%X8 := "OPC_Control_FB_DB_1".Error_ID.%X8;
+    "Erros_Word_OPC_2".%X8 := "OPC_Control_FB_DB_2".Error_ID.%X8;
+    "Erros_Word_OPC_3".%X8 := "OPC_Control_FB_DB_3".Error_ID.%X8;
+    "Erros_Word_OPC_4".%X8 := "OPC_Control_FB_DB_4".Error_ID.%X8;
+    "Erros_Word_OPC_5".%X8 := "OPC_Control_FB_DB_5".Error_ID.%X8;
+END_REGION
+
+REGION MQTT
+    IF "LMQTT_DB".error THEN
+        
+        // 16#8001 - Simultaneous input at publish/subscribe/unsubscribe
+        "Error_MQTT".%X0 := "LMQTT_DB".status = 16#8001;
+        
+        // 16#8200 - Client identifier is empty
+        "Error_MQTT".%X1 := "LMQTT_DB".status = 16#8200;
+        
+        // 16#8201 - Broker hostname or IP address is invalid
+        "Error_MQTT".%X2 := "LMQTT_DB".status = 16#8201;
+        
+        // 16#8210 - Invalid array size
+        // willMsgLen / publishMsgLen
+            "Error_MQTT".%X3 := "LMQTT_DB".status = 16#8210;
+        
+        
+        // 16#8220 - Invalid keepAlive value
+            "Error_MQTT".%X4 := "LMQTT_DB".status = 16#8220;
+        
+        // 16#8230 - Invalid QoS value
+            "Error_MQTT".%X5 := "LMQTT_DB".status = 16#8230;
+
+        // 16#8300 - Publish topic empty or invalid
+            "Error_MQTT".%X6 := "LMQTT_DB".status = 16#8300;
+        
+        
+        // 16#8310 - Subscribe topic empty or invalid
+            "Error_MQTT".%X7 := "LMQTT_DB".status = 16#8310;
+        
+        // 16#8320 - Unsubscribe topic empty or invalid
+            "Error_MQTT".%X8 := "LMQTT_DB".status = 16#8320;
+        
+        // 16#8600 - Undefined state in the state machine
+            "Error_MQTT".%X9 := "LMQTT_DB".status = 16#8600;
+        
+        // 16#8601 - Error of subordinate instruction TCON
+            "Error_MQTT".%X10 := "LMQTT_DB".status = 16#8601;
+        
+        // 16#8620 - Connection establishment timeout
+            "Error_MQTT".%X11 := "LMQTT_DB".status = 16#8620;
+        
+        // 16#8650 - Timeout during processing of the job
+            "Error_MQTT".%X12 := "LMQTT_DB".status = 16#8650;
+        
+        // 16#8670 - Timeout during MQTT connection setup
+            "Error_MQTT".%X13 := "LMQTT_DB".status = 16#8670;
+        
+        // 16#8700 - Invalid length in received MQTT packet
+            "Error_MQTT".%X14 := "LMQTT_DB".status = 16#8700;
+        
+        // 16#8710 - Invalid QoS in received MQTT packet
+            "Error_MQTT".%X15 := "LMQTT_DB".status = 16#8710;
+        
+        // 16#8720 - Existing session at MQTT broker
+            "Error_MQTT_2".%X0 := "LMQTT_DB".status = 16#8720;
+        
+        // 16#8730 - Connection rejected by MQTT broker
+            "Error_MQTT_2".%X1 := "LMQTT_DB".status = 16#8730;
+        
+        // 16#8740 - MQTT packet acknowledged with invalid packet ID
+            "Error_MQTT_2".%X2 := "LMQTT_DB".status = 16#8740;
+        
+        // 16#8750 - MQTT subscription rejected by broker
+            "Error_MQTT_2".%X3 := "LMQTT_DB".status = 16#8750;
+        
+        // 16#8760 - QoS 2 message buffer full
+            "Error_MQTT_2".%X4 := "LMQTT_DB".status = 16#8760;
+        
+        // 16#9000 - Connection to MQTT broker lost
+        // Automatic reconnect in progress
+            "Error_MQTT_2".%X5 := "LMQTT_DB".status = 16#9000;
+    END_IF;
+    
+END_REGION
+
+REGION OVERGANG SENSORS
+    //SYSTEM 1
+    IF NOT "Control_DB".ECnv_Sys[1].Inputs.Overhang_Left THEN
+        "Error_Word_Overhang".%X0 := TRUE;
+    END_IF;
+    
+    IF NOT "Control_DB".ECnv_Sys[1].Inputs.Overhang_Right THEN
+        "Error_Word_Overhang".%X1 := TRUE;
+    END_IF;
+    
+    //SYSTEM 2
+    IF NOT "Control_DB".ECnv_Sys[2].Inputs.Overhang_Left THEN
+        "Error_Word_Overhang".%X2 := TRUE;
+    END_IF;
+    
+    IF NOT "Control_DB".ECnv_Sys[2].Inputs.Overhang_Right THEN
+        "Error_Word_Overhang".%X3 := TRUE;
+    END_IF;
+    
+    //SYSTEM 3
+    IF NOT "Control_DB".ECnv_Sys[3].Inputs.Overhang_Left THEN
+        "Error_Word_Overhang".%X4 := TRUE;
+    END_IF;
+    
+    IF NOT "Control_DB".ECnv_Sys[3].Inputs.Overhang_Right THEN
+        "Error_Word_Overhang".%X5 := TRUE;
+    END_IF;
+    
+    //SYSTEM 4
+    IF NOT "Control_DB".ECnv_Sys[4].Inputs.Overhang_Left THEN
+        "Error_Word_Overhang".%X6 := TRUE;
+    END_IF;
+    
+    IF NOT "Control_DB".ECnv_Sys[4].Inputs.Overhang_Right THEN
+        "Error_Word_Overhang".%X7 := TRUE;
+    END_IF;
+    
+    //SYSTEM 5
+    IF NOT "Control_DB".ECnv_Sys[5].Inputs.Overhang_Left THEN
+        "Error_Word_Overhang".%X8 := TRUE;
+    END_IF;
+    
+    IF NOT "Control_DB".ECnv_Sys[5].Inputs.Overhang_Right THEN
+        "Error_Word_Overhang".%X9 := TRUE;
+    END_IF;
+END_REGION
+
+REGION RESET
+    IF "Reset_All" THEN
+        "Errors_Profinet_1" := 0;
+        "Errors_Profinet_2" := 0;
+        "Errors_Profinet_3" := 0;
+        "Errors_Profinet_4" := 0;
+        "Errors_Profinet_5" := 0;
+        "Errors_Profinet_6" := 0;
+        "Errors_Profinet_7" := 0;
+        "Errors_Profinet_8" := 0;
+        "Errors_Profinet_9" := 0;
+        "Errors_Profinet_10" := 0;
+        "Errors_Profinet_11" := 0;
+        "Erros_Supply_Feedback_1" := "Erros_Supply_Feedback_2" := 0;
+        "Erros_Supply_Feedback_3" := "Erros_Supply_Feedback_4" := 0;
+        "Erros_Supply_Feedback_5" := "Erros_Supply_Feedback_6" := 0;
+        "Erros_Supply_Feedback_7"  := 0;
+        "Sick Lector_Error code 1" := 0;
+        "Sick Lector_Error code 2" := 0;
+        "Sick Lector_Error code 3" := 0;
+        "Sick Lector_Error code 4" := 0;
+        "Sick Lector_Error code 5" := 0;
+        "Linear Encoder_Device Errors 1" := 0;
+        "Linear Encoder_Device Errors 2" := 0;
+        "Linear Encoder_Device Errors 3" := 0;
+        "Linear Encoder_Device Errors 4" := 0;
+        "Linear Encoder_Device Errors 5" := 0;
+        "Estop_Error_Word_1" := 0;
+        "Estop_Error_Word_2" := 0;
+        "Estop_Error_Word_3" := 0;
+        "Estop_Error_Word_4" := 0;
+        "Estop_Error_Word_5" := 0;
+        "Estop_Error_Word_6" := 0;
+        "Errors_Word_LightGuard_1" := 0;
+        "Error_MQTT" := 0;
+        "Error_MQTT_2" := 0;
+        "Error_Word_Overhang" := 0;
+    END_IF;
+END_REGION
+
+REGION RESET HMI 1
+    
+    REGION SYSTEM 1
+        IF "Screen_DB_1".Reset_All[1] AND
+            (("HMI_Box_Connected_1" = 11 AND "KEY REMOTE/LOCAL L1 - CH1(1)") OR
+            ("HMI_Box_Connected_1" = 12 AND "KEY REMOTE/LOCAL L2 - CH1(1)") OR
+            ("HMI_Box_Connected_1" = 13 AND "KEY REMOTE/LOCAL L3 - CH1(1)") OR
+            ("HMI_Box_Connected_1" = 14 AND "KEY REMOTE/LOCAL L4 - CH1(1)") OR
+            ("HMI_Box_Connected_1" = 15 AND "KEY REMOTE/LOCAL L5 - CH1(1)") OR
+            ("HMI_Box_Connected_1" = 16 AND "KEY REMOTE/LOCAL L6 - CH1(1)") OR
+            ("HMI_Box_Connected_1" = 17 AND "KEY REMOTE/LOCAL L7 - CH1(1)") OR
+            ("HMI_Box_Connected_1" = 18 AND "KEY REMOTE/LOCAL L8 - CH1(1)"))
+        THEN
+            "Errors_Profinet_1".%X4 :=
+            "Errors_Profinet_1".%X5 :=
+            "Errors_Profinet_1".%X6 :=
+            "Errors_Profinet_1".%X7 :=
+            "Errors_Profinet_1".%X8 :=
+            "Errors_Profinet_1".%X9 :=
+            "Errors_Profinet_1".%X11 :=
+            "Errors_Profinet_1".%X12 :=
+            "Errors_Profinet_1".%X14 :=
+            "Errors_Profinet_1".%X15 :=
+            "Errors_Profinet_2".%X0 :=
+            "Errors_Profinet_2".%X1 :=
+            "Errors_Profinet_2".%X2 :=
+            "Errors_Profinet_2".%X3 :=
+            "Errors_Profinet_2".%X4 :=
+            "Errors_Profinet_2".%X5 :=
+            "Errors_Profinet_2".%X6 :=
+            "Errors_Profinet_2".%X7 :=
+            "Errors_Profinet_2".%X8 :=
+            "Errors_Profinet_2".%X9 :=
+            "Errors_Profinet_2".%X10 :=
+            "Errors_Profinet_2".%X11 :=
+            "Errors_Profinet_2".%X12 :=
+            "Errors_Profinet_2".%X13 :=
+            "Errors_Profinet_2".%X14 :=
+            "Errors_Profinet_2".%X15 :=
+            "Errors_Profinet_3".%X0 :=
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_9".%X11 :=
+            "Errors_Profinet_9".%X12 :=
+            "Errors_Profinet_9".%X13 :=
+            
+            "Erros_Supply_Feedback_1".%X0 :=
+            "Erros_Supply_Feedback_1".%X10 :=
+            "Erros_Supply_Feedback_1".%X11 :=
+            "Erros_Supply_Feedback_1".%X12 :=
+            "Erros_Supply_Feedback_1".%X15 :=
+            
+            "Erros_Supply_Feedback_3".%X0 :=
+            "Erros_Supply_Feedback_3".%X1 :=
+            "Erros_Supply_Feedback_3".%X2 :=
+            "Erros_Supply_Feedback_3".%X3 :=
+            
+            "Estop_Error_Word_1".%X1 :=
+            "Estop_Error_Word_1".%X2 :=
+            "Estop_Error_Word_1".%X3 :=
+            "Estop_Error_Word_1".%X4 :=
+            "Estop_Error_Word_1".%X5 :=
+            "Estop_Error_Word_1".%X6 :=
+            "Estop_Error_Word_1".%X7 :=
+            "Estop_Error_Word_1".%X8 :=
+            "Estop_Error_Word_1".%X9 :=
+            "Estop_Error_Word_1".%X10 :=
+            "Estop_Error_Word_1".%X11 :=
+            "Error_Word_Overhang".%X0 :=
+            "Error_Word_Overhang".%X1 :=
+            FALSE;
+            
+            "Sick Lector_Error code 1_2" :=
+            "Erros_Supply_Feedback_2" :=
+            "Linear Encoder_Device Errors 1" :=
+            "Sick Lector_Error code 1" := 0;
+            "Errors_Word_LightGuard_1".%X0 := FALSE;
+            "Errors_Word_LightGuard_1".%X1 := FALSE;
+        END_IF;
+    END_REGION
+    
+    REGION SYSTEM 2
+        IF "Screen_DB_1".Reset_All[1] AND
+            (("HMI_Box_Connected_1" = 21 AND "KEY REMOTE/LOCAL L1 - CH1(2)") OR
+            ("HMI_Box_Connected_1" = 22 AND "KEY REMOTE/LOCAL L2 - CH1(2)") OR
+            ("HMI_Box_Connected_1" = 23 AND "KEY REMOTE/LOCAL L3 - CH1(2)") OR
+            ("HMI_Box_Connected_1" = 24 AND "KEY REMOTE/LOCAL L4 - CH1(2)") OR
+            ("HMI_Box_Connected_1" = 25 AND "KEY REMOTE/LOCAL L5 - CH1(2)") OR
+            ("HMI_Box_Connected_1" = 26 AND "KEY REMOTE/LOCAL L6 - CH1(2)") OR
+            ("HMI_Box_Connected_1" = 27 AND "KEY REMOTE/LOCAL L7 - CH1(2)") OR
+            ("HMI_Box_Connected_1" = 28 AND "KEY REMOTE/LOCAL L8 - CH1(2)"))
+        THEN
+            "Errors_Profinet_3".%X3 :=
+            "Errors_Profinet_3".%X6 :=
+            "Errors_Profinet_3".%X7 :=
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_3".%X9 :=
+            "Errors_Profinet_3".%X10 :=
+            "Errors_Profinet_3".%X11 :=
+            "Errors_Profinet_3".%X12 :=
+            "Errors_Profinet_3".%X13 :=
+            "Errors_Profinet_3".%X14 :=
+            "Errors_Profinet_4".%X0 :=
+            "Errors_Profinet_4".%X1 :=
+            "Errors_Profinet_4".%X2 :=
+            "Errors_Profinet_4".%X3 :=
+            "Errors_Profinet_4".%X4 :=
+            "Errors_Profinet_4".%X5 :=
+            "Errors_Profinet_4".%X6 :=
+            "Errors_Profinet_4".%X7 :=
+            "Errors_Profinet_4".%X8 :=
+            "Errors_Profinet_4".%X9 :=
+            "Errors_Profinet_4".%X10 :=
+            "Errors_Profinet_4".%X11 :=
+            "Errors_Profinet_4".%X12 :=
+            "Errors_Profinet_4".%X13 :=
+            "Errors_Profinet_4".%X14 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_9".%X14 :=
+            "Errors_Profinet_9".%X15 :=
+            "Errors_Profinet_10".%X0 :=
+            "Errors_Profinet_10".%X1 :=
+            
+            "Erros_Supply_Feedback_1".%X1 :=
+            "Erros_Supply_Feedback_1".%X10 :=
+            "Erros_Supply_Feedback_1".%X11 :=
+            "Erros_Supply_Feedback_1".%X12 :=
+            "Erros_Supply_Feedback_1".%X15 :=
+            
+            "Erros_Supply_Feedback_3".%X4 :=
+            "Erros_Supply_Feedback_3".%X5 :=
+            "Erros_Supply_Feedback_3".%X6 :=
+            "Erros_Supply_Feedback_3".%X7 :=
+            "Erros_Supply_Feedback_3".%X8 :=
+            "Erros_Supply_Feedback_3".%X9 :=
+            "Erros_Supply_Feedback_3".%X10 :=
+            "Erros_Supply_Feedback_3".%X11 :=
+            "Erros_Supply_Feedback_3".%X12 :=
+            "Erros_Supply_Feedback_3".%X13 :=
+            "Erros_Supply_Feedback_3".%X14 :=
+            "Erros_Supply_Feedback_3".%X15 :=
+            "Erros_Supply_Feedback_4".%X0 :=
+            "Erros_Supply_Feedback_4".%X1 :=
+            "Erros_Supply_Feedback_4".%X2 :=
+            "Erros_Supply_Feedback_4".%X3 :=
+            "Erros_Supply_Feedback_4".%X4 :=
+            "Erros_Supply_Feedback_4".%X5 :=
+            "Erros_Supply_Feedback_4".%X6 :=
+            "Erros_Supply_Feedback_4".%X7 :=
+            
+            "Estop_Error_Word_2".%X1 :=
+            "Estop_Error_Word_2".%X2 :=
+            "Estop_Error_Word_2".%X3 :=
+            "Estop_Error_Word_2".%X4 :=
+            "Estop_Error_Word_2".%X5 :=
+            "Estop_Error_Word_2".%X6 :=
+            "Estop_Error_Word_2".%X7 :=
+            "Estop_Error_Word_2".%X8 :=
+            "Estop_Error_Word_2".%X9 :=
+            "Estop_Error_Word_2".%X10 :=
+            "Estop_Error_Word_2".%X11 :=
+            "Error_Word_Overhang".%X2 :=
+            "Error_Word_Overhang".%X3 :=
+            FALSE;
+            
+            "Sick Lector_Error code 2_2" :=
+            "Linear Encoder_Device Errors 2" :=
+            "Sick Lector_Error code 2" := 0;
+            "Errors_Word_LightGuard_1".%X2 := FALSE;
+            "Errors_Word_LightGuard_1".%X3 := FALSE;
+        END_IF;
+    END_REGION
+    
+    REGION SYSTEM 3
+        IF "Screen_DB_1".Reset_All[1] AND
+            (("HMI_Box_Connected_1" = 31 AND "KEY REMOTE/LOCAL L1 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 32 AND "KEY REMOTE/LOCAL L2 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 33 AND "KEY REMOTE/LOCAL L3 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 34 AND "KEY REMOTE/LOCAL L4 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 35 AND "KEY REMOTE/LOCAL L5 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 36 AND "KEY REMOTE/LOCAL L6 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 37 AND "KEY REMOTE/LOCAL L7 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 38 AND "KEY REMOTE/LOCAL L8 - CH1(3)"))
+        THEN
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_5".%X0 :=
+            "Errors_Profinet_5".%X2 :=
+            "Errors_Profinet_5".%X3 :=
+            "Errors_Profinet_5".%X4 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_5".%X6 :=
+            "Errors_Profinet_5".%X7 :=
+            "Errors_Profinet_5".%X8 :=
+            "Errors_Profinet_5".%X9 :=
+            "Errors_Profinet_5".%X10 :=
+            "Errors_Profinet_5".%X12 :=
+            "Errors_Profinet_5".%X13 :=
+            "Errors_Profinet_5".%X14 :=
+            "Errors_Profinet_5".%X15 :=
+            "Errors_Profinet_6".%X0 :=
+            "Errors_Profinet_6".%X1 :=
+            "Errors_Profinet_6".%X2 :=
+            "Errors_Profinet_6".%X3 :=
+            "Errors_Profinet_6".%X4 :=
+            "Errors_Profinet_6".%X5 :=
+            "Errors_Profinet_6".%X6 :=
+            "Errors_Profinet_6".%X7 :=
+            "Errors_Profinet_6".%X8 :=
+            "Errors_Profinet_6".%X9 :=
+            "Errors_Profinet_6".%X10 :=
+            "Errors_Profinet_6".%X11 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_10".%X2 :=
+            "Errors_Profinet_10".%X3 :=
+            "Errors_Profinet_10".%X4 :=
+            "Errors_Profinet_10".%X5 :=
+            
+            "Erros_Supply_Feedback_4".%X8 :=
+            "Erros_Supply_Feedback_4".%X9 :=
+            "Erros_Supply_Feedback_4".%X10 :=
+            "Erros_Supply_Feedback_4".%X11 :=
+            "Erros_Supply_Feedback_4".%X12 :=
+            "Erros_Supply_Feedback_4".%X13 :=
+            "Erros_Supply_Feedback_4".%X14 :=
+            "Erros_Supply_Feedback_4".%X15 :=
+            "Erros_Supply_Feedback_5".%X0 :=
+            "Erros_Supply_Feedback_5".%X1 :=
+            "Erros_Supply_Feedback_5".%X2 :=
+            "Erros_Supply_Feedback_5".%X3 :=
+            "Erros_Supply_Feedback_5".%X4 :=
+            "Erros_Supply_Feedback_5".%X5 :=
+            "Erros_Supply_Feedback_5".%X6 :=
+            "Erros_Supply_Feedback_5".%X7 :=
+            "Erros_Supply_Feedback_5".%X8 :=
+            "Erros_Supply_Feedback_5".%X9 :=
+            "Erros_Supply_Feedback_5".%X10 :=
+            "Erros_Supply_Feedback_5".%X11 :=
+            
+            "Estop_Error_Word_3".%X1 :=
+            "Estop_Error_Word_3".%X2 :=
+            "Estop_Error_Word_3".%X3 :=
+            "Estop_Error_Word_3".%X4 :=
+            "Estop_Error_Word_3".%X5 :=
+            "Estop_Error_Word_3".%X6 :=
+            "Estop_Error_Word_3".%X7 :=
+            "Estop_Error_Word_3".%X8 :=
+            "Estop_Error_Word_3".%X9 :=
+            "Estop_Error_Word_3".%X10 :=
+            "Estop_Error_Word_3".%X11 :=
+            "Error_Word_Overhang".%X4 :=
+            "Error_Word_Overhang".%X5 :=
+            FALSE;
+            
+            "Sick Lector_Error code 3_2" :=
+            "Linear Encoder_Device Errors 3" :=
+            "Sick Lector_Error code 3" := 0;
+            
+            "Errors_Word_LightGuard_1".%X4 := FALSE;
+            "Errors_Word_LightGuard_1".%X5 := FALSE;
+        END_IF;
+    END_REGION
+    
+    REGION SYSTEM 4
+        IF "Screen_DB_1".Reset_All[1] AND
+            (("HMI_Box_Connected_1" = 31 AND "KEY REMOTE/LOCAL L1 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 32 AND "KEY REMOTE/LOCAL L2 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 33 AND "KEY REMOTE/LOCAL L3 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 34 AND "KEY REMOTE/LOCAL L4 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 35 AND "KEY REMOTE/LOCAL L5 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 36 AND "KEY REMOTE/LOCAL L6 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 37 AND "KEY REMOTE/LOCAL L7 - CH1(3)") OR
+            ("HMI_Box_Connected_1" = 38 AND "KEY REMOTE/LOCAL L8 - CH1(3)"))
+        THEN
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_6".%X13 :=
+            "Errors_Profinet_6".%X15 :=
+            "Errors_Profinet_7".%X0 :=
+            "Errors_Profinet_7".%X1 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_7".%X3 :=
+            "Errors_Profinet_7".%X4 :=
+            "Errors_Profinet_7".%X5 :=
+            "Errors_Profinet_7".%X6 :=
+            "Errors_Profinet_7".%X7 :=
+            "Errors_Profinet_7".%X8 :=
+            "Errors_Profinet_7".%X9 :=
+            "Errors_Profinet_7".%X10 :=
+            "Errors_Profinet_7".%X11 :=
+            "Errors_Profinet_7".%X12 :=
+            "Errors_Profinet_7".%X13 :=
+            "Errors_Profinet_7".%X14 :=
+            "Errors_Profinet_7".%X15 :=
+            "Errors_Profinet_8".%X0 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_10".%X6 :=
+            "Errors_Profinet_10".%X7 :=
+            "Errors_Profinet_10".%X8 :=
+            "Errors_Profinet_10".%X9 :=
+            
+            "Erros_Supply_Feedback_5".%X12 :=
+            "Erros_Supply_Feedback_5".%X13 :=
+            "Erros_Supply_Feedback_5".%X14 :=
+            "Erros_Supply_Feedback_5".%X15 :=
+            "Erros_Supply_Feedback_6".%X0 :=
+            "Erros_Supply_Feedback_6".%X1 :=
+            "Erros_Supply_Feedback_6".%X2 :=
+            "Erros_Supply_Feedback_6".%X3 :=
+            "Erros_Supply_Feedback_6".%X4 :=
+            "Erros_Supply_Feedback_6".%X5 :=
+            "Erros_Supply_Feedback_6".%X6 :=
+            "Erros_Supply_Feedback_6".%X7 :=
+            
+            "Estop_Error_Word_4".%X1 :=
+            "Estop_Error_Word_4".%X2 :=
+            "Estop_Error_Word_4".%X3 :=
+            "Estop_Error_Word_4".%X4 :=
+            "Estop_Error_Word_4".%X5 :=
+            "Estop_Error_Word_4".%X6 :=
+            "Estop_Error_Word_4".%X7 :=
+            "Estop_Error_Word_4".%X8 :=
+            "Estop_Error_Word_4".%X9 :=
+            "Estop_Error_Word_4".%X10 :=
+            "Error_Word_Overhang".%X6 :=
+            "Error_Word_Overhang".%X7 :=
+            FALSE;
+            
+            "Sick Lector_Error code 4_2" :=
+            "Linear Encoder_Device Errors 4" :=
+            "Sick Lector_Error code 4" := 0;
+        END_IF;
+    END_REGION
+    
+    REGION SYSTEM 5
+        IF "Screen_DB_1".Reset_All[1] AND
+            (("HMI_Box_Connected_1" = 51 AND "KEY REMOTE/LOCAL L1 - CH1(5)") OR
+            ("HMI_Box_Connected_1" = 52 AND "KEY REMOTE/LOCAL L2 - CH1(5)") OR
+            ("HMI_Box_Connected_1" = 53 AND "KEY REMOTE/LOCAL L3 - CH1(5)") OR
+            ("HMI_Box_Connected_1" = 54 AND "KEY REMOTE/LOCAL L4 - CH1(5)") OR
+            ("HMI_Box_Connected_1" = 55 AND "KEY REMOTE/LOCAL L5 - CH1(5)") OR
+            ("HMI_Box_Connected_1" = 56 AND "KEY REMOTE/LOCAL L6 - CH1(5)") OR
+            ("HMI_Box_Connected_1" = 57 AND "KEY REMOTE/LOCAL L7 - CH1(5)") OR
+            ("HMI_Box_Connected_1" = 58 AND "KEY REMOTE/LOCAL L8 - CH1(5)"))
+        THEN
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_8".%X2 :=
+            "Errors_Profinet_8".%X4 :=
+            "Errors_Profinet_8".%X5 :=
+            "Errors_Profinet_8".%X6 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_8".%X8 :=
+            "Errors_Profinet_8".%X9 :=
+            "Errors_Profinet_8".%X10 :=
+            "Errors_Profinet_8".%X11 :=
+            "Errors_Profinet_8".%X12 :=
+            "Errors_Profinet_8".%X13 :=
+            "Errors_Profinet_8".%X14 :=
+            "Errors_Profinet_8".%X15 :=
+            "Errors_Profinet_9".%X0 :=
+            "Errors_Profinet_9".%X1 :=
+            "Errors_Profinet_9".%X2 :=
+            "Errors_Profinet_9".%X3 :=
+            "Errors_Profinet_9".%X4 :=
+            "Errors_Profinet_9".%X5 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_10".%X10 :=
+            "Errors_Profinet_10".%X11 :=
+            "Errors_Profinet_10".%X12 :=
+            "Errors_Profinet_10".%X13 :=
+            
+            "Erros_Supply_Feedback_6".%X8 :=
+            "Erros_Supply_Feedback_6".%X9 :=
+            "Erros_Supply_Feedback_6".%X10 :=
+            "Erros_Supply_Feedback_6".%X11 :=
+            "Erros_Supply_Feedback_6".%X12 :=
+            "Erros_Supply_Feedback_6".%X13 :=
+            "Erros_Supply_Feedback_6".%X14 :=
+            "Erros_Supply_Feedback_6".%X15 :=
+            "Erros_Supply_Feedback_7".%X0 :=
+            "Erros_Supply_Feedback_7".%X1 :=
+            "Erros_Supply_Feedback_7".%X2 :=
+            "Erros_Supply_Feedback_7".%X3 :=
+            
+            "Estop_Error_Word_5".%X1 :=
+            "Estop_Error_Word_5".%X2 :=
+            "Estop_Error_Word_5".%X3 :=
+            "Estop_Error_Word_5".%X4 :=
+            "Estop_Error_Word_5".%X5 :=
+            "Estop_Error_Word_5".%X6 :=
+            "Estop_Error_Word_5".%X7 :=
+            "Estop_Error_Word_5".%X8 :=
+            "Estop_Error_Word_5".%X9 :=
+            "Estop_Error_Word_5".%X10 :=
+            "Error_Word_Overhang".%X8 :=
+            "Error_Word_Overhang".%X9 :=
+            FALSE;
+            
+            "Sick Lector_Error code 5_2" :=
+            "Linear Encoder_Device Errors 5" :=
+            "Sick Lector_Error code 5" := 0;
+        END_IF;
+    END_REGION
+    
+END_REGION
+
+REGION RESET HMI 2
+    
+    REGION SYSTEM 1
+        IF "Screen_DB_1".Reset_All[2] AND
+            (("HMI_Box_Connected_2" = 11 AND "KEY REMOTE/LOCAL L1 - CH1(1)") OR
+            ("HMI_Box_Connected_2" = 12 AND "KEY REMOTE/LOCAL L2 - CH1(1)") OR
+            ("HMI_Box_Connected_2" = 13 AND "KEY REMOTE/LOCAL L3 - CH1(1)") OR
+            ("HMI_Box_Connected_2" = 14 AND "KEY REMOTE/LOCAL L4 - CH1(1)") OR
+            ("HMI_Box_Connected_2" = 15 AND "KEY REMOTE/LOCAL L5 - CH1(1)") OR
+            ("HMI_Box_Connected_2" = 16 AND "KEY REMOTE/LOCAL L6 - CH1(1)") OR
+            ("HMI_Box_Connected_2" = 17 AND "KEY REMOTE/LOCAL L7 - CH1(1)") OR
+            ("HMI_Box_Connected_2" = 18 AND "KEY REMOTE/LOCAL L8 - CH1(1)"))
+        THEN
+            "Errors_Profinet_1".%X4 :=
+            "Errors_Profinet_1".%X5 :=
+            "Errors_Profinet_1".%X6 :=
+            "Errors_Profinet_1".%X7 :=
+            "Errors_Profinet_1".%X8 :=
+            "Errors_Profinet_1".%X9 :=
+            "Errors_Profinet_1".%X11 :=
+            "Errors_Profinet_1".%X12 :=
+            "Errors_Profinet_1".%X14 :=
+            "Errors_Profinet_1".%X15 :=
+            "Errors_Profinet_2".%X0 :=
+            "Errors_Profinet_2".%X1 :=
+            "Errors_Profinet_2".%X2 :=
+            "Errors_Profinet_2".%X3 :=
+            "Errors_Profinet_2".%X4 :=
+            "Errors_Profinet_2".%X5 :=
+            "Errors_Profinet_2".%X6 :=
+            "Errors_Profinet_2".%X7 :=
+            "Errors_Profinet_2".%X8 :=
+            "Errors_Profinet_2".%X9 :=
+            "Errors_Profinet_2".%X10 :=
+            "Errors_Profinet_2".%X11 :=
+            "Errors_Profinet_2".%X12 :=
+            "Errors_Profinet_2".%X13 :=
+            "Errors_Profinet_2".%X14 :=
+            "Errors_Profinet_2".%X15 :=
+            "Errors_Profinet_3".%X0 :=
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_9".%X11 :=
+            "Errors_Profinet_9".%X12 :=
+            "Errors_Profinet_9".%X13 :=
+            
+            "Erros_Supply_Feedback_1".%X0 :=
+            "Erros_Supply_Feedback_1".%X10 :=
+            "Erros_Supply_Feedback_1".%X11 :=
+            "Erros_Supply_Feedback_1".%X12 :=
+            "Erros_Supply_Feedback_1".%X15 :=
+            
+            "Erros_Supply_Feedback_3".%X0 :=
+            "Erros_Supply_Feedback_3".%X1 :=
+            "Erros_Supply_Feedback_3".%X2 :=
+            "Erros_Supply_Feedback_3".%X3 :=
+            
+            "Estop_Error_Word_1".%X1 :=
+            "Estop_Error_Word_1".%X2 :=
+            "Estop_Error_Word_1".%X3 :=
+            "Estop_Error_Word_1".%X4 :=
+            "Estop_Error_Word_1".%X5 :=
+            "Estop_Error_Word_1".%X6 :=
+            "Estop_Error_Word_1".%X7 :=
+            "Estop_Error_Word_1".%X8 :=
+            "Estop_Error_Word_1".%X9 :=
+            "Estop_Error_Word_1".%X10 :=
+            "Estop_Error_Word_1".%X11 :=
+            "Error_Word_Overhang".%X0 :=
+            "Error_Word_Overhang".%X1 :=
+            FALSE;
+            
+            "Sick Lector_Error code 1_2" :=
+            "Erros_Supply_Feedback_2" :=
+            "Linear Encoder_Device Errors 1" :=
+            "Sick Lector_Error code 1" := 0;
+            
+            "Errors_Word_LightGuard_1".%X0 := FALSE;
+            "Errors_Word_LightGuard_1".%X1 := FALSE;
+        END_IF;
+    END_REGION
+    
+    REGION SYSTEM 2
+        IF "Screen_DB_1".Reset_All[2] AND
+            (("HMI_Box_Connected_2" = 21 AND "KEY REMOTE/LOCAL L1 - CH1(2)") OR
+            ("HMI_Box_Connected_2" = 22 AND "KEY REMOTE/LOCAL L2 - CH1(2)") OR
+            ("HMI_Box_Connected_2" = 23 AND "KEY REMOTE/LOCAL L3 - CH1(2)") OR
+            ("HMI_Box_Connected_2" = 24 AND "KEY REMOTE/LOCAL L4 - CH1(2)") OR
+            ("HMI_Box_Connected_2" = 25 AND "KEY REMOTE/LOCAL L5 - CH1(2)") OR
+            ("HMI_Box_Connected_2" = 26 AND "KEY REMOTE/LOCAL L6 - CH1(2)") OR
+            ("HMI_Box_Connected_2" = 27 AND "KEY REMOTE/LOCAL L7 - CH1(2)") OR
+            ("HMI_Box_Connected_2" = 28 AND "KEY REMOTE/LOCAL L8 - CH1(2)"))
+        THEN
+            "Errors_Profinet_3".%X3 :=
+            "Errors_Profinet_3".%X6 :=
+            "Errors_Profinet_3".%X7 :=
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_3".%X9 :=
+            "Errors_Profinet_3".%X10 :=
+            "Errors_Profinet_3".%X11 :=
+            "Errors_Profinet_3".%X12 :=
+            "Errors_Profinet_3".%X13 :=
+            "Errors_Profinet_3".%X14 :=
+            "Errors_Profinet_4".%X0 :=
+            "Errors_Profinet_4".%X1 :=
+            "Errors_Profinet_4".%X2 :=
+            "Errors_Profinet_4".%X3 :=
+            "Errors_Profinet_4".%X4 :=
+            "Errors_Profinet_4".%X5 :=
+            "Errors_Profinet_4".%X6 :=
+            "Errors_Profinet_4".%X7 :=
+            "Errors_Profinet_4".%X8 :=
+            "Errors_Profinet_4".%X9 :=
+            "Errors_Profinet_4".%X10 :=
+            "Errors_Profinet_4".%X11 :=
+            "Errors_Profinet_4".%X12 :=
+            "Errors_Profinet_4".%X13 :=
+            "Errors_Profinet_4".%X14 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_9".%X14 :=
+            "Errors_Profinet_9".%X15 :=
+            "Errors_Profinet_10".%X0 :=
+            "Errors_Profinet_10".%X1 :=
+            
+            "Erros_Supply_Feedback_1".%X1 :=
+            "Erros_Supply_Feedback_1".%X10 :=
+            "Erros_Supply_Feedback_1".%X11 :=
+            "Erros_Supply_Feedback_1".%X12 :=
+            "Erros_Supply_Feedback_1".%X15 :=
+            
+            "Erros_Supply_Feedback_3".%X4 :=
+            "Erros_Supply_Feedback_3".%X5 :=
+            "Erros_Supply_Feedback_3".%X6 :=
+            "Erros_Supply_Feedback_3".%X7 :=
+            "Erros_Supply_Feedback_3".%X8 :=
+            "Erros_Supply_Feedback_3".%X9 :=
+            "Erros_Supply_Feedback_3".%X10 :=
+            "Erros_Supply_Feedback_3".%X11 :=
+            "Erros_Supply_Feedback_3".%X12 :=
+            "Erros_Supply_Feedback_3".%X13 :=
+            "Erros_Supply_Feedback_3".%X14 :=
+            "Erros_Supply_Feedback_3".%X15 :=
+            "Erros_Supply_Feedback_4".%X0 :=
+            "Erros_Supply_Feedback_4".%X1 :=
+            "Erros_Supply_Feedback_4".%X2 :=
+            "Erros_Supply_Feedback_4".%X3 :=
+            "Erros_Supply_Feedback_4".%X4 :=
+            "Erros_Supply_Feedback_4".%X5 :=
+            "Erros_Supply_Feedback_4".%X6 :=
+            "Erros_Supply_Feedback_4".%X7 :=
+            
+            "Estop_Error_Word_2".%X1 :=
+            "Estop_Error_Word_2".%X2 :=
+            "Estop_Error_Word_2".%X3 :=
+            "Estop_Error_Word_2".%X4 :=
+            "Estop_Error_Word_2".%X5 :=
+            "Estop_Error_Word_2".%X6 :=
+            "Estop_Error_Word_2".%X7 :=
+            "Estop_Error_Word_2".%X8 :=
+            "Estop_Error_Word_2".%X9 :=
+            "Estop_Error_Word_2".%X10 :=
+            "Estop_Error_Word_2".%X11 :=
+            "Error_Word_Overhang".%X2 :=
+            "Error_Word_Overhang".%X3 :=
+            FALSE;
+            
+            "Sick Lector_Error code 2_2" :=
+            "Linear Encoder_Device Errors 2" :=
+            "Sick Lector_Error code 2" := 0;
+            
+            "Errors_Word_LightGuard_1".%X2 := FALSE;
+            "Errors_Word_LightGuard_1".%X3 := FALSE;
+        END_IF;
+    END_REGION
+    
+    REGION SYSTEM 3
+        IF "Screen_DB_1".Reset_All[2] AND
+            (("HMI_Box_Connected_2" = 31 AND "KEY REMOTE/LOCAL L1 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 32 AND "KEY REMOTE/LOCAL L2 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 33 AND "KEY REMOTE/LOCAL L3 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 34 AND "KEY REMOTE/LOCAL L4 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 35 AND "KEY REMOTE/LOCAL L5 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 36 AND "KEY REMOTE/LOCAL L6 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 37 AND "KEY REMOTE/LOCAL L7 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 38 AND "KEY REMOTE/LOCAL L8 - CH1(3)"))
+        THEN
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_5".%X0 :=
+            "Errors_Profinet_5".%X2 :=
+            "Errors_Profinet_5".%X3 :=
+            "Errors_Profinet_5".%X4 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_5".%X6 :=
+            "Errors_Profinet_5".%X7 :=
+            "Errors_Profinet_5".%X8 :=
+            "Errors_Profinet_5".%X9 :=
+            "Errors_Profinet_5".%X10 :=
+            "Errors_Profinet_5".%X12 :=
+            "Errors_Profinet_5".%X13 :=
+            "Errors_Profinet_5".%X14 :=
+            "Errors_Profinet_5".%X15 :=
+            "Errors_Profinet_6".%X0 :=
+            "Errors_Profinet_6".%X1 :=
+            "Errors_Profinet_6".%X2 :=
+            "Errors_Profinet_6".%X3 :=
+            "Errors_Profinet_6".%X4 :=
+            "Errors_Profinet_6".%X5 :=
+            "Errors_Profinet_6".%X6 :=
+            "Errors_Profinet_6".%X7 :=
+            "Errors_Profinet_6".%X8 :=
+            "Errors_Profinet_6".%X9 :=
+            "Errors_Profinet_6".%X10 :=
+            "Errors_Profinet_6".%X11 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_10".%X2 :=
+            "Errors_Profinet_10".%X3 :=
+            "Errors_Profinet_10".%X4 :=
+            "Errors_Profinet_10".%X5 :=
+            
+            "Erros_Supply_Feedback_4".%X8 :=
+            "Erros_Supply_Feedback_4".%X9 :=
+            "Erros_Supply_Feedback_4".%X10 :=
+            "Erros_Supply_Feedback_4".%X11 :=
+            "Erros_Supply_Feedback_4".%X12 :=
+            "Erros_Supply_Feedback_4".%X13 :=
+            "Erros_Supply_Feedback_4".%X14 :=
+            "Erros_Supply_Feedback_4".%X15 :=
+            "Erros_Supply_Feedback_5".%X0 :=
+            "Erros_Supply_Feedback_5".%X1 :=
+            "Erros_Supply_Feedback_5".%X2 :=
+            "Erros_Supply_Feedback_5".%X3 :=
+            "Erros_Supply_Feedback_5".%X4 :=
+            "Erros_Supply_Feedback_5".%X5 :=
+            "Erros_Supply_Feedback_5".%X6 :=
+            "Erros_Supply_Feedback_5".%X7 :=
+            "Erros_Supply_Feedback_5".%X8 :=
+            "Erros_Supply_Feedback_5".%X9 :=
+            "Erros_Supply_Feedback_5".%X10 :=
+            "Erros_Supply_Feedback_5".%X11 :=
+            
+            "Estop_Error_Word_3".%X1 :=
+            "Estop_Error_Word_3".%X2 :=
+            "Estop_Error_Word_3".%X3 :=
+            "Estop_Error_Word_3".%X4 :=
+            "Estop_Error_Word_3".%X5 :=
+            "Estop_Error_Word_3".%X6 :=
+            "Estop_Error_Word_3".%X7 :=
+            "Estop_Error_Word_3".%X8 :=
+            "Estop_Error_Word_3".%X9 :=
+            "Estop_Error_Word_3".%X10 :=
+            "Estop_Error_Word_3".%X11 :=
+            "Error_Word_Overhang".%X4 :=
+            "Error_Word_Overhang".%X5 :=
+            FALSE;
+            
+            "Sick Lector_Error code 3_2" :=
+            "Linear Encoder_Device Errors 3" :=
+            "Sick Lector_Error code 3" := 0;
+            
+            "Errors_Word_LightGuard_1".%X4 := FALSE;
+            "Errors_Word_LightGuard_1".%X5 := FALSE;
+        END_IF;
+    END_REGION
+    
+    REGION SYSTEM 4
+        IF "Screen_DB_1".Reset_All[2] AND
+            (("HMI_Box_Connected_2" = 31 AND "KEY REMOTE/LOCAL L1 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 32 AND "KEY REMOTE/LOCAL L2 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 33 AND "KEY REMOTE/LOCAL L3 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 34 AND "KEY REMOTE/LOCAL L4 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 35 AND "KEY REMOTE/LOCAL L5 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 36 AND "KEY REMOTE/LOCAL L6 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 37 AND "KEY REMOTE/LOCAL L7 - CH1(3)") OR
+            ("HMI_Box_Connected_2" = 38 AND "KEY REMOTE/LOCAL L8 - CH1(3)"))
+        THEN
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_6".%X13 :=
+            "Errors_Profinet_6".%X15 :=
+            "Errors_Profinet_7".%X0 :=
+            "Errors_Profinet_7".%X1 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_7".%X3 :=
+            "Errors_Profinet_7".%X4 :=
+            "Errors_Profinet_7".%X5 :=
+            "Errors_Profinet_7".%X6 :=
+            "Errors_Profinet_7".%X7 :=
+            "Errors_Profinet_7".%X8 :=
+            "Errors_Profinet_7".%X9 :=
+            "Errors_Profinet_7".%X10 :=
+            "Errors_Profinet_7".%X11 :=
+            "Errors_Profinet_7".%X12 :=
+            "Errors_Profinet_7".%X13 :=
+            "Errors_Profinet_7".%X14 :=
+            "Errors_Profinet_7".%X15 :=
+            "Errors_Profinet_8".%X0 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_10".%X6 :=
+            "Errors_Profinet_10".%X7 :=
+            "Errors_Profinet_10".%X8 :=
+            "Errors_Profinet_10".%X9 :=
+            
+            "Erros_Supply_Feedback_5".%X12 :=
+            "Erros_Supply_Feedback_5".%X13 :=
+            "Erros_Supply_Feedback_5".%X14 :=
+            "Erros_Supply_Feedback_5".%X15 :=
+            "Erros_Supply_Feedback_6".%X0 :=
+            "Erros_Supply_Feedback_6".%X1 :=
+            "Erros_Supply_Feedback_6".%X2 :=
+            "Erros_Supply_Feedback_6".%X3 :=
+            "Erros_Supply_Feedback_6".%X4 :=
+            "Erros_Supply_Feedback_6".%X5 :=
+            "Erros_Supply_Feedback_6".%X6 :=
+            "Erros_Supply_Feedback_6".%X7 :=
+            
+            "Estop_Error_Word_4".%X1 :=
+            "Estop_Error_Word_4".%X2 :=
+            "Estop_Error_Word_4".%X3 :=
+            "Estop_Error_Word_4".%X4 :=
+            "Estop_Error_Word_4".%X5 :=
+            "Estop_Error_Word_4".%X6 :=
+            "Estop_Error_Word_4".%X7 :=
+            "Estop_Error_Word_4".%X8 :=
+            "Estop_Error_Word_4".%X9 :=
+            "Estop_Error_Word_4".%X10 :=
+            "Error_Word_Overhang".%X6 :=
+            "Error_Word_Overhang".%X7 :=
+            FALSE;
+            
+            "Sick Lector_Error code 4_2" :=
+            "Linear Encoder_Device Errors 4" :=
+            "Sick Lector_Error code 4" := 0;
+        END_IF;
+    END_REGION
+    
+    REGION SYSTEM 5
+        IF "Screen_DB_1".Reset_All[2] AND
+            (("HMI_Box_Connected_2" = 51 AND "KEY REMOTE/LOCAL L1 - CH1(5)") OR
+            ("HMI_Box_Connected_2" = 52 AND "KEY REMOTE/LOCAL L2 - CH1(5)") OR
+            ("HMI_Box_Connected_2" = 53 AND "KEY REMOTE/LOCAL L3 - CH1(5)") OR
+            ("HMI_Box_Connected_2" = 54 AND "KEY REMOTE/LOCAL L4 - CH1(5)") OR
+            ("HMI_Box_Connected_2" = 55 AND "KEY REMOTE/LOCAL L5 - CH1(5)") OR
+            ("HMI_Box_Connected_2" = 56 AND "KEY REMOTE/LOCAL L6 - CH1(5)") OR
+            ("HMI_Box_Connected_2" = 57 AND "KEY REMOTE/LOCAL L7 - CH1(5)") OR
+            ("HMI_Box_Connected_2" = 58 AND "KEY REMOTE/LOCAL L8 - CH1(5)"))
+        THEN
+            "Errors_Profinet_3".%X8 :=
+            "Errors_Profinet_5".%X5 :=
+            "Errors_Profinet_7".%X2 :=
+            "Errors_Profinet_8".%X2 :=
+            "Errors_Profinet_8".%X4 :=
+            "Errors_Profinet_8".%X5 :=
+            "Errors_Profinet_8".%X6 :=
+            "Errors_Profinet_8".%X7 :=
+            "Errors_Profinet_8".%X8 :=
+            "Errors_Profinet_8".%X9 :=
+            "Errors_Profinet_8".%X10 :=
+            "Errors_Profinet_8".%X11 :=
+            "Errors_Profinet_8".%X12 :=
+            "Errors_Profinet_8".%X13 :=
+            "Errors_Profinet_8".%X14 :=
+            "Errors_Profinet_8".%X15 :=
+            "Errors_Profinet_9".%X0 :=
+            "Errors_Profinet_9".%X1 :=
+            "Errors_Profinet_9".%X2 :=
+            "Errors_Profinet_9".%X3 :=
+            "Errors_Profinet_9".%X4 :=
+            "Errors_Profinet_9".%X5 :=
+            "Errors_Profinet_9".%X7 :=
+            "Errors_Profinet_9".%X8 :=
+            "Errors_Profinet_9".%X9 :=
+            "Errors_Profinet_9".%X10 :=
+            "Errors_Profinet_10".%X10 :=
+            "Errors_Profinet_10".%X11 :=
+            "Errors_Profinet_10".%X12 :=
+            "Errors_Profinet_10".%X13 :=
+            
+            "Erros_Supply_Feedback_6".%X8 :=
+            "Erros_Supply_Feedback_6".%X9 :=
+            "Erros_Supply_Feedback_6".%X10 :=
+            "Erros_Supply_Feedback_6".%X11 :=
+            "Erros_Supply_Feedback_6".%X12 :=
+            "Erros_Supply_Feedback_6".%X13 :=
+            "Erros_Supply_Feedback_6".%X14 :=
+            "Erros_Supply_Feedback_6".%X15 :=
+            "Erros_Supply_Feedback_7".%X0 :=
+            "Erros_Supply_Feedback_7".%X1 :=
+            "Erros_Supply_Feedback_7".%X2 :=
+            "Erros_Supply_Feedback_7".%X3 :=
+            
+            "Estop_Error_Word_5".%X1 :=
+            "Estop_Error_Word_5".%X2 :=
+            "Estop_Error_Word_5".%X3 :=
+            "Estop_Error_Word_5".%X4 :=
+            "Estop_Error_Word_5".%X5 :=
+            "Estop_Error_Word_5".%X6 :=
+            "Estop_Error_Word_5".%X7 :=
+            "Estop_Error_Word_5".%X8 :=
+            "Estop_Error_Word_5".%X9 :=
+            "Estop_Error_Word_5".%X10 :=
+            "Error_Word_Overhang".%X8 :=
+            "Error_Word_Overhang".%X9 :=
+            FALSE;
+            
+            "Sick Lector_Error code 5_2" :=
+            "Linear Encoder_Device Errors 5" :=
+            "Sick Lector_Error code 5" := 0;
+        END_IF;
+    END_REGION
+    
+END_REGION
+
+
+END_FUNCTION

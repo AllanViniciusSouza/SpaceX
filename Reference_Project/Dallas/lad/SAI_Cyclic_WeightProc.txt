@@ -1,0 +1,94 @@
+// FB "SAI_Cyclic_WeightProc" 29  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   WeightCmd : Word := 3;
+   MB_DevStatus : Word;
+END_VAR
+
+VAR_OUTPUT
+   RealTimeWeight : Real;
+   StableWeight : Real;
+   DataOK : Bool;
+   Motion : Bool;
+   NetMode : Bool;
+   Alarm : Bool;
+   Done : Bool;
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   TareImmediate : Bool;
+   TareStable : Bool;
+   ZeroImmediate : Bool;
+   ZeroStable : Bool;
+   PreTareValue : Real;
+   PreTare : Bool;
+   ClearTare : Bool;
+   MB_Value : Real;
+   MB_Response : Word;
+   MB_CmdValue : Real;
+   MB_Command : Word;
+END_VAR
+
+VAR
+   WriteTrigger : Bool;
+   RestoreTrigger : Bool;
+   Cmd : Int;
+   TareStablePTrigger : Bool;
+   ZeroStablePTrigger : Bool;
+   ZeroImmedTrigger : Bool;
+   TareImmedTrigger : Bool;
+   ClearTareTrigger : Bool;
+   PreTareTrigger : Bool;
+END_VAR
+
+VAR_TEMP
+   DevStatus : "SAI_MB_DeviceStatus";
+END_VAR
+
+--- Network 1  Comment: During 1st scan, moves the default weight reporting command to the cyclic command output word | Title: During 1st PLC scan, moves the default weight reporting command to the cyclic command output word
+   parts: Contact, Move
+   operands: FirstScan, #WeightCmd, #MB_Command
+--- Network 2  Comment: Tare stable is triggered, set command value to 400, set WriteTrigger flag | Title: Tare when scale is stable
+   parts: Contact, Move, PBox, SCoil
+   operands: #TareStable, #TareStablePTrigger, #Cmd, #WriteTrigger
+--- Network 3  Comment: Zero stable is triggered, set command value to 401, set WriteTrigger flag | Title: Zero when scale is stable
+   parts: Contact, Move, PBox, SCoil
+   operands: #ZeroStable, #ZeroStablePTrigger, #Cmd, #WriteTrigger
+--- Network 4  Comment: Tare immediate is triggered, set command value to 403, set WriteTrigger flag | Title: Tare Immediate
+   parts: Contact, Move, PBox, SCoil
+   operands: #TareImmediate, #TareImmedTrigger, #Cmd, #WriteTrigger
+--- Network 5  Comment: Zero immediate is triggered, set command value to 404, set WriteTrigger flag | Title: Zero Immediate
+   parts: Contact, Move, PBox, SCoil
+   operands: #ZeroImmediate, #ZeroImmedTrigger, #Cmd, #WriteTrigger
+--- Network 6  Comment: Zero immediate is triggered, set command value to 404, set WriteTrigger flag | Title: PreTare or Preset Tare
+   parts: Contact, Move, PBox, SCoil
+   operands: #PreTare, #PreTareTrigger, #Cmd, #WriteTrigger, #PreTareValue, #MB_CmdValue
+--- Network 7  Comment: Clear Tare is triggered, set command value to 402, set WriteTrigger flag | Title: Clear Tare
+   parts: Contact, Move, PBox, SCoil
+   operands: #ClearTare, #ClearTareTrigger, #Cmd, #WriteTrigger
+--- Network 8  Comment: Move the command value to output, reset flags | Title: Deliver the command
+   parts: Contact, Move, RCoil
+   operands: #WriteTrigger, #Cmd, #MB_Command, #Done, #Error, #RestoreTrigger, #MB_CmdValue
+--- Network 9  Comment: If response is equal to the command sent to output, which means that command has been excuted successfully, set flags | Title: Check the command response word for DONE
+   parts: Eq, SCoil
+   operands: #MB_Response, #Cmd, #Done, #RestoreTrigger
+--- Network 10  Comment: If response is less than 0, which means that command has failed, set flags | Title: Check the command response word for ERROR
+   parts: Lt, SCoil
+   operands: #MB_Response, #Error, #RestoreTrigger
+--- Network 11  Comment: Restore the weight report command, reset triggers | Title: Restore the weight reporting command
+   parts: Contact, Move, RCoil
+   operands: #RestoreTrigger, #WeightCmd, #MB_Command, #TareImmediate, #TareStable, #ZeroImmediate, #ZeroStable, #PreTare, #ClearTare
+--- Network 12  Title: Updates the device status bits continuously
+   CALL FC "SAI_Copy"
+   operands: #MB_DevStatus, #DevStatus
+--- Network 13  Comment: Check the motion flag to read stable weight | Title: Updates the stable weight value
+   parts: Contact, Ge, Le, Move, O
+   operands: #MB_Response, #DevStatus.Motion, #MB_Value, #StableWeight
+--- Network 14  Comment: Read real time weight | Title: Updates the real time weight value
+   parts: Ge, Le, Move, O
+   operands: #MB_Response, #MB_Value, #RealTimeWeight
+--- Network 15  Comment: Updates important device status bits: Data OK, Motion, Net Mode, Alarm, RunFlat (POWERCELL only) | Title: Updates the device status bits continuously
+   parts: Coil, Contact
+   operands: #DevStatus.Data OK, #DataOK, #DevStatus.Motion, #Motion, #DevStatus.Net Mode, #NetMode, #DevStatus.Alarm Condition, #Alarm

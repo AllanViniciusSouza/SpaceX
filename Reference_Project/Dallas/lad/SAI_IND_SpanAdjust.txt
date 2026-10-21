@@ -1,0 +1,80 @@
+// FB "SAI_IND_SpanAdjust" 55  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ID : HW_IO;   // The Profinet Device Hardware Identifier under device properties
+   Hi_Weight : Real;   // The highest adjustment weight, or the Span value
+   Mid_Weight : Real;   // The 4th adjustment weight
+   Low_Weight : Real;   // The 3rd adjustment weight
+   xLow_Weight : Real;   // The 2nd adjustment weight
+END_VAR
+
+VAR_OUTPUT
+   CurrentPoint : Int;   // Current point to be adjusted (Minimum 2 points; maximum 5 points; zero point is the 1st point)
+   CurrentWeight : Real;   // Current adjustment weight to be loaded onto the scale
+   LoadWeight : Bool;   // Load the next adjustment weight according to value shown in CurrentWeight
+   Process : Bool;   // Weight Transmitter is performing adjustment
+   Done : Bool;   // Linearity Adjustment has been completed successfully
+   Error : Bool;   // Adjustment can not proceed due to incomplete input parameters, check LinearityRange and all the adjustment weight values
+   Cancelled : Bool;   // Adjustment process has been cancelled successfully
+END_VAR
+
+VAR_IN_OUT
+   LinearityRange : Int;   // Number of linearity points to be adjusted: 0:none, 1:3 point, 2:4 point, 3:5 point
+   Start : Bool;   // Trigger this bit ON to start performing linearity adjustment; this bit will be turned off automatically after completion
+   ConfirmWeight : Bool;   // Switch ON this bit as an acknowledgement that new adjustment weight has being loaded
+   Cancel : Bool;   // Cancel/ Abort adjustment process, toggle ON
+END_VAR
+
+VAR
+   Activate : Bool;
+   WRREC_SpanAdjust : WRREC;
+   RDREC_Status : RDREC;
+   IEC_Timer_1_Instance : IEC_TIMER;
+   AdjustStep : SInt;
+   Static01 : Bool;
+   Static02 : Bool;
+   Static03 : Bool;
+   Static04 : Bool;
+   Static05 : Bool;
+   Static06 : Bool;
+   Static07 : Bool;
+   Static08 : Bool;
+   Validate_REC : SInt;
+   Abort_REC : SInt;
+   Check01 : Bool;
+   Check02 : Bool;
+   AdjustmentStatus : Int;
+   CurrentPoint_0 : Int;
+   CurrentWeight_0 : Real;
+END_VAR
+
+--- Network 1  Comment: Initializes FB output bits:
+Process;
+Error;
+Done;
+Cancelled | Title: Initialization
+   parts: Contact, Move, PBox, RCoil, SCoil
+   operands: #Start, #Cancel, #Static01, #Process, #Error, #Cancelled, #Done, #Activate, #AdjustStep
+--- Network 2  Comment: AdjustStep = 1: Check all the input parameters for LinearityRange and adjustment weights (Hi_Weight, Mid_Weight, Low_Weight, xLow_Weight)
+AdjustStep = 2: Initializes all the control bits
+AdjustStep = 3: Write in the LinearityRange into the transmitter (2-byte; Index: 16#400A)
+AdjustStep = 4: Updates the CurrentPoint and CurrentWeight (new reference weight) and wait for user to trigger ConfirmWeight input bit
+AdjustStep = 5: Start the adjustment process according to the CurrentWeight (REAL; Index: 16#4009)
+AdjustStep = 6: After adjusted all the required reference weights, validate the adjustment (2-byte; Index: 16#4010)
+AdjustStep = 7: Adjustment is completed successfully, set DONE bit to TRUE
+AdjustStep = 8; Adjustment failed with error, set ERROR bit to TRUE
+AdjustStep >= 4: Reading the adjustment status continuously (2-byte; Index: 16#4007) | Title: Sequence
+   parts: Coil, Contact, Eq, Ge, Gt, Inc, Lt, Move, O, PBox, PContact, RCoil, RDREC, SCoil, TON, WRREC
+   operands: #Activate, #Cancel, #AdjustStep, #LinearityRange, #Hi_Weight, #Mid_Weight, #Low_Weight, #xLow_Weight, #Check01, #AdjustmentStatus, #CurrentPoint_0, #CurrentWeight_0, #ConfirmWeight, #WRREC_SpanAdjust.DONE, #WRREC_SpanAdjust.REQ, #ID, #WRREC_SpanAdjust.BUSY, #WRREC_SpanAdjust.ERROR, #WRREC_SpanAdjust.STATUS, #Static02, #Static03, #Static05, #Static04, #Static06, #Validate_REC, #Static07, #Done, #Error, #Cancelled, #Start, #RDREC_Status.VALID, #RDREC_Status.REQ, #RDREC_Status.BUSY, #RDREC_Status.ERROR, #RDREC_Status.STATUS
+--- Network 3  Comment: LoadWeight - Inform user to load the next adjustment weight according to CurrentWeight value
+Process - Status bit to inform that the weight transmitter is performing adjustment process | Title: Adjsutment Status
+   parts: Coil, Contact, Eq, O
+   operands: #Activate, #AdjustStep, #AdjustmentStatus, #LoadWeight, #Process
+--- Network 4  Comment: CANCEL input bit can be triggered any time during the adjustment process to abort. 
+CANCELLED output bit will be set to TRUE after a successful cancellation. | Title: Cancellation
+   parts: Coil, Contact, Move, PContact, RCoil, SCoil, WRREC
+   operands: #Cancel, #Abort_REC, #WRREC_SpanAdjust.DONE, #WRREC_SpanAdjust.REQ, #ID, #WRREC_SpanAdjust.BUSY, #WRREC_SpanAdjust.ERROR, #WRREC_SpanAdjust.STATUS, #Static08, #AdjustmentStatus, #CurrentPoint_0, #CurrentWeight_0, #Cancelled, #Error, #Done, #Start, #Activate, #AdjustStep
+--- Network 5  Comment: Mapping the CurrentPoint and CurrentWeight from STATIC to OUTPUT field | Title: Mapping the CurrentPoint and CurrentWeight from STATIC to OUTPUT field
+   parts: Move
+   operands: #CurrentPoint_0, #CurrentPoint, #CurrentWeight_0, #CurrentWeight

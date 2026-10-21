@@ -1,0 +1,38 @@
+// FC "REMOTE PANEL" 1  language F_LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ACK : Bool;
+END_VAR
+
+VAR_OUTPUT
+   OK : Bool;
+   ESTOP_INBOUND : Bool;
+END_VAR
+
+   // RETURN : Void
+--- Network 1  Title: REMOTE PANEL OK
+   parts: Coil, Contact
+   operands: OT_LOWER_LIMIT.Q, OT_UPPER_LIMIT.Q, CHAIN_SLACK_1.Q, CHAIN_SLACK_2.Q, CHAIN_SLACK_3.Q, CHAIN_SLACK_4.Q, #OK
+--- Network 2  Title: Overtravel Lower Limit - CH1
+   parts: ESTOP1
+   operands: Overtravel Lower Limit - CH1, #ACK
+--- Network 3  Title: Overtravel Upper Limit - CH1
+   parts: ESTOP1
+   operands: Overtravel Upper Limit - CH1, #ACK
+--- Network 4  Title: Chain Slack 1 - CH1
+   parts: Contact, ESTOP1
+   operands: Chain Slack 1 - CH1, #ACK
+--- Network 5  Title: Chain Slack 2 - CH1
+   parts: Contact, ESTOP1
+   operands: Chain Slack 2 - CH1, #ACK
+--- Network 6  Title: Chain Slack 3 - CH1
+   parts: Contact, ESTOP1
+   operands: Chain Slack 3 - CH1, #ACK
+--- Network 7  Title: Chain Slack 4 - CH1
+   parts: Contact, ESTOP1
+   operands: Chain Slack 4 - CH1, #ACK
+--- Network 8  Title: E-STOP Inbound - CH1
+   parts: Contact, ESTOP1
+   operands: E-STOP Inbound - CH1, #ACK, #ESTOP_INBOUND
+--- Network 9  

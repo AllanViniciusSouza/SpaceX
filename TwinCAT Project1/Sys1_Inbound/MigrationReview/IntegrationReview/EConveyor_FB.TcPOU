@@ -1,0 +1,834 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="EConveyor_FB" Id="{3caff5c0-2c36-5ee0-b416-7cab170ed421}" SpecialFunc="None">
+    <Declaration><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/EConveyor_FB.scl, object EConveyor_FB.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+FUNCTION_BLOCK EConveyor_FB
+// TITLE = Conveyor Instance FB
+// 
+// 
+//    VAR_INPUT
+//       Id : UInt;
+//       Safety_OK_Delayed : Bool;
+//       Safety_OK : Bool;
+//       Cnv_Settings : ECnv_Settings;
+//       VTD_Current_Level : UInt;
+//       CNV_In_Out : Bool;
+//       CNV1_2_Selected : UInt;
+//    END_VAR
+// 
+//    VAR_IN_OUT
+//       Cnv_Control : ECnv_Control;
+//       SinaSpeed   : SinaSpeed;
+//    END_VAR
+// 
+//    VAR
+//       State : UInt;
+//       Timer_Transfer   : TON;
+//       Watchdog   : TON;
+//       Transfer_Direction   : String;
+//       MainSetpoint : Int;
+//       SinaSpeed_Instance   : SinaSpeed;
+//       IEC_Timer_0_Instance_1   : TON;
+//       R_TRIG_Instance   : R_TRIG;
+//       R_Start_DB   : R_TRIG;
+//       R_Stop_DB   : R_TRIG;
+//       ID_Decoded_From : ID_Decoded;
+//       ID_Decoded_To : ID_Decoded;
+//       R_Slow   : R_TRIG;
+//       T_Ramp   : TON;
+//       T_Ramp_In : Bool;
+//       VTD_Level : UInt;
+//       TCheck_PalletType   : TON;
+//    END_VAR
+// 
+//    VAR_TEMP
+//       Execute_Old : Bool;
+//       Stop_Old : Bool;
+//       i : Int;
+//       Left : Bool;
+//       Lpd1 : Bool;
+//       Center : Bool;
+//       Right : Bool;
+//       Rpd1 : Bool;
+//       Sdetect1 : Bool;
+//       Sdetect2 : Bool;
+//       HMI_Reset : Bool;
+//       ConfigAxis : Word;
+//    END_VAR
+// 
+//    VAR CONSTANT
+//       EMPTY : USInt := 0;
+//       CHEP : USInt := 1;
+//       EURO_LEFT : USInt := 2;
+//       EURO_RIGHT : USInt := 3;
+//       EURO_CENTER : USInt := 4;
+//       UNKNOWN : USInt := 5;
+//    END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// // MIGRATION DRAFT: not included in PLC compilation.
+// // Reference: Reference_Project/EConveyor_FB.scl, object EConveyor_FB.
+// // Types, globals, calls, units and behavior require manual reconciliation.
+// // See docs/TIA_Missing_Blocks.md before importing as PLC code.
+// R_Start_DB(CLK := Cnv_Control.Instruction.Execute AND NOT Execute_Old);
+// 	R_Stop_DB(CLK := Cnv_Control.Instruction.Stop AND NOT Stop_Old);
+// 
+// 	Execute_Old := Cnv_Control.Instruction.Execute;
+// 	Stop_Old := Cnv_Control.Instruction.Stop;
+// 
+// 	Cnv_Control.Enabled := Cnv_Control.Instruction.Enable;
+// 
+// 
+// 	ID_Decode_F(ID := Cnv_Control.Instruction.Transfer_From_ID,
+// 	              ID_Decoded := ID_Decoded_From);
+// 
+// 	ID_Decode_F(ID := Cnv_Control.Instruction.Transfer_To_ID,
+// 	              ID_Decoded := ID_Decoded_To);
+// 
+// 
+// 	Cnv_Control.Mode := Cnv_Control.Instruction.Mode_Change;
+// 	IF (Cnv_Control.Mode = 1 OR Cnv_Control.Mode = 5) AND NOT Cnv_Control.Error THEN
+// 	    State := 500;
+// 	END_IF;
+// 
+// 	R_TRIG_Instance(CLK := Cnv_Control.Mode = 3);
+// 	IF R_TRIG_Instance.Q OR (NOT Cnv_Control.Enabled AND NOT Cnv_Control.Error) THEN
+// 	    State := 0;
+// 	END_IF;
+// 
+// 	(*
+// 	TODO:
+// 	01. Need to add statemachine watchdog - Done
+// 	02. Extractor needs to be on same floor for pallet to be moved in manual passed Rbwd - Done
+// 	03. Complete reset state - Done
+// 	04. Add stop inputs - Done
+// 	05. Need to add variable motor speed, manual needs to be slower. - Done
+// 	06. Need to add cyclic error checking. For odd sensor combinations as well - Partially done
+// 	07. Need to add Shuttle monitor - Done
+// 	08. Need to add Task ID check and start bit check to outbound pallet move. Check direction of pallet movement based on connected Cnv.
+// 	09. Need to add checks for wrong direction of travel - Done
+// 	10. Add checks for unsafe conditions with Cnv_Inputs - Partially Done
+// 	11. Define Error codes - DOne
+// 	12. Add watchdof time to Cnv Settings - Done
+// 	13. Add self-timeout on manual
+// 	14. For shuttle in place sensor checks take into account extractor floor and safety stopper state
+// 	15. Confirm modes and states are correct (Semi-auto and maintenance as well)
+// 	16. Add the correct transfer process for the logistex-spacemaker pallet handovers.
+// 
+// 	Mode select is done via the HMI. Might add external mode select switches.
+// 
+// 	        Mode select mask:
+// 	        0: Disabled
+// 	        1: Manual
+// 	        2: Semi-Auto
+// 	        3: Auto
+// 	        4: Teach - N/A for Cnv
+// 	        5: Maintenance
+// 
+// 	Device ID Format: XXYYZZ
+// 	XX = Device type
+// 	    01   VTD
+// 	    10  Cnv_Front_of_VTD
+// 	    11  Cnv_Rear_of_VTD
+// 	    12  Cnv_On_Extractor
+// 	    20  Safety_Stop_Front_of_VTD
+// 	    21  Safety_Stop_Rear_of_VTD
+// 	YY = Floor
+// 	ZZ = VTD Connected to
+// 	Example: 110203 Conveyor at the rear of VTD 3 on level 2
+// 
+// 
+// 	 Sensor order for the conveyor:
+// 	 Lfwd Lpd1 Lpd2
+// 	  []   []   []
+// 	 ##############################
+// 	 #        Pallet Flow         #
+// 	 #         ------->>          #
+// 	 #                            #
+// 	 #                            #
+// 	 ##############################
+// 	                  []   []   []
+// 	                 Rpd2 Rpd1 Rbwd
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 	*)
+// 
+// 	    Left := Cnv_Control.Inputs.Left;
+// 	    Lpd1 := Cnv_Control.Inputs.Lpd1;
+// 	    Center := Cnv_Control.Inputs.Center;
+// 	    Right := Cnv_Control.Inputs.Right;
+// 	    Rpd1 := Cnv_Control.Inputs.Rpd1;
+// 
+// 
+// 	    Sdetect1 := Cnv_Control.Inputs.Sdetect1;
+// 	    Sdetect2 := Cnv_Control.Inputs.Sdetect2;
+// 
+// 
+// 	    IF Left OR Lpd1 OR Center OR Rpd1 OR Right THEN
+// 
+// 	        IF Left AND Right THEN
+// 	            Cnv_Control.Pallet_Type := CHEP;
+// 
+// 	        ELSIF Rpd1 AND Left AND NOT Right THEN
+// 	            Cnv_Control.Pallet_Type := #EURO_LEFT;
+// 
+// 	        ELSIF Lpd1 AND Right AND NOT Left THEN
+// 	            Cnv_Control.Pallet_Type := #EURO_RIGHT;
+// 
+// 	        ELSIF Center AND Lpd1 AND Rpd1 (*AND NOT Cnv_Control.Inputs.Rbwd AND NOT Cnv_Control.Inputs.Lfwd*)THEN
+// 	            Cnv_Control.Pallet_Type := #EURO_CENTER;
+// 
+// 	        ELSE
+// 	            Cnv_Control.Pallet_Type := UNKNOWN;
+// 	        END_IF;
+// 	        Cnv_Control.Cnv_Occupied := TRUE;
+// 	    ELSE
+// 
+// 	        Cnv_Control.Cnv_Occupied := FALSE;
+// 	        Cnv_Control.Pallet_Type := EMPTY;
+// 	    END_IF;
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 	    FOR i := 1 TO UINT_TO_INT(Settings_DB.System.Shuttle_Count) DO
+// 	        IF Shuttle_MQTT_DB.Shuttle_MQTT[i].Message.Shuttle_Status.Position_ID = Cnv_Settings.Barcode_ID THEN
+// 
+// 	                Cnv_Control.Shuttle_In_Place := TRUE;
+// 
+// 	            ELSE
+// 	                Cnv_Control.Shuttle_In_Place := FALSE;
+// 	        END_IF;
+// 	    END_FOR;
+// 
+// 
+// 	    Cnv_Control.SM_State := State;
+// 	    Cnv_Control.Stopped := NOT Cnv_Control.Running;
+// 	    IF Cnv_Control.Instruction.Inbound_Ready OR Cnv_Control.Instruction.Outbound_Ready THEN
+// 	        Cnv_Control.Ready_For_Task := TRUE;
+// 	    ELSE
+// 	        Cnv_Control.Ready_For_Task := FALSE;
+// 	    END_IF;
+// 
+// 
+// 	    CASE State OF
+// 	        0:
+// 	            Cnv_Control.Instruction.Inbound_Ready := FALSE;
+// 	            Cnv_Control.Instruction.Outbound_Ready := FALSE;
+// 	            Cnv_Control.Instruction.Transfer_Complete := 0;
+// 	            Cnv_Control.Instruction.Transfer_in_Progress := FALSE;
+// 	            Cnv_Control.Running := FALSE;
+// 	            Cnv_Control.Motor.Forward := FALSE;
+// 	            Cnv_Control.Motor.Reverse := FALSE;
+// 	            Cnv_Control.Motor.Speed := 0;
+// 	            Timer_Transfer(IN := FALSE,
+// 	                            PT := T#0S);
+// 	            T_Ramp(IN := FALSE,
+// 	                    PT := t#0s);
+// 	            T_Ramp_In := FALSE;
+// 	            IF Cnv_Control.Enabled AND (Cnv_Control.Mode = 3 OR Cnv_Control.Mode = 2) AND Cnv_Control.Error = 0 THEN
+// 	                State := 10;
+// 	            END_IF;
+// 
+// 	        10:
+// 	            IF (R_Start_DB.Q OR Cnv_Control.Instruction.Start_Transfer) AND
+// 	                Control.VTD_Sys[Id].Current_Level = Cnv_Settings.Cnv_Level AND NOT Cnv_Control.Running AND Cnv_Control.Error = 0 AND
+// 	                (Cnv_Control.Instruction.Inbound_Ready OR Cnv_Control.Instruction.Outbound_Ready)
+// 	            THEN
+// 	                Cnv_Control.Instruction.Inbound_Ready := FALSE;
+// 	                Cnv_Control.Instruction.Outbound_Ready := FALSE;
+// 	                Cnv_Control.Done := FALSE;
+// 	                Cnv_Control.Running := TRUE;
+// 	                Cnv_Control.Instruction.Transfer_in_Progress := TRUE;
+// 	                Cnv_Control.Current_Task_ID := Cnv_Control.Instruction.Task_ID;
+// 	                VTD_Level := VTD_Current_Level;
+// 	                State := 20;
+// 	            ELSIF Cnv_Control.Instruction.Start_Transfer AND Control.VTD_Sys[Id].Current_Level <> Cnv_Settings.Cnv_Level THEN
+// 
+// 	                Set_Bit_F(Bit := 2,
+// 	                            Bit_Value := 1,
+// 	                            Var := Cnv_Control.Cnv_Errors.Error_Word_3);
+// 	            END_IF;
+// 
+// 	            IF Cnv_Control.Instruction.Pallet_Allignment AND Cnv_Control.Mode = 2 THEN
+// 	                Cnv_Control.Done := FALSE;
+// 	                Cnv_Control.Running := TRUE;
+// 	                Cnv_Control.Instruction.Transfer_in_Progress := TRUE;
+// 	                State := 240;
+// 	            END_IF;
+// 
+// 
+// 	        20:
+// 	            IF ID_Decoded_From.Device_Type = 10 AND NOT Cnv_Control.Cnv_Occupied THEN
+// 	                IF Control.LCnv_Sys[ID_Decoded_From.VTD].Cnv_Level[ID_Decoded_From.Level].Cnv1.Cnv_Occupied THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
+// 	                    Cnv_Control.Motor.Forward := TRUE;
+// 	                    Transfer_Direction := 'Forward';
+// 	                    State := 30;
+// 	                END_IF;
+// 	            ELSIF ID_Decoded_From.Device_Type = 11 AND NOT Cnv_Control.Cnv_Occupied THEN
+// 	                IF Control.LCnv_Sys[ID_Decoded_From.VTD].Cnv_Level[ID_Decoded_From.Level].Cnv2.Cnv_Occupied THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
+// 	                    Cnv_Control.Motor.Reverse := TRUE;
+// 	                    Transfer_Direction := 'Backward';
+// 	                    State := 30;
+// 	                END_IF;
+// 	            ELSIF ID_Decoded_To.Device_Type = 10 AND Cnv_Control.Cnv_Occupied THEN
+// 	                IF NOT Control.LCnv_Sys[ID_Decoded_To.VTD].Cnv_Level[ID_Decoded_To.Level].Cnv1.Cnv_Occupied AND
+// 	                    Control.LCnv_Sys[ID_Decoded_To.VTD].Cnv_Level[ID_Decoded_To.Level].Cnv1.SM_State = 30 THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
+// 	                    Cnv_Control.Motor.Reverse := TRUE;
+// 	                    Transfer_Direction := 'Backward';
+// 	                    State := 30;
+// 	                END_IF;
+// 	            ELSIF ID_Decoded_To.Device_Type = 11 AND Cnv_Control.Cnv_Occupied THEN
+// 	                IF NOT Control.LCnv_Sys[ID_Decoded_To.VTD].Cnv_Level[ID_Decoded_To.Level].Cnv2.Cnv_Occupied AND
+// 	                    Control.LCnv_Sys[ID_Decoded_To.VTD].Cnv_Level[ID_Decoded_To.Level].Cnv2.SM_State = 30 THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
+// 	                    Cnv_Control.Motor.Forward := TRUE;
+// 	                    Transfer_Direction := 'Forward';
+// 	                    State := 30;
+// 	                END_IF;
+// 	            ELSE
+// 	                Set_Bit_F(Bit := 5,
+// 	                            Bit_Value := 1,
+// 	                            Var := Cnv_Control.Cnv_Errors.Error_Word_2);
+// 	            END_IF;
+// 
+// 
+// 	        30:
+// 	            IF R_Stop_DB.Q THEN
+// 	                Cnv_Control.Motor.Forward := FALSE;
+// 	                Cnv_Control.Motor.Reverse := FALSE;
+// 	                Cnv_Control.Motor.Speed := 0;
+// 	                State := 0;
+// 	            ELSIF ID_Decoded_From.Device_Type = 10 THEN
+// 	                R_Slow(CLK := Rpd1 OR (Cnv_Control.Instruction.Pallet_Type = 4 AND Center));
+// 	                IF R_Slow.Q THEN
+// 	                    T_Ramp_In := TRUE;
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 9;
+// 	                END_IF;
+// 	                T_Ramp(IN := T_Ramp_In,
+// 	                        PT := t#10s);
+// 	                IF T_Ramp.ET > Time_1_Start_Ecnv AND T_Ramp.ET <= Time_1_end_Ecnv THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 5;
+// 	                ELSIF T_Ramp.ET > Time_2_Start_Ecnv AND T_Ramp.ET <= Time_2_End_Ecnv THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 2;
+// 	                ELSIF T_Ramp.ET > Time_3_Ecnv THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed;
+// 	                    State := 35;
+// 	                END_IF;
+// 
+// 	                IF Right OR
+// 	                    (Cnv_Control.Instruction.Pallet_Type = 4 AND Rpd1) THEN
+// 	                    State := 35;
+// 	                END_IF;
+// 	            ELSIF ID_Decoded_From.Device_Type = 11 THEN
+// 	                R_Slow(CLK := Lpd1 OR (Cnv_Control.Instruction.Pallet_Type = 4 AND Center));
+// 	                IF R_Slow.Q THEN
+// 	                    T_Ramp_In := TRUE;
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 9;
+// 	                END_IF;
+// 	                T_Ramp(IN := T_Ramp_In,
+// 	                        PT := t#10s);
+// 	                IF T_Ramp.ET > Time_1_Start_Ecnv AND T_Ramp.ET <= Time_1_end_Ecnv THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 5;
+// 	                ELSIF T_Ramp.ET > Time_2_Start_Ecnv AND T_Ramp.ET <= Time_2_End_Ecnv THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 2;
+// 	                ELSIF T_Ramp.ET > Time_3_Ecnv THEN
+// 	                    Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed;
+// 	                    State := 35;
+// 	                END_IF;
+// 
+// 	                IF Left OR
+// 	                    (Cnv_Control.Instruction.Pallet_Type = 4 AND Lpd1) THEN
+// 	                    State := 35;
+// 	                END_IF;
+// 	            ELSIF ID_Decoded_To.Device_Type = 10 AND
+// 	                Control.LCnv_Sys[Id].Cnv_Level[VTD_Level].Cnv1.Inputs.Lpd1 THEN
+// 	                Cnv_Control.Motor.Forward := FALSE;
+// 	                Cnv_Control.Motor.Reverse := FALSE;
+// 	                Cnv_Control.Motor.Speed := 0;
+// 	                Cnv_Control.Done := TRUE;
+// 	                State := 0;
+// 	            ELSIF ID_Decoded_To.Device_Type = 11 AND
+// 	                Control.LCnv_Sys[Id].Cnv_Level[VTD_Level].Cnv2.Inputs.Rpd1 THEN
+// 	                Cnv_Control.Motor.Forward := FALSE;
+// 	                Cnv_Control.Motor.Reverse := FALSE;
+// 	                Cnv_Control.Motor.Speed := 0;
+// 	                Cnv_Control.Done := TRUE;
+// 	                State := 0;
+// 	            END_IF;
+// 
+// 
+// 	            Timer_Transfer(IN := TRUE,
+// 	                            PT := UINT_TO_TIME(Cnv_Settings.Transfer_Time) * 1000);
+// 
+// 	            IF Timer_Transfer.Q THEN
+// 	                Set_Bit_F(Bit := 3,
+// 	                            Bit_Value := 1,
+// 	                            Var := Cnv_Control.Cnv_Errors.Error_Word_2);
+// 	            END_IF;
+// 
+// 	        35:
+// 	            TCheck_PalletType(IN := Cnv_Control.Pallet_Type = CHEP OR Cnv_Control.Pallet_Type = #EURO_CENTER,
+// 	                               PT := UINT_TO_TIME(Cnv_Settings.Timer_Check_Pallet_Time));
+// 	            IF TCheck_PalletType.Q OR
+// 	                (ID_Decoded_From.Device_Type = 10 AND Right) OR
+// 	                (ID_Decoded_From.Device_Type = 11 AND Left)
+// 	            THEN
+// 	                TCheck_PalletType(IN := FALSE,
+// 	                        PT := t#0s);
+// 	                T_Ramp(IN := FALSE,
+// 	                        PT := t#0s);
+// 	                T_Ramp_In := FALSE;
+// 	                Cnv_Control.Motor.Forward := FALSE;
+// 	                Cnv_Control.Motor.Reverse := FALSE;
+// 	                Cnv_Control.Motor.Speed := 0;
+// 	                Cnv_Control.Done := TRUE;
+// 	                State := 240;
+// 	            END_IF;
+// 
+// 
+// 	        240:
+// 	            Timer_Transfer(IN := FALSE,
+// 	                            PT := T#0S);
+// 
+// 	            IF Cnv_Control.Pallet_Type = CHEP THEN
+// 	                Cnv_Control.Done := TRUE;
+// 	                Cnv_Control.Instruction.Transfer_Complete := TRUE;
+// 	                State := 0;
+// 
+// 	            ELSIF (Cnv_Control.Instruction.Pallet_Align_Left AND Cnv_Control.Mode = 2 AND Cnv_Control.Pallet_Type = #EURO_LEFT) OR
+// 	                (Cnv_Control.Instruction.Pallet_Type = 3 AND Cnv_Control.Mode = 3 AND Cnv_Control.Pallet_Type = #EURO_LEFT)
+// 	            THEN
+// 	                Cnv_Control.Done := TRUE;
+// 	                Cnv_Control.Instruction.Transfer_Complete := TRUE;
+// 	                Cnv_Control.Current_Task_ID := 0;
+// 	                State := 0;
+// 
+// 	            ELSIF (Cnv_Control.Instruction.Pallet_Align_Left AND Cnv_Control.Mode = 2) OR
+// 	                (Cnv_Control.Instruction.Pallet_Type = 3 AND Cnv_Control.Mode = 3)
+// 	            THEN
+// 	                State := 245;
+// 
+// 	            ELSIF (Cnv_Control.Instruction.Pallet_Align_Right AND Cnv_Control.Mode = 2 AND Cnv_Control.Pallet_Type = #EURO_RIGHT) OR
+// 	                (Cnv_Control.Instruction.Pallet_Type = 2 AND Cnv_Control.Mode = 3 AND Cnv_Control.Pallet_Type = #EURO_RIGHT)
+// 	            THEN
+// 	                Cnv_Control.Done := TRUE;
+// 	                Cnv_Control.Instruction.Transfer_Complete := TRUE;
+// 	                Cnv_Control.Current_Task_ID := 0;
+// 	                State := 0;
+// 
+// 	            ELSIF (Cnv_Control.Instruction.Pallet_Align_Right AND Cnv_Control.Mode = 2) OR
+// 	                (Cnv_Control.Instruction.Pallet_Type = 2 AND Cnv_Control.Mode = 3)
+// 	            THEN
+// 	                State := 270;
+// 
+// 
+// 	            ELSIF (Cnv_Control.Instruction.Pallet_Align_Center AND Cnv_Control.Mode = 2 AND Cnv_Control.Pallet_Type = #EURO_CENTER) OR
+// 	                (Cnv_Control.Instruction.Pallet_Type = 4 AND Cnv_Control.Mode = 3 AND Cnv_Control.Pallet_Type = #EURO_CENTER)
+// 	            THEN
+// 	                Cnv_Control.Done := TRUE;
+// 	                Cnv_Control.Instruction.Transfer_Complete := TRUE;
+// 	                Cnv_Control.Current_Task_ID := 0;
+// 	                State := 0;
+// 	            ELSIF Cnv_Control.Instruction.Pallet_Align_Center THEN
+// 	                State := 290;
+// 
+// 	            ELSIF (Cnv_Control.Instruction.Pallet_Type = 4 AND Cnv_Control.Mode = 3 AND (Cnv_Control.Pallet_Type = #EURO_LEFT OR Cnv_Control.Pallet_Type = #EURO_RIGHT)) THEN
+// 	                State := 290;
+// 
+// 	            ELSIF (Cnv_Control.Pallet_Type = EMPTY OR Cnv_Control.Pallet_Type = UNKNOWN) AND (Cnv_Control.Instruction.Pallet_Align_Left OR
+// 	                Cnv_Control.Instruction.Pallet_Align_Right OR Cnv_Control.Instruction.Pallet_Align_Center)
+// 	            THEN
+// 	                Set_Bit_F(Bit := 1,
+// 	                            Bit_Value := 1,
+// 	                            Var := Cnv_Control.Cnv_Errors.Error_Word_3);
+// 	            END_IF;
+// 	            IF NOT Cnv_Control.Instruction.Pallet_Allignment AND Cnv_Control.Mode = 2 THEN
+// 	                State := 0;
+// 	            END_IF;
+// 
+// 	        245:
+// 	            IF Cnv_Control.Pallet_Type <> #EURO_CENTER THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
+// 	                Cnv_Control.Motor.Reverse := TRUE;
+// 	                State := 250;
+// 	            ELSE
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed;
+// 	                Cnv_Control.Motor.Reverse := TRUE;
+// 	                State := 251;
+// 	            END_IF;
+// 
+// 	        250:
+// 	            T_Ramp(IN := TRUE,
+// 	                    PT := t#10s);
+// 	            IF T_Ramp.ET > T#1S AND T_Ramp.ET < T#1500mS THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 3;
+// 	            ELSIF T_Ramp.ET > T#1500mS AND T_Ramp.ET < T#2000mS THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 2;
+// 	            ELSIF T_Ramp.ET > T#2000mS THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed;
+// 	            END_IF;
+// 
+// 	            Timer_Transfer(IN := TRUE,
+// 	                            PT := UINT_TO_TIME(Cnv_Settings.Pallet_Align_Time) * 1000);
+// 
+// 	            IF Timer_Transfer.Q THEN
+// 	                Set_Bit_F(Bit := 0,
+// 	                            Bit_Value := 1,
+// 	                            Var := Cnv_Control.Cnv_Errors.Error_Word_3);
+// 	            END_IF;
+// 
+// 	            IF Cnv_Control.Pallet_Type = #EURO_LEFT OR R_Stop_DB.Q THEN
+// 	                T_Ramp(IN := FALSE,
+// 	                        PT := t#0s);
+// 	                Cnv_Control.Done := TRUE;
+// 	                Cnv_Control.Instruction.Transfer_Complete := TRUE;
+// 	                Timer_Transfer(IN := FALSE,
+// 	                                PT := T#0S);
+// 	                State := 0;
+// 	            END_IF;
+// 
+// 	        251:
+// 	            Timer_Transfer(IN := TRUE,
+// 	                            PT := UINT_TO_TIME(Cnv_Settings.Pallet_Align_Time) * 1000);
+// 
+// 	            IF Timer_Transfer.Q THEN
+// 	                Set_Bit_F(Bit := 0,
+// 	                            Bit_Value := 1,
+// 	                            Var := Cnv_Control.Cnv_Errors.Error_Word_3);
+// 	            END_IF;
+// 
+// 	            IF Cnv_Control.Pallet_Type = #EURO_LEFT OR R_Stop_DB.Q THEN
+// 	                T_Ramp(IN := FALSE,
+// 	                        PT := t#0s);
+// 	                Cnv_Control.Done := TRUE;
+// 	                Cnv_Control.Instruction.Transfer_Complete := TRUE;
+// 	                Timer_Transfer(IN := FALSE,
+// 	                                PT := T#0S);
+// 	                State := 0;
+// 	            END_IF;
+// 
+// 	        270:
+// 	            IF Cnv_Control.Pallet_Type <> #EURO_CENTER THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
+// 	                Cnv_Control.Motor.Forward := TRUE;
+// 	                State := 275;
+// 	            ELSE
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed;
+// 	                Cnv_Control.Motor.Forward := TRUE;
+// 	                State := 276;
+// 	            END_IF;
+// 
+// 	        275:
+// 	            T_Ramp(IN := TRUE,
+// 	                    PT := t#10s);
+// 	            IF T_Ramp.ET > T#1S AND T_Ramp.ET < T#1500mS THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 3;
+// 	            ELSIF T_Ramp.ET > T#1500mS AND T_Ramp.ET < T#2000mS THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 2;
+// 	            ELSIF T_Ramp.ET > T#2000mS THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed;
+// 	            END_IF;
+// 
+// 	            Timer_Transfer(IN := TRUE,
+// 	                            PT := UINT_TO_TIME(Cnv_Settings.Pallet_Align_Time) * 1000);
+// 
+// 	            IF Timer_Transfer.Q THEN
+// 	                Set_Bit_F(Bit := 0,
+// 	                            Bit_Value := 1,
+// 	                            Var := Cnv_Control.Cnv_Errors.Error_Word_3);
+// 	            END_IF;
+// 
+// 	            IF Cnv_Control.Pallet_Type = #EURO_RIGHT OR R_Stop_DB.Q THEN
+// 	                T_Ramp(IN := FALSE,
+// 	                        PT := t#0s);
+// 	                Cnv_Control.Instruction.Transfer_Complete := TRUE;
+// 	                Timer_Transfer(IN := FALSE,
+// 	                                PT := T#0S);
+// 	                Cnv_Control.Done := TRUE;
+// 	                Cnv_Control.Current_Task_ID := 0;
+// 	                State := 0;
+// 	            END_IF;
+// 
+// 	        276:
+// 	            Timer_Transfer(IN := TRUE,
+// 	                            PT := UINT_TO_TIME(Cnv_Settings.Pallet_Align_Time) * 1000);
+// 
+// 	            IF Timer_Transfer.Q THEN
+// 	                Set_Bit_F(Bit := 0,
+// 	                            Bit_Value := 1,
+// 	                            Var := Cnv_Control.Cnv_Errors.Error_Word_3);
+// 	            END_IF;
+// 
+// 	            IF Cnv_Control.Pallet_Type = #EURO_RIGHT OR R_Stop_DB.Q THEN
+// 	                T_Ramp(IN := FALSE,
+// 	                        PT := t#0s);
+// 	                Cnv_Control.Instruction.Transfer_Complete := TRUE;
+// 	                Timer_Transfer(IN := FALSE,
+// 	                                PT := T#0S);
+// 	                Cnv_Control.Done := TRUE;
+// 	                Cnv_Control.Current_Task_ID := 0;
+// 	                State := 0;
+// 	            END_IF;
+// 
+// 	        290:
+// 	            IF Cnv_Control.Pallet_Type = #EURO_LEFT THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
+// 	                Cnv_Control.Motor.Forward := TRUE;
+// 	                State := 295;
+// 	            ELSIF Cnv_Control.Pallet_Type = #EURO_RIGHT THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
+// 	                Cnv_Control.Motor.Reverse := TRUE;
+// 	                State := 295;
+// 	            END_IF;
+// 
+// 	        295:
+// 	            T_Ramp(IN := TRUE,
+// 	                    PT := t#10s);
+// 	            IF T_Ramp.ET > T#500mS AND T_Ramp.ET < T#1000mS THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 3;
+// 	            ELSIF T_Ramp.ET > T#1000mS AND T_Ramp.ET < T#1250mS THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed * 2;
+// 	            ELSIF T_Ramp.ET > T#1250mS THEN
+// 	                Cnv_Control.Motor.Speed := Cnv_Settings.Slow_Speed;
+// 	            END_IF;
+// 
+// 	            Timer_Transfer(IN := TRUE,
+// 	                            PT := UINT_TO_TIME(Cnv_Settings.Pallet_Align_Time) * 1000);
+// 
+// 	            IF Timer_Transfer.Q THEN
+// 	                Set_Bit_F(Bit := 0,
+// 	                            Bit_Value := 1,
+// 	                            Var := Cnv_Control.Cnv_Errors.Error_Word_3);
+// 	            END_IF;
+// 
+// 	            IF Cnv_Control.Pallet_Type = #EURO_CENTER OR R_Stop_DB.Q THEN
+// 	                T_Ramp(IN := FALSE,
+// 	                        PT := t#0s);
+// 	                Cnv_Control.Instruction.Transfer_Complete := TRUE;
+// 	                Cnv_Control.Done := TRUE;
+// 	                Timer_Transfer(IN := FALSE,
+// 	                                PT := T#0S);
+// 	                Cnv_Control.Current_Task_ID := 0;
+// 	                State := 0;
+// 	            END_IF;
+// 
+// 
+// 	        400:
+// 	            Cnv_Control.Instruction.Inbound_Ready := FALSE;
+// 	            Cnv_Control.Instruction.Outbound_Ready := FALSE;
+// 	            Cnv_Control.Running := FALSE;
+// 	            Cnv_Control.Motor.Speed := 0;
+// 	            Cnv_Control.Motor.Forward := FALSE;
+// 	            Cnv_Control.Motor.Reverse := FALSE;
+// 	            Cnv_Control.Stopped := TRUE;
+// 	            Cnv_Control.Instruction.Transfer_in_Progress := FALSE;
+// 	            Watchdog(IN := FALSE,
+// 	                      PT := T#0S);
+// 	            Timer_Transfer(IN := FALSE,
+// 	                            PT := T#0S);
+// 	            IEC_Timer_0_Instance_1(IN := FALSE,
+// 	                                    PT := T#0S);
+// 	            T_Ramp(IN := FALSE,
+// 	                    PT := t#0s);
+// 	            TCheck_PalletType(IN := FALSE,
+// 	                               PT := t#0s);
+// 	            T_Ramp_In := FALSE;
+// 	            IF Cnv_Control.Instruction.Reset OR Reset_All OR HMI_Reset THEN
+// 	                Cnv_Control.Warning := 0;
+// 	                Cnv_Control.Current_Task_ID := 0;
+// 	                Cnv_Control.Error := FALSE;
+// 
+// 	                Cnv_Control.Cnv_Errors.Error_Word_1 := 0;
+// 	                Cnv_Control.Cnv_Errors.Error_Word_2 := 0;
+// 	                Cnv_Control.Cnv_Errors.Error_Word_3 := 0;
+// 	                Cnv_Control.Cnv_Errors.Error_Word_4 := 0;
+// 	                State := 0;
+// 	            END_IF;
+// 
+// 	        500:
+// 	            IF Cnv_Control.Enabled THEN
+// 	                IF #VTD_Current_Level = Cnv_Settings.Cnv_Level THEN
+// 	                    IF Cnv_Control.Instruction.Foward OR ((Cnv_Control.Instruction.Start_Transfer AND CNV_In_Out AND CNV1_2_Selected = 2)
+// 	                        OR (Cnv_Control.Instruction.Start_Transfer AND NOT CNV_In_Out (*SEND = 1*)AND CNV1_2_Selected = 1))
+// 	                    THEN
+// 	                        Cnv_Control.Motor.Speed := Cnv_Settings.Manual_Speed;
+// 	                        Cnv_Control.Motor.Forward := TRUE;
+// 	                        Cnv_Control.Running := TRUE;
+// 	                    ELSIF Cnv_Control.Instruction.Backward OR ((Cnv_Control.Instruction.Start_Transfer AND NOT CNV_In_Out AND CNV1_2_Selected = 2)
+// 	                        OR (Cnv_Control.Instruction.Start_Transfer AND CNV_In_Out AND CNV1_2_Selected = 1))
+// 	                    THEN
+// 	                        Cnv_Control.Motor.Speed := Cnv_Settings.Manual_Speed;
+// 	                        Cnv_Control.Motor.Reverse := TRUE;
+// 	                        Cnv_Control.Running := TRUE;
+// 	                    ELSE
+// 	                        Cnv_Control.Motor.Speed := 0;
+// 	                        Cnv_Control.Motor.Forward := FALSE;
+// 	                        Cnv_Control.Motor.Reverse := FALSE;
+// 	                        Cnv_Control.Running := FALSE;
+// 	                    END_IF;
+// 	                END_IF;
+// 	            END_IF;
+// 	            IF Cnv_Control.Mode <> 1 AND Cnv_Control.Mode <> 5 THEN
+// 	                State := 0;
+// 	            END_IF;
+// 	    END_CASE;
+// 
+// 
+// 	    IF NOT Safety_OK_Delayed THEN
+// 	        Set_Bit_F(Bit := 0,
+// 	                    Bit_Value := 1,
+// 	                    Var := Cnv_Control.Cnv_Errors.Error_Word_1);
+// 	    END_IF;
+// 
+// 	    IF Cnv_Control.Motor.Error THEN
+// 	        Set_Bit_F(Bit := 0,
+// 	                    Bit_Value := 1,
+// 	                    Var := Cnv_Control.Cnv_Errors.Error_Word_4);
+// 	    END_IF;
+// 
+// 	    IF Cnv_Control.Instruction.Stop THEN
+// 	        Set_Bit_F(Bit := 1,
+// 	                    Bit_Value := 1,
+// 	                    Var := Cnv_Control.Cnv_Errors.Error_Word_1);
+// 	    END_IF;
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 	    IF Cnv_Control.Cnv_Errors.Error_Word_1 <> 0 OR
+// 	        Cnv_Control.Cnv_Errors.Error_Word_2 <> 0 OR
+// 	        Cnv_Control.Cnv_Errors.Error_Word_3 <> 0 OR
+// 	        Cnv_Control.Cnv_Errors.Error_Word_4 <> 0
+// 	    THEN
+// 	        Cnv_Control.Error := TRUE;
+// 	        State := 400;
+// 	    END_IF;
+// 
+// 
+// 
+// 
+// 	    Cnv_Control.Motor.Ready := (Cnv_Control.Inputs.VFD_Status.%X0 OR Cnv_Control.Inputs.VFD_Status.%X1) AND NOT Cnv_Control.Motor.Error;
+// 	    Cnv_Control.Motor.Error := Cnv_Control.Inputs.VFD_Status.%X3 OR Cnv_Control.Inputs.VFD_Status.%X7 OR NOT Cnv_Control.Inputs.VFD_Status.%X13;
+// 	    Cnv_Control.Motor.Enabled := Cnv_Control.Inputs.VFD_Status.%X2;
+// 	    Cnv_Control.Motor.Actual_Current := SCALE_X(MIN := 0,
+// 	                                                 VALUE := NORM_X(MIN := 0,
+// 	                                                                 VALUE := Cnv_Control.Inputs.VFD_ActualCurrent,
+// 	                                                                 MAX := 16384),
+// 	                                                 MAX := 1.93);
+// 
+// 
+// 	    IF MainSetpoint > 0 THEN
+// 	        Cnv_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
+// 	                                                   VALUE := NORM_X(MIN := 0,
+// 	                                                                   VALUE := Cnv_Control.Inputs.VFD_Speed_Actual,
+// 	                                                                   MAX := 16384),
+// 	                                                   MAX := 130);
+// 	        Cnv_Control.Motor.Actual_Torque := SCALE_X(MIN := 0,
+// 	                                                    VALUE := NORM_X(MIN := 0,
+// 	                                                                    VALUE := Cnv_Control.Inputs.VFD_ActualTorque,
+// 	                                                                    MAX := 16384),
+// 	                                                    MAX := 100);
+// 	    ELSIF MainSetpoint < 0 THEN
+// 	        Cnv_Control.Motor.Speed_Actual := SCALE_X(MIN := 0,
+// 	                                                   VALUE := NORM_X(MIN := 0,
+// 	                                                                   VALUE := Cnv_Control.Inputs.VFD_Speed_Actual * -1,
+// 	                                                                   MAX := 16384),
+// 	                                                   MAX := 130);
+// 	        Cnv_Control.Motor.Actual_Torque := SCALE_X(MIN := 0,
+// 	                                                    VALUE := NORM_X(MIN := 0,
+// 	                                                                    VALUE := Cnv_Control.Inputs.VFD_ActualTorque * -1,
+// 	                                                                    MAX := 16384),
+// 	                                                    MAX := 100);
+// 	    ELSE
+// 	        Cnv_Control.Motor.Speed_Actual := 0;
+// 	        Cnv_Control.Motor.Actual_Torque := 0;
+// 	    END_IF;
+// 
+// 
+// 
+// 
+// 	    IF Cnv_Control.Motor.Reverse THEN
+// 	        MainSetpoint := (SCALE_X(MIN := 0,
+// 	                                  VALUE := NORM_X(MIN := 0,
+// 	                                                  VALUE := Cnv_Control.Motor.Speed,
+// 	                                                  MAX := 130),
+// 	                                  MAX := 1865.0));
+// 	    ELSIF Cnv_Control.Motor.Forward THEN
+// 	        MainSetpoint := SCALE_X(MIN := 0,
+// 	                                 VALUE := NORM_X(MIN := 0,
+// 	                                                 VALUE := Cnv_Control.Motor.Speed,
+// 	                                                 MAX := 130),
+// 	                                 MAX := 1865.0) * -1;
+// 	    ELSE
+// 	        MainSetpoint := 0;
+// 	    END_IF;
+// 
+// 	    IF Safety_OK THEN
+// 	        ConfigAxis := 16#003F;
+// 	    ELSE
+// 	        ConfigAxis := 16#003D;
+// 	    END_IF;
+// 
+// 	    SinaSpeed(EnableAxis := Cnv_Control.Motor.Forward OR Cnv_Control.Motor.Reverse,
+// 	               AckError := Cnv_Control.Instruction.Reset OR Reset_All OR HMI_Reset,
+// 	               SpeedSp := MainSetpoint,
+// 	               RefSpeed := 1865.0,
+// 	               ConfigAxis := ConfigAxis,
+// 	               HWIDSTW := Cnv_Settings.G120_Hardware_ID,
+// 	               HWIDZSW := Cnv_Settings.G120_Hardware_ID);
+// 
+// 	HMI_Reset := Screen_DB_1.Reset_All[1] OR Screen_DB_1.Reset_All[2] OR CNV_HMI.Reset[1] OR CNV_HMI.Reset[2];
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

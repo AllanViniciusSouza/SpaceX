@@ -1,0 +1,38 @@
+DATA_BLOCK "SICK_Lector_Control_DB_3"   // InstanceDB 48  instance of "SICK_Lector_Control_FB"
+
+VAR_INPUT
+   Rd_Done : Bool;
+   Req_Done : Bool;
+   Req_Busy : Bool;
+   Error : Bool;
+   arrResult : Array[1..200] of Byte;
+   iCounter : USInt;
+   iLength : Int;
+   Error_Code : DWord;
+END_VAR
+
+VAR_OUTPUT
+   Test_Comm : Bool;
+   Enable_Trigger : Bool;
+   Disable_Trigger : Bool;
+   Enable_Req : Bool;
+   Result : String;
+   Test_OK : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Test_Comm_HMI : Bool;
+   Enable_HMI : Bool;
+   Disable_HMI : Bool;
+   Auto_Start_Lector : Bool;
+   Auto_Stop_Lector : Bool;
+END_VAR
+
+VAR
+   Timer : TON_TIME;
+   R_Done_DB : R_TRIG;
+   T_Reset_DB : TON_TIME;
+END_VAR
+
+
+// ---- start values (path : type := value)

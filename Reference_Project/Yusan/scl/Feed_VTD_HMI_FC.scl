@@ -1,0 +1,208 @@
+FUNCTION "Feed_VTD_HMI_FC"   // FC 33, author 
+
+VAR_INPUT
+   Sys_No : UInt;
+   Rem_Loc_Keys : Array[1..8] of Bool;
+   Safety_OK : Bool;
+   BCD_Test_Ok_HMI : Bool;
+   BCD_Error_HMI : Bool;
+   BCD_RdDone : Bool;
+   BCD_ReqDone : Bool;
+   BCD_ReqBusy : Bool;
+   Start_InBarcodeStation : Bool;
+   Sick_Lector_Reseult : String;
+   Level_Below_Extractor : UInt;
+   Speed_mm_s : Real;
+END_VAR
+
+VAR_OUTPUT
+   System_Busy : Bool;
+END_VAR
+
+VAR_IN_OUT
+   LE_Bypass : Bool;
+   BCD_Start_Comm_Test_HMI : Bool;
+   BCD_Enable_Trigger_HMI : Bool;
+   BCD_Disable_Trigger_HMI : Bool;
+   BCD_Execute_Function : Bool;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+//Status
+"VTD_Error_HMI" := "Control_DB".VTD_Sys[#Sys_No].Error;
+"VTD_Warning_HMI" := "Control_DB".VTD_Sys[#Sys_No].Warning <> 0;
+"VTD_Enabled_HMI" := "Control_DB".VTD_Sys[#Sys_No].Enabled;
+"VTD_Stopped_HMI" := "Control_DB".VTD_Sys[#Sys_No].Stopped;
+"VTD_Running_HMI" := "Control_DB".VTD_Sys[#Sys_No].Running;
+"VTD_Docked_HMI" := "Control_DB".VTD_Sys[#Sys_No].Docked;
+"Safety_OK_HMI" := #Safety_OK;
+"VTD_Current_Task_Type_HMI" := "Control_DB".VTD_Sys[#Sys_No].Current_Task_Type;
+"VTD_Current_Task_ID_HMI" := "Control_DB".VTD_Sys[#Sys_No].Current_Task_ID;
+"VTD_Current_Level_HMI" := "Control_DB".VTD_Sys[#Sys_No].Current_Level;
+"VTD_LP_State_HMI" := "Control_DB".VTD_Sys[#Sys_No].LP_State;
+"VTD_Pallet_Type_HMI" := "Control_DB".VTD_Sys[#Sys_No].Pallet_Loaded;
+"VTD_Shuttle_Loaded_HMI" := "Control_DB".VTD_Sys[#Sys_No].Shuttle_Loaded;
+"VTD_SM_State_HMI" := "Control_DB".VTD_Sys[#Sys_No].SM_State;
+"VTD_LE_Error_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Status.%X0;
+"VTD_AE_Error_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Status_2.%X15;
+"VTD_Encoder_Delta_HMI" := "Control_DB".VTD_Sys[#Sys_No].Encoder_Delta;
+"VTD_Moving_To_Level" := "Control_DB".VTD_Sys[#Sys_No].Instruction.Move_To_Level;
+"VTD_Cnv_Occupied" := "Control_DB".VTD_Sys[#Sys_No].Pallet_Loaded <> 0;
+"VTD_Progress_HMI" := REAL_TO_INT("Control_DB".VTD_Sys[#Sys_No].LE);
+"VTD_Motor_SetPoint_HMI" := "Control_DB".VTD_Sys[#Sys_No].Motor_Speed;
+"VTD_Motor_Actual_Speed_HMI" := INT_TO_UINT("Control_DB".VTD_Sys[#Sys_No].Motor.Speed_Actual);
+"VTD_Motor_Actual_Current_HMI" := "Control_DB".VTD_Sys[#Sys_No].Motor.Actual_Current;
+"VTD_Actual_Torque" := "Control_DB".VTD_Sys[#Sys_No].Motor.Actual_Torque;
+"VTD_Motor_Ready_HMI" := "Control_DB".VTD_Sys[#Sys_No].Motor.Ready;
+"VTD_Level_Below_Extractor" := #Level_Below_Extractor;
+"VTD_Speed_mm_s" := #Speed_mm_s;
+"VTD_Mode_HMI" := "Control_DB".VTD_Sys[#Sys_No].Mode;
+
+//MOTOR STATUS
+IF "Control_DB".VTD_Sys[#Sys_No].Motor.Error THEN
+    "VTD_Motor_Status_HMI" := 2;
+ELSIF "Control_DB".VTD_Sys[#Sys_No].Motor.Enabled THEN
+    "VTD_Motor_Status_HMI" := 1;
+ELSIF NOT "Control_DB".VTD_Sys[#Sys_No].Motor.Enabled THEN
+    "VTD_Motor_Status_HMI" := 0;
+END_IF;
+
+//BARCODE
+"BCD_Test_Ok_HMI" := #BCD_Test_Ok_HMI;
+"BCD_Error_HMI" := #BCD_Error_HMI;
+"BCD_RdDone" := #BCD_RdDone;
+"BCD_ReqDone" := #BCD_ReqDone;
+"BCD_ReqBusy" := #BCD_ReqBusy;
+"PopUps_DB".Sick_Lector_Reseult := #Sick_Lector_Reseult;
+
+//Inputs
+"VTD_Upper_Overtravel_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Upper_Overtravel;
+"VTD_Upper_Limet_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Upper_limit;
+"VTD_Ultimate_Slow_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Ultimate_SlowDown;
+"VTD_Ultimate_Creep_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Ultimate_Creep;
+"VTD_Lower_Limit_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Lower_Limit;
+"VTD_Lower_Overtravel_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Lower_Overtravel;
+"VTD_Level_Detect1_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Level_Detect1;
+"VTD_Level_Detect2_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Level_Detect2;
+"VTD_Ultimate_Slow_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Ultimate_SlowDown;
+"VTD_Ultimate_Creep_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.Ultimate_Creep;
+"VTD_DP1_Extended_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.DP1_Extended;
+"VTD_DP2_Extended_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.DP2_Extended;
+"VTD_DP1_Retracted_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.DP1_Retracted;
+"VTD_DP2_Retracted_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.DP2_Retracted;
+"Chain Slack 1" := NOT "Control_DB".VTD_Sys[#Sys_No].Inputs.Chain_Slack_1;
+"Chain Slack 2" := NOT "Control_DB".VTD_Sys[#Sys_No].Inputs.Chain_Slack_2;
+"Chain Slack 3" := NOT "Control_DB".VTD_Sys[#Sys_No].Inputs.Chain_Slack_3;
+"Chain Slack 4" := NOT "Control_DB".VTD_Sys[#Sys_No].Inputs.Chain_Slack_4;
+"VTD_AE_HMI" := "Control_DB".VTD_Sys[#Sys_No].AE;
+"VTD_LE_HMI" := "Control_DB".VTD_Sys[#Sys_No].LE;
+"VTD_LE_Speed_HMI" := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Speed;
+"LE_X_Unsafe_Position" := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Position;
+"LE_Speed" := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Speed;
+"LE_Warnings" := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Warnings;
+"LE_Quality_Decoded_Codes" := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Quality_Decoded_Codes;
+"LE_Quality_Value" := "Control_DB".VTD_Sys[#Sys_No].Inputs.LE_Quality_Value;
+
+"AE_Position_1" := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Position_1;
+"AE_Position_2" := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Position_2;
+"AE_Speed" := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Speed;
+"AE_Status_1" := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Status_1;
+"AE_Status_2" := "Control_DB".VTD_Sys[#Sys_No].Inputs.AE_Status_2;
+
+//Instruction
+IF "HMI_Box_Connected_1" <> 0 THEN
+    IF "HMI_Box_Connected_1" = (#Sys_No * 10) + 9 OR
+        ("HMI_Box_Connected_1" = (#Sys_No * 10) + "HMI_Box_Connected_1" MOD 10 AND #Rem_Loc_Keys["HMI_Box_Connected_1" MOD 10])
+    THEN
+        #System_Busy := TRUE;
+    END_IF;
+END_IF;
+IF "HMI_Box_Connected_2" <> 0 THEN
+    IF "HMI_Box_Connected_2" = (#Sys_No * 10) + 9 OR
+        ("HMI_Box_Connected_2" = (#Sys_No * 10) + "HMI_Box_Connected_2" MOD 10 AND #Rem_Loc_Keys["HMI_Box_Connected_2" MOD 10])
+    THEN
+        #System_Busy := TRUE;
+    END_IF;
+END_IF;
+
+IF NOT #System_Busy THEN
+    #System_Busy := FALSE;
+    IF NOT "Screen_DB".Charge_VTD_Commands THEN
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Reset := "VTD_Reset_HMIs" OR "Reset_All" OR "VTD_HMI".Reset[1] OR "VTD_HMI".Reset[2] OR "Screen_DB_1".Reset_All[1] OR "Screen_DB_1".Reset_All[2];
+        IF "BT_Confirmation_HMI" THEN
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Mode_Change :=
+            "Control_DB".ECnv_Sys[#Sys_No].Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[1].Cnv1.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[2].Cnv1.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[3].Cnv1.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[4].Cnv1.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[5].Cnv1.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[6].Cnv1.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[7].Cnv1.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[8].Cnv1.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[1].Cnv2.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[2].Cnv2.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[3].Cnv2.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[4].Cnv2.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[5].Cnv2.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[6].Cnv2.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[7].Cnv2.Instruction.Mode_Change :=
+            "Control_DB".LCnv_Sys[#Sys_No].Cnv_Level[8].Cnv2.Instruction.Mode_Change := "VTD_Mode_Change_HMI";
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Move_To_Level := "VTD_Move_To_Level_HMI";
+            "VTD_Move_To_Level_HMI" := 0;
+            "BT_Confirmation_HMI" := FALSE;
+        END_IF;
+        
+        "Control_DB".VTD_Sys[#Sys_No].Instruction.Enable := "VTD_Enable_HMI";
+        IF "VTD_Stop_HMI" THEN
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Stop := TRUE;
+        END_IF;
+        
+        IF "Reset_All" OR "VTD_Reset_HMIs"
+        THEN
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Stop := "VTD_Stop_HMI" := FALSE;
+        END_IF;
+        
+        IF "Control_DB".VTD_Sys[#Sys_No].Mode <> 3 THEN
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Pallet_Type := "VTD_Pallet_Type_HMI";
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Task_ID := "VTD_Task_ID_HMI";
+            
+            // IF "Control_DB".VTD_Sys[#Sys_No].Mode = 2 AND "VTD_Move_To_Level_HMI" <> 0 AND "BT_Confirmation_HMI" THEN
+            //     "Control_DB".VTD_Sys[#Sys_No].Instruction.Move_To_Level := "VTD_Move_To_Level_HMI";
+            //     "VTD_Move_To_Level_HMI" := 0;
+            //     "BT_Confirmation_HMI" := 0;
+            // END_IF;
+            
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_Up := "VTD_Manual_Up_HMI";
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_Down := "VTD_Manual_Down_HMI";
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_LP_Retract := "VTD_Manual_LP_Retract_HMIs";
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Manual_LP_Extend := "VTD_Manual_LP_Extend_HMIs";
+            "Control_DB".VTD_Sys[#Sys_No].Instruction.Start_Teach := "VTD_Start_Teach_HMIs";
+        END_IF;
+        
+        //ABSOLUTE ENCODER
+        "Control_DB".VTD_Sys[#Sys_No].Outputs.AE_Control_Word_1 := "AE_Control_Word_1";
+        "Control_DB".VTD_Sys[#Sys_No].Outputs.AE_Control_Word_2 := "AE_Control_Word_2";
+        
+        //LINEAR ENCODER
+        #LE_Bypass := "LE_Bypass";
+        
+        IF "Control_DB".VTD_Sys[#Sys_No].LE > 0 THEN
+            "LE_Bypass" := FALSE;
+        END_IF;
+        
+        //BARCODE
+        #BCD_Start_Comm_Test_HMI := "BCD_Start_Comm_Test_HMI";
+        #BCD_Enable_Trigger_HMI := "BCD_Enable_Trigger_HMI";
+        #BCD_Disable_Trigger_HMI := "BCD_Disable_Trigger_HMI";
+        #BCD_Execute_Function := "BCD_Execute_Function";
+        
+        //SICK BARCODE MANUAL TRIG FROM HMI
+        IF "Control_DB".VTD_Sys[#Sys_No].Mode <> 3 THEN
+            "Control_DB".VTDBarcode_Station[#Sys_No].Start := #Start_InBarcodeStation;
+        END_IF;
+    END_IF;
+END_IF;
+
+END_FUNCTION

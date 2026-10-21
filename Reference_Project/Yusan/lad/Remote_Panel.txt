@@ -1,0 +1,257 @@
+// FB "Remote_Panel" 17  language F_LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ID : Int;
+   Overtravel_Lower_limit : Bool;
+   Overtravel_Upper_limit : Bool;
+   Estop : Bool;
+   Reset : Bool;
+   Chain_Slack_1 : Bool;
+   Chain_Slack_2 : Bool;
+   Chain_Slack_3 : Bool;
+   Chain_Slack_4 : Bool;
+   Light Guards CX101 : Bool;
+   Light Guards CX201 : Bool;
+   Gate_1 : Bool;
+   Gate_2 : Bool;
+   EStop_Lock_1 : Bool;
+   EStop_Lock_2 : Bool;
+   Lock_Secured_1 : Bool;
+   Lock_Secured_2 : Bool;
+   EStop Level 1 : Bool;
+   EStop Level 2 : Bool;
+   EStop Level 3 : Bool;
+   EStop Level 4 : Bool;
+   EStop Level 5 : Bool;
+   EStop Level 6 : Bool;
+   EStop Level 7 : Bool;
+   EStop Level 8 : Bool;
+   Bypass : "F_Bypass_RemotePanel";
+   Material_Selection_1 : Bool;
+   MR_1 : Bool;
+   Material_Selection_2 : Bool;
+   MR_2 : Bool;
+   Overhang_Left : Bool;
+   Overhang_Right : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Safety_OK : Bool;
+   Bypass_Warning : Bool;
+   STO VTD - CH1 : Bool;
+   STO VTD - CH2 : Bool;
+   STO CONVEYOR VTD - CH1 : Bool;
+   STO CONVEYOR VTD - CH2 : Bool;
+   STO CNV VFD (Level 1,2,3 - Side1) - CH1 : Bool;
+   STO CNV VFD (Level 1,2,3 - Side1) - CH2 : Bool;
+   STO CNV VFD (Level 1,2,3 - Side2) - CH1 : Bool;
+   STO CNV VFD (Level 1,2,3 - Side2) - CH2 : Bool;
+   STO CNV VFD (Level 4,5,6 - Side1) - CH1 : Bool;
+   STO CNV VFD (Level 4,5,6 - Side1) - CH2 : Bool;
+   STO CNV VFD (Level 4,5,6 - Side2) - CH1 : Bool;
+   STO CNV VFD (Level 4,5,6 - Side2) - CH2 : Bool;
+   STO CNV VFD (Level 7,8 - Side1) - CH1 : Bool;
+   STO CNV VFD (Level 7,8 - Side1) - CH2 : Bool;
+   STO CNV VFD (Level 7,8 - Side2) - CH1 : Bool;
+   STO CNV VFD (Level 7,8 - Side2) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side1) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side1) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side2) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side2) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side1) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side1) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side2) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side2) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 7,8 - Side1) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 7,8 - Side1) - CH2 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 7,8 - Side2) - CH1 : Bool;
+   Power Enable Safety Stopper Conveyors (Level 7,8 - Side2) - CH2 : Bool;
+   VTU Hoist Brake Sfty Enable - CH1 : Bool;
+   VTU Hoist Brake Sfty Enable - CH2 : Bool;
+   ACK : Bool;
+   L1_OK : Bool;
+   L2_OK : Bool;
+   L3_OK : Bool;
+   L4_OK : Bool;
+   L5_OK : Bool;
+   L6_OK : Bool;
+   L7_OK : Bool;
+   L8_OK : Bool;
+   EStop_Lock_1_OK : Bool;
+   EStop_Lock_2_OK : Bool;
+   Lock_Secured_1_OK : Bool;
+   Lock_Secured_2_OK : Bool;
+   Safety_Ok_Conf : Bool;
+END_VAR
+
+VAR
+   Overtravel_Lower_Limit_DB : ESTOP1;
+   Overtravel_Upper_Limit_DB : ESTOP1;
+   Estop_Cabinet_DB : ESTOP1;
+   Chain_Slack_1_DB : ESTOP1;
+   Chain_Slack_2_DB : ESTOP1;
+   Chain_Slack_3_DB : ESTOP1;
+   Chain_Slack_4_DB : ESTOP1;
+   Light_Guards_CX101 : ESTOP1;
+   Light_Guards_CX201 : ESTOP1;
+   Gate_1_DB : ESTOP1;
+   Gate_2_DB : ESTOP1;
+   EStop_Lock_1_DB : ESTOP1;
+   EStop_Lock_2_DB : ESTOP1;
+   Lock_Secured_1_DB : ESTOP1;
+   Lock_Secured_2_DB : ESTOP1;
+   EStop Level 1_DB : ESTOP1;
+   EStop Level 2_DB : ESTOP1;
+   EStop Level 3_DB : ESTOP1;
+   EStop Level 4_DB : ESTOP1;
+   EStop Level 5_DB : ESTOP1;
+   EStop Level 6_DB : ESTOP1;
+   EStop Level 7_DB : ESTOP1;
+   EStop Level 8_DB : ESTOP1;
+   Mute_LG_1_DB : "SICK Safe Entry Exit HW PLC V02";
+   Distance_Materia_To_LG : DInt;
+   Mute_LG_2_DB : "SICK Safe Entry Exit HW PLC V02";
+   F_T_Delay_Sae_OK : TOF;
+   F_T_Delay_CL_4 : TOF;
+   F_T_Delay_CL_3 : TOF;
+   F_T_Delay_CL_2 : TOF;
+   F_T_Delay_CL_1 : TOF;
+   Chain_Slack_1_Filtered : Bool;
+   Chain_Slack_2_Filtered : Bool;
+   Chain_Slack_3_Filtered : Bool;
+   Chain_Slack_4_Filtered : Bool;
+   Light_Guard_Tuned : Bool;
+   Light_Guard_Tuned_Euro : Bool;
+   Light_Guard_Tuned_UK : Bool;
+   Light_Guard_Tuned_UK_Infeed : Bool;
+   Light_Guard_Tuned_Euro_Infeed : Bool;
+   Light_Guard_Tuned_Infeed : Bool;
+   F_Timer_Infeed_UK : TP;
+   F_Timer_Infeed_E : TP;
+   F_Timer_Outfeed_UK : TP;
+   F_Timer_Outfeed_E : TP;
+   Overhang_Left_DB : ESTOP1;
+   Overhang_Right_DB : ESTOP1;
+END_VAR
+
+VAR_TEMP
+   EStop_Levels_OK : Bool;
+END_VAR
+
+--- Network 1  Title: RESET CABINET
+   parts: Coil, Contact
+   operands: #Reset, #ACK
+--- Network 2  Title: Overtravel lower limit
+   parts: Contact, ESTOP1, O
+   operands: #Overtravel_Lower_limit, #Bypass.Overtravel_Lower_limit, #ACK
+--- Network 3  Title: Overtravel upper limit
+   parts: Contact, ESTOP1, O
+   operands: #Overtravel_Upper_limit, #Bypass.Overtravel_Upper_limit, #ACK
+--- Network 4  Title: Estop Main Panel
+   parts: Contact, ESTOP1, O
+   operands: #Estop, #Bypass.Estop_Main_Panel, #ACK
+--- Network 5  Title: Chain slack 1
+   parts: Coil, Contact, ESTOP1, O, TOF
+   operands: #Chain_Slack_1, #Chain_Slack_1_Filtered, #Bypass.Chain_Slack_1, #ACK
+--- Network 6  Title: Chain slack 2
+   parts: Coil, Contact, ESTOP1, O, TOF
+   operands: #Chain_Slack_2, #Chain_Slack_2_Filtered, #Bypass.Chain_Slack_2, #ACK
+--- Network 7  Title: Chain slack 3
+   parts: Coil, Contact, ESTOP1, O, TOF
+   operands: #Chain_Slack_3, #Chain_Slack_3_Filtered, #Bypass.Chain_Slack_3, #ACK
+--- Network 8  Title: Chain slack 4
+   parts: Coil, Contact, ESTOP1, O, TOF
+   operands: #Chain_Slack_4, #Chain_Slack_4_Filtered, #Bypass.Chain_Slack_4, #ACK
+--- Network 9  Title: Light Guard CX101
+   parts: Contact, ESTOP1
+   operands: #Mute_LG_1_DB.Q_Safety_release_1, #ACK
+--- Network 10  Title: Light Guard UK PALLETS - Infeed Conveyor
+   parts: Coil, Contact, TP
+   operands: #Light Guards CX101, #Material_Selection_1, #Light_Guard_Tuned_UK_Infeed
+--- Network 11  Title: Light Guard EURO PALLETS - Infeed Conveyor
+   parts: Coil, Contact, TP
+   operands: #Light Guards CX101, #Material_Selection_1, #Light_Guard_Tuned_Euro_Infeed
+--- Network 12  Title: Light Guard - OR - Infeed Conveyor - MUTE 1
+   parts: Coil, Contact, Not, O
+   operands: #Light_Guard_Tuned_UK_Infeed, #Light_Guard_Tuned_Euro_Infeed, #Light_Guard_Tuned_Infeed
+--- Network 13  Title: MUTE 1
+   CALL FB "SICK Safe Entry Exit HW PLC V02"  instance "Mute_LG_1_DB"
+   parts: Contact
+   operands: #MR_1, #Material_Selection_1, #Light_Guard_Tuned_Infeed, #ACK, #Bypass.Light Guards CX101 - CH1, FirstScan
+--- Network 14  Title: Light Guard CX201
+   parts: Contact, ESTOP1
+   operands: #Mute_LG_2_DB.Q_Safety_release_1, #ACK
+--- Network 15  Title: Light Guard UK PALLETS - Outfeed Conveyor
+   parts: Coil, Contact, TP
+   operands: #Light Guards CX201, #Material_Selection_2, #Light_Guard_Tuned_UK
+--- Network 16  Title: Light Guard EURO PALLETS - Outfeed Conveyor
+   parts: Coil, Contact, TP
+   operands: #Light Guards CX201, #Material_Selection_2, #Light_Guard_Tuned_Euro
+--- Network 17  Title: Light Guard - OR - Infeed Conveyor - MUTE 2
+   parts: Coil, Contact, Not, O
+   operands: #Light_Guard_Tuned_UK, #Light_Guard_Tuned_Euro, #Light_Guard_Tuned
+--- Network 18  Title: MUTE 2
+   CALL FB "SICK Safe Entry Exit HW PLC V02"  instance "Mute_LG_2_DB"
+   parts: Contact
+   operands: #MR_2, #Material_Selection_2, #Light_Guard_Tuned, #ACK, #Bypass.Light Guards CX201 - CH1, FirstScan
+--- Network 19  Title: Gate 1 Sensor
+   parts: Contact, ESTOP1, O
+   operands: #Gate_1, #Bypass.Gate_1, #ACK
+--- Network 20  Title: Gate 2 Sensor
+   parts: Contact, ESTOP1, O
+   operands: #Gate_2, #Bypass.Gate_2, #ACK
+--- Network 21  Title: Lock Secured 1
+   parts: Contact, ESTOP1, O
+   operands: #Lock_Secured_1, #Bypass.Lock_Secured_1, #ACK, #Lock_Secured_1_OK
+--- Network 22  Title: Lock Secured 2
+   parts: Contact, ESTOP1, O
+   operands: #Lock_Secured_2, #Bypass.Lock_Secured_2, #ACK, #Lock_Secured_2_OK
+--- Network 23  Title: Idem Lock EStop 1
+   parts: Contact, ESTOP1, O
+   operands: #EStop_Lock_1, #Bypass.EStop_Lock_1, #ACK, #EStop_Lock_1_OK
+--- Network 24  Title: Idem Lock EStop 2
+   parts: Contact, ESTOP1, O
+   operands: #EStop_Lock_2, #Bypass.EStop_Lock_2, #ACK, #EStop_Lock_2_OK
+--- Network 25  Title: ESTOP LEVEL 1
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 1, #Bypass.EStop Level 1, #ACK
+--- Network 26  Title: ESTOP LEVEL 2
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 2, #Bypass.EStop Level 2, #ACK
+--- Network 27  Title: ESTOP LEVEL 3
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 3, #Bypass.EStop Level 3, #ACK
+--- Network 28  Title: ESTOP LEVEL 4
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 4, #Bypass.EStop Level 4, #ACK
+--- Network 29  Title: ESTOP LEVEL 5
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 5, #Bypass.EStop Level 5, #ACK
+--- Network 30  Title: ESTOP LEVEL 6
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 6, #Bypass.EStop Level 6, #ACK
+--- Network 31  Title: ESTOP LEVEL 7
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 7, #Bypass.EStop Level 7, #ACK
+--- Network 32  Title: ESTOP LEVEL 8
+   parts: Contact, ESTOP1, O
+   operands: #EStop Level 8, #Bypass.EStop Level 8, #ACK
+--- Network 33  Title: STOP LEVEL
+   parts: Coil, Contact
+   operands: #EStop Level 1_DB.Q, #EStop_Lock_1_DB.Q, #EStop_Lock_2_DB.Q, #Lock_Secured_1_DB.Q, #Lock_Secured_2_DB.Q, #L1_OK, #EStop Level 2_DB.Q, #L2_OK, #EStop Level 3_DB.Q, #L3_OK, #EStop Level 4_DB.Q, #L4_OK, #EStop Level 5_DB.Q, #L5_OK, #EStop Level 6_DB.Q, #L6_OK, #EStop Level 7_DB.Q, #L7_OK, #EStop Level 8_DB.Q, #L8_OK, #EStop_Levels_OK
+--- Network 34  Title: OVERHANG LEFT
+   parts: Contact, ESTOP1
+   operands: #Overhang_Left, #ACK
+--- Network 35  Title: OVERHANG RIGHT
+   parts: Contact, ESTOP1
+   operands: #Overhang_Right, #ACK
+--- Network 36  Title: Safety OK
+   parts: Coil, Contact, Ge, Le, O, TOF
+   operands: #Overtravel_Lower_Limit_DB.Q, #Overtravel_Upper_Limit_DB.Q, #Estop_Cabinet_DB.Q, #Chain_Slack_1_DB.Q, #Chain_Slack_2_DB.Q, #Chain_Slack_3_DB.Q, #Chain_Slack_4_DB.Q, #EStop_Levels_OK, #Gate_1_DB.Q, #EStop_Lock_1_DB.Q, #Lock_Secured_1_DB.Q, #Overhang_Left_DB.Q, #Overhang_Right_DB.Q, #Light_Guards_CX101.Q, #Light_Guards_CX201.Q, #Gate_2_DB.Q, #EStop_Lock_2_DB.Q, #Lock_Secured_2_DB.Q, #ID, #Safety_OK, #Safety_Ok_Conf
+--- Network 37  Title: Bypass Warning
+   parts: Coil, Contact, O
+   operands: #Bypass.Overtravel_Lower_limit, #Bypass.Overtravel_Upper_limit, #Bypass.Estop_Main_Panel, #Bypass.Chain_Slack_1, #Bypass.Chain_Slack_2, #Bypass.Chain_Slack_3, #Bypass.Chain_Slack_4, #Bypass.Light Guards CX101 - CH1, #Bypass.Light Guards CX201 - CH1, #Bypass_Warning
+--- Network 38  Title: Enable outputs
+   parts: Coil, Contact
+   operands: #Safety_OK, #STO VTD - CH1, #STO VTD - CH2, #STO CONVEYOR VTD - CH1, #STO CONVEYOR VTD - CH2, #STO CNV VFD (Level 1,2,3 - Side1) - CH1, #STO CNV VFD (Level 1,2,3 - Side1) - CH2, #STO CNV VFD (Level 1,2,3 - Side2) - CH1, #STO CNV VFD (Level 1,2,3 - Side2) - CH2, #STO CNV VFD (Level 4,5,6 - Side1) - CH1, #STO CNV VFD (Level 4,5,6 - Side1) - CH2, #STO CNV VFD (Level 4,5,6 - Side2) - CH1, #STO CNV VFD (Level 4,5,6 - Side2) - CH2, #STO CNV VFD (Level 7,8 - Side1) - CH1, #STO CNV VFD (Level 7,8 - Side1) - CH2, #STO CNV VFD (Level 7,8 - Side2) - CH1, #STO CNV VFD (Level 7,8 - Side2) - CH2, #VTU Hoist Brake Sfty Enable - CH1, #VTU Hoist Brake Sfty Enable - CH2, #Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side1) - CH1, #Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side1) - CH2, #Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side2) - CH1, #Power Enable Safety Stopper Conveyors (Level 1,2,3 - Side2) - CH2, #Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side1) - CH1, #Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side1) - CH2, #Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side2) - CH1, #Power Enable Safety Stopper Conveyors (Level 4,5,6 - Side2) - CH2, #Power Enable Safety Stopper Conveyors (Level 7,8 - Side1) - CH1, #Power Enable Safety Stopper Conveyors (Level 7,8 - Side1) - CH2, #Power Enable Safety Stopper Conveyors (Level 7,8 - Side2) - CH1, #Power Enable Safety Stopper Conveyors (Level 7,8 - Side2) - CH2

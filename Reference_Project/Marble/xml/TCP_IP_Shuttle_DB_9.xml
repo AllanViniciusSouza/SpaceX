@@ -1,0 +1,715 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-19T18:41:33.6432055Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.GlobalDB ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <DBAccessibleFromOPCUA>true</DBAccessibleFromOPCUA>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Static">
+    <Member Name="enable" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <StartValue>TRUE</StartValue>
+    </Member>
+    <Member Name="send" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="sendDataLength" Datatype="UDInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <StartValue>0</StartValue>
+    </Member>
+    <Member Name="receiveDataLength" Datatype="UDInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <StartValue>16#FFFF_FFFF</StartValue>
+    </Member>
+    <Member Name="tcpConfig" Datatype="&quot;LCom_typeConfig&quot;" Remanence="Retain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="connection" Datatype="Struct">
+            <Member Name="interfaceID" Datatype="HW_ANY">
+              <StartValue>65164</StartValue>
+            </Member>
+            <Member Name="connectionID" Datatype="CONN_ANY">
+              <StartValue>109</StartValue>
+            </Member>
+            <Member Name="comService" Datatype="USInt">
+              <StartValue>1</StartValue>
+            </Member>
+            <Member Name="isClient" Datatype="Bool">
+              <StartValue>False</StartValue>
+            </Member>
+            <Member Name="connectType" Datatype="USInt">
+              <StartValue>1</StartValue>
+            </Member>
+            <Member Name="localPort" Datatype="UInt">
+              <StartValue>4009</StartValue>
+            </Member>
+            <Member Name="partnerPort" Datatype="UInt">
+              <StartValue>4009</StartValue>
+            </Member>
+            <Member Name="partnerIP" Datatype="IP_V4" Version="1.0">
+              <Sections>
+                <Section Name="None">
+                  <Member Name="ADDR" Datatype="Array[1..4] of Byte">
+                    <Subelement Path="1">
+                      <StartValue>10</StartValue>
+                    </Subelement>
+                    <Subelement Path="2">
+                      <StartValue>0</StartValue>
+                    </Subelement>
+                    <Subelement Path="3">
+                      <StartValue>34</StartValue>
+                    </Subelement>
+                    <Subelement Path="4">
+                      <StartValue>219</StartValue>
+                    </Subelement>
+                  </Member>
+                </Section>
+              </Sections>
+            </Member>
+            <Member Name="partnerQDN" Datatype="String [254]" />
+            <Member Name="acceptUnknownPartner" Datatype="Bool">
+              <StartValue>TRUE</StartValue>
+            </Member>
+            <Member Name="lifeSignCycleTime" Datatype="Time">
+              <StartValue>T#1s</StartValue>
+            </Member>
+          </Member>
+          <Member Name="sender" Datatype="Struct">
+            <Member Name="cycleTime" Datatype="Time" />
+            <Member Name="ackTimeout" Datatype="Time" />
+          </Member>
+          <Member Name="timeSync" Datatype="Struct">
+            <Member Name="usePartnerTimestamps" Datatype="Bool" />
+            <Member Name="sendMode" Datatype="USInt" />
+            <Member Name="cycleTime" Datatype="Time" />
+            <Member Name="sendAtTimeOfDay" Datatype="Time_Of_Day" />
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="tcpDiagnostics" Datatype="&quot;LCom_typeDiagnostics&quot;" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Sections>
+        <Section Name="None">
+          <Member Name="localConfig" Datatype="Struct">
+            <Member Name="connection" Datatype="Struct">
+              <Member Name="interfaceID" Datatype="HW_ANY" />
+              <Member Name="connectionID" Datatype="CONN_ANY" />
+              <Member Name="comService" Datatype="USInt" />
+              <Member Name="isClient" Datatype="Bool" />
+              <Member Name="connectType" Datatype="USInt" />
+              <Member Name="localPort" Datatype="UInt" />
+              <Member Name="localIP" Datatype="IP_V4" Version="1.0">
+                <Sections>
+                  <Section Name="None">
+                    <Member Name="ADDR" Datatype="Array[1..4] of Byte" />
+                  </Section>
+                </Sections>
+              </Member>
+              <Member Name="partnerPort" Datatype="UInt" />
+              <Member Name="partnerIP" Datatype="IP_V4" Version="1.0">
+                <Sections>
+                  <Section Name="None">
+                    <Member Name="ADDR" Datatype="Array[1..4] of Byte" />
+                  </Section>
+                </Sections>
+              </Member>
+              <Member Name="partnerQDN" Datatype="String [254]" />
+              <Member Name="acceptUnknownPartner" Datatype="Bool" />
+              <Member Name="useLComProtocol" Datatype="Bool" />
+              <Member Name="lifeSignCycleTime" Datatype="Time" />
+            </Member>
+            <Member Name="sender" Datatype="Struct">
+              <Member Name="cycleTime" Datatype="Time" />
+              <Member Name="ackTimeout" Datatype="Time" />
+            </Member>
+            <Member Name="timeSync" Datatype="Struct">
+              <Member Name="usePartnerTimestamps" Datatype="Bool" />
+              <Member Name="sendMode" Datatype="USInt" />
+              <Member Name="cycleTime" Datatype="Time" />
+              <Member Name="sendAtTimeOfDay" Datatype="Time_Of_Day" />
+            </Member>
+            <Member Name="sizeOfSendBuffer" Datatype="UDInt" />
+            <Member Name="sizeOfReceiveBuffer" Datatype="UDInt" />
+          </Member>
+          <Member Name="partnerConfig" Datatype="Struct">
+            <Member Name="connnection" Datatype="Struct">
+              <Member Name="lifeSignCycleTime" Datatype="Time" />
+            </Member>
+            <Member Name="sender" Datatype="Struct">
+              <Member Name="cycleTime" Datatype="Time" />
+              <Member Name="ackTimeout" Datatype="Time" />
+            </Member>
+            <Member Name="timeSync" Datatype="Struct">
+              <Member Name="usePartnerTimestamps" Datatype="Bool" />
+              <Member Name="sendMode" Datatype="USInt" />
+            </Member>
+            <Member Name="sizeOfSendBuffer" Datatype="UDInt" />
+            <Member Name="sizeOfReceiveBuffer" Datatype="UDInt" />
+          </Member>
+          <Member Name="statistics" Datatype="Struct">
+            <Member Name="avgCallCycle" Datatype="Real" />
+            <Member Name="avgReceiveMsgCycle" Datatype="Real" />
+            <Member Name="maxReceiveMsgCycle" Datatype="Time" />
+            <Member Name="LComProtocolUsed" Datatype="Bool" />
+            <Member Name="activeLComVersion" Datatype="USInt" />
+            <Member Name="avgMsgSendingTime" Datatype="Real" />
+            <Member Name="maxMsgSendingTime" Datatype="Time" />
+            <Member Name="avgMsgReceivingTime" Datatype="Real" />
+            <Member Name="maxMsgReceivingTime" Datatype="Time" />
+            <Member Name="numberOfSentMessages" Datatype="UDInt" />
+            <Member Name="numberOfReceivedMessages" Datatype="UDInt" />
+            <Member Name="totalAckTimeouts" Datatype="UInt" />
+            <Member Name="totalSendCycleViolations" Datatype="UInt" />
+            <Member Name="totalReceiveCycleViolations" Datatype="UInt" />
+            <Member Name="totalReconnects" Datatype="UInt" />
+            <Member Name="lastConnect" Datatype="DTL" Version="1.0" />
+            <Member Name="lastTimeSync" Datatype="DTL" Version="1.0" />
+          </Member>
+          <Member Name="bufferIndex" Datatype="USInt" />
+          <Member Name="buffer" Datatype="Array[0..63] of Struct">
+            <Member Name="status" Datatype="Word" />
+            <Member Name="timestamp" Datatype="DTL" Version="1.0" />
+            <Member Name="isActive" Datatype="Bool" />
+            <Member Name="subFunctionErrorID" Datatype="Word" />
+            <Member Name="additionalValue1" Datatype="Real" />
+            <Member Name="additionalValue2" Datatype="Real" />
+            <Member Name="additionalValue3" Datatype="Real" />
+            <Member Name="additionalValue4" Datatype="Time" />
+          </Member>
+        </Section>
+      </Sections>
+    </Member>
+    <Member Name="sendBuffer" Datatype="Array[0..59] of Byte" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">true</BooleanAttribute>
+      </AttributeList>
+      <Subelement Path="0">
+        <Comment>
+          <MultiLanguageText Lang="en-US">STX</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="1">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Size</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="2">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Type</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="3">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Request ID 1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="4">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Request ID 2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="5">
+        <Comment>
+          <MultiLanguageText Lang="en-US">PID 1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="6">
+        <Comment>
+          <MultiLanguageText Lang="en-US">PID 2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="7">
+        <Comment>
+          <MultiLanguageText Lang="en-US">PID 3</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="8">
+        <Comment>
+          <MultiLanguageText Lang="en-US">PID 4</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="9">
+        <Comment>
+          <MultiLanguageText Lang="en-US">DID 1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="10">
+        <Comment>
+          <MultiLanguageText Lang="en-US">DID 2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="11">
+        <Comment>
+          <MultiLanguageText Lang="en-US">DID 3</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="12">
+        <Comment>
+          <MultiLanguageText Lang="en-US">DID 4</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="13">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Distance remaining 1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="14">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Distance remaining 2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="15">
+        <Comment>
+          <MultiLanguageText Lang="en-US">X</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="16">
+        <Comment>
+          <MultiLanguageText Lang="en-US">X</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="17">
+        <Comment>
+          <MultiLanguageText Lang="en-US">X</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="18">
+        <Comment>
+          <MultiLanguageText Lang="en-US">X</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="19">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Y</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="20">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Y</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="21">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Y</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="22">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Y</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="23">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Floor</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="24">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Mode</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="25">
+        <Comment>
+          <MultiLanguageText Lang="en-US">State</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="26">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Load State</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="27">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="28">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="29">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="30">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="31">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E3</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="32">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E3</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="33">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E4</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="34">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E4</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="35">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E5</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="36">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E5</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="37">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E6</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="38">
+        <Comment>
+          <MultiLanguageText Lang="en-US">E6</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="39">
+        <Comment>
+          <MultiLanguageText Lang="en-US">I1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="40">
+        <Comment>
+          <MultiLanguageText Lang="en-US">I1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="41">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Q1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="42">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Q1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="43">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Barcode 1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="44">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Barcode 2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="45">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Barcode 3</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="46">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Barcode 4</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="47">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Pallet Type</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="48">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Energy Level</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="49">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Battery Voltage</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="50">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Battery Voltage</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="51">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Paused</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="52">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Last order 1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="53">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Last order 2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="54">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Current order 1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="55">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Current order 2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="56">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Last finished 1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="57">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Last Finished 2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="58">
+        <Comment>
+          <MultiLanguageText Lang="en-US">CS</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="59">
+        <Comment>
+          <MultiLanguageText Lang="en-US">ETX</MultiLanguageText>
+        </Comment>
+      </Subelement>
+    </Member>
+    <Member Name="SendBufferSize" Datatype="UInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <StartValue>60</StartValue>
+    </Member>
+    <Member Name="receiveBuffer" Datatype="Array[0..27] of Byte" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <Subelement Path="0">
+        <Comment>
+          <MultiLanguageText Lang="en-US">STX</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="1">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Size (length of payload)</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="2">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Type</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="3">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Request ID 1</MultiLanguageText>
+        </Comment>
+      </Subelement>
+      <Subelement Path="4">
+        <Comment>
+          <MultiLanguageText Lang="en-US">Request ID 2</MultiLanguageText>
+        </Comment>
+      </Subelement>
+    </Member>
+    <Member Name="receiveBufferSize" Datatype="UInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+      <StartValue>28</StartValue>
+    </Member>
+    <Member Name="connected" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="sending" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="dataReceived" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="receivedDataLength" Datatype="UDInt" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="busy" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="error" Datatype="Bool" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+    <Member Name="status" Datatype="Word" Remanence="NonRetain" Accessibility="Public">
+      <AttributeList>
+        <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalVisible" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="ExternalWritable" SystemDefined="true">true</BooleanAttribute>
+        <BooleanAttribute Name="SetPoint" SystemDefined="true">false</BooleanAttribute>
+      </AttributeList>
+    </Member>
+  </Section>
+</Sections></Interface>
+      <IsOnlyStoredInLoadMemory>false</IsOnlyStoredInLoadMemory>
+      <IsRetainMemResEnabled>false</IsRetainMemResEnabled>
+      <IsWriteProtectedInAS>false</IsWriteProtectedInAS>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <MemoryReserve>100</MemoryReserve>
+      <Name>TCP_IP_Shuttle_DB_9</Name>
+      <Namespace />
+      <Number>383</Number>
+      <ProgrammingLanguage>DB</ProgrammingLanguage>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <MultilingualText ID="3" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="4" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.GlobalDB>
+</Document>

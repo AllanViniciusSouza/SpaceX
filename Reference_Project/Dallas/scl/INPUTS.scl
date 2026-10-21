@@ -1,0 +1,209 @@
+FUNCTION "INPUTS"   // FC 25, author 
+
+VAR_TEMP
+   Barcode_Inbound : Array[1..16] of Char;
+   Barcode_Outbound : Array[1..16] of Char;
+   Empty_code : Array[1..16] of Char;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+REGION INBOUND CONVEYOR
+    "Control_DB".Inbound_Cnv.Inputs."Pallet Detect 1" := NOT "Inbound Conveyor - Back Sensor";
+    "Control_DB".Inbound_Cnv.Inputs."Pallet Detect 2" := NOT "Inbound Conveyor - Front Sensor";
+    "Control_DB".Inbound_Cnv.Inputs."Fork Lift Detect":= "Fork Lift Detect_Inbound";
+END_REGION
+
+REGION OUTBOUND CONVEYOR
+    "Control_DB".Outbound_Cnv.Inputs."Pallet Detect" := "Outbound Conveyor";
+    "Control_DB".Outbound_Cnv.Inputs."Fork Lift Detect" := "Fork Lift Detect_Outbound";
+END_REGION
+    
+REGION EXTRACTOR CONVEYOR
+    "Control_DB".ECnv_Control.Inputs."Pallet Detect 1" := "Pallet in Position Front VTD";
+    "Control_DB".ECnv_Control.Inputs."Pallet Detect 2" := "Pallet in Position Rear VTD";
+    "Control_DB".ECnv_Control.Inputs.Sdetect1 := "Shuttle in Position Front VTD";
+    "Control_DB".ECnv_Control.Inputs.Sdetect2 := "Shuttle in Position Rear VTD";
+END_REGION
+
+REGION BUFFER CONVEYOR
+    //BUFFER CONVEYOR LEVEL 1
+    "Control_DB".LCnv_Control[1].Inputs."Pallet Detect 1" := "Buffer Conveyor 1 - Pallet present 1";
+    "Control_DB".LCnv_Control[1].Inputs."Pallet Detect 2" := "Buffer Conveyor 1 - Pallet present 2";
+    "Control_DB".LCnv_Control[1].Inputs."Pallet Detect 3" := "Buffer Conveyor 1 - Pallet present 3";
+    "Control_DB".LCnv_Control[1].Inputs.Sdetect1 := "Buffer Conveyor 1 - Shuttle present 1";
+    "Control_DB".LCnv_Control[1].Inputs.Sdetect2 := "Buffer Conveyor 1 - Shuttle present 2";
+    "Control_DB".LCnv_Control[1].Inputs.SftyPinUp := "Buffer Conveyor 1 - Safety Pin Up";
+    "Control_DB".LCnv_Control[1].Inputs.SftyPinDown := "Buffer Conveyor 1 - Safety Pin Down";
+    //BUFFER CONVEYOR LEVEL 2
+    "Control_DB".LCnv_Control[2].Inputs."Pallet Detect 1" := "Buffer Conveyor 2 - Pallet present 1";
+    "Control_DB".LCnv_Control[2].Inputs."Pallet Detect 2" := "Buffer Conveyor 2 - Pallet present 2";
+    "Control_DB".LCnv_Control[2].Inputs."Pallet Detect 3" := "Buffer Conveyor 2 - Pallet present 3";
+    "Control_DB".LCnv_Control[2].Inputs.Sdetect1 := "Buffer Conveyor 2 - Shuttle present 1";
+    "Control_DB".LCnv_Control[2].Inputs.Sdetect2 := "Buffer Conveyor 2 - Shuttle present 2";
+    "Control_DB".LCnv_Control[2].Inputs.SftyPinUp := "Buffer Conveyor 2 - Safety Pin Up";
+    "Control_DB".LCnv_Control[2].Inputs.SftyPinDown := "Buffer Conveyor 2 - Safety Pin Down";
+    //BUFFER CONVEYOR LEVEL 3
+    "Control_DB".LCnv_Control[3].Inputs."Pallet Detect 1" := "Buffer Conveyor 3 - Pallet present 1";
+    "Control_DB".LCnv_Control[3].Inputs."Pallet Detect 2" := "Buffer Conveyor 3 - Pallet present 2";
+    "Control_DB".LCnv_Control[3].Inputs."Pallet Detect 3" := "Buffer Conveyor 3 - Pallet present 3";
+    "Control_DB".LCnv_Control[3].Inputs.Sdetect1 := "Buffer Conveyor 3 - Shuttle present 1";
+    "Control_DB".LCnv_Control[3].Inputs.Sdetect2 := "Buffer Conveyor 3 - Shuttle present 2";
+    "Control_DB".LCnv_Control[3].Inputs.SftyPinUp := "Buffer Conveyor 3 - Safety Pin Up";
+    "Control_DB".LCnv_Control[3].Inputs.SftyPinDown := "Buffer Conveyor 3 - Safety Pin Down";
+END_REGION
+
+REGION VTD
+    "Control_DB".VTD_Control.Inputs.Upper_limit := "Upper Ultimate";
+    "Control_DB".VTD_Control.Inputs.Lower_Limit := "Lower Ultimate";
+    "Control_DB".VTD_Control.Inputs.Level_Detect1 := "Docking Sensor Front";
+    "Control_DB".VTD_Control.Inputs.Level_Detect2 := "Docking Sensor Rear";
+    "Control_DB".VTD_Control.Inputs.Ultimate_Slow := "Slowdown";
+    "Control_DB".VTD_Control.Inputs.Ultimate_Creep := "Creep speed";
+    "Control_DB".VTD_Control.Inputs.LPL_Extended := "Locking Pins Extended left";
+    "Control_DB".VTD_Control.Inputs.LPR_Extended := "Locking Pins Extended Right";
+    "Control_DB".VTD_Control.Inputs.LPL_Retracted := "Locking Pins Retracted left";
+    "Control_DB".VTD_Control.Inputs.LPR_Retracted := "Locking Pins Retracted Right";
+END_REGION
+
+REGION POPUP CONVEYORS
+    "Control_DB".PopUp_Cnv[1].Inputs."Lift Up" := "PopUp Conveyor 1 - Sensor Up";
+    "Control_DB".PopUp_Cnv[1].Inputs."Lift Down" := "PopUp Conveyor 1 - Sensor Down";
+    "Control_DB".PopUp_Cnv[2].Inputs."Lift Up" := "PopUp Conveyor 2 - Sensor Up";
+    "Control_DB".PopUp_Cnv[2].Inputs."Lift Down" := "PopUp Conveyor 2 - Sensor Down";
+    "Control_DB".PopUp_Cnv[3].Inputs."Lift Up" := "PopUp Conveyor 3 - Sensor Up";
+    "Control_DB".PopUp_Cnv[3].Inputs."Lift Down" := "PopUp Conveyor 3 - Sensor Down";
+    "Control_DB".PopUp_Cnv[4].Inputs."Lift Up" := "PopUp Conveyor 4 - Sensor Up";
+    "Control_DB".PopUp_Cnv[4].Inputs."Lift Down" := "PopUp Conveyor 4 - Sensor Down";
+END_REGION
+
+REGION VFD HARDWARE ID
+    //Buffer conveyors
+    "Settings_DB".LCnv_Settings[1].G120_Hardware_ID := ;
+    "Settings_DB".LCnv_Settings[2].G120_Hardware_ID := ;
+    "Settings_DB".LCnv_Settings[3].G120_Hardware_ID := ;
+    //Extractor conveyor
+    "Settings_DB".ECnv_Settings.G120_Hardware_ID := ;
+    //IO Conveyors
+    "Settings_DB".Inbound_Cnv_Settings.G120_Hardware_ID := ;
+    "Settings_DB".Outbound_Cnv_Settings.G120_Hardware_ID := ;
+    //PopUp conveyor 1
+    "Settings_DB".PopUp_Cnv_Settings[1].Roller_G120_Hardware_ID := ;
+    "Settings_DB".Pick_Cnv_Settings.G120_Hardware_ID := ;
+    "Settings_DB".PopUp_Cnv_Settings[1].Lift_G120_Hardware_ID := ;
+    //PopUp conveyor 2
+    "Settings_DB".PopUp_Cnv_Settings[2].Roller_G120_Hardware_ID := ;
+    "Settings_DB".PopUp_Cnv_Settings[2].Chain_G120_Hardware_ID := ;
+    "Settings_DB".PopUp_Cnv_Settings[2].Lift_G120_Hardware_ID := ;
+    //PopUp conveyor 3
+    "Settings_DB".PopUp_Cnv_Settings[3].Roller_G120_Hardware_ID := ;
+    "Settings_DB".PopUp_Cnv_Settings[3].Chain_G120_Hardware_ID := ;
+    "Settings_DB".PopUp_Cnv_Settings[3].Lift_G120_Hardware_ID := ;
+    //PopUp conveyor 4
+    "Settings_DB".PopUp_Cnv_Settings[4].Roller_G120_Hardware_ID := ;
+    "Settings_DB".PopUp_Cnv_Settings[4].Lift_G120_Hardware_ID := ;
+END_REGION
+
+REGION LEUZE/SICK BARCODE LECTORS
+    #Barcode_Inbound[1] := "In Lector_Data - Byte 1";
+    #Barcode_Inbound[2] := "In Lector_Data - Byte 2";
+    #Barcode_Inbound[3] := "In Lector_Data - Byte 3";
+    #Barcode_Inbound[4] := "In Lector_Data - Byte 4";
+    #Barcode_Inbound[5] := "In Lector_Data - Byte 5";
+    #Barcode_Inbound[6] := "In Lector_Data - Byte 6";
+    #Barcode_Inbound[7] := "In Lector_Data - Byte 7";
+    #Barcode_Inbound[8] := "In Lector_Data - Byte 8";
+    #Barcode_Inbound[9] := "In Lector_Data - Byte 9";
+    #Barcode_Inbound[10] := "In Lector_Data - Byte 10";
+    #Barcode_Inbound[11] := "In Lector_Data - Byte 11";
+    #Barcode_Inbound[12] := "In Lector_Data - Byte 12";
+    #Barcode_Inbound[13] := "In Lector_Data - Byte 13";
+    #Barcode_Inbound[14] := "In Lector_Data - Byte 14";
+    #Barcode_Inbound[15] := "In Lector_Data - Byte 15";
+    #Barcode_Inbound[16] := "In Lector_Data - Byte 16";
+    
+    #Barcode_Outbound[1] := "Out Lector_Data - Byte 1";
+    #Barcode_Outbound[2] := "Out Lector_Data - Byte 2";
+    #Barcode_Outbound[3] := "Out Lector_Data - Byte 3";
+    #Barcode_Outbound[4] := "Out Lector_Data - Byte 4";
+    #Barcode_Outbound[5] := "Out Lector_Data - Byte 5";
+    #Barcode_Outbound[6] := "Out Lector_Data - Byte 6";
+    #Barcode_Outbound[7] := "Out Lector_Data - Byte 7";
+    #Barcode_Outbound[8] := "Out Lector_Data - Byte 8";
+    #Barcode_Outbound[9] := "Out Lector_Data - Byte 9";
+    #Barcode_Outbound[10] := "Out Lector_Data - Byte 10";
+    #Barcode_Outbound[11] := "Out Lector_Data - Byte 11";
+    #Barcode_Outbound[12] := "Out Lector_Data - Byte 12";
+    #Barcode_Outbound[13] := "Out Lector_Data - Byte 13";
+    #Barcode_Outbound[14] := "Out Lector_Data - Byte 14";
+    #Barcode_Outbound[15] := "Out Lector_Data - Byte 15";
+    #Barcode_Outbound[16] := "Out Lector_Data - Byte 16";
+    
+    
+    
+    
+    IF "Control_DB".OutBarcode_Station.Running AND #Barcode_Outbound <> "Control_DB".OutBarcode_Station.Barcode_Old THEN
+        "Control_DB".Outbound_Cnv.Inputs.Barcode := CharsArrayToString(CharsArray := #Barcode_Outbound, Lenght := 16);
+        "Control_DB".OutBarcode_Station.Barcode_Old := #Barcode_Outbound;
+    ELSE
+        "Control_DB".OutBarcode_Station.Barcode := '';
+    END_IF;
+    
+    IF "Control_DB".VTDBarcode_Station.Running AND "SICK_Barcode_DB".Result <> "Control_DB".VTDBarcode_Station.Barcode_Old THEN
+        "Control_DB".VTD_Control.Inputs."Barcode 1" := "SICK_Barcode_DB".Result;
+        // "Control_DB".VTD_Control.Inputs."Barcode 2'" := SICK_Barcode_DB".Result;
+        "Control_DB".VTDBarcode_Station.Barcode_Old := "SICK_Barcode_DB".Result;
+    ELSE
+        "Control_DB".VTD_Control.Inputs."Barcode 1" :=
+        "Control_DB".VTD_Control.Inputs."Barcode 2'" :='';
+    END_IF;
+    
+    // IF "Reset_All" THEN
+    //     "Control_DB".InBarcode_Station."Reading Gate number OLD" := '';
+    //     "Control_DB".OutBarcode_Station.Barcode_Old := #Empty_code;
+    //     "Control_DB".VTD_Control.Inputs."Barcode 1" := 
+    //     "Control_DB".VTD_Control.Inputs."Barcode 2'" := '';
+    // END_IF;
+END_REGION
+
+REGION WEIGTH STATION
+    "SB_Alarm"."LC overload in operation range" := "SB Status Group 1".%X0;
+    "SB_Alarm"."LC Mix" := "SB Status Group 1".%X1;
+    "SB_Alarm"."Application defined 1" := "SB Status Group 1".%X2;
+    "SB_Alarm"."Application defined 2" := "SB Status Group 1".%X3;
+    "SB_Alarm"."Application defined 3" := "SB Status Group 1".%X4;
+    "SB_Alarm"."Application defined 4" := "SB Status Group 1".%X5;
+    "SB_Alarm"."Application defined 5" := "SB Status Group 1".%X6;
+    "SB_Alarm"."Application defined 7" := "SB Status Group 1".%X7;
+    "SB_Alarm"."Rate of change error" := "SB Status Group 1".%X8;
+    "SB_Alarm"."Communication error" := "SB Status Group 1".%X9;
+    "SB_Alarm"."Over / under voltage" := "SB Status Group 1".%X10;
+    "SB_Alarm"."Weight drift" := "SB Status Group 1".%X11;
+    "SB_Alarm".Breach := "SB Status Group 1".%X12;
+    "SB_Alarm"."Calibration expired" := "SB Status Group 1".%X13;
+    "SB_Alarm"."Over Current" := "SB Status Group 1".%X14;
+    "SB_Alarm"."LC overload in normal range" := "SB Status Group 1".%X15;
+    
+    "SB_RedAlarm"."Zero out of range" := "SB Status Group 2".%X0;
+    "SB_RedAlarm"."Symetry errors" := "SB Status Group 2".%X1;
+    "SB_RedAlarm"."LC Temperature out of normal temperature" := "SB Status Group 2".%X2;
+    "SB_RedAlarm"."Weights and measures failure" := "SB Status Group 2".%X3;
+    "SB_RedAlarm"."Foreign device detected" := "SB Status Group 2".%X4;
+    "SB_RedAlarm"."Test mode" := "SB Status Group 2".%X5;
+    "SB_RedAlarm"."LC temperature out of operatio" := "SB Status Group 2".%X6;
+    "SB_RedAlarm"."LC parameters block checksum error" := "SB Status Group 2".%X7;
+    "SB_RedAlarm"."Calibration error" := "SB Status Group 2".%X8;
+    "SB_RedAlarm"."Out of A/D range over/under" := "SB Status Group 2".%X9;
+    "SB_RedAlarm"."Checksu failure" := "SB Status Group 2".%X10;
+    "SB_RedAlarm"."Weight blocked" := "SB Status Group 2".%X11;
+    "SB_RedAlarm"."LC Missing" := "SB Status Group 2".%X12;
+    "SB_RedAlarm"."Customer-defined overload" := "SB Status Group 2".%X13;
+    "SB_RedAlarm"."Customer-defined underload" := "SB Status Group 2".%X14;
+END_REGION
+
+REGION PICK STATION
+    "Control_DB".Pick_Station.Cnv_Occupied := NOT "Pick Station";
+    "Control_DB".Pick_Station.PushButton := "PushButton Pick Station";
+    "Control_DB".Pick_Station.LightGuard := NOT "LighGuard_Cut-Off Path 01";
+END_REGION
+END_FUNCTION

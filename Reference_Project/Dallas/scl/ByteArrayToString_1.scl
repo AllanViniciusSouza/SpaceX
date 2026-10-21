@@ -1,0 +1,33 @@
+FUNCTION "ByteArrayToString_1"   // FC 23, author 
+
+VAR_INPUT
+   Lenght : Int;
+   ByteArray : Array[1..200] of Byte;
+END_VAR
+
+VAR_TEMP
+   tempStr_1 : String;
+   foundPos : Int;
+   i : Int;
+END_VAR
+
+   // RETURN : String
+BEGIN
+#tempStr_1 := '';
+FOR #i := 1 TO MIN(IN1 := #Lenght - 1, IN2 := 200) DO
+    IF #ByteArray[#i] <> 0 THEN
+        #tempStr_1 := CONCAT(IN1 := #tempStr_1, IN2 := CHAR_TO_STRING(BYTE_TO_CHAR(#ByteArray[#i])));
+    END_IF;
+END_FOR;
+
+// Remove '$02'
+// string 1
+#foundPos := FIND(IN1 := #tempStr_1, IN2 := '$02');
+WHILE #foundPos > 0 DO
+    #tempStr_1 := REPLACE(IN1 := #tempStr_1, IN2 := '', P := #foundPos, L := 1);
+    #foundPos := FIND(IN1 := #tempStr_1, IN2 := '$02');
+END_WHILE;
+
+#ByteArrayToString_1 := #tempStr_1;
+
+END_FUNCTION

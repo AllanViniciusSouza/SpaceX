@@ -1,0 +1,24 @@
+DATA_BLOCK "Outbound_Cnv_FB_DB"   // InstanceDB 6  instance of "OutConveyor_FB"
+
+VAR_INPUT
+   Cnv_Settings : "Outbound_Cnv_Settings";
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Control : "Outbound_Cnv_Control";
+   SinaSpeed : SinaSpeed;
+END_VAR
+
+VAR
+   State : UInt;
+   Timer_TC : TON_TIME;
+   Timer_Transfer : TON_TIME;
+   Watchdog : TON_TIME;
+   Transfer_Direction : String;
+   MainSetpoint : Int;
+   IEC_Timer_0_Instance_1 : TON_TIME;
+   R_TRIG_Instance : R_TRIG;
+END_VAR
+
+
+// ---- start values (path : type := value)

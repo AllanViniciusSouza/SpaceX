@@ -1,0 +1,40 @@
+FUNCTION "Feed_Steptable_FC"   // FC 44, author 
+
+VAR_INPUT
+   CurrentTime : String;
+   Task_Type : Int;
+   Source_Location : DInt;
+   Destination_Location : DInt;
+   Pallet_Type : Char;
+   Pallet_Alignment : Char;
+   Shuttle_ID : Int;
+END_VAR
+
+VAR_IN_OUT
+   StepTable : "OrderTable_UDT";
+END_VAR
+
+   // RETURN : Void
+BEGIN
+#StepTable.OrderNo := "OrderNo" + 1;
+#StepTable.StepNo := "OrderNo" + 1;
+#StepTable.PlaceTime := #CurrentTime;
+
+#StepTable.OPC_Control.Task_ID := "OrderNo" + 1;
+#StepTable.OPC_Control.Task_Type := #Task_Type;
+#StepTable.OPC_Control.Source_Location := #Source_Location;
+#StepTable.OPC_Control.Destination_Location := #Destination_Location;
+#StepTable.OPC_Control.Pallet_Type := #Pallet_Type;
+#StepTable.OPC_Control.Pallet_Alignment := #Pallet_Alignment;
+#StepTable.OPC_Control.Shuttle_ID := #Shuttle_ID;
+
+
+
+
+
+
+
+
+
+
+END_FUNCTION

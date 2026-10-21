@@ -1,0 +1,837 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Document>
+  <Engineering version="V20" />
+  <DocumentInfo>
+    <Created>2026-10-19T18:02:21.744537Z</Created>
+    <ExportSetting>WithDefaults</ExportSetting>
+    <InstalledProducts>
+      <Product>
+        <DisplayName>Totally Integrated Automation Portal</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>TIA Portal Openness</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>TIA Portal Version Control Interface</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>SINAMICS Startdrive Advanced</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G130, G150, S120, S150, SINAMICS MV, G220, S200, S210</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <OptionPackage>
+        <DisplayName>SINAMICS Startdrive G110M, G120, G120C, G120D, G120P, G115D</DisplayName>
+        <DisplayVersion>V20 SP1</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>STEP 7 Professional</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <OptionPackage>
+        <DisplayName>STEP 7 Safety</DisplayName>
+        <DisplayVersion>V20 Update 2</DisplayVersion>
+      </OptionPackage>
+      <Product>
+        <DisplayName>WinCC Basic/Comfort/Advanced</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+      <Product>
+        <DisplayName>WinCC Unified</DisplayName>
+        <DisplayVersion>V20 Update 6</DisplayVersion>
+      </Product>
+    </InstalledProducts>
+  </DocumentInfo>
+  <SW.Blocks.FC ID="0">
+    <AttributeList>
+      <AutoNumber>true</AutoNumber>
+      <HeaderAuthor />
+      <HeaderFamily />
+      <HeaderName />
+      <HeaderVersion>0.1</HeaderVersion>
+      <Interface><Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v5">
+  <Section Name="Input" />
+  <Section Name="Output" />
+  <Section Name="InOut" />
+  <Section Name="Temp" />
+  <Section Name="Constant" />
+  <Section Name="Return">
+    <Member Name="Ret_Val" Datatype="Void" Accessibility="Public" />
+  </Section>
+</Sections></Interface>
+      <IsIECCheckEnabled>false</IsIECCheckEnabled>
+      <MemoryLayout>Optimized</MemoryLayout>
+      <Name>Encoders</Name>
+      <Namespace />
+      <Number>8</Number>
+      <ProgrammingLanguage>SCL</ProgrammingLanguage>
+      <SetENOAutomatically>false</SetENOAutomatically>
+      <UDABlockProperties />
+      <UDAEnableTagReadback>false</UDAEnableTagReadback>
+    </AttributeList>
+    <ObjectList>
+      <MultilingualText ID="1" CompositionName="Comment">
+        <ObjectList>
+          <MultilingualTextItem ID="2" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+      <SW.Blocks.CompileUnit ID="3" CompositionName="CompileUnits">
+        <AttributeList>
+          <NetworkSource><StructuredText xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/StructuredText/v4">
+  <Token Text="REGION" UId="21" />
+  <Blank Num="1" UId="22" />
+  <Text UId="23">ABSOLUTE ENCODER</Text>
+  <NewLine Num="1" UId="24" />
+  <Blank Num="4" UId="25" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="26">
+    <Text UId="27">STATUS---------------------------------------------------------------------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="28" />
+  <Blank Num="4" UId="29" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="30">
+    <Text UId="31" />
+  </LineComment>
+  <NewLine Num="1" UId="32" />
+  <Blank Num="4" UId="33" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="34">
+    <Text UId="35">Encoder state word 2 - INPUT WORD 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="36" />
+  <Blank Num="4" UId="37" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="38">
+    <Text UId="39" />
+  </LineComment>
+  <NewLine Num="1" UId="40" />
+  <Blank Num="4" UId="41" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="42">
+    <Text UId="43"> 15 … 12 Encoder’s Sign-OF-Life (NOT relevant)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="44" />
+  <Blank Num="4" UId="45" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="46">
+    <Text UId="47"> 11, 10 Reserved</Text>
+  </LineComment>
+  <NewLine Num="1" UId="48" />
+  <Blank Num="4" UId="49" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="50">
+    <Text UId="51"> 9 Control requested 0 = No control BY the PLC requested 1 = Control BY the PLC requested</Text>
+  </LineComment>
+  <NewLine Num="1" UId="52" />
+  <Blank Num="4" UId="53" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="54">
+    <Text UId="55"> 8 … 0 Reserved</Text>
+  </LineComment>
+  <NewLine Num="1" UId="56" />
+  <Blank Num="4" UId="57" />
+  <NewLine Num="1" UId="58" />
+  <Blank Num="4" UId="59" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="60">
+    <Text UId="61">Sensor 1 state word - INPUT WORD 2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="62" />
+  <Blank Num="4" UId="63" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="64">
+    <Text UId="65" />
+  </LineComment>
+  <NewLine Num="1" UId="66" />
+  <Blank Num="4" UId="67" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="68">
+    <Text UId="69"> 15 Encoder error Description 0 = No error 1 = Error The error code is output in G1_XIST2.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="70" />
+  <Blank Num="4" UId="71" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="72">
+    <Text UId="73"> 14 Park mode activated 0 = Normal operation 1 = Park mode activated Feedback based on G1_STW bit 14: No output OF position data G1_XIST1 AND G1_XIST2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="74" />
+  <Blank Num="4" UId="75" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="76">
+    <Text UId="77"> 13 Transmission OF absolute position value 0 = No transmission 1 = Position value is output in G1_XIST2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="78" />
+  <Blank Num="4" UId="79" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="80">
+    <Text UId="81"> 12 Status OF the Preset function (set/shift OF home position executed) 0 = No Preset function active 1 = Preset function is run Feedback based on G1_STW bit 12:  </Text>
+  </LineComment>
+  <NewLine Num="1" UId="82" />
+  <Blank Num="4" UId="83" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="84">
+    <Text UId="85"> 11 Requirement OF error acknowledgement detected New position value is output in G1_XIST1 AND G1_XIST2. On conclusion OF the Preset function the bit is set TO 0. 0 = No RETURN acknowledgement OF Encoder error 1 = Requirement OF error acknowledgement detected Reaction TO bit 15 in the sensor control word 1 G1_STW is acknowledged (see Table 14)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="86" />
+  <Blank Num="4" UId="87" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="88">
+    <Text UId="89"> 10 Reserved</Text>
+  </LineComment>
+  <NewLine Num="1" UId="90" />
+  <Blank Num="4" UId="91" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="92">
+    <Text UId="93"> 9 … 0 NOT supported</Text>
+  </LineComment>
+  <NewLine Num="1" UId="94" />
+  <Blank Num="4" UId="95" />
+  <NewLine Num="1" UId="96" />
+  <Blank Num="4" UId="97" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="98">
+    <Text UId="99">Position 1 - INPUT WORD 3 AND 4</Text>
+  </LineComment>
+  <NewLine Num="1" UId="100" />
+  <Blank Num="4" UId="101" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="102">
+    <Text UId="103"> "AE_Position_1_Scaled" := (*SCALE_X(MIN := "Settings_DB".VTD_Settings.VTD_Min_Height,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="104" />
+  <Blank Num="4" UId="105" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="106">
+    <Text UId="107">                                   VALUE := *)NORM_X(MIN := 0,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="108" />
+  <Blank Num="4" UId="109" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="110">
+    <Text UId="111">                                                   VALUE := (SHL(IN:="AE_Position_1", N:=2) * 0.00228881) (*- "AE_Offset"*),</Text>
+  </LineComment>
+  <NewLine Num="1" UId="112" />
+  <Blank Num="4" UId="113" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="114">
+    <Text UId="115">                                                   MAX := 1073741824)(*,</Text>
+  </LineComment>
+  <NewLine Num="1" UId="116" />
+  <Blank Num="4" UId="117" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="118">
+    <Text UId="119">                                   MAX := "Settings_DB".VTD_Settings.VTD_Max_Heigh)*);</Text>
+  </LineComment>
+  <NewLine Num="1" UId="120" />
+  <Blank Num="4" UId="121" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="122">
+    <Text UId="123"> "mm_per_pulse" := 401,5584 / 262144;</Text>
+  </LineComment>
+  <NewLine Num="1" UId="124" />
+  <Blank Num="4" UId="125" />
+  <Access Scope="GlobalVariable" UId="126">
+    <Symbol UId="127">
+      <Component Name="AE_Position_1_Scaled" UId="128">
+        <BooleanAttribute Name="HasQuotes" UId="129">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="130" />
+  <Token Text=":=" UId="131" />
+  <Blank Num="1" UId="132" />
+  <Token Text="(" UId="133" />
+  <Token Text="(" UId="134" />
+  <Token Text="(" UId="135" />
+  <Access Scope="LiteralConstant" UId="136">
+    <Constant UId="137">
+      <ConstantValue UId="139">1073741823</ConstantValue>
+    </Constant>
+  </Access>
+  <Blank Num="1" UId="140" />
+  <Token Text="-" UId="141" />
+  <Blank Num="1" UId="142" />
+  <Token Text="(" UId="143" />
+  <Access Scope="Call" UId="144">
+    <Instruction Name="SHR" UId="145">
+      <Token Text="(" UId="146" />
+      <Parameter Name="IN" UId="147">
+        <Blank Num="1" UId="148" />
+        <Token Text=":=" UId="149" />
+        <Blank Num="1" UId="150" />
+        <Access Scope="GlobalVariable" UId="151">
+          <Symbol UId="152">
+            <Component Name="AE_Position_1" UId="153">
+              <BooleanAttribute Name="HasQuotes" UId="154">true</BooleanAttribute>
+            </Component>
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="155" />
+      <Blank Num="1" UId="156" />
+      <Parameter Name="N" UId="157">
+        <Blank Num="1" UId="158" />
+        <Token Text=":=" UId="159" />
+        <Blank Num="1" UId="160" />
+        <Access Scope="LiteralConstant" UId="161">
+          <Constant UId="162">
+            <ConstantValue UId="164">2</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="166" />
+    </Instruction>
+  </Access>
+  <Token Text=")" UId="167" />
+  <Token Text=")" UId="168" />
+  <Blank Num="1" UId="169" />
+  <Token Text="-" UId="170" />
+  <Blank Num="1" UId="171" />
+  <Access Scope="LiteralConstant" UId="172">
+    <Constant UId="173">
+      <ConstantValue UId="175">31381317</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="176" />
+  <Blank Num="1" UId="177" />
+  <Token Text="*" UId="178" />
+  <Blank Num="1" UId="179" />
+  <Access Scope="LiteralConstant" UId="180">
+    <Constant UId="181">
+      <ConstantValue UId="183">0.0015318237304688</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=")" UId="184" />
+  <Blank Num="1" UId="185" />
+  <Token Text="-" UId="186" />
+  <Blank Num="1" UId="187" />
+  <Access Scope="LiteralConstant" UId="188">
+    <Constant UId="189">
+      <ConstantValue UId="191">1548572</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="192" />
+  <NewLine Num="1" UId="193" />
+  <Blank Num="4" UId="194" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="195">
+    <Text UId="196"> Position 2 - INPUT WORD 5 AND 6</Text>
+  </LineComment>
+  <NewLine Num="1" UId="197" />
+  <Blank Num="4" UId="198" />
+  <Access Scope="GlobalVariable" UId="199">
+    <Symbol UId="200">
+      <Component Name="AE_Position_2_Scaled" UId="201">
+        <BooleanAttribute Name="HasQuotes" UId="202">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="203" />
+  <Token Text=":=" UId="204" />
+  <Blank Num="1" UId="205" />
+  <Access Scope="Call" UId="206">
+    <Instruction Name="SHR" UId="207">
+      <Token Text="(" UId="208" />
+      <Parameter Name="IN" UId="209">
+        <Blank Num="1" UId="210" />
+        <Token Text=":=" UId="211" />
+        <Blank Num="1" UId="212" />
+        <Access Scope="GlobalVariable" UId="213">
+          <Symbol UId="214">
+            <Component Name="AE_Position_2" UId="215">
+              <BooleanAttribute Name="HasQuotes" UId="216">true</BooleanAttribute>
+            </Component>
+          </Symbol>
+        </Access>
+      </Parameter>
+      <Token Text="," UId="217" />
+      <Blank Num="1" UId="218" />
+      <Parameter Name="N" UId="219">
+        <Blank Num="1" UId="220" />
+        <Token Text=":=" UId="221" />
+        <Blank Num="1" UId="222" />
+        <Access Scope="LiteralConstant" UId="223">
+          <Constant UId="224">
+            <ConstantValue UId="226">2</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="228" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="229" />
+  <NewLine Num="1" UId="230" />
+  <Blank Num="4" UId="231" />
+  <NewLine Num="1" UId="232" />
+  <Blank Num="4" UId="233" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="234">
+    <Text UId="235">Speed A - INPUT WORD 7</Text>
+  </LineComment>
+  <NewLine Num="1" UId="236" />
+  <Blank Num="4" UId="237" />
+  <Access Scope="GlobalVariable" UId="238">
+    <Symbol UId="239">
+      <Component Name="AE_Speed_Justified" UId="240">
+        <BooleanAttribute Name="HasQuotes" UId="241">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="242" />
+  <Token Text=":=" UId="243" />
+  <Blank Num="1" UId="244" />
+  <Access Scope="GlobalVariable" UId="245">
+    <Symbol UId="246">
+      <Component Name="AE_Speed" UId="247">
+        <BooleanAttribute Name="HasQuotes" UId="248">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="249" />
+  <NewLine Num="1" UId="250" />
+  <Blank Num="4" UId="251" />
+  <NewLine Num="1" UId="252" />
+  <Blank Num="4" UId="253" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="254">
+    <Text UId="255">CONTROL---------------------------------------------------------------------------------------------------------------------</Text>
+  </LineComment>
+  <NewLine Num="1" UId="256" />
+  <Blank Num="4" UId="257" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="258">
+    <Text UId="259" />
+  </LineComment>
+  <NewLine Num="1" UId="260" />
+  <Blank Num="4" UId="261" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="262">
+    <Text UId="263">Encoder control word 2 - OUTPUT WORD 1</Text>
+  </LineComment>
+  <NewLine Num="1" UId="264" />
+  <Blank Num="4" UId="265" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="266">
+    <Text UId="267" />
+  </LineComment>
+  <NewLine Num="1" UId="268" />
+  <Blank Num="4" UId="269" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="270">
+    <Text UId="271"> 15 … 12 Master’s Sign-OF-Life (NOT relevant)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="272" />
+  <Blank Num="4" UId="273" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="274">
+    <Text UId="275"> 10 control BY PLC 0 = No control BY the PLC 1 = Control BY the PLC Enables the PLC BY using control words TO activate / deactivate encoder functions</Text>
+  </LineComment>
+  <NewLine Num="1" UId="276" />
+  <Blank Num="4" UId="277" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="278">
+    <Text UId="279"> 7 Fault acknowledge Error-buffer handling NOT supported</Text>
+  </LineComment>
+  <NewLine Num="1" UId="280" />
+  <Blank Num="4" UId="281" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="282">
+    <Text UId="283"> 11, 9, 8, 6 … 0 Reserved</Text>
+  </LineComment>
+  <NewLine Num="1" UId="284" />
+  <Blank Num="4" UId="285" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="286">
+    <Text UId="287"> "AE_Control_Word_1".%X10 := "AE_PLC_Control";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="288" />
+  <Blank Num="4" UId="289" />
+  <Access Scope="GlobalVariable" UId="290">
+    <Symbol UId="291">
+      <Component Name="AE_Control_Word_1" UId="292">
+        <BooleanAttribute Name="HasQuotes" UId="293">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="294" />
+      <Token Text="%X7" UId="295" />
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="296" />
+  <Token Text=":=" UId="297" />
+  <Blank Num="1" UId="298" />
+  <Access Scope="GlobalVariable" UId="299">
+    <Symbol UId="300">
+      <Component Name="VTD_Reset_HMI_Tags" UId="301">
+        <BooleanAttribute Name="HasQuotes" UId="302">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="303" />
+  <NewLine Num="1" UId="304" />
+  <Blank Num="4" UId="305" />
+  <NewLine Num="1" UId="306" />
+  <Blank Num="4" UId="307" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="308">
+    <Text UId="309">Sensor 1 control word - OUTPUT WORD 2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="310" />
+  <Blank Num="4" UId="311" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="312">
+    <Text UId="313" />
+  </LineComment>
+  <NewLine Num="1" UId="314" />
+  <Blank Num="4" UId="315" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="316">
+    <Text UId="317"> 15 Acknowledging a sensor error Description 0 = Encoder error message NOT acknowledged BY PLC 1 = Encoder error message acknowledged BY the PLC</Text>
+  </LineComment>
+  <NewLine Num="1" UId="318" />
+  <Blank Num="4" UId="319" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="320">
+    <Text UId="321"> 14 Activate park mode 0 = Normal operation 1 = Activate park mode</Text>
+  </LineComment>
+  <NewLine Num="1" UId="322" />
+  <Blank Num="4" UId="323" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="324">
+    <Text UId="325"> 13 Request FOR the absolute position value 0 = No request 1 = Request BY the master Results in the cyclic output OF the position values in G1_XIST2</Text>
+  </LineComment>
+  <NewLine Num="1" UId="326" />
+  <Blank Num="4" UId="327" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="328">
+    <Text UId="329"> 12 Activate preset value (see note below) Defines that a configured preset value is used (see section 3.5 on page 24) 0 = Preset value is NOT activated 1 = Preset value is activated</Text>
+  </LineComment>
+  <NewLine Num="1" UId="330" />
+  <Blank Num="4" UId="331" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="332">
+    <Text UId="333"> 11 Preset mode Defines how a configured preset value is used 0 = Preset value is used as a new absolute value 1 = Preset value is added TO the previous value</Text>
+  </LineComment>
+  <NewLine Num="1" UId="334" />
+  <Blank Num="4" UId="335" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="336">
+    <Text UId="337"> 10 … 0 Reserved</Text>
+  </LineComment>
+  <NewLine Num="1" UId="338" />
+  <Blank Num="4" UId="339" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="340">
+    <Text UId="341"> "AE_Control_Word_2".%X15 := "VTD_Reset_HMI_Tags";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="342" />
+  <Blank Num="4" UId="343" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="344">
+    <Text UId="345"> "AE_Control_Word_2".%X14 := "AE_Activate_ParkMode";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="346" />
+  <Blank Num="4" UId="347" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="348">
+    <Text UId="349"> "AE_Control_Word_2".%X13 := "AE_Request_ABS_Value";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="350" />
+  <Blank Num="4" UId="351" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="352">
+    <Text UId="353"> "AE_Control_Word_2".%X12 := "AE_Activate_Preset_Value";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="354" />
+  <Blank Num="4" UId="355" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="356">
+    <Text UId="357"> "AE_Control_Word_2".%X11 := "AE_Preset_Mode";</Text>
+  </LineComment>
+  <NewLine Num="1" UId="358" />
+  <Token Text="END_REGION" UId="359" />
+  <NewLine Num="2" UId="360" />
+  <Token Text="REGION" UId="361" />
+  <Blank Num="1" UId="362" />
+  <Text UId="363">LINEAR ENCODER</Text>
+  <NewLine Num="1" UId="364" />
+  <Blank Num="4" UId="365" />
+  <Access Scope="GlobalVariable" UId="366">
+    <Symbol UId="367">
+      <Component Name="LE_X_Unsafe_Position_1" UId="368">
+        <BooleanAttribute Name="HasQuotes" UId="369">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="370" />
+  <Token Text=":=" UId="371" />
+  <Blank Num="1" UId="372" />
+  <Access Scope="Call" UId="373">
+    <Instruction Name="DINT_TO_REAL" UId="374">
+      <Token Text="(" UId="375" />
+      <NamelessParameter UId="376">
+        <Access Scope="GlobalVariable" UId="377">
+          <Symbol UId="378">
+            <Component Name="LE_X_Unsafe_Position" UId="379">
+              <BooleanAttribute Name="HasQuotes" UId="380">true</BooleanAttribute>
+            </Component>
+          </Symbol>
+        </Access>
+      </NamelessParameter>
+      <Token Text=")" UId="382" />
+    </Instruction>
+  </Access>
+  <Blank Num="1" UId="383" />
+  <Token Text="/" UId="384" />
+  <Blank Num="1" UId="385" />
+  <Access Scope="LiteralConstant" UId="386">
+    <Constant UId="387">
+      <ConstantValue UId="389">10</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="390" />
+  <NewLine Num="1" UId="391" />
+  <Blank Num="4" UId="392" />
+  <Access Scope="GlobalVariable" UId="393">
+    <Symbol UId="394">
+      <Component Name="LE_Speed_1" UId="395">
+        <BooleanAttribute Name="HasQuotes" UId="396">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="397" />
+  <Token Text=":=" UId="398" />
+  <Blank Num="1" UId="399" />
+  <Access Scope="GlobalVariable" UId="400">
+    <Symbol UId="401">
+      <Component Name="LE_Speed" UId="402">
+        <BooleanAttribute Name="HasQuotes" UId="403">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="404" />
+  <Token Text="*" UId="405" />
+  <Blank Num="1" UId="406" />
+  <Access Scope="LiteralConstant" UId="407">
+    <Constant UId="408">
+      <ConstantValue UId="410">10</ConstantValue>
+    </Constant>
+  </Access>
+  <Token Text=";" UId="411" />
+  <NewLine Num="1" UId="412" />
+  <Blank Num="4" UId="413" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="414">
+    <Text UId="415">STATUS </Text>
+  </LineComment>
+  <NewLine Num="1" UId="416" />
+  <Blank Num="4" UId="417" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="418">
+    <Text UId="419" />
+  </LineComment>
+  <NewLine Num="1" UId="420" />
+  <Blank Num="4" UId="421" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="422">
+    <Text UId="423"> 0 ERR - Error message (Error code in XP00– XP15); remaining bits = 0, see Error Codes</Text>
+  </LineComment>
+  <NewLine Num="1" UId="424" />
+  <Blank Num="4" UId="425" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="426">
+    <Text UId="427"> 1 NP - No position information/OUT (XP = 0, YP = 0, SP = 0)</Text>
+  </LineComment>
+  <NewLine Num="1" UId="428" />
+  <Blank Num="4" UId="429" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="430">
+    <Text UId="431"> 2 WRN - Warnings present, see Warning Module</Text>
+  </LineComment>
+  <NewLine Num="1" UId="432" />
+  <Blank Num="4" UId="433" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="434">
+    <Text UId="435"> 3 EV - Event present</Text>
+  </LineComment>
+  <NewLine Num="1" UId="436" />
+  <Blank Num="4" UId="437" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="438">
+    <Text UId="439"> 4 posdetected - Valid position information available</Text>
+  </LineComment>
+  <NewLine Num="1" UId="440" />
+  <Blank Num="4" UId="441" />
+  <NewLine Num="1" UId="442" />
+  <Blank Num="4" UId="443" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="444">
+    <Text UId="445">WARNINGS</Text>
+  </LineComment>
+  <NewLine Num="1" UId="446" />
+  <Blank Num="4" UId="447" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="448">
+    <Text UId="449" />
+  </LineComment>
+  <NewLine Num="1" UId="450" />
+  <Blank Num="4" UId="451" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="452">
+    <Text UId="453"> 0 WRN01 A code with non-PXV content was found.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="454" />
+  <Blank Num="4" UId="455" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="456">
+    <Text UId="457"> 1 WRN02 the read head is too close TO the Data Matrix code tape.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="458" />
+  <Blank Num="4" UId="459" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="460">
+    <Text UId="461"> 2 WRN03 the read head is too far from the Data Matrix code tape.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="462" />
+  <Blank Num="4" UId="463" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="464">
+    <Text UId="465"> 3 WRN04 Y position too large. The sensor is just before OUT.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="466" />
+  <Blank Num="4" UId="467" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="468">
+    <Text UId="469"> 4 WRN05 Y position is too small. The sensor is just before OUT.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="470" />
+  <Blank Num="4" UId="471" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="472">
+    <Text UId="473"> 5 WRN06 the read head is rotated OR tilted in relation TO the Data Matrix code tape.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="474" />
+  <Blank Num="4" UId="475" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="476">
+    <Text UId="477"> 6 WRN07 Low level OF code contrast.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="478" />
+  <Blank Num="4" UId="479" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="480">
+    <Text UId="481"> 7 WRN08 Repair tape detected.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="482" />
+  <Blank Num="4" UId="483" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="484">
+    <Text UId="485"> 8 WRN09 Temperature too high.</Text>
+  </LineComment>
+  <NewLine Num="1" UId="486" />
+  <Blank Num="4" UId="487" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="488">
+    <Text UId="489"> 9...15 Reserved</Text>
+  </LineComment>
+  <NewLine Num="1" UId="490" />
+  <Blank Num="4" UId="491" />
+  <NewLine Num="1" UId="492" />
+  <Blank Num="4" UId="493" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="494">
+    <Text UId="495">QUALITY GRADE</Text>
+  </LineComment>
+  <NewLine Num="1" UId="496" />
+  <Blank Num="4" UId="497" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="498">
+    <Text UId="499" />
+  </LineComment>
+  <NewLine Num="1" UId="500" />
+  <Blank Num="4" UId="501" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="502">
+    <Text UId="503">The quality grades enable constant monitoring of the code tape and the camera along the entire</Text>
+  </LineComment>
+  <NewLine Num="1" UId="504" />
+  <Blank Num="4" UId="505" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="506">
+    <Text UId="507">traverse distance. This enables you to detect and act upon potential damage or contamination</Text>
+  </LineComment>
+  <NewLine Num="1" UId="508" />
+  <Blank Num="4" UId="509" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="510">
+    <Text UId="511">of the code tape and camera at the earliest stage possible during commissioning and normal</Text>
+  </LineComment>
+  <NewLine Num="1" UId="512" />
+  <Blank Num="4" UId="513" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="514">
+    <Text UId="515">operation. As a result, this maximizes the overall functional reliability of your plant, and</Text>
+  </LineComment>
+  <NewLine Num="1" UId="516" />
+  <Blank Num="4" UId="517" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="518">
+    <Text UId="519">it means you are able to immediately localize the issue in the case of a fault. Evaluations</Text>
+  </LineComment>
+  <NewLine Num="1" UId="520" />
+  <Blank Num="4" UId="521" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="522">
+    <Text UId="523">are made using a scale of 1 to 6. The value 1 is the best possible read quality. A value greater</Text>
+  </LineComment>
+  <NewLine Num="1" UId="524" />
+  <Blank Num="4" UId="525" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="526">
+    <Text UId="527">than 3 or worse requires the camera and its path to be inspected. The value 7 signifies "No position"</Text>
+  </LineComment>
+  <NewLine Num="1" UId="528" />
+  <Blank Num="4" UId="529" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="530">
+    <Text UId="531">because no code was detected. An evaluation that indicates poor quality as the outcome can be due to</Text>
+  </LineComment>
+  <NewLine Num="1" UId="532" />
+  <Blank Num="4" UId="533" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="534">
+    <Text UId="535">a misalignment or incorrect orientation, an incorrect measuring distance, or because the code tape has been affixed incorrectly</Text>
+  </LineComment>
+  <NewLine Num="1" UId="536" />
+  <Token Text="END_REGION" UId="537" />
+  <NewLine Num="2" UId="538" />
+  <Blank Num="4" UId="539" />
+  <LineComment Inserted="false" NoClosingBracket="false" UId="540">
+    <Text UId="541">RESET SAFETY POSITION LINEAR ENCODER</Text>
+  </LineComment>
+  <NewLine Num="1" UId="542" />
+  <Blank Num="4" UId="543" />
+  <Access Scope="GlobalVariable" UId="544">
+    <Symbol UId="545">
+      <Component Name="R_TRIG_DB_10" UId="546">
+        <BooleanAttribute Name="HasQuotes" UId="547">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Access Scope="Call" UId="548">
+    <Instruction UId="549">
+      <Token Text="(" UId="550" />
+      <Parameter Name="CLK" UId="551">
+        <Token Text=":=" UId="552" />
+        <Access Scope="GlobalVariable" UId="553">
+          <Symbol UId="554">
+            <Component Name="LE_Safe_Status" UId="555">
+              <BooleanAttribute Name="HasQuotes" UId="556">true</BooleanAttribute>
+            </Component>
+          </Symbol>
+        </Access>
+        <Blank Num="1" UId="557" />
+        <Token Text="=" UId="558" />
+        <Blank Num="1" UId="559" />
+        <Access Scope="LiteralConstant" UId="560">
+          <Constant UId="561">
+            <ConstantValue UId="563">0</ConstantValue>
+          </Constant>
+        </Access>
+      </Parameter>
+      <Token Text=")" UId="564" />
+    </Instruction>
+  </Access>
+  <Token Text=";" UId="565" />
+  <NewLine Num="1" UId="566" />
+  <Blank Num="4" UId="567" />
+  <Access Scope="GlobalVariable" UId="568">
+    <Symbol UId="569">
+      <Component Name="Reintegration" UId="570">
+        <BooleanAttribute Name="HasQuotes" UId="571">true</BooleanAttribute>
+      </Component>
+    </Symbol>
+  </Access>
+  <Blank Num="1" UId="572" />
+  <Token Text=":=" UId="573" />
+  <Blank Num="1" UId="574" />
+  <Access Scope="GlobalVariable" UId="575">
+    <Symbol UId="576">
+      <Component Name="R_TRIG_DB_10" UId="577">
+        <BooleanAttribute Name="HasQuotes" UId="578">true</BooleanAttribute>
+      </Component>
+      <Token Text="." UId="579" />
+      <Component Name="Q" UId="580" />
+    </Symbol>
+  </Access>
+  <Token Text=";" UId="581" />
+</StructuredText></NetworkSource>
+          <ProgrammingLanguage>SCL</ProgrammingLanguage>
+        </AttributeList>
+        <ObjectList>
+          <MultilingualText ID="4" CompositionName="Comment">
+            <ObjectList>
+              <MultilingualTextItem ID="5" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+          <MultilingualText ID="6" CompositionName="Title">
+            <ObjectList>
+              <MultilingualTextItem ID="7" CompositionName="Items">
+                <AttributeList>
+                  <Culture>en-US</Culture>
+                  <Text />
+                </AttributeList>
+              </MultilingualTextItem>
+            </ObjectList>
+          </MultilingualText>
+        </ObjectList>
+      </SW.Blocks.CompileUnit>
+      <MultilingualText ID="8" CompositionName="Title">
+        <ObjectList>
+          <MultilingualTextItem ID="9" CompositionName="Items">
+            <AttributeList>
+              <Culture>en-US</Culture>
+              <Text />
+            </AttributeList>
+          </MultilingualTextItem>
+        </ObjectList>
+      </MultilingualText>
+    </ObjectList>
+  </SW.Blocks.FC>
+</Document>

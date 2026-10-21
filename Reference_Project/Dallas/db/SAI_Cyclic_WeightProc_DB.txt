@@ -1,0 +1,47 @@
+DATA_BLOCK "SAI_Cyclic_WeightProc_DB"   // InstanceDB 29  instance of "SAI_Cyclic_WeightProc"
+
+VAR_INPUT
+   WeightCmd : Word := 3;
+   MB_DevStatus : Word;
+END_VAR
+
+VAR_OUTPUT
+   RealTimeWeight : Real;
+   StableWeight : Real;
+   DataOK : Bool;
+   Motion : Bool;
+   NetMode : Bool;
+   Alarm : Bool;
+   Done : Bool;
+   Error : Bool;
+END_VAR
+
+VAR_IN_OUT
+   TareImmediate : Bool;
+   TareStable : Bool;
+   ZeroImmediate : Bool;
+   ZeroStable : Bool;
+   PreTareValue : Real;
+   PreTare : Bool;
+   ClearTare : Bool;
+   MB_Value : Real;
+   MB_Response : Word;
+   MB_CmdValue : Real;
+   MB_Command : Word;
+END_VAR
+
+VAR
+   WriteTrigger : Bool;
+   RestoreTrigger : Bool;
+   Cmd : Int;
+   TareStablePTrigger : Bool;
+   ZeroStablePTrigger : Bool;
+   ZeroImmedTrigger : Bool;
+   TareImmedTrigger : Bool;
+   ClearTareTrigger : Bool;
+   PreTareTrigger : Bool;
+END_VAR
+
+
+// ---- start values (path : type := value)
+WeightCmd : Word := 3

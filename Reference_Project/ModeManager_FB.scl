@@ -1,0 +1,188 @@
+﻿FUNCTION_BLOCK "ModeManager_FB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      RTE_PB : Bool;   // Request To Enter pushbutton, rising edge triggers request
+      Reset_PB : Bool;   // Reset pushbutton, rising edge triggers reset attempt
+      Restart_PB : Bool;   // Restart pushbutton, rising edge triggers return to auto
+      ForceRTE : Bool;   // one-scan pulse from FB_GateAccessControl.ForceRTE_Request
+      GateClosed : Bool;   // TRUE = gate physically closed
+      GateLockedFeedback : Bool;   // TRUE = gate lock solenoid confirmed locked
+      GateFault : Bool;   // from FB_GateAccessControl - blocks Auto/Restart
+      NoEStop : Bool;   // TRUE = no emergency stop active anywhere in chain
+      AllDrivesHealthy : Bool;   // TRUE = no drive faults on VTD/shuttle drives
+      SafetyResetDone : Bool;   // TRUE = upstream safety reset permissive satisfied
+      NoVTDLocalMode : Bool;   // TRUE = no VTD station currently in Local mode
+      NoCrossoverPaused : Bool;   // TRUE = no conveyor crossover currently paused
+      AllDevicesStopped : Bool;   // TRUE = all VTDs confirmed at standstill
+      Safe_Bypassed : Bool;
+      Reset : Bool;
+   END_VAR
+
+   VAR_OUTPUT 
+      CurrentState : UInt;   // current sequence state, for HMI/diagnostics
+      GateUnlockPermissive : Bool;   // TRUE = safe to unlock gate solenoid (SAFE_TO_UNLOCK onwards)
+      StopNewAutoCycles : Bool;   // TRUE = do not start new automatic cycles
+      AutoModeAllowed : Bool;   // TRUE = auto mode is permitted (all interlocks satisfied)
+      ManualModeActive : Bool;   // TRUE = system is in manual/jog/local maintenance mode
+      ReqFlash_RTE_Lamp : Bool;
+      ReqFlash_ResetLamp : Bool;
+      ReqFlash_RestartLamp : Bool;
+      RestartLampSteadyOn : Bool;
+      RTE_LampSteadyOn : Bool;
+   END_VAR
+
+   VAR 
+      RTE_PB_Rising : Bool;   // edge memory for RTE_PB
+      Reset_PB_Rising : Bool;   // edge memory for Reset_PB
+      Restart_PB_Rising : Bool;   // edge memory for Restart_PB
+      T_Delay_DB {InstructionName := 'TON_TIME'; LibVersion := '1.0'} : TON_TIME;
+      EStop_Pressed : Bool;
+      PLCInitialization : Bool;
+   END_VAR
+
+   VAR_TEMP 
+      RTE_PB_Edge_M : Bool;   // temp for R_TRIG-style edge detection
+      Reset_PB_Edge_M : Bool;
+      Restart_PB_Edge_M : Bool;
+   END_VAR
+
+   VAR CONSTANT 
+      AUTO_RUNNING : UInt := 0;
+      RTE_REQUESTED : UInt := 1;
+      SAFE_BYPASS : UInt := 2;
+      SAFE_TO_UNLOCK : UInt := 3;
+      ACCESS_MANUAL_MODE : UInt := 4;
+      READY_TO_RESET : UInt := 5;
+      RESETTING : UInt := 6;
+      READY_TO_RESTART : UInt := 7;
+   END_VAR
+
+
+BEGIN
+	#RTE_PB_Rising := #RTE_PB AND NOT #RTE_PB_Edge_M;
+	#Reset_PB_Rising := #Reset_PB AND NOT #Reset_PB_Edge_M;
+	#Restart_PB_Rising := #Restart_PB AND NOT #Restart_PB_Edge_M;
+	
+	#RTE_PB_Edge_M := #RTE_PB;
+	#Reset_PB_Edge_M := #Reset_PB;
+	#Restart_PB_Edge_M := #Restart_PB;
+	
+	IF #Reset THEN
+	    #CurrentState := #AUTO_RUNNING;
+	END_IF;
+	
+	// Emergency Access
+	// 
+	IF "FirstScan" THEN
+	    #PLCInitialization := TRUE;
+	ELSIF "Reset_All" AND #NoEStop THEN
+	    #PLCInitialization := FALSE;
+	END_IF;
+	    
+	IF NOT #PLCInitialization THEN
+	    IF NOT #NoEStop AND NOT #EStop_Pressed THEN
+	        #CurrentState := #SAFE_TO_UNLOCK;
+	        #EStop_Pressed := TRUE;
+	    ELSIF #NoEStop THEN
+	        #EStop_Pressed := FALSE;
+	    END_IF;
+	END_IF;
+	
+	CASE #CurrentState OF
+	        
+	    #AUTO_RUNNING:
+	        IF #RTE_PB_Rising THEN
+	            #CurrentState := #RTE_REQUESTED;
+	        END_IF;
+	        
+	    #RTE_REQUESTED:
+	        IF #AllDevicesStopped THEN
+	            #CurrentState := #SAFE_BYPASS;
+	        END_IF;
+	        
+	    #SAFE_BYPASS:
+	        IF #Safe_Bypassed THEN
+	            #T_Delay_DB(IN:=TRUE,
+	                        PT:=T#500MS);
+	            IF #T_Delay_DB.Q THEN
+	                #T_Delay_DB(IN := FALSE,
+	                            PT := T#0MS);
+	                #CurrentState := #SAFE_TO_UNLOCK;
+	            END_IF;
+	        END_IF;
+	        
+	    #SAFE_TO_UNLOCK:
+	        // Solenoid is now de-energised->energised per GateUnlockPermissive,
+	        // which physically frees the mechanism so the operator can rotate
+	        // the manual handle. Transition to manual mode once the gate is
+	        // actually opened.
+	        IF NOT #GateClosed THEN
+	            #CurrentState := #ACCESS_MANUAL_MODE;
+	        END_IF;
+	        
+	    #ACCESS_MANUAL_MODE:
+	        // Gate physically closed again (handle rotated back, solenoid
+	        // still energised/unlocked at this point - lock only re-engages
+	        // in RESETTING once Reset is pressed).
+	        IF #GateClosed THEN
+	            #CurrentState := #READY_TO_RESET;
+	        END_IF;
+	        
+	    #READY_TO_RESET:
+	        IF #Reset_PB_Rising THEN
+	            #CurrentState := #RESETTING;
+	        END_IF;
+	        
+	    #RESETTING:
+	        // Lock is commanded via GateUnlockPermissive=FALSE
+	        // (see output mapping below); wait for GS1/GS2 to
+	        // confirm locked before allowing restart readiness.
+	        IF #GateLockedFeedback AND #SafetyResetDone AND #NoVTDLocalMode AND NOT #GateFault AND #AllDrivesHealthy THEN
+	            #CurrentState := #READY_TO_RESTART;
+	        END_IF;
+	        
+	    #READY_TO_RESTART:
+	        IF #Restart_PB_Rising
+	            AND #NoEStop
+	            AND NOT #GateFault
+	            AND #AllDrivesHealthy
+	            AND #NoVTDLocalMode
+	            AND #NoCrossoverPaused THEN
+	            #CurrentState := #AUTO_RUNNING;
+	        END_IF;
+	        
+	END_CASE;
+	
+	// ------------------------------------------------------
+	// OUTPUT MAPPING
+	// ------------------------------------------------------
+	// GateUnlockPermissive drives O_S1_SolenoidEnergise (assumed
+	// energise=unlock) in FB_GateAccessControl. In RESETTING /
+	// READY_TO_RESTART / AUTO_RUNNING the gate must be LOCKED,
+	// so permissive is FALSE (commands lock, per assumption).
+	#GateUnlockPermissive := (#CurrentState = #SAFE_TO_UNLOCK)
+	OR (#CurrentState = #ACCESS_MANUAL_MODE)
+	// OR (#CurrentState = #READY_TO_RESET)
+	;
+	
+	#StopNewAutoCycles := NOT (#CurrentState = #AUTO_RUNNING);
+	#ManualModeActive := (#CurrentState = #ACCESS_MANUAL_MODE);
+	
+	#AutoModeAllowed := (#CurrentState = #AUTO_RUNNING)
+	AND #GateClosed
+	AND #GateLockedFeedback
+	AND #NoEStop
+	AND NOT #GateFault
+	// AND #NoVTDLocalMode
+	AND #NoCrossoverPaused
+	AND #AllDrivesHealthy
+	AND #SafetyResetDone;
+	
+	#RestartLampSteadyOn := (#CurrentState = #AUTO_RUNNING);
+	#RTE_LampSteadyOn := (#CurrentState = #SAFE_TO_UNLOCK);
+	#ReqFlash_RTE_Lamp := (#CurrentState = #RTE_REQUESTED) AND "Clock_1Hz";
+	#ReqFlash_ResetLamp := (#CurrentState = #READY_TO_RESET);
+	#ReqFlash_RestartLamp := (#CurrentState = #READY_TO_RESTART);
+END_FUNCTION_BLOCK
+

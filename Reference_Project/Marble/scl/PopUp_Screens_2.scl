@@ -1,0 +1,50 @@
+FUNCTION "PopUp_Screens_2"   // FC 63, author 
+
+VAR_INPUT
+   HMI_No : UInt;
+   HMI_Box : UInt;
+   Sys_No : UInt;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+//VTD SETTINGS
+IF "PopUps_DB_1"."VTD_Settings"[#HMI_No].ID <> 0 THEN
+    "Settings_DB".VTD_Sys[#Sys_No] := "PopUps_DB_1"."VTD_Settings"[#HMI_No];
+    Settings_Limits_FC("Settings_DB".VTD_Sys[#Sys_No]);
+END_IF;
+
+//CONVEYORS SETTINGS
+IF "PopUps_DB_1".ECnv_Settings[#HMI_No].ID <> 0 THEN
+    CASE #HMI_Box MOD 10 OF
+        // 1:
+        //     "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[1].Cnv1 := "PopUps_DB_1"."Buffer_Cnv_Settings_1"[#HMI_No];
+        //     "Settings_DB".ECnv_Sys[#Sys_No] := "PopUps_DB_1"."ECnv_Settings"[#HMI_No];
+        //     "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[1].Cnv2 := "PopUps_DB_1"."Buffer_Cnv_Settings_2"[#HMI_No];
+        2:
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[2].Cnv1 := "PopUps_DB_1"."Buffer_Cnv_Settings_1"[#HMI_No];
+            "Settings_DB".ECnv_Sys[#Sys_No] := "PopUps_DB_1"."ECnv_Settings"[#HMI_No];
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[2].Cnv2 := "PopUps_DB_1"."Buffer_Cnv_Settings_2"[#HMI_No];
+        3:
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[3].Cnv1 := "PopUps_DB_1"."Buffer_Cnv_Settings_1"[#HMI_No];
+            "Settings_DB".ECnv_Sys[#Sys_No] := "PopUps_DB_1"."ECnv_Settings"[#HMI_No];
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[3].Cnv2 := "PopUps_DB_1"."Buffer_Cnv_Settings_2"[#HMI_No];
+        4:
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[4].Cnv1 := "PopUps_DB_1"."Buffer_Cnv_Settings_1"[#HMI_No];
+            "Settings_DB".ECnv_Sys[#Sys_No] := "PopUps_DB_1"."ECnv_Settings"[#HMI_No];
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[4].Cnv2 := "PopUps_DB_1"."Buffer_Cnv_Settings_2"[#HMI_No];
+        5:
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[5].Cnv1 := "PopUps_DB_1"."Buffer_Cnv_Settings_1"[#HMI_No];
+            "Settings_DB".ECnv_Sys[#Sys_No] := "PopUps_DB_1"."ECnv_Settings"[#HMI_No];
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[5].Cnv2 := "PopUps_DB_1"."Buffer_Cnv_Settings_2"[#HMI_No];
+        6:
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[6].Cnv1 := "PopUps_DB_1"."Buffer_Cnv_Settings_1"[#HMI_No];
+            "Settings_DB".ECnv_Sys[#Sys_No] := "PopUps_DB_1"."ECnv_Settings"[#HMI_No];
+            "Settings_DB".LCnv_Sys[#Sys_No].Cnv_Level[6].Cnv2 := "PopUps_DB_1"."Buffer_Cnv_Settings_2"[#HMI_No];
+    END_CASE;
+END_IF;
+
+
+
+
+END_FUNCTION

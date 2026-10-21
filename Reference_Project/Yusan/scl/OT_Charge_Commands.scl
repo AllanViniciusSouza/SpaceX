@@ -1,0 +1,42 @@
+FUNCTION "OT_Charge_Commands"   // FC 52, author 
+
+VAR_IN_OUT
+   Auto_Test : "Auto_Test";
+END_VAR
+
+   // RETURN : Void
+BEGIN
+"OrderTable_HMI"."Manual order" := #Auto_Test.Manual;
+//PALLET TYPE
+IF #Auto_Test."Pallet Type" = 'C' THEN
+    "OrderTable_HMI"."Pallet Type" := 1;
+ELSIF #Auto_Test."Pallet Type" = 'E' THEN
+    "OrderTable_HMI"."Pallet Type" := 2;
+END_IF;
+//TOWER 1 PALLET ALIGNMENT
+IF #Auto_Test."Tower 1 Pallet Alignment" = 'R' THEN
+    "OrderTable_HMI"."Tower 1 Pallet Alignment" := 1;
+ELSIF #Auto_Test."Tower 1 Pallet Alignment" = 'L' THEN
+    "OrderTable_HMI"."Tower 1 Pallet Alignment" := 2;
+END_IF;
+//TOWER 2 PALLET ALIGNMENT
+IF #Auto_Test."Tower 2 Pallet Alignment" = 'R' THEN
+    "OrderTable_HMI"."Tower 2 Pallet Alignment" := 1;
+ELSIF #Auto_Test."Tower 2 Pallet Alignment" = 'L' THEN
+    "OrderTable_HMI"."Tower 2 Pallet Alignment" := 2;
+END_IF;
+//ECONVEYOR PALLET ALIGNMENT
+IF #Auto_Test."Extractor Pallet Alignment" = 'R' THEN
+    "OrderTable_HMI"."Extractor Pallet Alignment" := 1;
+ELSIF #Auto_Test."Extractor Pallet Alignment" = 'L' THEN
+    "OrderTable_HMI"."Extractor Pallet Alignment" := 2;
+ELSIF #Auto_Test."Extractor Pallet Alignment" = 'C' THEN
+    "OrderTable_HMI"."Extractor Pallet Alignment" := 3;
+END_IF;
+"OrderTable_HMI"."From level" := #Auto_Test."From level";
+"OrderTable_HMI"."To level" := #Auto_Test."To level";
+"OrderTable_HMI"."Testing Time" := #Auto_Test."Testing Time";
+"OrderTable_HMI"."Numer of cycles" := #Auto_Test."Numer of cycles";
+"OrderTable_HMI".Level := UINT_TO_BYTE(#Auto_Test.Level);
+"OrderTable_HMI".Tower := UINT_TO_BYTE(#Auto_Test.Tower);
+END_FUNCTION

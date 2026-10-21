@@ -1,0 +1,446 @@
+FUNCTION "Errors"   // FC 26, author 
+
+VAR_TEMP
+   ReturnValue : Word;
+   Devices : Array[0..1023] of Bool;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+REGION Profinet Device Errors
+    #ReturnValue := DeviceStates(LADDR := ,
+                                 MODE := 2, // Mode 5 = a problem has occurred
+                                 STATE := #Devices);
+    IF #ReturnValue = 0 THEN
+        IF #Devices[0] THEN // Main PLC Error
+            "Errors_Profinet_1".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[1] THEN // Switch 1
+            "Errors_Profinet_1".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[2] THEN // Switch 2
+            "Errors_Profinet_1".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[3] THEN // Remote IO
+            "Errors_Profinet_1".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[4] THEN // VTD
+            "Errors_Profinet_1".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[5] THEN // Lift PopUp1
+            "Errors_Profinet_1".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[6] THEN // Lift PopUp4
+            "Errors_Profinet_1".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[7] THEN // Lift PopUp2
+            "Errors_Profinet_1".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[8] THEN // Roller Outbound
+            "Errors_Profinet_1".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[9] THEN // Roller Inbound
+            "Errors_Profinet_1".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[10] THEN // Roller PopUp1
+            "Errors_Profinet_1".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[11] THEN // Roller PopUp2
+            "Errors_Profinet_1".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[12] THEN // Roller PopUp3
+            "Errors_Profinet_1".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[13] THEN // Chain 1
+            "Errors_Profinet_1".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[14] THEN // Chain 2
+            "Errors_Profinet_1".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[15] THEN // Chain 3
+            "Errors_Profinet_1".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[16] THEN // Buffer Level 1
+            "Errors_Profinet_2".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[17] THEN // Buffer Level 2
+            "Errors_Profinet_2".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[18] THEN // Buffer Level 3
+            "Errors_Profinet_2".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[19] THEN // Roller PopUp4
+            "Errors_Profinet_2".%X3 := TRUE;
+        END_IF;
+        
+        IF #Devices[20] THEN // VTD Conveyor
+            "Errors_Profinet_2".%X4 := TRUE;
+        END_IF;
+        
+        IF #Devices[21] THEN // IND360
+            "Errors_Profinet_2".%X5 := TRUE;
+        END_IF;
+        
+        IF #Devices[22] THEN // Lift PopUp3
+            "Errors_Profinet_2".%X6 := TRUE;
+        END_IF;
+        
+        IF #Devices[23] THEN // Turck
+            "Errors_Profinet_2".%X7 := TRUE;
+        END_IF;
+        
+        IF #Devices[24] THEN // INTERFACE ET200AL
+            "Errors_Profinet_2".%X8 := TRUE;
+        END_IF;
+        
+        IF #Devices[25] THEN // WLAN 1
+            "Errors_Profinet_2".%X9 := TRUE;
+        END_IF;
+        
+        IF #Devices[26] THEN // WLAN 2
+            "Errors_Profinet_2".%X10 := TRUE;
+        END_IF;
+        
+        IF #Devices[27] THEN // WLAN 3
+            "Errors_Profinet_2".%X11 := TRUE;
+        END_IF;
+        
+        IF #Devices[28] THEN // WLAN 4
+            "Errors_Profinet_2".%X12 := TRUE;
+        END_IF;
+        
+        IF #Devices[29] THEN // Linear Encoder
+            "Errors_Profinet_2".%X13 := TRUE;
+        END_IF;
+        
+        IF #Devices[30] THEN // Absolute Encoder
+            "Errors_Profinet_2".%X14 := TRUE;
+        END_IF;
+        
+        IF #Devices[31] THEN // Sick Barcode
+            "Errors_Profinet_2".%X15 := TRUE;
+        END_IF;
+        
+        IF #Devices[32] THEN // Inbound Leuze Barcode
+            "Errors_Profinet_3".%X0 := TRUE;
+        END_IF;
+        
+        IF #Devices[33] THEN // Outbound Leuze Barcode
+            "Errors_Profinet_3".%X1 := TRUE;
+        END_IF;
+        
+        IF #Devices[34] THEN // HMI
+            "Errors_Profinet_3".%X2 := TRUE;
+        END_IF;
+        
+        IF #Devices[35] THEN // Light Guard
+            "Errors_Profinet_3".%X3 := TRUE;
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION LMs
+    IF NOT "Auxiliar Circuit Breaker Feedback LM2" THEN
+        "Erros_LMs_1".%X0 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM3" THEN
+        "Erros_LMs_1".%X1 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM4" THEN
+        "Erros_LMs_1".%X2 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM5" THEN
+        "Erros_LMs_1".%X3 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM6" THEN
+        "Erros_LMs_1".%X4 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM7" THEN
+        "Erros_LMs_1".%X5 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM8" THEN
+        "Erros_LMs_1".%X6 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM9" THEN
+        "Erros_LMs_1".%X7 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM10" THEN
+        "Erros_LMs_1".%X8 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM11" THEN
+        "Erros_LMs_1".%X9 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM12" THEN
+        "Erros_LMs_1".%X10 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM13" THEN
+        "Erros_LMs_1".%X11 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM14" THEN
+        "Erros_LMs_1".%X12 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM15" THEN
+        "Erros_LMs_1".%X13 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM16" THEN
+        "Erros_LMs_1".%X14 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM100" THEN
+        "Erros_LMs_1".%X15 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM101" THEN
+        "Erros_LMs_2".%X0 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM102" THEN
+        "Erros_LMs_2".%X1 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM103" THEN
+        "Erros_LMs_2".%X2 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM104" THEN
+        "Erros_LMs_2".%X3 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM105" THEN
+        "Erros_LMs_2".%X4 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM106" THEN
+        "Erros_LMs_2".%X5 := TRUE;
+    END_IF;
+    
+    IF NOT "Auxiliar Circuit Breaker Feedback LM107" THEN
+        "Erros_LMs_2".%X6 := TRUE;
+    END_IF;
+    
+END_REGION
+
+REGION WEIGHT STATION
+    REGION Smart5 Red Level 5 
+        
+        // Calibration error 
+        "Errors_IND360_Smart5_Red_Level_5".%X0 := "SB Status Group 1".%X0;
+        // 1 = Weight data can no longer be trusted
+        // due TO loss OF calibration data OR an
+        // algorithm running in the product TO detect
+        // weighing irregularities.
+        
+        // Out of A/D range over/under
+        "Errors_IND360_Smart5_Red_Level_5".%X1 := "SB Status Group 1".%X1;
+        // 1 = Weight data can no longer be trusted
+        // due TO loss OF data OR mechanical damage
+        // OF the weigh module.
+        
+        // Checksum failure 
+        "Errors_IND360_Smart5_Red_Level_5".%X2 := "SB Status Group 1".%X2;
+        // 1 = A checksum analysis OF memory does
+        // NOT yield the expected result.
+        
+        // Weight blocked
+        "Errors_IND360_Smart5_Red_Level_5".%X3 := "SB Status Group 1".%X3;
+        // [NOT supported BY IND360 devices.]
+        
+        // Single sensor communication failure (LC missing)
+        "Errors_IND360_Smart5_Red_Level_5".%X4 := "SB Status Group 1".%X4;
+        // 1 = One OR more OF the connected sensors
+        // are NOT working properly.
+        
+        //Customer defined overload
+        "Errors_IND360_Smart5_Red_Level_5".%X5 := "SB Status Group 1".%X5;
+        // 1 = Weight is equal TO OR greater than the
+        // maximum load allowed. Although overload
+        // is a conditional limit, it can lead TO bigger
+        // #Errors such as mechanical breakage OR
+        // personal injury.
+        
+        // Customer defined underload
+        "Errors_IND360_Smart5_Red_Level_5".%X6 := "SB Status Group 1".%X6;
+        // 1 = Weight is equal OR less than the
+        // minimum load allowed.
+        
+        // Network failure (all cells)
+        "Errors_IND360_Smart5_Red_Level_5".%X7 := "SB Status Group 1".%X7;
+        // Applicable only on multi-cell networks.
+        // 1 = Failure OF the entire Network. No cells
+        // are responding.
+        
+        // Zero out OF range
+        "Errors_IND360_Smart5_Red_Level_5".%X8 := "SB Status Group 1".%X8;
+        // 1 = A control system attempted A Zero
+        // command but the device did NOT accept the
+        // command because the weight is outside the
+        // specified limits OR the weights AND measure
+        // limits.
+        
+        // Symmetry #Errors
+        "Errors_IND360_Smart5_Red_Level_5".%X9 := "SB Status Group 1".%X9;
+        // Applicable only FOR products with TraxDSP
+        // function which detects significant errors
+        // between load cells AND their peers.
+        // 1 = A symmetry error has been detected.
+        
+        // Temperature #Errors (LC temperature out OF normal temperature)
+        "Errors_IND360_Smart5_Red_Level_5".%X10 := "SB Status Group 1".%X10;
+        // 1 = Sensor is outside OF the allowed
+        // Temperature range. The weight value can be
+        // affected, OR the components can prematurely
+        // fail.
+        
+        // Weights AND measures failure
+        "Errors_IND360_Smart5_Red_Level_5".%X11 := "SB Status Group 1".%X11;
+        // 1 = The product is no longer in compliance
+        // with Weights AND measure regulations.
+        
+        // Foreign device detected
+        "Errors_IND360_Smart5_Red_Level_5".%X12 := "SB Status Group 1".%X12;
+        // 1 = A Foreign device is attached TO the
+        // system OR any similar algorithm limits.
+        
+        // Test mode
+        "Errors_IND360_Smart5_Red_Level_5".%X13 := "SB Status Group 1".%X13;
+        // 1 = Device is in a mode in which live data
+        // is being replaced with special Test data.
+        
+        // Analog LC Error
+        "Errors_IND360_Smart5_Red_Level_5".%X14 := "SB Status Group 1".%X14;
+        // 1 = Analog Sensor Error detected BY
+        // measuring system total resistance
+    END_REGION
+END_REGION
+
+REGION Leuze Barcode
+    //INBOUND LECTOR
+    IF "In Lector_Staus" = 128 THEN
+        "Error_Devices".%X0 := TRUE;
+    ELSIF "In Lector_Staus" = 129 THEN
+        "Error_Devices".%X1 := TRUE;
+    END_IF;
+    
+    //OUTBOUND LECTOR
+    IF "Out Lector_Staus" = 128 THEN
+        "Error_Devices".%X2 := TRUE;
+    ELSIF "Out Lector_Staus" = 129 THEN
+        "Error_Devices".%X3 := TRUE;
+    END_IF;
+END_REGION
+
+REGION Sick Barcode
+    IF "SICK_Lector".Errorcode = 16#0000_0001 THEN //Timeout (SICK_CCOM_PNDP) 
+        "Sick Lector_Error code 1".%X0 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0002 THEN //Invalid module length (input)
+        "Sick Lector_Error code 1".%X1 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0003 THEN //Invalid module length (output)
+        "Sick Lector_Error code 1".%X2 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0004 THEN //DPWR_DAT error 
+        "Sick Lector_Error code 1".%X3 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0005 THEN //DPRD_DAT error 
+        "Sick Lector_Error code 1".%X4 := TRUE;
+    ELSIF "SICK_Lector".Errorcode > 16#0000_0006 AND "SICK_Lector".Errorcode < 16#0000_0009 THEN //Communication error 
+        "Sick Lector_Error code 1".%X5 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0010 THEN //Timeout (SICK_CCOM_PNDP)
+        "Sick Lector_Error code 1".%X6 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0011 THEN //Device error 
+        "Sick Lector_Error code 1".%X7 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0012 THEN //SICK_GetValue error 
+        "Sick Lector_Error code 1".%X8 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0013 THEN //SICK_SetValue error
+        "Sick Lector_Error code 1".%X9 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0014 THEN //#CANId > 63 
+        "Sick Lector_Error code 1".%X10 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0015 THEN //No module function selected, OR more than one module function selected
+        "Sick Lector_Error code 1".%X11 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0016 THEN //Invalid command response received
+        "Sick Lector_Error code 1".%X12 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0017 THEN //Change not possible in "RUN mode".
+        "Sick Lector_Error code 1".%X13 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0020 THEN //FreeCommand.sCommand > arrCommand (500 bytes)
+        "Sick Lector_Error code 1".%X14 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0021 THEN //Response to free command > result string(FreeCommand.sResult[100 characters])
+        "Sick Lector_Error code 1".%X15 := TRUE;
+    ELSIF "SICK_Lector".Errorcode = 16#0000_0022 THEN //String length Match - code.sName =0
+        "Sick Lector_Error code 2".%X0 := TRUE;
+    END_IF;
+    END_REGION
+
+REGION Linear Encoder
+    IF "LE_Status".%X0 THEN //Error present
+        IF "LE_X_Unsafe_Position" = 1 THEN //Reader tilted 180°
+            "Linear Encoder_Device Errors".%X0 := TRUE;
+        ELSIF "LE_X_Unsafe_Position" = 2 THEN // No clear position can be determined (difference between codes is too great, code distance incorrect, etc.)
+            "Linear Encoder_Device Errors".%X1 := TRUE;
+        ELSIF "LE_X_Unsafe_Position" = 1000 THEN //Internal error
+            "Linear Encoder_Device Errors".%X2 := TRUE;
+        END_IF;
+    ELSIF "LE_Status".%X1 THEN // No position information/OUT
+        "Linear Encoder_Device Errors".%X3 := TRUE;
+    ELSE//NO ERROR
+        "Linear Encoder_Device Errors" := 0;
+    END_IF;
+    
+    //WARNINGS
+    IF "LE_Status".%X2 THEN // Warnign present
+        "Linear Encoder_Warnings".%X0 := "LE_Warnings".%X0; //Code with non-PXV content found
+        "Linear Encoder_Warnings".%X1 := "LE_Warnings".%X1; //Reader too close to code tape
+        "Linear Encoder_Warnings".%X2 := "LE_Warnings".%X2; //Reader too far from code tape
+        "Linear Encoder_Warnings".%X3 := "LE_Warnings".%X3; //Y position too large; the sensor is just before OUT
+        "Linear Encoder_Warnings".%X4 := "LE_Warnings".%X4; //Y position too small; the sensor is just before OUT
+        "Linear Encoder_Warnings".%X5 := "LE_Warnings".%X5; //The reader is rotated or tilted in relation to the code tape
+        "Linear Encoder_Warnings".%X6 := "LE_Warnings".%X6; // Low level of code contrast
+        "Linear Encoder_Warnings".%X7 := "LE_Warnings".%X7; //Repair tape detected
+        "Linear Encoder_Warnings".%X8 := "LE_Warnings".%X8; //Temperature too high
+        END_IF;
+END_REGION
+
+REGION RESET
+    IF "Reset_All" THEN
+        "Errors_Profinet_1" := 0;
+        "Errors_Profinet_2" := 0;
+        "Errors_Profinet_3" := 0;
+        "Error_Devices" := 0;
+        "Sick Lector_Error code 1" := 0;
+        "Sick Lector_Error code 2" := 0;
+        "Erros_LMs_1" := "Erros_LMs_2" := 0;
+        "Linear Encoder_Device Errors" := 0;
+    END_IF;
+END_REGION
+
+
+END_FUNCTION

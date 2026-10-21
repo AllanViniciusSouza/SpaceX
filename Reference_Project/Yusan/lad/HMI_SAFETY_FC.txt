@@ -1,0 +1,40 @@
+// FC "HMI_SAFETY_FC" 43  language F_FBD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   HMI_Box_Connected : Int;
+   HMI_Reset : Bool;
+   HMI_EStop : Bool;
+   HMI_Profinet_Error : Bool;
+   Local_Mode : Bool;
+END_VAR
+
+VAR_OUTPUT
+   HMI_Estop_Pressed_1 : Bool;
+   HMI_Estop_Pressed_2 : Bool;
+   HMI_Estop_Pressed_3 : Bool;
+   HMI_Estop_Pressed_4 : Bool;
+   HMI_Estop_Pressed_5 : Bool;
+   Reset_Comissioning_1 : Bool;
+   Reset_Comissioning_2 : Bool;
+   Reset_Comissioning_3 : Bool;
+   Reset_Comissioning_4 : Bool;
+   Reset_Comissioning_5 : Bool;
+END_VAR
+
+   // RETURN : Void
+--- Network 1  Title: HMI CONNECTED IN THE SYSTEM 1
+   parts: A, Coil, Ge, Le
+   operands: #HMI_EStop, #HMI_Profinet_Error, #Local_Mode, #HMI_Box_Connected, #HMI_Estop_Pressed_1, #HMI_Reset, #Reset_Comissioning_1
+--- Network 2  Title: HMI CONNECTED IN THE SYSTEM 2
+   parts: A, Coil, Ge, Le
+   operands: #HMI_EStop, #HMI_Profinet_Error, #Local_Mode, #HMI_Box_Connected, #HMI_Estop_Pressed_2, #HMI_Reset, #Reset_Comissioning_2
+--- Network 3  Title: HMI CONNECTED IN THE SYSTEM 3
+   parts: A, Coil, Ge, Le
+   operands: #HMI_EStop, #HMI_Profinet_Error, #Local_Mode, #HMI_Box_Connected, #HMI_Estop_Pressed_3, #HMI_Reset, #Reset_Comissioning_3
+--- Network 4  Title: HMI CONNECTED IN THE SYSTEM 4
+   parts: A, Coil, Ge, Le
+   operands: #HMI_EStop, #HMI_Profinet_Error, #Local_Mode, #HMI_Box_Connected, #HMI_Estop_Pressed_4, #HMI_Reset, #Reset_Comissioning_4
+--- Network 5  Title: HMI CONNECTED IN THE SYSTEM 5
+   parts: A, Coil, Ge, Le
+   operands: #HMI_EStop, #HMI_Profinet_Error, #Local_Mode, #HMI_Box_Connected, #HMI_Estop_Pressed_5, #HMI_Reset, #Reset_Comissioning_5

@@ -1,0 +1,706 @@
+FUNCTION_BLOCK "Order_Table_Buffers_FB"   // FB 31, author 
+
+VAR_INPUT
+   System_Selected : Bool;
+   AutoMan_Switch : Bool;   // Auto/Man Switch on CPU Panel - 1 = Auto, 0 = Manual
+   CurrentTime : String;
+   CurrentDTL : DTL;
+   Watchdog : "Watchdog_Settings_UDT";
+   VTD_CurrentLevel : UInt;
+   OPC_UA_State_VTD : UInt;
+   OPC_UA_State_Main : UInt;
+   OPC_UA_State_L2 : UInt;
+   OPC_UA_State_L3 : UInt;
+   OPC_UA_State_L4 : UInt;
+   OPC_UA_State_L5 : UInt;
+   OPC_UA_State_L6 : UInt;
+   Clear_OrderTable : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Buffer_21 : "Buffer_Cnv_Control";
+   Cnv_Buffer_31 : "Buffer_Cnv_Control";
+   Cnv_Buffer_41 : "Buffer_Cnv_Control";
+   Cnv_Buffer_51 : "Buffer_Cnv_Control";
+   Cnv_Buffer_61 : "Buffer_Cnv_Control";
+   Cnv_Buffer_22 : "Buffer_Cnv_Control";
+   Cnv_Buffer_32 : "Buffer_Cnv_Control";
+   Cnv_Buffer_42 : "Buffer_Cnv_Control";
+   Cnv_Buffer_52 : "Buffer_Cnv_Control";
+   Cnv_Buffer_62 : "Buffer_Cnv_Control";
+   System : "System_UDT";
+   Control_OPC_Ua : "WMS_OPC_UA";
+END_VAR
+
+VAR
+   L2_CurrentOrder : UDInt;
+   L3_CurrentOrder : UDInt;
+   L4_CurrentOrder : UDInt;
+   L5_CurrentOrder : UDInt;
+   L6_CurrentOrder : UDInt;
+   L2DoneRTrig : R_TRIG;
+   L3DoneRTrig : R_TRIG;
+   L4DoneRTrig : R_TRIG;
+   L5DoneRTrig : R_TRIG;
+   L6DoneRTrig : R_TRIG;
+   PalletRefused_RTrig : R_TRIG;
+   ErrorRTrig : R_TRIG;
+   CancelRTrig : R_TRIG;
+   PauseRTrig : R_TRIG;
+   ResumeRTrig : R_TRIG;
+   Clear_Store : R_TRIG;
+   Clear_Retrieve : R_TRIG;
+   Canceling : Bool;
+   L2_WatchdogTimer : TON_TIME;
+   L3_WatchdogTimer : TON_TIME;
+   L4_WatchdogTimer : TON_TIME;
+   L5_WatchdogTimer : TON_TIME;
+   L6_WatchdogTimer : TON_TIME;
+   L2_WatchdogStart : Bool;
+   L3_WatchdogStart : Bool;
+   L4_WatchdogStart : Bool;
+   L5_WatchdogStart : Bool;
+   L6_WatchdogStart : Bool;
+   F_AutoMode : F_TRIG;
+END_VAR
+
+VAR_TEMP
+   i : DInt;
+   n : DInt;
+   EmptyOrder : "OrderTable_UDT";
+   MaxRunningOrderNo : UInt;
+END_VAR
+
+VAR CONSTANT
+   LEVEL_2_DEVICE : String := 'Level 2';
+   LEVEL_3_DEVICE : String := 'Level 3';
+   LEVEL_4_DEVICE : String := 'Level 4';
+   LEVEL_5_DEVICE : String := 'Level 5';
+   LEVEL_6_DEVICE : String := 'Level 6';
+   RUNNING_STATUS : String := 'Running';
+   COMPLETED_STATUS : String := 'Completed';
+   QUEUED_STATUS : String := 'Queued';
+   PALLET_REFUSED_STATUS : String := 'Pallet Refused';
+   ERROR_STATUS : String := 'Error';
+   CANCELED_STATUS : String := 'Canceled';
+   PAUSED_STATUS : String := 'Paused';
+   ORDER_REFUSED : String := 'Refused';
+   ERROR_CANCELED_STATUS : String := 'Error\Cancel';
+END_VAR
+
+BEGIN
+// Converts the task type for strings 
+IF #System.OrderTable[1].OPC_Control.Task_Type = 12 THEN
+    #System.OrderTable[1].Device := 'Level 2';
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 13 THEN
+    #System.OrderTable[1].Device := 'Level 3';
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 14 THEN
+    #System.OrderTable[1].Device := 'Level 4';
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 15 THEN
+    #System.OrderTable[1].Device := 'Level 5';
+ELSIF #System.OrderTable[1].OPC_Control.Task_Type = 16 THEN
+    #System.OrderTable[1].Device := 'Level 6';
+ELSE
+    #System.OrderTable[1].Device := '';
+END_IF;
+
+REGION #New Order was Sent
+    IF #System.OrderSent THEN
+        //Count orders in Step Table
+        FOR #i := 0 TO 20 DO
+            IF #System.StepTable[#i].OrderNo <> 0
+                AND #System.StepTable[#i].StepNo <> 0
+                AND #System.StepTable[#i].PlaceTime <> ''
+            THEN
+                #System.StepTable[#i].Status := #QUEUED_STATUS;
+                #n += 1;
+            ELSE
+                EXIT;
+            END_IF;
+        END_FOR;
+        IF #n > 0 THEN
+            //shift order table down by Order number rows
+            FOR #i := 99 TO (#n + 1) BY -1 DO
+                #System.OrderTable[#i] := #System.OrderTable[#i - #n];
+            END_FOR;
+            //copy data from step table to order table
+            FOR #i := 0 (*1*)TO #n DO
+                #System.OrderTable[#n - #i (*+ 1*)] := #System.StepTable[#i];
+            END_FOR;
+            //clean step table
+            FOR #i := 0 (*1*)TO 20 DO
+                #System.StepTable[#i] := #EmptyOrder;
+            END_FOR;
+            #System.CurrentOrder += #n;
+            
+            //Pallet Transfer L2
+            IF #L2_CurrentOrder <> 0 THEN
+                #L2_CurrentOrder += #n;
+            END_IF;
+            
+            //Pallet Transfer L3
+            IF #L3_CurrentOrder <> 0 THEN
+                #L3_CurrentOrder += #n;
+            END_IF;
+            
+            //Pallet Transfer L4
+            IF #L4_CurrentOrder <> 0 THEN
+                #L4_CurrentOrder += #n;
+            END_IF;
+            
+            //Pallet Transfer L5
+            IF #L5_CurrentOrder <> 0 THEN
+                #L5_CurrentOrder += #n;
+            END_IF;
+            
+            //Pallet Transfer L6
+            IF #L6_CurrentOrder <> 0 THEN
+                #L6_CurrentOrder += #n;
+            END_IF;
+            
+        END_IF;
+        #System.OrderSent := FALSE;
+    END_IF;
+END_REGION
+
+REGION Auto/Man Mode
+    //Enable Devices in Auto/Man Mode
+    IF #System.Auto_Man THEN
+        #Cnv_Buffer_21.Instruction.Enable :=
+        #Cnv_Buffer_31.Instruction.Enable :=
+        #Cnv_Buffer_41.Instruction.Enable :=
+        #Cnv_Buffer_51.Instruction.Enable :=
+        #Cnv_Buffer_61.Instruction.Enable :=
+        #Cnv_Buffer_22.Instruction.Enable :=
+        #Cnv_Buffer_32.Instruction.Enable :=
+        #Cnv_Buffer_42.Instruction.Enable :=
+        #Cnv_Buffer_52.Instruction.Enable :=
+        #Cnv_Buffer_62.Instruction.Enable := TRUE;
+    END_IF;
+    //Disable Devices in Auto/Man Mode
+    #F_AutoMode(CLK := #System.Auto_Man);
+    
+    IF #F_AutoMode.Q THEN
+        #Cnv_Buffer_21.Instruction.Enable :=
+        #Cnv_Buffer_31.Instruction.Enable :=
+        #Cnv_Buffer_41.Instruction.Enable :=
+        #Cnv_Buffer_51.Instruction.Enable :=
+        #Cnv_Buffer_61.Instruction.Enable :=
+        #Cnv_Buffer_22.Instruction.Enable :=
+        #Cnv_Buffer_32.Instruction.Enable :=
+        #Cnv_Buffer_42.Instruction.Enable :=
+        #Cnv_Buffer_52.Instruction.Enable :=
+        #Cnv_Buffer_62.Instruction.Enable := FALSE;
+    END_IF;
+END_REGION
+
+REGION LEVEL 2
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = #LEVEL_2_DEVICE
+        AND #System.OrderTable[1].Status = #QUEUED_STATUS
+        AND #OPC_UA_State_Main = 10
+        AND NOT (#OPC_UA_State_L2 > 0 AND #OPC_UA_State_L2 <= 400)
+        AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 2)
+        AND NOT #Canceling
+    THEN
+        #L2_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#L2_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#L2_CurrentOrder].Device = #LEVEL_2_DEVICE
+        AND #System.OrderTable[#L2_CurrentOrder].Status = #QUEUED_STATUS
+        AND #OPC_UA_State_Main = 10
+        AND NOT (#OPC_UA_State_L2 > 0 AND #OPC_UA_State_L2 <= 400)
+        AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 2)
+        AND NOT #Canceling
+    THEN
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Data_Available := TRUE; // Send the Task Data Available to OPC UA Control
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Type := #System.OrderTable[#L2_CurrentOrder].OPC_Control.Task_Type;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#L2_CurrentOrder].OPC_Control.Pallet_Type; 
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_ID := #System.OrderTable[#L2_CurrentOrder].OPC_Control.Task_ID;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Metadata := 'Task avaliable';
+        "Control_DB"."Buffer_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#L2_CurrentOrder].OPC_Control.Destination_Location;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Source_Location := #System.OrderTable[#L2_CurrentOrder].OPC_Control.Source_Location;
+        #L2_WatchdogStart := TRUE;
+    END_IF;
+    
+    //RUNNING
+    IF #OPC_UA_State_L2 > 0 AND #OPC_UA_State_L2 < 400 AND #System.Auto_Man THEN
+        #System.OrderTable[#L2_CurrentOrder].Status := #RUNNING_STATUS;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Metadata := 'Movement Ready';
+        #System.OrderTable[#L2_CurrentOrder].OPC_Control.SM_State := "Control_DB".LCnv_Sys[#System.Id].Cnv_Level[2].Cnv1.SM_State;
+        #System.OrderTable[#L2_CurrentOrder].OPC_Control.Movement_Ready := TRUE;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#OPC_UA_State_L2 > 0 AND #OPC_UA_State_L2 < 400) AND #L2_CurrentOrder <> 0 THEN
+        #System.OrderTable[#L2_CurrentOrder].Status := #CANCELED_STATUS;
+        #System.OrderTable[#L2_CurrentOrder].CompleteTime := #CurrentTime;
+        #L2_CurrentOrder := 0;
+    END_IF;
+    
+    //Error
+    IF #OPC_UA_State_L2 = 400 THEN
+        #System.OrderTable[#L2_CurrentOrder].Status := #ERROR_STATUS;
+        #System.OrderTable[#L2_CurrentOrder].ErrorID := #Cnv_Buffer_21.Cnv_Errors."Error_Word_1" OR #Cnv_Buffer_21.Cnv_Errors."Error_Word_2"
+        OR #Cnv_Buffer_21.Cnv_Errors."Error_Word_3" OR #Cnv_Buffer_21.Cnv_Errors."Error_Word_4";
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #L2DoneRTrig(CLK := "Control_DB".Movement_Completed.Level_2);
+    IF #L2DoneRTrig.Q THEN
+        #System.OrderTable[#L2_CurrentOrder].OPC_Control.Movement_Ready := FALSE;
+        #System.OrderTable[#L2_CurrentOrder].OPC_Control.Movement_Request_Complete := TRUE;
+        #L2_WatchdogStart := FALSE;
+        #System.OrderTable[#L2_CurrentOrder].Status := #COMPLETED_STATUS;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Metadata := 'Movement Completed';
+        #System.OrderTable[#L2_CurrentOrder].CompleteTime := #CurrentTime;
+    END_IF;
+    
+    //Acknoledgment
+    IF #System.OrderTable[#L2_CurrentOrder].Status = #COMPLETED_STATUS AND #System.OrderTable[#L2_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack THEN
+        "Control_DB".Movement_Completed.Level_2 := FALSE;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Metadata := 'HandShake Completed';
+        #L2_CurrentOrder := 0;
+    ELSIF #System.OrderTable[#L2_CurrentOrder].Status = #COMPLETED_STATUS AND NOT #System.OrderTable[#L2_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack THEN
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Metadata := 'Waiting Ack';
+    END_IF;
+    
+    //Simulated Handshake
+    IF "OrderTable_HMI"."Manual order" THEN
+        IF #System.OrderTable[#L2_CurrentOrder].Status = #RUNNING_STATUS THEN
+            #System.OrderTable[#L2_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack := FALSE;
+        ELSIF #System.OrderTable[#L2_CurrentOrder].Status = #COMPLETED_STATUS THEN
+            #System.OrderTable[#L2_CurrentOrder].OPC_Control.Movement_Request_Complete_Ack := TRUE;
+        END_IF;
+    END_IF;
+END_REGION
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REGION LEVEL 3
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = #LEVEL_3_DEVICE
+        AND #System.OrderTable[1].Status = #QUEUED_STATUS
+        AND #OPC_UA_State_Main = 10
+        AND NOT (#OPC_UA_State_L3 > 0 AND #OPC_UA_State_L3 <= 400)
+        AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 3)
+        AND NOT #Canceling
+    THEN
+        #L3_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#L3_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#L3_CurrentOrder].Device = #LEVEL_3_DEVICE
+        AND #System.OrderTable[#L3_CurrentOrder].Status = #QUEUED_STATUS
+        AND #OPC_UA_State_Main = 10
+        AND NOT (#OPC_UA_State_L3 > 0 AND #OPC_UA_State_L3 <= 400)
+        AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 3)
+        AND NOT #Canceling
+    THEN
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Data_Available := TRUE;// Send the Task Data Available to OPC UA Control
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Type := #System.OrderTable[#L3_CurrentOrder].OPC_Control.Task_Type;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#L3_CurrentOrder].OPC_Control.Pallet_Type;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_ID := #System.OrderTable[#L3_CurrentOrder].OPC_Control.Task_ID;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#L3_CurrentOrder].OPC_Control.Task_Metadata;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#L3_CurrentOrder].OPC_Control.Destination_Location;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Source_Location := #System.OrderTable[#L3_CurrentOrder].OPC_Control.Source_Location;
+        #L3_WatchdogStart := TRUE;
+    END_IF;
+    
+    //RUNNING
+    IF #OPC_UA_State_L3 > 0 AND #OPC_UA_State_L3 < 400 AND #System.Auto_Man THEN
+        #System.OrderTable[#L3_CurrentOrder].Status := #RUNNING_STATUS;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#OPC_UA_State_L3 > 0 AND #OPC_UA_State_L3 < 400) AND #L3_CurrentOrder <> 0 THEN
+        #System.OrderTable[#L3_CurrentOrder].Status := #CANCELED_STATUS;
+        #System.OrderTable[#L3_CurrentOrder].CompleteTime := #CurrentTime;
+        #L3_CurrentOrder := 0;
+    END_IF;
+    
+    //Error
+    IF #OPC_UA_State_L3 = 400 THEN
+        #System.OrderTable[#L3_CurrentOrder].Status := #ERROR_STATUS;
+        #System.OrderTable[#L3_CurrentOrder].ErrorID := #Cnv_Buffer_31.Cnv_Errors."Error_Word_1" OR #Cnv_Buffer_31.Cnv_Errors."Error_Word_2"
+        OR #Cnv_Buffer_31.Cnv_Errors."Error_Word_3" OR #Cnv_Buffer_31.Cnv_Errors."Error_Word_4";
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #L3DoneRTrig(CLK := "Control_DB".Movement_Completed.Level_3);
+    IF #L3DoneRTrig.Q THEN
+        "Control_DB".Movement_Completed.Level_3 := FALSE;
+        #L3_WatchdogStart := FALSE;
+        #System.OrderTable[#L3_CurrentOrder].Status := #COMPLETED_STATUS;
+        #System.OrderTable[#L3_CurrentOrder].CompleteTime := #CurrentTime;
+        #L3_CurrentOrder := 0;
+    END_IF;
+END_REGION
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REGION LEVEL 4
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = #LEVEL_4_DEVICE
+        AND #System.OrderTable[1].Status = #QUEUED_STATUS
+        AND #OPC_UA_State_Main = 10
+        AND NOT (#OPC_UA_State_L4 > 0 AND #OPC_UA_State_L4 <= 400)
+        AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 4)
+        AND NOT #Canceling
+    THEN
+        #L4_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#L4_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#L4_CurrentOrder].Device = #LEVEL_4_DEVICE
+        AND #System.OrderTable[#L4_CurrentOrder].Status = #QUEUED_STATUS
+        AND #OPC_UA_State_Main = 10
+        AND NOT (#OPC_UA_State_L4 > 0 AND #OPC_UA_State_L4 <= 400)
+        AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 4)
+        AND NOT #Canceling
+    THEN
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Data_Available := TRUE; // Send the Task Data Available to OPC UA Control
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Type := #System.OrderTable[#L4_CurrentOrder].OPC_Control.Task_Type;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#L4_CurrentOrder].OPC_Control.Pallet_Type;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_ID := #System.OrderTable[#L4_CurrentOrder].OPC_Control.Task_ID;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#L4_CurrentOrder].OPC_Control.Task_Metadata;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#L4_CurrentOrder].OPC_Control.Destination_Location;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Source_Location := #System.OrderTable[#L4_CurrentOrder].OPC_Control.Source_Location;
+        #L4_WatchdogStart := TRUE;
+    END_IF;
+    
+    //RUNNING
+    IF #OPC_UA_State_L4 > 0 AND #OPC_UA_State_L4 < 400 AND #System.Auto_Man THEN
+        #System.OrderTable[#L4_CurrentOrder].Status := #RUNNING_STATUS;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#OPC_UA_State_L4 > 0 AND #OPC_UA_State_L4 < 400) AND #L4_CurrentOrder <> 0 THEN
+        #System.OrderTable[#L4_CurrentOrder].Status := #CANCELED_STATUS;
+        #System.OrderTable[#L4_CurrentOrder].CompleteTime := #CurrentTime;
+        #L4_CurrentOrder := 0;
+    END_IF;
+    
+    //Error
+    IF #OPC_UA_State_L4 = 400 THEN
+        #System.OrderTable[#L4_CurrentOrder].Status := #ERROR_STATUS;
+        #System.OrderTable[#L4_CurrentOrder].ErrorID := #Cnv_Buffer_41.Cnv_Errors."Error_Word_1" OR #Cnv_Buffer_41.Cnv_Errors."Error_Word_2"
+        OR #Cnv_Buffer_41.Cnv_Errors."Error_Word_3" OR #Cnv_Buffer_41.Cnv_Errors."Error_Word_4";
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #L4DoneRTrig(CLK := "Control_DB".Movement_Completed.Level_4);
+    IF #L4DoneRTrig.Q THEN
+        "Control_DB".Movement_Completed.Level_4 := FALSE;
+        #L4_WatchdogStart := FALSE;
+        #System.OrderTable[#L4_CurrentOrder].Status := #COMPLETED_STATUS;
+        #System.OrderTable[#L4_CurrentOrder].CompleteTime := #CurrentTime;
+        #L4_CurrentOrder := 0;
+    END_IF;
+END_REGION
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REGION LEVEL 5
+IF #System.OrderTable[1].StepNo <> 0
+    AND #System.OrderTable[1].Device = #LEVEL_5_DEVICE
+    AND #System.OrderTable[1].Status = #QUEUED_STATUS
+    AND #OPC_UA_State_Main = 10
+    AND NOT (#OPC_UA_State_L5 > 0 AND #OPC_UA_State_L5 <= 400)
+    AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 5)
+    AND NOT #Canceling
+THEN
+    #L5_CurrentOrder := 1;
+END_IF;
+IF #System.OrderTable[#L5_CurrentOrder].StepNo <> 0
+    AND #System.OrderTable[#L5_CurrentOrder].Device = #LEVEL_4_DEVICE
+    AND #System.OrderTable[#L5_CurrentOrder].Status = #QUEUED_STATUS
+    AND #OPC_UA_State_Main = 10
+    AND NOT (#OPC_UA_State_L5 > 0 AND #OPC_UA_State_L5 <= 400)
+    AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 5)
+    AND NOT #Canceling
+THEN
+    "Control_DB"."Buffer_Order Table"[#System.Id].Task_Data_Available := TRUE; // Send the Task Data Available to OPC UA Control
+    "Control_DB"."Buffer_Order Table"[#System.Id].Task_Type := #System.OrderTable[#L5_CurrentOrder].OPC_Control.Task_Type;
+    "Control_DB"."Buffer_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#L5_CurrentOrder].OPC_Control.Pallet_Type;
+    "Control_DB"."Buffer_Order Table"[#System.Id].Task_ID := #System.OrderTable[#L5_CurrentOrder].OPC_Control.Task_ID;
+    "Control_DB"."Buffer_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#L5_CurrentOrder].OPC_Control.Task_Metadata;
+    "Control_DB"."Buffer_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#L5_CurrentOrder].OPC_Control.Destination_Location;
+    "Control_DB"."Buffer_Order Table"[#System.Id].Source_Location := #System.OrderTable[#L5_CurrentOrder].OPC_Control.Source_Location;
+    #L5_WatchdogStart := TRUE;
+END_IF;
+
+//RUNNING
+IF #OPC_UA_State_L5 > 0 AND #OPC_UA_State_L5 < 400 AND #System.Auto_Man THEN
+    #System.OrderTable[#L5_CurrentOrder].Status := #RUNNING_STATUS;
+END_IF;
+
+//Cancel order
+IF #Canceling AND NOT (#OPC_UA_State_L5 > 0 AND #OPC_UA_State_L5 < 400) AND #L5_CurrentOrder <> 0 THEN
+    #System.OrderTable[#L5_CurrentOrder].Status := #CANCELED_STATUS;
+    #System.OrderTable[#L5_CurrentOrder].CompleteTime := #CurrentTime;
+    #L5_CurrentOrder := 0;
+END_IF;
+
+//Error
+IF #OPC_UA_State_L5 = 400 THEN
+    #System.OrderTable[#L5_CurrentOrder].Status := #ERROR_STATUS;
+    #System.OrderTable[#L5_CurrentOrder].ErrorID := #Cnv_Buffer_51.Cnv_Errors."Error_Word_1" OR #Cnv_Buffer_51.Cnv_Errors."Error_Word_2"
+    OR #Cnv_Buffer_51.Cnv_Errors."Error_Word_3" OR #Cnv_Buffer_51.Cnv_Errors."Error_Word_4";
+END_IF;
+
+//MOVEMENT FINALIZED
+#L5DoneRTrig(CLK := "Control_DB".Movement_Completed.Level_5);
+IF #L5DoneRTrig.Q THEN
+    "Control_DB".Movement_Completed.Level_5 := FALSE;
+    #L5_WatchdogStart := FALSE;
+    #System.OrderTable[#L5_CurrentOrder].Status := #COMPLETED_STATUS;
+    #System.OrderTable[#L5_CurrentOrder].CompleteTime := #CurrentTime;
+    #L5_CurrentOrder := 0;
+END_IF;
+END_REGION
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+REGION LEVEL 6
+    IF #System.OrderTable[1].StepNo <> 0
+        AND #System.OrderTable[1].Device = #LEVEL_6_DEVICE
+        AND #System.OrderTable[1].Status = #QUEUED_STATUS
+        AND #OPC_UA_State_Main = 10
+        AND NOT (#OPC_UA_State_L6 > 0 AND #OPC_UA_State_L6 <= 400)
+        AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 6)
+        AND NOT #Canceling
+    THEN
+        #L6_CurrentOrder := 1;
+    END_IF;
+    IF #System.OrderTable[#L6_CurrentOrder].StepNo <> 0
+        AND #System.OrderTable[#L6_CurrentOrder].Device = #LEVEL_6_DEVICE
+        AND #System.OrderTable[#L6_CurrentOrder].Status = #QUEUED_STATUS
+        AND #OPC_UA_State_Main = 10
+        AND NOT (#OPC_UA_State_L6 > 0 AND #OPC_UA_State_L6 <= 400)
+        AND NOT (#OPC_UA_State_VTD >= 100 AND #OPC_UA_State_VTD < 400 AND #VTD_CurrentLevel = 6)
+        AND NOT #Canceling
+    THEN
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Data_Available := TRUE; // Send the Task Data Available to OPC UA Control
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Type := #System.OrderTable[#L6_CurrentOrder].OPC_Control.Task_Type;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Pallet_Type := #System.OrderTable[#L6_CurrentOrder].OPC_Control.Pallet_Type;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_ID := #System.OrderTable[#L6_CurrentOrder].OPC_Control.Task_ID;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Metadata := #System.OrderTable[#L6_CurrentOrder].OPC_Control.Task_Metadata;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Destination_Location := #System.OrderTable[#L6_CurrentOrder].OPC_Control.Destination_Location;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Source_Location := #System.OrderTable[#L6_CurrentOrder].OPC_Control.Source_Location;
+        #L6_WatchdogStart := TRUE;
+    END_IF;
+    
+    //RUNNING
+    IF #OPC_UA_State_L6 > 0 AND #OPC_UA_State_L6 < 400 AND #System.Auto_Man THEN
+        #System.OrderTable[#L6_CurrentOrder].Status := #RUNNING_STATUS;
+    END_IF;
+    
+    //Cancel order
+    IF #Canceling AND NOT (#OPC_UA_State_L6 > 0 AND #OPC_UA_State_L6 < 400) AND #L6_CurrentOrder <> 0 THEN
+        #System.OrderTable[#L6_CurrentOrder].Status := #CANCELED_STATUS;
+        #System.OrderTable[#L6_CurrentOrder].CompleteTime := #CurrentTime;
+        #L6_CurrentOrder := 0;
+    END_IF;
+    
+    //Error
+    IF #OPC_UA_State_L6 = 400 THEN
+        #System.OrderTable[#L6_CurrentOrder].Status := #ERROR_STATUS;
+        #System.OrderTable[#L6_CurrentOrder].ErrorID := #Cnv_Buffer_61.Cnv_Errors."Error_Word_1" OR #Cnv_Buffer_61.Cnv_Errors."Error_Word_2"
+        OR #Cnv_Buffer_61.Cnv_Errors."Error_Word_3" OR #Cnv_Buffer_61.Cnv_Errors."Error_Word_4";
+    END_IF;
+    
+    //MOVEMENT FINALIZED
+    #L6DoneRTrig(CLK := "Control_DB".Movement_Completed.Level_6);
+    IF #L6DoneRTrig.Q THEN
+        "Control_DB".Movement_Completed.Level_6 := FALSE;
+        #L6_WatchdogStart := FALSE;
+        #System.OrderTable[#L6_CurrentOrder].Status := #COMPLETED_STATUS;
+        #System.OrderTable[#L6_CurrentOrder].CompleteTime := #CurrentTime;
+        #L6_CurrentOrder := 0;
+    END_IF;
+END_REGION
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+REGION Max Running Order Number
+    #MaxRunningOrderNo := MAX(IN1 := #L2_CurrentOrder, IN2 := #L3_CurrentOrder,
+                              IN3 := #L4_CurrentOrder, IN4 := #L5_CurrentOrder,
+                              IN5 := #L6_CurrentOrder, IN6 := #System.CurrentOrder);
+END_REGION
+
+REGION Pause Orders
+    #ErrorRTrig(CLK := #System.Error);
+    #PauseRTrig(CLK := #System.PauseOrders OR NOT #System.Auto_Man);
+    IF #ErrorRTrig.Q OR #PauseRTrig.Q THEN
+        #System.PauseOrders := FALSE;
+        #System.Paused := #MaxRunningOrderNo > 0;
+        IF #System.Paused THEN
+            FOR #i := 1 TO UDINT_TO_DINT(#MaxRunningOrderNo) DO
+                IF #System.OrderTable[#i].Status = '' THEN
+                    EXIT;
+                ELSIF #System.OrderTable[#i].Status = #QUEUED_STATUS THEN
+                    #System.OrderTable[#i].Status := #PAUSED_STATUS;
+                ELSIF #System.OrderTable[#i].Status = #RUNNING_STATUS AND NOT #System.Auto_Man THEN
+                    #System.OrderTable[#i].Status := #CANCELED_STATUS;
+                END_IF;
+            END_FOR;
+        END_IF;
+    END_IF;
+    IF #System.Paused AND #MaxRunningOrderNo = 0 THEN
+        #System.Paused := FALSE;
+    END_IF;
+END_REGION
+
+REGION Cancel Orders
+    #CancelRTrig(CLK := #System.CancelOrders);
+    (*#WeighingStation.Cancel := #ProfileStation.Cancel:= #CancelRTrig.Q*)
+    ;
+    IF #CancelRTrig.Q THEN
+        #Canceling := TRUE;
+        #System.CancelOrders := FALSE;
+        #System.Paused := FALSE;
+        FOR #i := 1 TO UDINT_TO_DINT(#MaxRunningOrderNo) DO
+            IF #System.OrderTable[#i].Status = '' THEN
+                CONTINUE;
+            ELSIF #System.OrderTable[#i].Status = #PAUSED_STATUS
+                OR #System.OrderTable[#i].Status = #QUEUED_STATUS
+            THEN
+                #System.OrderTable[#i].Status := #CANCELED_STATUS;
+                #System.OrderTable[#i].CompleteTime := #CurrentTime;
+            ELSIF #System.OrderTable[#i].Status = #ERROR_STATUS
+            THEN
+                #System.OrderTable[#i].Status := #ERROR_CANCELED_STATUS;
+                #System.OrderTable[#i].CompleteTime := #CurrentTime;
+            END_IF;
+        END_FOR;
+        #System.CurrentOrder := 0;
+    END_IF;
+    IF #Canceling AND NOT (#Cnv_Buffer_21.Running OR #Cnv_Buffer_31.Running OR #Cnv_Buffer_41.Running OR #Cnv_Buffer_51.Running OR #Cnv_Buffer_61.Running) THEN
+        #Canceling := FALSE;
+        #L2_CurrentOrder := #L3_CurrentOrder := #L4_CurrentOrder := #L5_CurrentOrder := #L6_CurrentOrder := 0;
+    END_IF;
+END_REGION
+
+REGION Resume Orders
+    #ResumeRTrig(CLK := #System.ResumeOrders);
+    IF #ResumeRTrig.Q THEN
+        #System.ResumeOrders := FALSE;
+        #System.CurrentOrder := #MaxRunningOrderNo;
+        IF NOT #System.Error THEN
+            #System.Paused := FALSE;
+            FOR #i := 1 TO UDINT_TO_DINT(#MaxRunningOrderNo) DO
+                IF #System.OrderTable[#i].Status = '' THEN
+                    EXIT;
+                ELSIF #System.OrderTable[#i].Status = #PAUSED_STATUS
+                    OR #System.OrderTable[#i].Status = #ERROR_STATUS
+                THEN
+                    #System.OrderTable[#i].Status := #QUEUED_STATUS;
+                END_IF;
+            END_FOR;
+        END_IF;
+        
+    END_IF;
+END_REGION
+
+REGION Order Handler
+    IF #System.Running AND NOT #System.Error
+        AND (#System.OrderTable[#System.CurrentOrder].Status = #COMPLETED_STATUS
+        OR #System.OrderTable[#System.CurrentOrder].Status = #ERROR_STATUS
+        OR #System.OrderTable[#System.CurrentOrder].Status = #ERROR_CANCELED_STATUS
+        OR #System.OrderTable[#System.CurrentOrder].Sequence = 0)
+    THEN
+        IF #System.CurrentOrder > 0 THEN
+            #System.CurrentOrder -= 1;
+        ELSE
+            #System.CurrentOrder := 0;
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION Watchdogs
+    //Watchdog Timers
+    
+    #L2_WatchdogTimer(IN := #L2_WatchdogStart,
+                      PT := UDINT_TO_TIME(#Watchdog.Level_2 * 60000),
+                      Q => #System.Watchdog_TimeOut.Level_2);
+    
+    #L3_WatchdogTimer(IN := #L3_WatchdogStart,
+                      PT := UDINT_TO_TIME(#Watchdog.Level_3 * 60000),
+                      Q => #System.Watchdog_TimeOut.Level_3);
+    #L4_WatchdogTimer(IN := #L4_WatchdogStart,
+                      PT := UDINT_TO_TIME(#Watchdog.Level_4 * 60000),
+                      Q => #System.Watchdog_TimeOut.Level_4);
+    
+    #L5_WatchdogTimer(IN := #L5_WatchdogStart,
+                      PT := UDINT_TO_TIME(#Watchdog.Level_5 * 60000),
+                      Q => #System.Watchdog_TimeOut.Level_5);
+    
+    #L6_WatchdogTimer(IN := #L6_WatchdogStart,
+                      PT := UDINT_TO_TIME(#Watchdog.Level_6 * 60000),
+                      Q => #System.Watchdog_TimeOut.Level_6);
+    
+    //Reset  Watchdog Timers
+    IF #System.Error OR #CancelRTrig.Q OR #PauseRTrig.Q OR "Reset_All" OR
+        ("Screen_DB_1".Reset_All[1] AND
+        ("HMI_Box_Connected_1" = 1) OR ("HMI_Box_Connected_1" = 2) OR ("HMI_Box_Connected_1" = 3) OR ("HMI_Box_Connected_1" = 4) OR ("HMI_Box_Connected_1" = 5) OR
+        ("HMI_Box_Connected_1" = 11 AND "KEY REMOTE/LOCAL L1 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 12 AND "KEY REMOTE/LOCAL L2 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 13 AND "KEY REMOTE/LOCAL L3 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 14 AND "KEY REMOTE/LOCAL L4 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 15 AND "KEY REMOTE/LOCAL L5 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 16 AND "KEY REMOTE/LOCAL L6 - CH1(1)") OR
+        ("HMI_Box_Connected_1" = 21 AND "KEY REMOTE/LOCAL L1 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 22 AND "KEY REMOTE/LOCAL L2 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 23 AND "KEY REMOTE/LOCAL L3 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 24 AND "KEY REMOTE/LOCAL L4 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 25 AND "KEY REMOTE/LOCAL L5 - CH1(2)") OR
+        ("HMI_Box_Connected_1" = 26 AND "KEY REMOTE/LOCAL L6 - CH1(2)"))
+    THEN
+        #L2_WatchdogStart := FALSE;
+        #L3_WatchdogStart := FALSE;
+        #L4_WatchdogStart := FALSE;
+    END_IF;
+END_REGION
+
+REGION Reset Next Order Number
+    IF #System.NextOrder > 1
+        AND #CurrentDTL.HOUR = 0
+        AND #CurrentDTL.MINUTE = 0
+        AND #CurrentDTL.SECOND = 0
+    THEN
+        #System.NextOrder := 1;
+    END_IF;
+    
+END_REGION
+
+REGION #System Mode and State
+    #System.Selected := #System_Selected; // System selected
+    #System.Ready := NOT #System.Error AND #System.Selected;
+    #System.Auto_Man := #AutoMan_Switch;
+    #System.Running := #Cnv_Buffer_21.Running OR
+    #Cnv_Buffer_31.Running OR #Cnv_Buffer_41.Running OR #Cnv_Buffer_51.Running OR #Cnv_Buffer_61.Running OR
+    #Cnv_Buffer_22.Running OR
+    #Cnv_Buffer_32.Running OR #Cnv_Buffer_42.Running OR #Cnv_Buffer_52.Running OR #Cnv_Buffer_62.Running;
+    
+    #System.Error := #Cnv_Buffer_21.Error OR
+    #Cnv_Buffer_31.Error OR #Cnv_Buffer_41.Error OR #Cnv_Buffer_51.Error OR #Cnv_Buffer_61.Error OR
+    #Cnv_Buffer_22.Error OR
+    #Cnv_Buffer_32.Error OR #Cnv_Buffer_42.Error OR #Cnv_Buffer_52.Error OR #Cnv_Buffer_62.Error OR
+    #OPC_UA_State_L2 = 400 OR #OPC_UA_State_L3 = 400 OR #OPC_UA_State_L4 = 400 OR #OPC_UA_State_L5 = 400 OR #OPC_UA_State_L6 = 400;
+    
+    #System.IDLE := NOT #System.Running AND NOT #System.Paused AND NOT #System.Error;
+    IF #System.Running THEN
+        #System.State := 1;
+    ELSIF #System.Paused AND NOT #System.Error THEN
+        #System.State := 2;
+    ELSIF #System.Error THEN
+        #System.State := 3;
+    ELSE
+        #System.State := 0;
+    END_IF;
+END_REGION
+
+REGION Clear order table
+    IF #Clear_OrderTable THEN
+        FOR #i := 0 TO 99 DO
+            #System.OrderTable[#i] := #EmptyOrder;
+        END_FOR;
+        "Control_DB"."Buffer_Order Table"[#System.Id].Task_Data_Available := FALSE;
+    END_IF;
+END_REGION
+END_FUNCTION_BLOCK

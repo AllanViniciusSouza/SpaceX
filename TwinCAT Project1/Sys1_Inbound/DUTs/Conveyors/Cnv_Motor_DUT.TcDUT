@@ -17,6 +17,12 @@ STRUCT
 	Status:	WORD;
 	Communication_Error:	WORD;
 	Lockout:	BOOL;
+
+	// SEW MOVIKIT Velocity Drive, "5 PD" profile (buffer and roller conveyors).
+	// stProcessInput is written only by FC Inputs; aProcessOutput is read only by FC Outputs.
+	stProcessInput:	ST_SEW_ProcessInput5;   // PI 1..5 + EtherCAT diagnostics, written by Inputs
+	aProcessOutput:	ARRAY[1..5] OF UINT;    // PO 1..5 raw, written by the conveyor FB, read by Outputs
+	stStatus:	ST_SEW_VelocityStatus;          // Decoded drive status, written by the conveyor FB
 END_STRUCT
 END_TYPE
 ]]></Declaration>

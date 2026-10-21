@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Turn_Table_Settings_DUT" Id="{bbe7db76-6b19-4b9b-93d1-2d9d8e3a54ce}">
+    <Declaration><![CDATA[// Parameters of the turntable (Settings.Turn_Table). Number of stations to confirm (Rev 9).
+// 0 = not configured: the function that uses the value is blocked.
+TYPE Turn_Table_Settings_DUT :
+STRUCT
+	ID:	DINT;	// XXYYZZ
+	Rotation_Time:	UINT;	// [s] rotation watchdog
+	Full_Speed:	UINT;	// [%] automatic rotation
+	Manual_Speed:	UINT;	// [%] manual jog
+
+	// Station positions, drive user units (MOVIKIT Positioning). 0 = not taught: rotation to that station blocked
+	Position:	ARRAY[1..4] OF DINT;
+	Position_Tolerance:	DINT;	// [user units] in-position window
+
+	// Interlock with the turntable roller conveyor (Control.TBCnv)
+	Changeover_Time:	UINT;	// [ms] rotation and roller both stopped before the other may start, 0 = not configured
+
+	// SEW MOVIKIT scaling (user units from MOVISUITE), as VTD_Settings_DUT
+	SEW_Speed_At_100pct:	INT;	// PO 2 speed setpoint [user units] for 100 %
+	SEW_Ramp_At_100pct:	UINT;	// PO 3/PO 4 acceleration/deceleration [user units] for 100 %
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

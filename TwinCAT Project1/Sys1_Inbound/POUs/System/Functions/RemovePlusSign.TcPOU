@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="RemovePlusSign" Id="{6b09d02e-7105-48ef-aa27-979431561c53}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION RemovePlusSign : STRING(254)
+VAR_INPUT
+    inString : STRING(254);
+END_VAR
+]]></Declaration>
+    <Implementation><ST><![CDATA[// Preserve the reference behavior: remove only one leading plus sign.
+RemovePlusSign := inString;
+IF LEFT(inString, 1) = '+' THEN
+    RemovePlusSign := RIGHT(inString, LEN(inString) - 1);
+END_IF;
+]]></ST></Implementation>
+  </POU>
+</TcPlcObject>

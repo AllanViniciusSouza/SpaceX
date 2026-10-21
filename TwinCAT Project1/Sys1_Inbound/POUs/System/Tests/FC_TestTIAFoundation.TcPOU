@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FC_TestTIAFoundation" Id="{928bfbd3-1753-4810-ae48-4d53ca9dc309}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FC_TestTIAFoundation : DWORD
+VAR
+    value : WORD;
+    success : BOOL;
+    decoded : ID_Decoded_DUT;
+    lamps : Stack_Lights_FB;
+    result : STRING(254);
+END_VAR
+]]></Declaration>
+    <Implementation><ST><![CDATA[// Offline utility checks: return DWORD#0 when all checks pass.
+// Invoke manually in an isolated test PLC. No physical I/O or global data is used.
+// Failure bits identify the numbered checks below; no task call is installed.
+FC_TestTIAFoundation := DWORD#0;
+
+// Bit 0: set the highest WORD bit and preserve other bits.
+value := WORD#16#0001;
+success := Set_Bit_F(BIT_Number := 15, Bit_Value := TRUE, Variavel := value);
+IF NOT success OR (value <> WORD#16#8001) THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0001;
+END_IF;
+// Bit 1: FALSE is intentionally a no-op, not a reset operation.
+success := Set_Bit_F(BIT_Number := 15, Bit_Value := FALSE, Variavel := value);
+IF NOT success OR (value <> WORD#16#8001) THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0002;
+END_IF;
+// Bit 2: reject out-of-range shifts without modifying the word.
+success := Set_Bit_F(BIT_Number := 16, Bit_Value := TRUE, Variavel := value);
+IF success OR (value <> WORD#16#8001) THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0004;
+END_IF;
+// Bit 3: decimal ID decomposition.
+success := ID_Decode_F(ID := 123456, ID_Decoded := decoded);
+IF NOT success OR (decoded.Device_Type <> 12) OR
+   (decoded.Level <> 34) OR (decoded.VTD <> 56) THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0008;
+END_IF;
+// Bit 4: invalid ID must not retain the preceding decoded result.
+success := ID_Decode_F(ID := -1, ID_Decoded := decoded);
+IF success OR (decoded.Device_Type <> 0) OR (decoded.Level <> 0) OR (decoded.VTD <> 0) THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0010;
+END_IF;
+// Bit 5: accept leading zero fields and the unassigned ID.
+success := ID_Decode_F(ID := 0, ID_Decoded := decoded);
+IF NOT success OR (decoded.Device_Type <> 0) OR (decoded.Level <> 0) OR (decoded.VTD <> 0) THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0020;
+END_IF;
+// Bit 6: source-compatible SICK field spacing.
+result := FindStringField(FieldName := 'Code', JsonStr := '{"Number" :"2", "Code" :"ABC123"}');
+IF result <> 'ABC123' THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0040;
+END_IF;
+// Bit 7: a barcode longer than the source's 10-character search window.
+result := FindStringField(FieldName := 'Code', JsonStr := '{"Code":"123456789012345678901234567890"}');
+IF result <> '123456789012345678901234567890' THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0080;
+END_IF;
+// Bit 8: missing field returns empty after a previous successful call.
+result := FindStringField(FieldName := 'Code', JsonStr := '{"Number":"3"}');
+IF result <> '' THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0100;
+END_IF;
+// Bit 9: an unterminated value must not be accepted.
+result := FindStringField(FieldName := 'Code', JsonStr := '{"Code":"ABC');
+IF result <> '' THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0200;
+END_IF;
+// Bit 10: fault takes priority over automatic mode.
+lamps(System_Auto := TRUE, Fault := TRUE, i_bFlash_05Hz := TRUE);
+IF NOT lamps.Red OR lamps.Green OR lamps.Orange OR lamps.Yellow THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0400;
+END_IF;
+// Bit 11: manual mode uses yellow/orange and clears red/green.
+lamps(System_Auto := FALSE, Fault := FALSE, i_bFlash_05Hz := FALSE);
+IF lamps.Red OR lamps.Green OR NOT lamps.Orange OR NOT lamps.Yellow THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#0800;
+END_IF;
+// Bit 12: upper ID boundary validation.
+success := ID_Decode_F(ID := 1000000, ID_Decoded := decoded);
+IF success OR (decoded.Device_Type <> 0) OR (decoded.Level <> 0) OR (decoded.VTD <> 0) THEN
+    FC_TestTIAFoundation := FC_TestTIAFoundation OR DWORD#16#1000;
+END_IF;
+]]></ST></Implementation>
+  </POU>
+</TcPlcObject>

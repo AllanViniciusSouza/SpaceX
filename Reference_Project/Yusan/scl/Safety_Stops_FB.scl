@@ -1,0 +1,180 @@
+FUNCTION_BLOCK "Safety_Stops_FB"   // FB 7, author 
+
+VAR_INPUT
+   Sys_No : UInt;
+   Mode : UInt;
+   Timeout : UInt;
+   Reset : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Sfts_Control : "Sfts_Control";
+END_VAR
+
+VAR
+   State : UInt;
+   LP_Timer : TON_TIME;
+   T_Run : TOF_TIME;
+   Timer_1 : Time;
+END_VAR
+
+BEGIN
+#Sfts_Control.Enabled := #Sfts_Control.Instruction.Enable := #Mode = 2 OR #Mode = 3;
+
+//MODES
+IF (#Mode = 1 OR #Mode = 5) AND NOT #Sfts_Control.Error THEN
+    #State := 500;
+END_IF;
+
+(*
+TODO
+1. Need to add the mode and running checks for manual mode
+2. Add output for safety stop brake.
+
+Mode select is done via the HMI. Might add external mode select switches.
+        
+        Mode select mask:
+        0: Disabled
+        1: Manual
+        2: Semi-Auto
+        3: Auto
+        4: Teach - N/A for Cnv
+        5: Maintenance
+        
+Device ID Format: XXYYZZ    
+XX = Device type   
+    01   VTD
+    10  Cnv_Front_of_VTD
+    11  Cnv_Rear_of_VTD
+    12  Cnv_On_Extractor
+    20  Safety_Stop_Front_of_VTD
+    21  Safety_Stop_Rear_of_VTD
+YY = Floor   
+ZZ = VTD Connected to 
+*)
+
+
+REGION Cyclic Checks
+    //Update variables
+    #Sfts_Control.SM_State := #State;
+    
+    #LP_Timer(IN := #Sfts_Control.Running,
+              PT := UINT_TO_TIME(#Timeout));
+    
+    //STOPPER STATE
+    IF #Sfts_Control.Inputs.DP_Extended AND NOT #Sfts_Control.Inputs.DP_Retracted THEN
+        #Sfts_Control.LP_State := 1; // EXTENDED
+    ELSIF NOT #Sfts_Control.Inputs.DP_Extended AND #Sfts_Control.Inputs.DP_Retracted THEN
+        #Sfts_Control.LP_State := 0; //RETRACTED
+    ELSE
+        #Sfts_Control.LP_State := 2; //LOST
+    END_IF;;
+END_REGION
+
+REGION Auto Mode 
+        CASE #State OF
+            0: //IDLE MODE
+                IF #Mode = 2 OR #Mode = 3 THEN
+                    IF #Sfts_Control.Instruction.Enable AND #Sfts_Control.Error = 0 THEN
+                        #Sfts_Control.Enabled := TRUE;
+                        #State := 10;
+                    END_IF;
+                END_IF;
+            10: //Standby
+                IF NOT #Sfts_Control.Running AND #Sfts_Control.Error = 0 AND
+                    (#Sfts_Control.Instruction.Extend AND (#Mode = 3 OR #Mode = 2)) OR (#Sfts_Control.Instruction.Manual_Extend AND #Mode = 2) THEN
+                    IF #Sfts_Control.Inputs.DP_Extended THEN
+                        ; // Complete the task as the LP ar already extended
+                    ELSIF #Sfts_Control.Inputs.DP_Retracted THEN
+                        #Sfts_Control.Running := True;
+                        #State := 20;
+                    ELSE
+                        #Sfts_Control.Error := 0; //Unknown locking pin state
+                        #State := 400;
+                    END_IF;
+                ELSIF NOT #Sfts_Control.Running AND #Sfts_Control.Error = 0 AND
+                    (#Sfts_Control.Instruction.Retract AND #Mode = 3) OR (#Sfts_Control.Instruction.Manual_Retract AND #Mode = 2) THEN
+                    IF #Sfts_Control.Inputs.DP_Retracted THEN
+                        ; // Complete the task as the LP ar already extended
+                    ELSIF #Sfts_Control.Inputs.DP_Extended THEN
+                        #Sfts_Control.Running := True;
+                        #State := 40;
+                    ELSE
+                        #Sfts_Control.Error := 0; //Unknown locking pin state
+                        #State := 400;
+                    END_IF;
+                END_IF;
+                
+            20: //Extend safety locking pins
+                #Sfts_Control.Motor_Extend := TRUE;
+                IF #Sfts_Control.Inputs.DP_Extended THEN
+                    #Sfts_Control.Motor_Extend := FALSE;
+                    #Sfts_Control.Running := FALSE;
+                    #State := 0;
+                END_IF;
+                
+            40: //Retract safety locking pins
+                #Sfts_Control.Motor_Retract := TRUE;
+                IF #Sfts_Control.Inputs.DP_Retracted THEN
+                    #Sfts_Control.Motor_Retract := FALSE;
+                    #Sfts_Control.Running := FALSE;
+                    #State := 0;
+                END_IF;
+                
+            400: // Error#Sfts_Control
+                #Sfts_Control.Motor_Retract := FALSE;
+                #Sfts_Control.Motor_Extend := FALSE;
+                #Sfts_Control.Running := FALSE;
+                #LP_Timer(IN := FALSE,
+                          PT := T#0S);
+                IF #Reset OR "Reset_All" OR
+                    "Screen_DB_1".Reset_All[1] OR "Screen_DB_1".Reset_All[2] OR
+                    "CNV_HMI"."Reset(1)"[1] OR "CNV_HMI"."Reset(1)"[2]
+                THEN
+                    #Sfts_Control.Error := FALSE;
+                    #State := 0;
+                END_IF;
+                
+            500:
+                IF #Sfts_Control.Instruction.Manual_Extend AND NOT #Sfts_Control.Inputs.DP_Extended THEN
+                    #Sfts_Control.Motor_Extend := TRUE;
+                    #Sfts_Control.Running := TRUE;
+                ELSIF #Sfts_Control.Instruction.Manual_Retract AND NOT #Sfts_Control.Inputs.DP_Retracted THEN
+                    #Sfts_Control.Motor_Retract := TRUE;
+                    #Sfts_Control.Running := TRUE;
+                ELSE
+                    #Sfts_Control.Motor_Extend := FALSE;
+                    #Sfts_Control.Motor_Retract := FALSE;
+                    #Sfts_Control.Running := FALSE;
+                END_IF;
+                
+                IF #Mode <> 1 AND #Mode <> 5 THEN
+                    #State := 0;
+                END_IF;
+        END_CASE;
+END_REGION
+
+REGION Cyclic Error Checks
+    IF #Sfts_Control.Inputs.DP_Extended AND #Sfts_Control.Inputs.DP_Retracted THEN
+        #Sfts_Control.Error := TRUE; //Cant have the locking pins extended and retracted at the same time11
+    END_IF;
+    
+    // Statement section REGION
+    IF #LP_Timer.Q THEN
+        #Sfts_Control.Error := TRUE;//locking pin timeout
+    END_IF;
+    
+    IF #Sfts_Control.Error THEN
+        #State := 400;
+    END_IF;
+END_REGION
+
+REGION Assign outputs
+    #T_Run(IN := #Sfts_Control.Motor_Extend OR #Sfts_Control.Motor_Retract,
+                          PT := #Timer_1);
+    
+END_REGION
+
+
+
+END_FUNCTION_BLOCK

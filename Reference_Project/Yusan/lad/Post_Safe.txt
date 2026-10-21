@@ -1,0 +1,13 @@
+// FC "Post_Safe" 1001  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+   // RETURN : Void
+--- Network 1  
+   parts: MoveBlockU
+   operands: Send_Data_to_LGX.SEND_ARRAY, Send_Data_to_LGX.SEND_LENGTH, Safety_Communication.SEND_ARRAY
+--- Network 2  Comment: "Safety_Communication".ACK_SEND_ARRAY[0]
+
+
+"Receive_Data_from_LGX".ACK_SEND_LENGTH
+   parts: Move, MoveBlockU
+   operands: Receive_Data_from_LGX.ACK_SEND_ARRAY, Safety_Communication.ACK_RCV_ARRAY

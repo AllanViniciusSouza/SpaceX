@@ -1,0 +1,27 @@
+DATA_BLOCK "Sf_L3_FB_DB"   // InstanceDB 68  instance of "Safety_Stops_FB"
+
+VAR_INPUT
+   Mode : UInt;
+   Timeout : UInt;
+   Reset : Bool;
+   Up : Bool;
+   Down : Bool;
+END_VAR
+
+VAR_OUTPUT
+   Rotate : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Sfts_Control : "Sfts_Control";
+END_VAR
+
+VAR
+   State : UInt;
+   LP_Timer : TON_TIME;
+   IEC_Timer_0_Instance : TOF_TIME;
+   Timer_1 : Time;
+END_VAR
+
+
+// ---- start values (path : type := value)

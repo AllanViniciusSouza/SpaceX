@@ -1,0 +1,25 @@
+FUNCTION "OUTPUTS"   // FC 5, author 
+
+   // RETURN : Void
+BEGIN
+
+// Let's do it for each Shuttle 
+//IF destinationid = position id = id charger (*Setpoint in the HMI reggarding to the charger position*)
+//     2000 = 2000 = 2000 // Example 1 Shuttle on charger positio => Charger on
+//     2000 = 1900 = 2000 // Example 2 Shuttle in other position => Charger off
+//     1000 = 2000 = 2000 // Example 3 Shuttle in charger position but received an order to move to other position => Charger off
+// Enable the charger (Variable) = TRUE;
+//ELSE  
+  // Disable the charger
+  // Enable the charger (Variable) = FALSE;
+//END_IF;
+
+
+IF "FirstScan" THEN
+    "Charger Panel" := TRUE;
+END_IF;
+
+"Charger Panel" := "Charger";
+
+"Pick Station light" := "Control_DB".Pick_Station.PushButtonLight;
+END_FUNCTION

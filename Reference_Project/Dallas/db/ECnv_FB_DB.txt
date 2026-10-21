@@ -1,0 +1,29 @@
+DATA_BLOCK "ECnv_FB_DB"   // InstanceDB 16  instance of "EConveyor_FB"
+
+VAR_INPUT
+   Cnv_Settings : "ECnv_Settings";
+   Cnv_Inputs : "ECnv_Inputs";
+   VTD_Level : UInt;
+   Cnv_TIP : Bool;
+END_VAR
+
+VAR_IN_OUT
+   Cnv_Control : "ECnv_Control";
+   SinaSpeed : SinaSpeed;
+END_VAR
+
+VAR
+   State : UInt;
+   Timer_TC : TON_TIME;
+   Timer_Transfer : TON_TIME;
+   Watchdog : TON_TIME;
+   Transfer_Direction : String;
+   MainSetpoint : Int;
+   SinaSpeed_Instance : SinaSpeed;
+   IEC_Timer_0_Instance_1 : TON_TIME;
+   IEC_Timer_0_Instance_2 : TON_TIME;
+   R_TRIG_Instance : R_TRIG;
+END_VAR
+
+
+// ---- start values (path : type := value)

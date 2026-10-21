@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Turn_Table_Motor_DUT" Id="{0e305817-94c4-4173-867f-c44003f1194e}">
+    <Declaration><![CDATA[// Turntable drive: SEW MOVI-C with MOVIKIT Positioning Drive, 8 PD (confirm in MOVISUITE, AGENTS.md).
+// Same layout as VTD_Motor_DUT. Raw process data is filled by FC Inputs and sent by FC Outputs.
+TYPE Turn_Table_Motor_DUT :
+STRUCT
+	stProcessInput:	ST_SEW_ProcessInput8;	// PI 1..8 + EtherCAT diagnostics, written by Inputs
+	aProcessOutput:	ARRAY[1..8] OF UINT;	// PO 1..8 raw, read by Outputs
+	stStatus:	ST_SEW_MovikitStatus;	// Decoded drive status, written by the turntable FB
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

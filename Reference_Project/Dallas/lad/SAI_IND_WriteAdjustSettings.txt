@@ -1,0 +1,41 @@
+// FB "SAI_IND_WriteAdjustSettings" 51  language LAD  author 
+// Graphic/other language: interface + per-network calls and operands. Full logic in xml/.
+
+VAR_INPUT
+   ID : HW_IO;   // The Profinet Device Hardware Identifier under device properties
+   ScaleCapacity : Real;   // Scale capacity to be written into the transmitter
+   Increment : Real;   // Increment value to be written into the transmitter
+END_VAR
+
+VAR_OUTPUT
+   Done : Bool;   // Write process done successfully
+   Error : Bool;   // Error during writing process
+END_VAR
+
+VAR_IN_OUT
+   Write : Bool;   // Switch this bit ON to start writing
+END_VAR
+
+VAR
+   Static01 : Bool;
+   Step : Int;
+   WRREC_CAP : WRREC;
+   CAP_RECORD : Real;
+   INC_RECORD : Real;
+   Activate : Bool;
+END_VAR
+
+--- Network 1  Comment: Initializes FB output bits:
+Process;
+Error;
+Done;
+Check validity of scale capacity and increment values before proceeding to next step | Title: Initialization and Checking
+   parts: Contact, Gt, Le, Move, O, PBox, RCoil, SCoil
+   operands: #Write, #Static01, #ScaleCapacity, #Increment, #Error, #Done, #Activate, #Step
+--- Network 2  Comment: Sequence steps:
+10: Write in scale capacity (REAL; Index= 16#4367)
+20: Write in scale increment (REAL; Index= 16#4366)
+30: Completed the write process, DONE bit is set to TRUE
+99: ERROR bit is set to TRUE due to error | Title: Sequence
+   parts: Coil, Contact, Eq, Move, RCoil, SCoil, WRREC
+   operands: #Activate, #Step, #ScaleCapacity, #CAP_RECORD, #WRREC_CAP.BUSY, #WRREC_CAP.REQ, #ID, #WRREC_CAP.DONE, #WRREC_CAP.ERROR, #WRREC_CAP.STATUS, #Increment, #INC_RECORD, #Done, #Error, #Write

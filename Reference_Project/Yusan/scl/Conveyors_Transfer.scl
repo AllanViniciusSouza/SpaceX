@@ -1,0 +1,173 @@
+FUNCTION "Conveyors_Transfer"   // FC 24, author 
+
+VAR_TEMP
+   i_Lev : UInt;
+   i_Sys : UInt;
+   Concat1 : String;
+   Concat2 : String;
+   ID : DInt;
+   StrLev : String;
+   StrSys : String;
+   Level : UInt;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+FOR #i_Sys := 1 TO 5 DO
+    #StrSys := UINT_TO_STRING(#i_Sys);
+    // Remove "+"
+    IF #StrSys[1] = '+' THEN
+        #StrSys := RIGHT(IN := #StrSys, L := LEN(#StrSys) - 1);
+    END_IF;
+    
+    REGION ID OF THE VTD CONVEYOR
+        FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+            IF (#i_Sys >= 1) AND (#i_Sys <= 5) THEN
+                IF "Control_DB".VTD_Sys[#i_Sys].Current_Level = #i_Lev THEN
+                    #StrLev := UINT_TO_STRING(#i_Lev);
+                    
+                    // Remove "+"
+                    IF #StrLev[1] = '+' THEN
+                        #StrLev := RIGHT(IN := #StrLev, L := LEN(#StrLev) - 1);
+                    END_IF;
+                    
+                    //Build ID
+                    #Concat1 := CONCAT(IN1 := '120', IN2 := #StrLev);
+                    #Concat2 := CONCAT(IN1 := #Concat1, IN2 := '0');
+                    #ID := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat2, IN2 := #StrSys));
+                    
+                    "Settings_DB".ECnv_Sys[#i_Sys].ID := #ID;
+                    "Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level := #i_Lev;
+                END_IF;
+            END_IF;
+        END_FOR;
+    END_REGION
+        
+        REGION READY TO RECEIVE
+            //EXTRACTOR CONVEYOR
+            FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+                IF "Control_DB".VTD_Sys[#i_Sys].Current_Level = #i_Lev THEN
+                    #StrLev := UINT_TO_STRING(#i_Lev);
+                    
+                    // Remove "+"
+                    IF #StrLev[1] = '+' THEN
+                        #StrLev := RIGHT(IN := #StrLev, L := LEN(#StrLev) - 1);
+                    END_IF;
+                    
+                    //Build ID
+                    #Concat1 := CONCAT(IN1 := '120', IN2 := #StrLev);
+                    #Concat2 := CONCAT(IN1 := #Concat1, IN2 := '0');
+                    #ID := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat2, IN2 := #StrSys));
+                END_IF;
+                
+                IF "Settings_DB".ECnv_Sys[#i_Sys].ID = #ID AND NOT "Control_DB".ECnv_Sys[#i_Sys].Error AND NOT "Control_DB".ECnv_Sys[#i_Sys].Running
+                    AND NOT "Control_DB".ECnv_Sys[#i_Sys].Cnv_Occupied AND NOT "Control_DB".ECnv_Sys[#i_Sys].Instruction.Outbound_Ready AND
+                    ("Control_DB".ECnv_Sys[#i_Sys].Mode = 2 OR "Control_DB".ECnv_Sys[#i_Sys].Mode = 3) THEN
+                    "Control_DB".ECnv_Sys[#i_Sys].Instruction.Inbound_Ready := TRUE;
+                ELSIF "Control_DB".ECnv_Sys[#i_Sys].Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+                    "Control_DB".ECnv_Sys[#i_Sys].Instruction.Inbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+                END_IF;
+            END_FOR;
+            
+            //BUFFER CONVEYORS
+            FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+                //CNV 1
+                IF NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Error AND
+                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Running AND
+                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Occupied AND
+                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Outbound_Ready AND
+                    ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Mode = 2 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Mode = 3) AND
+                    (NOT "Control_DB".ECnv_Sys[#i_Sys].Running OR "Settings_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Level <> 1)
+                THEN
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Inbound_Ready := TRUE;
+                ELSIF "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Inbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+                END_IF;
+                
+                //CNV 2
+                IF NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Error AND
+                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Running AND
+                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Occupied AND
+                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Outbound_Ready AND
+                    ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Mode = 2 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Mode = 3) THEN
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Inbound_Ready := TRUE;
+                ELSIF "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Inbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+                END_IF;
+            END_FOR;
+        END_REGION
+        
+        REGION READY TO SEND
+            //EXTRACTOR CONVEYOR
+            #Level := "Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level;
+            
+            IF "Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level >= "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level AND
+                "Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level <= "Settings_DB".VTD_Sys[#i_Sys].Highest_Level AND //Leveled
+                "Control_DB".ECnv_Sys[#i_Sys].Cnv_Occupied AND //Econveyor occupied
+                NOT "Control_DB".ECnv_Sys[#i_Sys].Error AND //not error
+                NOT "Control_DB".ECnv_Sys[#i_Sys].Running AND //not error
+                ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv1.Instruction.Inbound_Ready OR
+                "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv2.Instruction.Inbound_Ready) AND //conveyor not occupied
+                ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv1.Mode = 2 OR
+                "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv1.Mode = 3 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv2.Mode = 2 OR
+                "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv2.Mode = 3) AND //cnv1 or cnv 2 semi or auto mode
+                ("Control_DB".ECnv_Sys[#i_Sys].Mode = 2 OR "Control_DB".ECnv_Sys[#i_Sys].Mode = 3) THEN //Econveyor semi or auto mode 
+                "Control_DB".ECnv_Sys[#i_Sys].Instruction.Outbound_Ready := TRUE;
+            ELSIF  NOT "Control_DB".ECnv_Sys[#i_Sys].Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+                "Control_DB".ECnv_Sys[#i_Sys].Instruction.Outbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+            END_IF;
+            
+            
+            //BUFFER CONVEYORS
+            FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+                //CNV 1
+                IF "Control_DB".ECnv_Sys[#i_Sys].Instruction.Inbound_Ready AND
+                    "Control_DB".VTD_Sys[#i_Sys].Current_Level = #i_Lev AND
+                    (NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Transfer_in_Progress OR "Control_DB".VTD_Sys[#i_Sys].Current_Level = 1) AND
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Occupied AND
+                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Error AND NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Running AND
+                    ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Mode = 2 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Mode = 3) THEN
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Outbound_Ready := TRUE;
+                ELSIF  NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Outbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+                END_IF;
+                
+                //CNV 2
+                IF ("Control_DB".ECnv_Sys[#i_Sys].Instruction.Inbound_Ready OR "Settings_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Level = 1) AND
+                    ("Control_DB".VTD_Sys[#i_Sys].Current_Level = #i_Lev OR "Settings_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Level = 1) AND
+                    (NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Transfer_in_Progress OR "Settings_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Level = 1) AND
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Occupied AND
+                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Error AND NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Running AND
+                    ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Mode = 2 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Mode = 3) THEN
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Outbound_Ready := TRUE;
+                ELSIF  NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Outbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+                END_IF;
+            END_FOR;
+        END_REGION
+        
+        REGION TRANSFER IN PROGRESS FOR EXTRACTOR CONVEYOR
+            FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+                "Control_DB".ECnv_Sys[#i_Sys].Instruction.Transfer_in_Progress :=
+                ("Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level = #i_Lev AND
+                "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Transfer_in_Progress OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Transfer_in_Progress);
+            END_FOR;
+        END_REGION
+    END_FOR;
+    
+    IF "FirstScan" THEN
+        "Time_1_Start_Buffers" := T#500MS;
+        "Time_1_end_Buffers" := T#1S;
+        "Time_2_Start_Buffers" := T#1S;
+        "Time_2_End_Buffers" := T#1S_500MS;
+        "Time_3_Buffers" := T#1S_500MS;
+        
+        "Time_1_Start_Ecnv" := T#1S700MS;
+        "Time_1_end_Ecnv" := T#2S100MS;
+        "Time_2_Start_Ecnv" := T#2S100MS;
+        "Time_2_End_Ecnv" := T#2S_600MS;
+        "Time_3_Ecnv" := T#2S_600MS;
+    END_IF;
+    
+    
+END_FUNCTION

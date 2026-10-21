@@ -3,11 +3,58 @@
   <POU Name="MAIN" Id="{1668c7a5-c10d-4b27-a3e5-4fc8521ffe20}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
-	VTD : VTD_FB;
+    // TEST ONLY - VTD MOVIPRO process data communication check.
+    fbVtdProcessDataTest : FB_SEW_ProcessDataTest;
+    // TEST ONLY - VTD manual control from the screen VTD_ManualTest.
+    fbVtdManualControl : FB_VTD_ManualControl;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[VTD.]]></ST>
+      <ST><![CDATA[// 1. IO inputs -> internal variables
+Inputs();
+
+// 2. Logic on internal variables
+// TEST ONLY - two sources can write the VTD process outputs, only one at a time:
+//  - the raw write of the process data screen is refused (its HMI toggle is reset)
+//    while the manual screen has the drive enabled;
+//  - the manual control is inhibited while the raw write is active.
+IF fbVtdManualControl.q_stStatus.bEnableActive THEN
+    GVL_HMI_VTD.stPdCommand.bTestWriteEnable := FALSE;
+END_IF
+
+// TEST ONLY - VTD MOVIPRO process data communication check.
+fbVtdProcessDataTest(
+    i_aProcessInput := Control.VTD_Sys[1].Motor.stProcessInput.aWord,
+    i_bWcStateError := Control.VTD_Sys[1].Motor.stProcessInput.bWcStateError,
+    i_uiEcState := Control.VTD_Sys[1].Motor.stProcessInput.uiEcState,
+    i_bTestWriteEnable := GVL_HMI_VTD.stPdCommand.bTestWriteEnable,
+    i_bTestAllowControlWord := GVL_HMI_VTD.stPdCommand.bTestAllowControlWord,
+    i_aTestProcessOutput := GVL_HMI_VTD.stPdCommand.aTestProcessOutput);
+
+// TEST ONLY - VTD manual control (jog, modes, speed, software stop, reset).
+fbVtdManualControl(
+    i_stProcessInput := Control.VTD_Sys[1].Motor.stProcessInput,
+    i_bInhibit := fbVtdProcessDataTest.q_bTestWriteActive,
+    i_stSettings := GVL_HMI_VTD.stManualSettings,
+    io_stCommand := GVL_HMI_VTD.stManualCommand);
+
+IF fbVtdProcessDataTest.q_bTestWriteActive THEN
+    Control.VTD_Sys[1].Motor.aProcessOutput := fbVtdProcessDataTest.q_aProcessOutput;
+ELSE
+    Control.VTD_Sys[1].Motor.aProcessOutput := fbVtdManualControl.q_aProcessOutput;
+END_IF
+
+// 3. HMI status
+FC_VTD_PdHmiUpdateStatus(
+    io_fbProcessData := fbVtdProcessDataTest,
+    io_stStatus := GVL_HMI_VTD.stPdStatus);
+// PO really sent to the drive (raw write or manual control).
+GVL_HMI_VTD.stPdStatus.aProcessOutputSent := Control.VTD_Sys[1].Motor.aProcessOutput;
+GVL_HMI_VTD.stManualStatus := fbVtdManualControl.q_stStatus;
+
+// 4. Internal variables -> IO outputs
+Outputs();
+]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

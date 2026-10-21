@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_HMI_Carousel" Id="{7b302f53-8711-449c-bad1-a271b08bdf51}">
+    <Declaration><![CDATA[// HMI interface of the screen Carrousel.
+// Device index: 1..2 = PopUp 1..2, 3..7 = Roller 1..5, 8 = Chain, 9 = Turntable.
+// TODO: FC_CarouselHmiUpdate once the carousel DUTs / FBs exist. Until then all values stay 0/FALSE.
+{attribute 'qualified_only'}
+VAR_GLOBAL
+    uiSelected : UINT;                                   // HMI -> PLC: 1..9, see above
+    astDevice : ARRAY[1..9] OF ST_HMI_ConveyorStatus;    // PLC -> HMI
+    stSelected : ST_HMI_ConveyorStatus;                  // PLC -> HMI: copy of the selected device
+    stCommand : ST_HMI_ConveyorCommand;                  // HMI -> PLC: commands for the selected device
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

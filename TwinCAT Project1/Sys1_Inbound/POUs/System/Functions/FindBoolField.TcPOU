@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FindBoolField" Id="{66bb21db-36d8-4975-9160-893b5cc40b6a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FindBoolField : BOOL
+VAR_INPUT
+    FieldName : STRING(254);
+    JsonStr : STRING(254);
+END_VAR
+VAR_OUTPUT
+    Valid : BOOL;
+END_VAR
+VAR
+    token : STRING(32);
+END_VAR
+]]></Declaration>
+    <Implementation><ST><![CDATA[// Missing, malformed and false all return FALSE; inspect Valid to distinguish.
+FindBoolField := FALSE;
+Valid := FC_TIAScalarToken(FieldName := FieldName, JsonStr := JsonStr, Token => token);
+IF NOT Valid THEN RETURN; END_IF;
+Valid := (token = 'true') OR (token = 'false');
+FindBoolField := token = 'true';
+]]></ST></Implementation>
+  </POU>
+</TcPlcObject>

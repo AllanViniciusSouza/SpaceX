@@ -1,25 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="ID_Decode_F" Id="{969fb6bb-8805-49f8-9776-eda41aa37be8}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION ID_Decode_F : BOOL
 VAR_INPUT
-	ID: DINT;
+    ID : DINT;
 END_VAR
 VAR_IN_OUT
-	ID_Decoded: ID_Decoded_DUT;
-END_VAR
-VAR
+    ID_Decoded : ID_Decoded_DUT;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// Extract XX (first two digits)
-ID_Decoded.Device_Type := DINT_TO_INT(ID / 10000);        // 123456 / 10000 = 12
-
-// Extract YY (middle two digits)
-ID_Decoded.Level := DINT_TO_INT((ID MOD 10000) / 100); // 123456 % 10000 = 3456 → 3456 / 100 = 34
-
-// Extract ZZ (last two digits)
-ID_Decoded.VTD := DINT_TO_INT(ID MOD 100);       // 123456 % 100 = 56]]></ST>
+      <ST><![CDATA[// Source: Reference_Project/ID_Decode_F.scl. Decimal layout: XXYYZZ.
+// Zero is accepted as the unassigned ID. Reject negative or oversized IDs.
+ID_Decode_F := FALSE;
+ID_Decoded.Device_Type := 0;
+ID_Decoded.Level := 0;
+ID_Decoded.VTD := 0;
+IF (ID < DINT#0) OR (ID > DINT#999999) THEN
+    RETURN;
+END_IF;
+ID_Decoded.Device_Type := DINT_TO_INT(ID / DINT#10000);
+ID_Decoded.Level := DINT_TO_INT((ID MOD DINT#10000) / DINT#100);
+ID_Decoded.VTD := DINT_TO_INT(ID MOD DINT#100);
+ID_Decode_F := TRUE;
+]]></ST>
     </Implementation>
   </POU>
 </TcPlcObject>

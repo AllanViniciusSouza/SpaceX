@@ -1,0 +1,2262 @@
+﻿TYPE "Sfts_Inputs"
+VERSION : 0.1
+   STRUCT
+      DP_Extended : Bool;
+      DP_Retracted : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Sfts_Instruction"
+VERSION : 0.1
+   STRUCT
+      Mode_Change : UInt;
+      Enable : Bool;
+      Extend : Bool;
+      Retract : Bool;
+      Manual_Extend : Bool;
+      Manual_Retract : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Buffer_Cnv_Inputs"
+VERSION : 0.1
+   STRUCT
+      Left : Bool;   // Sensor Conveyor Left (Fwd)
+      Lpd1 : Bool;   // Sensor Conveyor Left (Pallet detect 1)
+      Lpd2 : Bool;   // Sensor Conveyor Left (Pallet detect 2)
+      Right : Bool;   // Sensor Conveyor Right (Bwd)
+      Rpd1 : Bool;   // Sensor Conveyor Right (Pallet detect 1)
+      Rpd2 : Bool;   // Sensor Conveyor Right (Pallet detect 2)
+      Sdetect1 : Bool;   // Shuttle In Position 1
+      Sdetect2 : Bool;   // Shuttle In Position 2
+      Shuttle_High : Bool;
+      VFD_Status : Word;
+      VFD_Speed_Actual : Int;
+      VFD_ActualCurrent : Int;
+      VFD_ActualTorque : Int;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Sfts_Control"
+VERSION : 0.1
+   STRUCT
+      Mode { ExternalWritable := 'False'} : UInt;
+      Error { ExternalWritable := 'False'} : Bool;
+      Enabled { ExternalWritable := 'False'} : Bool;
+      Running { ExternalWritable := 'False'} : Bool;
+      LP_State : USInt;
+      Motor_Extend { ExternalWritable := 'False'} : Bool;
+      Motor_Retract { ExternalWritable := 'False'} : Bool;
+      SM_State : UInt;
+      Instruction { S7_SetPoint := 'False'} : "Sfts_Instruction";
+      Inputs : "Sfts_Inputs";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Instruction"
+VERSION : 0.1
+   STRUCT
+      Mode_Change : UInt;
+      Stop : Bool;
+      Enable : Bool;
+      Reset : Bool;
+      Pallet_Type : UInt;
+      Pallet_Allignment : Bool;
+      Execute : Bool;
+      Task_ID : UInt;
+      Task_Metadata : String;
+      Transfer_To_ID : DInt;
+      Transfer_From_ID : DInt;
+      Transfer_in_Progress : Bool;   // Transfer In progress
+      Inbound_Ready : Bool;   // Ready to receive
+      Transfer_Complete : Bool;   // Transfer complete
+      Outbound_Ready : Bool;   // Ready to send
+      Start_Transfer : Bool;
+      Pallet_Align_Left : Bool;
+      Pallet_Align_Right : Bool;
+      Pallet_Align_Center : Bool;
+      Start_Transfer_Backward : Bool;
+      Foward : Bool;
+      Backward : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Motor"
+VERSION : 0.1
+   STRUCT
+      Enable : Bool;
+      Enabled : Bool;
+      Ready : Bool;
+      Forward : Bool;
+      Reverse : Bool;
+      Speed : Real;
+      Speed_Actual : Real;
+      Actual_Current : Real;
+      Actual_Torque : UInt;
+      Control_Word : Word;
+      Config_Axis : Word := 16#003F;
+      Error : Bool;
+      Status : Word;
+      Communication_Error : Word;
+      Lockout : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Errors"
+VERSION : 0.1
+   STRUCT
+      Error_Word_1 : UInt;
+      Error_Word_2 : UInt;
+      Error_Word_3 : UInt;
+      Error_Word_4 : UInt;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Buffer_Cnv_Settings"
+VERSION : 0.1
+   STRUCT
+      ID : DInt;
+      Barcode_ID : UInt;
+      Cnv_Level : UInt;
+      TC_Time : UInt;
+      Transfer_Time : UInt;
+      Pallet_Align_Time : UInt;
+      Slow_Speed : UInt;
+      Full_Speed : UInt;
+      Manual_Speed : UInt;
+      Safety_stop_Timeout : UInt;
+      Timer_Check_Pallet_Time : UInt;
+      G120_Hardware_ID { S7_SetPoint := 'True'} : HW_IO;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Buffer_Cnv_Control"
+VERSION : 0.1
+   STRUCT
+      Mode { ExternalWritable := 'False'} : UInt;
+      Error { ExternalWritable := 'False'} : Bool;
+      Warning { ExternalWritable := 'False'} : UInt;
+      Enabled { ExternalWritable := 'False'} : Bool;
+      Stopped { ExternalWritable := 'False'} : Bool;
+      Done : Bool;
+      Running { ExternalWritable := 'False'} : Bool;
+      Ready_For_Task { ExternalWritable := 'False'} : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID { ExternalWritable := 'False'} : UInt;
+      Cnv_Occupied { ExternalWritable := 'False'} : Bool;
+      Pallet_Type { ExternalWritable := 'False'} : UInt;
+      SM_State { ExternalWritable := 'False'} : UInt;   // State Machine state
+      Shuttle_In_Place { ExternalWritable := 'False'} : Bool;
+      Motor { S7_SetPoint := 'False'} : "Cnv_Motor";
+      Instruction { S7_SetPoint := 'False'} : "Cnv_Instruction";
+      Inputs : "Buffer_Cnv_Inputs";
+      Safety_Stop_Cnrl : "Sfts_Control";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Motor"
+VERSION : 0.1
+   STRUCT
+      Enable : Bool;
+      Enabled : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Forward : Bool;
+      Reverse : Bool;
+      Brake_Opened : Bool;
+      Speed : Int;
+      Speed_Actual : Int;
+      Actual_Current : Int;
+      Actual_Torque : UInt;
+      Acc_Factor : UInt;
+      Config_Axis : Word := 16#003F;
+      Error : Bool;
+      Status : Word;
+      Communication_Error : Word;
+      Lockout : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Errors"
+VERSION : 0.1
+   STRUCT
+      Error_Word_1 : UInt;
+      Error_Word_2 : UInt;
+      Error_Word_3 : UInt;
+      Error_Word_4 : UInt;
+      Error_Word_5 : UInt;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Shuttle_Interlock"
+VERSION : 0.1
+   STRUCT
+      Interlock_Complete { ExternalWritable := 'False'} : Bool;
+      Interlock_Complete_Ack : Bool;
+      Ready_To_Interlock { ExternalWritable := 'False'} : Bool;
+      Interlock_Request : Bool;
+      Shuttle_ID : UInt;
+      Shuttle_Target_Location : DInt;
+      Shuttle_Start_Location : DInt;
+      Shuttle_Loaded : Bool;
+      Shuttle_Interlock_Task_ID : UInt;
+      Shuttle_Interlock_Task_Metadata : String;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Outputs"
+VERSION : 0.1
+   STRUCT
+      LP1_Retract : Bool;
+      LP1_Extend : Bool;
+      LP2_Retract : Bool;
+      LP2_Extend : Bool;
+      AE_Control_Word_1 : Word;
+      AE_Control_Word_2 : Word;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Instruction"
+VERSION : 0.1
+   STRUCT
+      Mode_Change : UInt;
+      Stop : Bool;
+      Enable : Bool;
+      Execulte : Bool;
+      Reset : Bool;
+      Pallet_Type : UInt;
+      Task_ID : UInt;
+      Task_Metadata : String;
+      Move_To_Level : UInt;
+      Manual_Up : Bool;
+      Manual_Down : Bool;
+      Manual_LP_Retract : Bool;
+      Manual_LP_Extend : Bool;
+      Start_Teach : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Inputs"
+VERSION : 0.1
+   STRUCT
+      Left : Bool;   // Sensor Conveyor Left (Fwd)
+      Lpd1 : Bool;   // Sensor Conveyor Left (Pallet detect 1)
+      Center : Bool;   // Sensor Conveyor Left (Pallet detect 2)
+      Right : Bool;   // Sensor Conveyor Right (Bwd)
+      Rpd1 : Bool;   // Sensor Conveyor Right (Pallet detect 1)
+      Sdetect1 : Bool;   // Shuttle In Position 1
+      Sdetect2 : Bool;   // Shuttle In Position 2
+      VFD_Status : Word;
+      VFD_Speed_Actual : Int;
+      VFD_ActualCurrent : Int;
+      VFD_ActualTorque : Int;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "LMQTT_typeConnParam"
+TITLE = LMQTT_typeConnParams
+VERSION : 0.1
+//Specifies connection parameters for the mqtt connection
+   STRUCT
+      hwId : HW_ANY;   // Hardware identifier of the interface. 0: interface is selected automatically
+      connId : CONN_OUC := 1;   // Unique connection identifier (1..4095)
+      broker : String;   // Hostname or IP address of broker
+      port : UInt := 1883;   // Port on the broker
+      tls : Struct   // Parameters for TLS encryption
+         enableTls : Bool;   // TRUE: Enables TLS, FALSE: disable TLS
+         validateServerIdentity : Bool;   // TRUE: Validate server certificate, FALSE: No validation of server certificate
+         brokerCert : UDInt;   // ID of the broker's certificate in TIA Portal
+         clientCert : UDInt;   // ID of the client's certificate in TIA Portal
+      END_STRUCT;
+      keepAlive : UInt;   // Keepalive mechanism for MQTT in seconds. 0: disabled.
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Level_Settings"
+VERSION : 0.1
+   STRUCT
+      Cnv1 { S7_SetPoint := 'False'} : "Buffer_Cnv_Settings";
+      Cnv2 { S7_SetPoint := 'False'} : "Buffer_Cnv_Settings";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Levels"
+VERSION : 0.1
+   STRUCT
+      Levels_LE : Array[1..8] of Real;
+      Levels_AE : Array[1..8] of DInt;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_Level_Control"
+VERSION : 0.1
+   STRUCT
+      Cnv1 : "Buffer_Cnv_Control";
+      Cnv2 : "Buffer_Cnv_Control";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Inputs"
+VERSION : 0.1
+   STRUCT
+      Upper_Overtravel : Bool;
+      Upper_limit : Bool;   // Upper Limit
+      Ultimate_SlowDown : Bool;
+      Ultimate_Creep : Bool;
+      Lower_Limit : Bool;   // Lower Limit 
+      Lower_Overtravel : Bool;
+      Level_Detect1 : Bool;   // Level Detect Front
+      Level_Detect2 : Bool;   // Level Detect  Rear
+      DP1_Extended : Bool;   // Locking Pins Extended left
+      DP2_Extended : Bool;   // Locking Pins Extended Right
+      DP1_Retracted : Bool;   // Locking Pins Retracted left
+      DP2_Retracted : Bool;   // Locking Pins Retracted Right
+      Chain_Slack_1 : Bool;
+      Chain_Slack_2 : Bool;
+      Chain_Slack_3 : Bool;
+      Chain_Slack_4 : Bool;
+      PushToEnter : Bool;
+      PushToExit : Bool;
+      "Barcode 1" : String;
+      "Barcode 2" : String;
+      LE_Status : UInt;
+      LE_Position : DInt;
+      LE_Speed : Int;
+      LE_Warnings : Int;
+      LE_Quality_Decoded_Codes : Byte;
+      LE_Quality_Value : Byte;
+      AE_Status_1 : UInt;
+      AE_Status_2 : UInt;
+      AE_Position_1 : DInt;
+      AE_Position_2 : DInt;
+      AE_Speed : Int;
+      VFD_Status : Word;
+      VFD_Speed_Actual : Word;
+      VFD_ActualCurrent : Int;
+      VFD_ActualTorque : Int;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_VTD_Control"
+VERSION : 0.1
+   STRUCT
+      Cnv_Level { S7_SetPoint := 'False'} : Array[1..8] of "Cnv_Level_Control";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Barcode_Station_UDT"
+VERSION : 0.1
+   STRUCT
+      Start : Bool;
+      Ready : Bool;
+      Running : Bool;
+      Done : Bool;
+      Valid : Bool;
+      "Reading Gate number" : String;
+      "Reading Gate number OLD" : String;
+      "Number of Reading Gates" : String;
+      "Number of Reading Gates OLD" : String;
+      Barcode : String;
+      Barcode_Old : String;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Gate_Station_UDT"
+VERSION : 0.1
+   STRUCT
+      Requested_Access { ExternalWritable := 'False'} : Bool;
+      Secure_Access : Bool;
+      Safe_To_Restart { ExternalWritable := 'False'} : Bool;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "System_Settings"
+VERSION : 0.1
+   STRUCT
+      VTD_Count : UInt;
+      Level_Count : UInt;
+      Cnv_Count : UInt;
+      Shuttle_Count : UInt;
+      Shuttle_Interlock_Timeout : UInt;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Control"
+VERSION : 0.1
+   STRUCT
+      Mode : UInt;
+      Error { ExternalWritable := 'False'} : Bool;
+      Warning { ExternalWritable := 'False'} : UInt;
+      Enabled { ExternalWritable := 'False'} : Bool;
+      Stopped { ExternalWritable := 'False'} : Bool;
+      Running { ExternalWritable := 'False'} : Bool;
+      Done : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID { ExternalWritable := 'False'} : UInt;
+      AE { ExternalWritable := 'False'} : Real;
+      LE { ExternalWritable := 'False'} : Real;
+      Current_Level { ExternalWritable := 'False'} : UInt;
+      Docked { ExternalWritable := 'False'} : Bool;
+      LP_State { ExternalWritable := 'False'} : UInt;
+      DP_Extended { ExternalWritable := 'False'} : Bool;
+      Pallet_Loaded { ExternalWritable := 'False'} : UInt;
+      Shuttle_Loaded { ExternalWritable := 'False'} : UInt;
+      SM_State { ExternalWritable := 'False'} : UInt;   // State Machine state
+      Motor_UP { ExternalWritable := 'False'} : Bool;
+      Motor_Down { ExternalWritable := 'False'} : Bool;
+      Motor_Speed { ExternalWritable := 'False'} : UInt;
+      VFD_Error { ExternalWritable := 'False'} : UInt;
+      LE_Error { ExternalWritable := 'False'} : UInt;
+      AE_Error { ExternalWritable := 'False'} : UInt;
+      Encoder_Delta { ExternalWritable := 'False'} : Int;
+      Instruction { S7_SetPoint := 'False'} : "VTD_Instruction";
+      Shuttle_Interlock : "VTD_Shuttle_Interlock";
+      Inputs : "VTD_Inputs";
+      Outputs : "VTD_Outputs";
+      Motor : "VTD_Motor";
+      VTD_Errors : "VTD_Errors";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "ECnv_Control"
+VERSION : 0.1
+   STRUCT
+      Mode { ExternalWritable := 'False'} : UInt;
+      Error { ExternalWritable := 'False'} : Bool;
+      Warning { ExternalWritable := 'False'} : UInt;
+      Enabled { ExternalWritable := 'False'} : Bool;
+      Stopped { ExternalWritable := 'False'} : Bool;
+      Done : Bool;
+      Running { ExternalWritable := 'False'} : Bool;
+      Ready_For_Task { ExternalWritable := 'False'} : Bool;
+      Current_Task_Type : UInt;
+      Current_Task_ID { ExternalWritable := 'False'} : UInt;
+      Cnv_Occupied { ExternalWritable := 'False'} : Bool;
+      Pallet_Type { ExternalWritable := 'False'} : UInt;
+      SM_State { ExternalWritable := 'False'} : UInt;   // State Machine state
+      Shuttle_In_Place { ExternalWritable := 'False'} : Bool;
+      Motor { S7_SetPoint := 'False'} : "Cnv_Motor";
+      Instruction { S7_SetPoint := 'False'} : "Cnv_Instruction";
+      Inputs : "Cnv_Inputs";
+      Cnv_Errors : "Cnv_Errors";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "MQTT_Settings"
+VERSION : 0.1
+   STRUCT
+      MQTT_Con_Params { S7_SetPoint := 'False'} : "LMQTT_typeConnParam" := ((), (), (), (), (), 60);
+      Client_ID : WString;
+      Username : WString;
+      Password : WString;
+      Timeout : DInt;
+      QoS : USInt;
+      "Retain" : Bool;
+      Will_Topic : WString;
+      Will_Msg_Length : UInt;
+      Will_Msg_Payload : Array[1..128] of Byte;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "ECnv_Settings"
+VERSION : 0.1
+   STRUCT
+      ID : DInt;
+      Barcode_ID : UInt;
+      Cnv_Level : UInt;
+      TC_Time : UInt;
+      Transfer_Time : UInt;
+      Pallet_Align_Time : UInt;
+      Slow_Speed : UInt;
+      Full_Speed : UInt;
+      Manual_Speed : UInt;
+      Timer_Check_Pallet_Time : UInt;
+      G120_Hardware_ID { S7_SetPoint := 'True'} : HW_IO;
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "Cnv_VTD_Settings"
+VERSION : 0.1
+   STRUCT
+      Cnv_Level { S7_SetPoint := 'False'} : Array[1..8] of "Cnv_Level_Settings";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "VTD_Settings"
+VERSION : 0.1
+   STRUCT
+      ID : UInt;
+      Lowest_Level : UInt;
+      Highest_Level : UInt;
+      VTD_Max_Heigh : UInt;
+      VTD_Min_Height : UInt;
+      VTD_Level_Granularity : Int;
+      Dft_Level_Offset_LE : Int;
+      Dft_Level_Offset_AE : Int;
+      Teach_Speed : UInt;   // Extracor speed during the teach sequence, should not exceed 15% throttle
+      Creep_Speed : UInt;
+      Slow_Speed : UInt;
+      Slow_Calib_Speed : UInt;
+      Loaded_Speed : UInt;   // Speed when both a Pallet and Shuttle is on the extractor
+      Shuttle_Speed : UInt;   // Shuttle only on the extractor
+      Pallet_Speed : UInt;   // Pallet only on the extractor
+      Empty_Speed : UInt;   // Extractor only speed
+      Dock_speed : UInt;
+      Manual_Speed : UInt;
+      Slowdown_Count_LE : UInt;
+      Creep_Count_LE : UInt;
+      Slowdown_Count_AE : UInt;
+      Creep_Count_AE : UInt;
+      Encoder_Delta_W1 : Real;
+      Encoder_Delta_W2 : Real;
+      AE_Ratio : Real;
+      Encoder_Delta_Warning : Real;
+      Encoder_Delta_Error : Real;
+      Transfer_Timeout_Up : UInt;
+      Transfer_Timeout_Down : UInt;
+      Lockpins_Timeout_Extend : UInt;
+      Lockpins_Timeout_Retract : UInt;
+      Level_Detect_Timeout : UInt;
+      Teach_Timeout : UInt;
+      Chain_Slack_Timeout : UInt;
+      Level_Detect_LE : Real;
+      Acc_Range_1 : UInt;
+      Acc_Range_2 : UInt;
+      Acc_Range_3 : UInt;
+      Weight_Range_1 : UInt;
+      Weight_Range_2 : UInt;
+      Weight_Range_3 : UInt;
+      G120_Hardware_ID { S7_SetPoint := 'True'} : HW_IO;
+      Teach_Values : "VTD_Levels";
+   END_STRUCT;
+
+END_TYPE
+
+TYPE "WMS_OPC_UA"
+VERSION : 0.1
+   STRUCT
+      Task_ID : Int;   // ID of the Task
+      Task_Metadata : String[250];
+      Task_Type : Int;
+      Source_Location : DInt;
+      Destination_Location : DInt;
+      Task_Data_Available : Bool;   // This tag is used to inform the PLC that task data is ready to be read.
+      SM_State : UInt;   // The current state machine value of the Device/VTD
+      Movement_Ready : Bool;
+      Movement_Request_Complete : Bool;   // This PLC tag is set to true once the task is complete.
+      Movement_Request_Complete_Ack : Bool;   // The WCS will acknowledge the completion of the task. 
+      Shuttle_ID : Int;
+      Shuttle_Loaded : Bool;
+      Pallet_Type : Char;   // Values can be (C)hep or (E)uro.
+      Pallet_Alignment : Char;   // Values can be (L)eft or (R)ight.
+      SM_State_Maestro : UInt;   // SM State to mimic openTCS states from devices to Maestro
+      Pallet_Weight : Int;
+   END_STRUCT;
+
+END_TYPE
+
+DATA_BLOCK "Control_DB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      ECnv_Sys : Array[1..5] of "ECnv_Control";
+      LCnv_Sys : Array[1..5] of "Cnv_VTD_Control";
+      VTD_Sys : Array[1..5] of "VTD_Control";
+      WCS_OPC_Control : Array[1..5] of "WMS_OPC_UA";
+      Shuttles_Position : Array[1..23] of Struct
+         x : DInt;
+         y : DInt;
+         Charging : Bool;
+      END_STRUCT;
+      VTDBarcode_Station { S7_SetPoint := 'False'} : Array[1..5] of "Barcode_Station_UDT";
+      Pallet_ID_Received : Array[1..3] of Bool;
+      Gate_Station { S7_SetPoint := 'False'} : Array[1..12] of "Gate_Station_UDT";
+   END_VAR
+
+
+BEGIN
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Inputs.DP_Extended := TRUE;
+
+END_DATA_BLOCK
+
+DATA_BLOCK "Settings_DB"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR RETAIN
+      VTD_Sys { S7_SetPoint := 'False'} : Array[1..5] of "VTD_Settings";
+      ECnv_Sys { S7_SetPoint := 'False'} : Array[1..5] of "ECnv_Settings";
+      LCnv_Sys { S7_SetPoint := 'False'} : Array[1..5] of "Cnv_VTD_Settings";
+      Shuttle_MQTT { S7_SetPoint := 'False'} : "MQTT_Settings";
+      System { S7_SetPoint := 'False'} : "System_Settings";
+   END_VAR
+   VAR 
+      Chain_Slack_Time { S7_SetPoint := 'True'} : Time;
+   END_VAR
+
+
+BEGIN
+   VTD_Sys[1].ID := 1;
+   VTD_Sys[1].Lowest_Level := 1;
+   VTD_Sys[1].Highest_Level := 8;
+   VTD_Sys[1].VTD_Max_Heigh := 16500;
+   VTD_Sys[1].VTD_Min_Height := 55;
+   VTD_Sys[1].VTD_Level_Granularity := 20;
+   VTD_Sys[1].Dft_Level_Offset_LE := 0;
+   VTD_Sys[1].Dft_Level_Offset_AE := 0;
+   VTD_Sys[1].Teach_Speed := 0;
+   VTD_Sys[1].Creep_Speed := 3;
+   VTD_Sys[1].Slow_Speed := 5;
+   VTD_Sys[1].Slow_Calib_Speed := 10;
+   VTD_Sys[1].Loaded_Speed := 50;
+   VTD_Sys[1].Shuttle_Speed := 50;
+   VTD_Sys[1].Pallet_Speed := 100;
+   VTD_Sys[1].Empty_Speed := 100;
+   VTD_Sys[1].Dock_speed := 5;
+   VTD_Sys[1].Manual_Speed := 15;
+   VTD_Sys[1].Slowdown_Count_LE := 700;
+   VTD_Sys[1].Creep_Count_LE := 60;
+   VTD_Sys[1].Slowdown_Count_AE := 700;
+   VTD_Sys[1].Creep_Count_AE := 60;
+   VTD_Sys[1].Encoder_Delta_W1 := 0.0;
+   VTD_Sys[1].Encoder_Delta_W2 := 0.0;
+   VTD_Sys[1].AE_Ratio := 0.0;
+   VTD_Sys[1].Encoder_Delta_Warning := 80.0;
+   VTD_Sys[1].Encoder_Delta_Error := 200.0;
+   VTD_Sys[1].Transfer_Timeout_Up := 50;
+   VTD_Sys[1].Transfer_Timeout_Down := 45;
+   VTD_Sys[1].Lockpins_Timeout_Extend := 3000;
+   VTD_Sys[1].Lockpins_Timeout_Retract := 3000;
+   VTD_Sys[1].Level_Detect_Timeout := 500;
+   VTD_Sys[1].Teach_Timeout := 600;
+   VTD_Sys[1].Chain_Slack_Timeout := 750;
+   VTD_Sys[1].Level_Detect_LE := 3.0;
+   VTD_Sys[1].Acc_Range_1 := 60;
+   VTD_Sys[1].Acc_Range_2 := 70;
+   VTD_Sys[1].Acc_Range_3 := 80;
+   VTD_Sys[1].Weight_Range_1 := 250;
+   VTD_Sys[1].Weight_Range_2 := 500;
+   VTD_Sys[1].Weight_Range_3 := 750;
+   VTD_Sys[1].G120_Hardware_ID := 475;
+   VTD_Sys[1].Teach_Values.Levels_LE[1] := 58.0;
+   VTD_Sys[1].Teach_Values.Levels_LE[2] := 2525.0;
+   VTD_Sys[1].Teach_Values.Levels_LE[3] := 4722.0;
+   VTD_Sys[1].Teach_Values.Levels_LE[4] := 6927.0;
+   VTD_Sys[1].Teach_Values.Levels_LE[5] := 9276.0;
+   VTD_Sys[1].Teach_Values.Levels_LE[6] := 11627.0;
+   VTD_Sys[1].Teach_Values.Levels_LE[7] := 13978.0;
+   VTD_Sys[1].Teach_Values.Levels_LE[8] := 16325.0;
+   VTD_Sys[1].Teach_Values.Levels_AE[1] := 0;
+   VTD_Sys[1].Teach_Values.Levels_AE[2] := 0;
+   VTD_Sys[1].Teach_Values.Levels_AE[3] := 0;
+   VTD_Sys[1].Teach_Values.Levels_AE[4] := 0;
+   VTD_Sys[1].Teach_Values.Levels_AE[5] := 0;
+   VTD_Sys[1].Teach_Values.Levels_AE[6] := 0;
+   VTD_Sys[1].Teach_Values.Levels_AE[7] := 0;
+   VTD_Sys[1].Teach_Values.Levels_AE[8] := 0;
+   VTD_Sys[2].ID := 2;
+   VTD_Sys[2].Lowest_Level := 1;
+   VTD_Sys[2].Highest_Level := 8;
+   VTD_Sys[2].VTD_Max_Heigh := 16500;
+   VTD_Sys[2].VTD_Min_Height := 0;
+   VTD_Sys[2].VTD_Level_Granularity := 20;
+   VTD_Sys[2].Dft_Level_Offset_LE := 0;
+   VTD_Sys[2].Dft_Level_Offset_AE := 0;
+   VTD_Sys[2].Teach_Speed := 0;
+   VTD_Sys[2].Creep_Speed := 3;
+   VTD_Sys[2].Slow_Speed := 15;
+   VTD_Sys[2].Slow_Calib_Speed := 10;
+   VTD_Sys[2].Loaded_Speed := 50;
+   VTD_Sys[2].Shuttle_Speed := 50;
+   VTD_Sys[2].Pallet_Speed := 100;
+   VTD_Sys[2].Empty_Speed := 100;
+   VTD_Sys[2].Dock_speed := 5;
+   VTD_Sys[2].Manual_Speed := 15;
+   VTD_Sys[2].Slowdown_Count_LE := 700;
+   VTD_Sys[2].Creep_Count_LE := 50;
+   VTD_Sys[2].Slowdown_Count_AE := 700;
+   VTD_Sys[2].Creep_Count_AE := 60;
+   VTD_Sys[2].Encoder_Delta_W1 := 0.0;
+   VTD_Sys[2].Encoder_Delta_W2 := 0.0;
+   VTD_Sys[2].AE_Ratio := 0.0;
+   VTD_Sys[2].Encoder_Delta_Warning := 50.0;
+   VTD_Sys[2].Encoder_Delta_Error := 200.0;
+   VTD_Sys[2].Transfer_Timeout_Up := 50;
+   VTD_Sys[2].Transfer_Timeout_Down := 45;
+   VTD_Sys[2].Lockpins_Timeout_Extend := 3000;
+   VTD_Sys[2].Lockpins_Timeout_Retract := 3000;
+   VTD_Sys[2].Level_Detect_Timeout := 900;
+   VTD_Sys[2].Teach_Timeout := 600;
+   VTD_Sys[2].Chain_Slack_Timeout := 500;
+   VTD_Sys[2].Level_Detect_LE := 2.0;
+   VTD_Sys[2].Acc_Range_1 := 60;
+   VTD_Sys[2].Acc_Range_2 := 70;
+   VTD_Sys[2].Acc_Range_3 := 80;
+   VTD_Sys[2].Weight_Range_1 := 250;
+   VTD_Sys[2].Weight_Range_2 := 500;
+   VTD_Sys[2].Weight_Range_3 := 750;
+   VTD_Sys[2].G120_Hardware_ID := 959;
+   VTD_Sys[2].Teach_Values.Levels_LE[1] := 63.0;
+   VTD_Sys[2].Teach_Values.Levels_LE[2] := 2546.0;
+   VTD_Sys[2].Teach_Values.Levels_LE[3] := 4744.0;
+   VTD_Sys[2].Teach_Values.Levels_LE[4] := 6944.0;
+   VTD_Sys[2].Teach_Values.Levels_LE[5] := 9291.0;
+   VTD_Sys[2].Teach_Values.Levels_LE[6] := 11641.0;
+   VTD_Sys[2].Teach_Values.Levels_LE[7] := 13993.0;
+   VTD_Sys[2].Teach_Values.Levels_LE[8] := 16347.0;
+   VTD_Sys[2].Teach_Values.Levels_AE[1] := 0;
+   VTD_Sys[2].Teach_Values.Levels_AE[2] := 0;
+   VTD_Sys[2].Teach_Values.Levels_AE[3] := 0;
+   VTD_Sys[2].Teach_Values.Levels_AE[4] := 0;
+   VTD_Sys[2].Teach_Values.Levels_AE[5] := 0;
+   VTD_Sys[2].Teach_Values.Levels_AE[6] := 0;
+   VTD_Sys[2].Teach_Values.Levels_AE[7] := 0;
+   VTD_Sys[2].Teach_Values.Levels_AE[8] := 0;
+   VTD_Sys[3].ID := 3;
+   VTD_Sys[3].Lowest_Level := 1;
+   VTD_Sys[3].Highest_Level := 8;
+   VTD_Sys[3].VTD_Max_Heigh := 16500;
+   VTD_Sys[3].VTD_Min_Height := 45;
+   VTD_Sys[3].VTD_Level_Granularity := 20;
+   VTD_Sys[3].Dft_Level_Offset_LE := 0;
+   VTD_Sys[3].Dft_Level_Offset_AE := 0;
+   VTD_Sys[3].Teach_Speed := 0;
+   VTD_Sys[3].Creep_Speed := 3;
+   VTD_Sys[3].Slow_Speed := 15;
+   VTD_Sys[3].Slow_Calib_Speed := 10;
+   VTD_Sys[3].Loaded_Speed := 50;
+   VTD_Sys[3].Shuttle_Speed := 50;
+   VTD_Sys[3].Pallet_Speed := 100;
+   VTD_Sys[3].Empty_Speed := 100;
+   VTD_Sys[3].Dock_speed := 5;
+   VTD_Sys[3].Manual_Speed := 15;
+   VTD_Sys[3].Slowdown_Count_LE := 700;
+   VTD_Sys[3].Creep_Count_LE := 60;
+   VTD_Sys[3].Slowdown_Count_AE := 700;
+   VTD_Sys[3].Creep_Count_AE := 60;
+   VTD_Sys[3].Encoder_Delta_W1 := 0.0;
+   VTD_Sys[3].Encoder_Delta_W2 := 0.0;
+   VTD_Sys[3].AE_Ratio := 0.0;
+   VTD_Sys[3].Encoder_Delta_Warning := 50.0;
+   VTD_Sys[3].Encoder_Delta_Error := 200.0;
+   VTD_Sys[3].Transfer_Timeout_Up := 50;
+   VTD_Sys[3].Transfer_Timeout_Down := 45;
+   VTD_Sys[3].Lockpins_Timeout_Extend := 3000;
+   VTD_Sys[3].Lockpins_Timeout_Retract := 3000;
+   VTD_Sys[3].Level_Detect_Timeout := 500;
+   VTD_Sys[3].Teach_Timeout := 600;
+   VTD_Sys[3].Chain_Slack_Timeout := 600;
+   VTD_Sys[3].Level_Detect_LE := 3.0;
+   VTD_Sys[3].Acc_Range_1 := 60;
+   VTD_Sys[3].Acc_Range_2 := 70;
+   VTD_Sys[3].Acc_Range_3 := 80;
+   VTD_Sys[3].Weight_Range_1 := 250;
+   VTD_Sys[3].Weight_Range_2 := 500;
+   VTD_Sys[3].Weight_Range_3 := 750;
+   VTD_Sys[3].G120_Hardware_ID := 1363;
+   VTD_Sys[3].Teach_Values.Levels_LE[1] := 49.0;
+   VTD_Sys[3].Teach_Values.Levels_LE[2] := 2524.0;
+   VTD_Sys[3].Teach_Values.Levels_LE[3] := 4726.0;
+   VTD_Sys[3].Teach_Values.Levels_LE[4] := 6923.0;
+   VTD_Sys[3].Teach_Values.Levels_LE[5] := 9273.0;
+   VTD_Sys[3].Teach_Values.Levels_LE[6] := 11623.0;
+   VTD_Sys[3].Teach_Values.Levels_LE[7] := 13972.0;
+   VTD_Sys[3].Teach_Values.Levels_LE[8] := 16328.0;
+   VTD_Sys[3].Teach_Values.Levels_AE[1] := 0;
+   VTD_Sys[3].Teach_Values.Levels_AE[2] := 0;
+   VTD_Sys[3].Teach_Values.Levels_AE[3] := 0;
+   VTD_Sys[3].Teach_Values.Levels_AE[4] := 0;
+   VTD_Sys[3].Teach_Values.Levels_AE[5] := 0;
+   VTD_Sys[3].Teach_Values.Levels_AE[6] := 0;
+   VTD_Sys[3].Teach_Values.Levels_AE[7] := 0;
+   VTD_Sys[3].Teach_Values.Levels_AE[8] := 0;
+   VTD_Sys[4].ID := 4;
+   VTD_Sys[4].Lowest_Level := 1;
+   VTD_Sys[4].Highest_Level := 8;
+   VTD_Sys[4].VTD_Max_Heigh := 17000;
+   VTD_Sys[4].VTD_Min_Height := 0;
+   VTD_Sys[4].VTD_Level_Granularity := 20;
+   VTD_Sys[4].Dft_Level_Offset_LE := 0;
+   VTD_Sys[4].Dft_Level_Offset_AE := 0;
+   VTD_Sys[4].Teach_Speed := 0;
+   VTD_Sys[4].Creep_Speed := 3;
+   VTD_Sys[4].Slow_Speed := 15;
+   VTD_Sys[4].Slow_Calib_Speed := 10;
+   VTD_Sys[4].Loaded_Speed := 50;
+   VTD_Sys[4].Shuttle_Speed := 50;
+   VTD_Sys[4].Pallet_Speed := 100;
+   VTD_Sys[4].Empty_Speed := 100;
+   VTD_Sys[4].Dock_speed := 5;
+   VTD_Sys[4].Manual_Speed := 15;
+   VTD_Sys[4].Slowdown_Count_LE := 700;
+   VTD_Sys[4].Creep_Count_LE := 60;
+   VTD_Sys[4].Slowdown_Count_AE := 700;
+   VTD_Sys[4].Creep_Count_AE := 60;
+   VTD_Sys[4].Encoder_Delta_W1 := 0.0;
+   VTD_Sys[4].Encoder_Delta_W2 := 0.0;
+   VTD_Sys[4].AE_Ratio := 0.0;
+   VTD_Sys[4].Encoder_Delta_Warning := 50.0;
+   VTD_Sys[4].Encoder_Delta_Error := 200.0;
+   VTD_Sys[4].Transfer_Timeout_Up := 50;
+   VTD_Sys[4].Transfer_Timeout_Down := 45;
+   VTD_Sys[4].Lockpins_Timeout_Extend := 3000;
+   VTD_Sys[4].Lockpins_Timeout_Retract := 3000;
+   VTD_Sys[4].Level_Detect_Timeout := 500;
+   VTD_Sys[4].Teach_Timeout := 600;
+   VTD_Sys[4].Chain_Slack_Timeout := 500;
+   VTD_Sys[4].Level_Detect_LE := 3.0;
+   VTD_Sys[4].Acc_Range_1 := 60;
+   VTD_Sys[4].Acc_Range_2 := 70;
+   VTD_Sys[4].Acc_Range_3 := 80;
+   VTD_Sys[4].Weight_Range_1 := 250;
+   VTD_Sys[4].Weight_Range_2 := 500;
+   VTD_Sys[4].Weight_Range_3 := 750;
+   VTD_Sys[4].G120_Hardware_ID := 1767;
+   VTD_Sys[4].Teach_Values.Levels_LE[1] := 161.0;
+   VTD_Sys[4].Teach_Values.Levels_LE[2] := 2608.0;
+   VTD_Sys[4].Teach_Values.Levels_LE[3] := 4807.0;
+   VTD_Sys[4].Teach_Values.Levels_LE[4] := 7009.0;
+   VTD_Sys[4].Teach_Values.Levels_LE[5] := 9358.0;
+   VTD_Sys[4].Teach_Values.Levels_LE[6] := 11709.0;
+   VTD_Sys[4].Teach_Values.Levels_LE[7] := 14057.0;
+   VTD_Sys[4].Teach_Values.Levels_LE[8] := 16406.0;
+   VTD_Sys[4].Teach_Values.Levels_AE[1] := 0;
+   VTD_Sys[4].Teach_Values.Levels_AE[2] := 0;
+   VTD_Sys[4].Teach_Values.Levels_AE[3] := 0;
+   VTD_Sys[4].Teach_Values.Levels_AE[4] := 0;
+   VTD_Sys[4].Teach_Values.Levels_AE[5] := 0;
+   VTD_Sys[4].Teach_Values.Levels_AE[6] := 0;
+   VTD_Sys[4].Teach_Values.Levels_AE[7] := 0;
+   VTD_Sys[4].Teach_Values.Levels_AE[8] := 0;
+   VTD_Sys[5].ID := 5;
+   VTD_Sys[5].Lowest_Level := 1;
+   VTD_Sys[5].Highest_Level := 8;
+   VTD_Sys[5].VTD_Max_Heigh := 17000;
+   VTD_Sys[5].VTD_Min_Height := 0;
+   VTD_Sys[5].VTD_Level_Granularity := 20;
+   VTD_Sys[5].Dft_Level_Offset_LE := 0;
+   VTD_Sys[5].Dft_Level_Offset_AE := 0;
+   VTD_Sys[5].Teach_Speed := 0;
+   VTD_Sys[5].Creep_Speed := 3;
+   VTD_Sys[5].Slow_Speed := 15;
+   VTD_Sys[5].Slow_Calib_Speed := 10;
+   VTD_Sys[5].Loaded_Speed := 50;
+   VTD_Sys[5].Shuttle_Speed := 50;
+   VTD_Sys[5].Pallet_Speed := 100;
+   VTD_Sys[5].Empty_Speed := 100;
+   VTD_Sys[5].Dock_speed := 5;
+   VTD_Sys[5].Manual_Speed := 15;
+   VTD_Sys[5].Slowdown_Count_LE := 700;
+   VTD_Sys[5].Creep_Count_LE := 60;
+   VTD_Sys[5].Slowdown_Count_AE := 700;
+   VTD_Sys[5].Creep_Count_AE := 60;
+   VTD_Sys[5].Encoder_Delta_W1 := 0.0;
+   VTD_Sys[5].Encoder_Delta_W2 := 0.0;
+   VTD_Sys[5].AE_Ratio := 0.0;
+   VTD_Sys[5].Encoder_Delta_Warning := 50.0;
+   VTD_Sys[5].Encoder_Delta_Error := 200.0;
+   VTD_Sys[5].Transfer_Timeout_Up := 50;
+   VTD_Sys[5].Transfer_Timeout_Down := 45;
+   VTD_Sys[5].Lockpins_Timeout_Extend := 3000;
+   VTD_Sys[5].Lockpins_Timeout_Retract := 3000;
+   VTD_Sys[5].Level_Detect_Timeout := 500;
+   VTD_Sys[5].Teach_Timeout := 600;
+   VTD_Sys[5].Chain_Slack_Timeout := 1600;
+   VTD_Sys[5].Level_Detect_LE := 3.0;
+   VTD_Sys[5].Acc_Range_1 := 60;
+   VTD_Sys[5].Acc_Range_2 := 70;
+   VTD_Sys[5].Acc_Range_3 := 80;
+   VTD_Sys[5].Weight_Range_1 := 250;
+   VTD_Sys[5].Weight_Range_2 := 500;
+   VTD_Sys[5].Weight_Range_3 := 750;
+   VTD_Sys[5].G120_Hardware_ID := 2075;
+   VTD_Sys[5].Teach_Values.Levels_LE[1] := 168.0;
+   VTD_Sys[5].Teach_Values.Levels_LE[2] := 2609.0;
+   VTD_Sys[5].Teach_Values.Levels_LE[3] := 4808.0;
+   VTD_Sys[5].Teach_Values.Levels_LE[4] := 7007.0;
+   VTD_Sys[5].Teach_Values.Levels_LE[5] := 9358.0;
+   VTD_Sys[5].Teach_Values.Levels_LE[6] := 11705.0;
+   VTD_Sys[5].Teach_Values.Levels_LE[7] := 14056.0;
+   VTD_Sys[5].Teach_Values.Levels_LE[8] := 16404.0;
+   VTD_Sys[5].Teach_Values.Levels_AE[1] := 0;
+   VTD_Sys[5].Teach_Values.Levels_AE[2] := 0;
+   VTD_Sys[5].Teach_Values.Levels_AE[3] := 0;
+   VTD_Sys[5].Teach_Values.Levels_AE[4] := 0;
+   VTD_Sys[5].Teach_Values.Levels_AE[5] := 0;
+   VTD_Sys[5].Teach_Values.Levels_AE[6] := 0;
+   VTD_Sys[5].Teach_Values.Levels_AE[7] := 0;
+   VTD_Sys[5].Teach_Values.Levels_AE[8] := 0;
+   ECnv_Sys[1].ID := 120101;
+   ECnv_Sys[1].Barcode_ID := 1;
+   ECnv_Sys[1].Cnv_Level := 1;
+   ECnv_Sys[1].TC_Time := 20;
+   ECnv_Sys[1].Transfer_Time := 20;
+   ECnv_Sys[1].Pallet_Align_Time := 20;
+   ECnv_Sys[1].Slow_Speed := 11;
+   ECnv_Sys[1].Full_Speed := 100;
+   ECnv_Sys[1].Manual_Speed := 40;
+   ECnv_Sys[1].Timer_Check_Pallet_Time := 750;
+   ECnv_Sys[1].G120_Hardware_ID := 488;
+   ECnv_Sys[2].ID := 120102;
+   ECnv_Sys[2].Barcode_ID := 2;
+   ECnv_Sys[2].Cnv_Level := 1;
+   ECnv_Sys[2].TC_Time := 20;
+   ECnv_Sys[2].Transfer_Time := 20;
+   ECnv_Sys[2].Pallet_Align_Time := 20;
+   ECnv_Sys[2].Slow_Speed := 11;
+   ECnv_Sys[2].Full_Speed := 100;
+   ECnv_Sys[2].Manual_Speed := 40;
+   ECnv_Sys[2].Timer_Check_Pallet_Time := 750;
+   ECnv_Sys[2].G120_Hardware_ID := 968;
+   ECnv_Sys[3].ID := 120203;
+   ECnv_Sys[3].Barcode_ID := 3;
+   ECnv_Sys[3].Cnv_Level := 2;
+   ECnv_Sys[3].TC_Time := 20;
+   ECnv_Sys[3].Transfer_Time := 20;
+   ECnv_Sys[3].Pallet_Align_Time := 20;
+   ECnv_Sys[3].Slow_Speed := 11;
+   ECnv_Sys[3].Full_Speed := 100;
+   ECnv_Sys[3].Manual_Speed := 40;
+   ECnv_Sys[3].Timer_Check_Pallet_Time := 750;
+   ECnv_Sys[3].G120_Hardware_ID := 1372;
+   ECnv_Sys[4].ID := 120104;
+   ECnv_Sys[4].Barcode_ID := 4;
+   ECnv_Sys[4].Cnv_Level := 1;
+   ECnv_Sys[4].TC_Time := 20;
+   ECnv_Sys[4].Transfer_Time := 20;
+   ECnv_Sys[4].Pallet_Align_Time := 20;
+   ECnv_Sys[4].Slow_Speed := 11;
+   ECnv_Sys[4].Full_Speed := 100;
+   ECnv_Sys[4].Manual_Speed := 40;
+   ECnv_Sys[4].Timer_Check_Pallet_Time := 750;
+   ECnv_Sys[4].G120_Hardware_ID := 1776;
+   ECnv_Sys[5].ID := 120105;
+   ECnv_Sys[5].Barcode_ID := 5;
+   ECnv_Sys[5].Cnv_Level := 1;
+   ECnv_Sys[5].TC_Time := 20;
+   ECnv_Sys[5].Transfer_Time := 20;
+   ECnv_Sys[5].Pallet_Align_Time := 20;
+   ECnv_Sys[5].Slow_Speed := 11;
+   ECnv_Sys[5].Full_Speed := 100;
+   ECnv_Sys[5].Manual_Speed := 40;
+   ECnv_Sys[5].Timer_Check_Pallet_Time := 750;
+   ECnv_Sys[5].G120_Hardware_ID := 2084;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.ID := 100101;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.Barcode_ID := 6;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.Cnv_Level := 1;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.Manual_Speed := 90;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[1].Cnv1.G120_Hardware_ID := 527;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.ID := 110101;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.Barcode_ID := 7;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[1].Cnv2.G120_Hardware_ID := 629;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.ID := 100201;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.Barcode_ID := 14;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.Cnv_Level := 2;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[2].Cnv1.G120_Hardware_ID := 551;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.ID := 110201;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.Barcode_ID := 15;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.Cnv_Level := 2;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[2].Cnv2.G120_Hardware_ID := 641;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.ID := 100301;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.Barcode_ID := 22;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.Cnv_Level := 3;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[3].Cnv1.G120_Hardware_ID := 569;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.ID := 110301;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.Barcode_ID := 23;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.Cnv_Level := 3;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[3].Cnv2.G120_Hardware_ID := 653;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.ID := 100401;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.Barcode_ID := 30;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.Cnv_Level := 4;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[4].Cnv1.G120_Hardware_ID := 581;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.ID := 110401;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.Barcode_ID := 31;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.Cnv_Level := 4;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[4].Cnv2.G120_Hardware_ID := 665;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.ID := 100501;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.Barcode_ID := 38;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.Cnv_Level := 5;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[5].Cnv1.G120_Hardware_ID := 593;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.ID := 110501;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.Barcode_ID := 39;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.Cnv_Level := 5;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[5].Cnv2.G120_Hardware_ID := 678;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.ID := 100601;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.Barcode_ID := 46;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.Cnv_Level := 6;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[6].Cnv1.G120_Hardware_ID := 605;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.ID := 110601;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.Barcode_ID := 47;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.Cnv_Level := 6;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[6].Cnv2.G120_Hardware_ID := 690;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.ID := 100701;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.Barcode_ID := 54;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.Cnv_Level := 7;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[7].Cnv1.G120_Hardware_ID := 726;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.ID := 110701;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.Barcode_ID := 55;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.Cnv_Level := 7;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[7].Cnv2.G120_Hardware_ID := 702;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.ID := 100801;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.Barcode_ID := 62;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.Cnv_Level := 8;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[8].Cnv1.G120_Hardware_ID := 617;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.ID := 110801;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.Barcode_ID := 63;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.Cnv_Level := 8;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.TC_Time := 20;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.Full_Speed := 86;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[1].Cnv_Level[8].Cnv2.G120_Hardware_ID := 714;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.ID := 100102;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.Barcode_ID := 8;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.Cnv_Level := 1;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[1].Cnv1.G120_Hardware_ID := 980;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.ID := 110102;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.Barcode_ID := 9;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[1].Cnv2.G120_Hardware_ID := 1080;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.ID := 100202;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.Barcode_ID := 16;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.Cnv_Level := 2;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[2].Cnv1.G120_Hardware_ID := 996;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.ID := 110202;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.Barcode_ID := 17;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.Cnv_Level := 2;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[2].Cnv2.G120_Hardware_ID := 1092;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.ID := 100302;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.Barcode_ID := 24;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.Cnv_Level := 3;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[3].Cnv1.G120_Hardware_ID := 1008;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.ID := 110302;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.Barcode_ID := 25;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.Cnv_Level := 3;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[3].Cnv2.G120_Hardware_ID := 1104;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.ID := 100402;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.Barcode_ID := 32;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.Cnv_Level := 4;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[4].Cnv1.G120_Hardware_ID := 1020;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.ID := 110402;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.Barcode_ID := 33;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.Cnv_Level := 4;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[4].Cnv2.G120_Hardware_ID := 1116;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.ID := 100502;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.Barcode_ID := 40;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.Cnv_Level := 5;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[5].Cnv1.G120_Hardware_ID := 1056;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.ID := 110502;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.Barcode_ID := 41;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.Cnv_Level := 5;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[5].Cnv2.G120_Hardware_ID := 1128;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.ID := 100602;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.Barcode_ID := 48;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.Cnv_Level := 6;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[6].Cnv1.G120_Hardware_ID := 1032;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.ID := 110602;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.Barcode_ID := 49;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.Cnv_Level := 6;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[6].Cnv2.G120_Hardware_ID := 1140;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.ID := 100702;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.Barcode_ID := 56;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.Cnv_Level := 7;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[7].Cnv1.G120_Hardware_ID := 1044;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.ID := 110702;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.Barcode_ID := 57;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.Cnv_Level := 7;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[7].Cnv2.G120_Hardware_ID := 1152;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.ID := 100802;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.Barcode_ID := 64;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.Cnv_Level := 8;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[8].Cnv1.G120_Hardware_ID := 1068;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.ID := 110802;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.Barcode_ID := 65;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.Cnv_Level := 8;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.TC_Time := 20;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.Full_Speed := 86;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[2].Cnv_Level[8].Cnv2.G120_Hardware_ID := 1164;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.ID := 100103;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.Barcode_ID := 10;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.Cnv_Level := 1;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[1].Cnv1.G120_Hardware_ID := 1384;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.ID := 110103;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.Barcode_ID := 11;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[1].Cnv2.G120_Hardware_ID := 1484;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.ID := 100203;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.Barcode_ID := 18;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.Cnv_Level := 2;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[2].Cnv1.G120_Hardware_ID := 1400;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.ID := 110203;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.Barcode_ID := 19;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.Cnv_Level := 2;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[2].Cnv2.G120_Hardware_ID := 1496;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.ID := 100303;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.Barcode_ID := 26;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.Cnv_Level := 3;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[3].Cnv1.G120_Hardware_ID := 1412;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.ID := 110303;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.Barcode_ID := 27;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.Cnv_Level := 3;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[3].Cnv2.G120_Hardware_ID := 1508;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.ID := 100403;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.Barcode_ID := 34;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.Cnv_Level := 4;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[4].Cnv1.G120_Hardware_ID := 1424;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.ID := 110403;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.Barcode_ID := 35;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.Cnv_Level := 4;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[4].Cnv2.G120_Hardware_ID := 1520;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.ID := 100503;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.Barcode_ID := 42;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.Cnv_Level := 5;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[5].Cnv1.G120_Hardware_ID := 1436;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.ID := 110503;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.Barcode_ID := 43;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.Cnv_Level := 5;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[5].Cnv2.G120_Hardware_ID := 1532;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.ID := 100603;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.Barcode_ID := 50;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.Cnv_Level := 6;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[6].Cnv1.G120_Hardware_ID := 1448;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.ID := 110603;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.Barcode_ID := 51;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.Cnv_Level := 6;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[6].Cnv2.G120_Hardware_ID := 1544;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.ID := 100703;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.Barcode_ID := 58;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.Cnv_Level := 7;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[7].Cnv1.G120_Hardware_ID := 1460;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.ID := 110703;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.Barcode_ID := 59;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.Cnv_Level := 7;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[7].Cnv2.G120_Hardware_ID := 1556;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.ID := 100803;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.Barcode_ID := 66;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.Cnv_Level := 8;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[8].Cnv1.G120_Hardware_ID := 1472;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.ID := 110803;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.Barcode_ID := 67;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.Cnv_Level := 8;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.TC_Time := 20;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.Slow_Speed := 11;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.Full_Speed := 86;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[3].Cnv_Level[8].Cnv2.G120_Hardware_ID := 1568;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.ID := 100104;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.Barcode_ID := 12;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.Cnv_Level := 1;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[4].Cnv_Level[1].Cnv1.G120_Hardware_ID := 1788;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.ID := 110104;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[1].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.ID := 100204;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.Barcode_ID := 20;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.Cnv_Level := 2;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[4].Cnv_Level[2].Cnv1.G120_Hardware_ID := 1804;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.ID := 110204;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Transfer_Time := 20;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[2].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.ID := 100304;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.Barcode_ID := 28;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.Cnv_Level := 3;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.Transfer_Time := 20;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[4].Cnv_Level[3].Cnv1.G120_Hardware_ID := 1816;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.ID := 110304;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[3].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.ID := 100404;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.Barcode_ID := 36;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.Cnv_Level := 4;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[4].Cnv_Level[4].Cnv1.G120_Hardware_ID := 1828;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.ID := 110404;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[4].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.ID := 100504;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.Barcode_ID := 44;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.Cnv_Level := 5;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[4].Cnv_Level[5].Cnv1.G120_Hardware_ID := 1840;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.ID := 110504;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[4].Cnv_Level[5].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.ID := 100604;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.Barcode_ID := 52;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.Cnv_Level := 6;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[4].Cnv_Level[6].Cnv1.G120_Hardware_ID := 1852;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.ID := 110604;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[4].Cnv_Level[6].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.ID := 100704;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.Barcode_ID := 60;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.Cnv_Level := 7;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[4].Cnv_Level[7].Cnv1.G120_Hardware_ID := 1864;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.ID := 110704;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[4].Cnv_Level[7].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.ID := 100804;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.Barcode_ID := 68;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.Cnv_Level := 8;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[4].Cnv_Level[8].Cnv1.G120_Hardware_ID := 1876;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.ID := 110804;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.TC_Time := 20;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Full_Speed := 86;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[4].Cnv_Level[8].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.ID := 100105;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.Barcode_ID := 13;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.Cnv_Level := 1;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[5].Cnv_Level[1].Cnv1.G120_Hardware_ID := 2096;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.ID := 110105;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[5].Cnv_Level[1].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.ID := 100205;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.Barcode_ID := 21;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.Cnv_Level := 2;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[5].Cnv_Level[2].Cnv1.G120_Hardware_ID := 2112;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.ID := 110205;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[5].Cnv_Level[2].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.ID := 100305;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.Barcode_ID := 29;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.Cnv_Level := 3;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[5].Cnv_Level[3].Cnv1.G120_Hardware_ID := 2124;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.ID := 110305;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[5].Cnv_Level[3].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.ID := 100405;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.Barcode_ID := 37;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.Cnv_Level := 4;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[5].Cnv_Level[4].Cnv1.G120_Hardware_ID := 2136;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.ID := 110405;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[5].Cnv_Level[4].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.ID := 100505;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.Barcode_ID := 45;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.Cnv_Level := 5;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[5].Cnv_Level[5].Cnv1.G120_Hardware_ID := 2148;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.ID := 110505;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[5].Cnv_Level[5].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.ID := 100605;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.Barcode_ID := 53;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.Cnv_Level := 6;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[5].Cnv_Level[6].Cnv1.G120_Hardware_ID := 2160;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.ID := 110605;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[5].Cnv_Level[6].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.ID := 100705;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.Barcode_ID := 61;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.Cnv_Level := 7;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[5].Cnv_Level[7].Cnv1.G120_Hardware_ID := 2172;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.ID := 110705;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[5].Cnv_Level[7].Cnv2.G120_Hardware_ID := 0;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.ID := 100805;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.Barcode_ID := 69;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.Cnv_Level := 8;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.Slow_Speed := 11;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.Safety_stop_Timeout := 3000;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.Timer_Check_Pallet_Time := 500;
+   LCnv_Sys[5].Cnv_Level[8].Cnv1.G120_Hardware_ID := 2184;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.ID := 110805;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Barcode_ID := 0;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Cnv_Level := 1;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.TC_Time := 20;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Transfer_Time := 15;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Pallet_Align_Time := 20;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Slow_Speed := 10;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Full_Speed := 86;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Manual_Speed := 40;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.Safety_stop_Timeout := 20;
+   LCnv_Sys[5].Cnv_Level[8].Cnv2.G120_Hardware_ID := 0;
+   Shuttle_MQTT.MQTT_Con_Params.hwId := 0;
+   Shuttle_MQTT.MQTT_Con_Params.connId := 16#0001;
+   Shuttle_MQTT.MQTT_Con_Params.broker := '10.44.116.8';
+   Shuttle_MQTT.MQTT_Con_Params.port := 1883;
+   Shuttle_MQTT.MQTT_Con_Params.tls.enableTls := FALSE;
+   Shuttle_MQTT.MQTT_Con_Params.tls.validateServerIdentity := FALSE;
+   Shuttle_MQTT.MQTT_Con_Params.tls.brokerCert := 0;
+   Shuttle_MQTT.MQTT_Con_Params.tls.clientCert := 0;
+   Shuttle_MQTT.MQTT_Con_Params.keepAlive := 60;
+   Shuttle_MQTT.Client_ID := WSTRING#'PLC_1';
+   Shuttle_MQTT.Username := WSTRING#'';
+   Shuttle_MQTT.Password := WSTRING#'';
+   Shuttle_MQTT.Timeout := 0;
+   Shuttle_MQTT.QoS := 0;
+   Shuttle_MQTT."Retain" := TRUE;
+   Shuttle_MQTT.Will_Topic := WSTRING#'';
+   Shuttle_MQTT.Will_Msg_Length := 0;
+   Shuttle_MQTT.Will_Msg_Payload[1] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[2] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[3] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[4] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[5] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[6] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[7] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[8] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[9] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[10] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[11] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[12] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[13] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[14] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[15] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[16] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[17] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[18] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[19] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[20] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[21] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[22] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[23] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[24] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[25] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[26] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[27] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[28] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[29] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[30] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[31] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[32] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[33] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[34] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[35] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[36] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[37] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[38] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[39] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[40] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[41] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[42] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[43] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[44] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[45] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[46] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[47] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[48] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[49] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[50] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[51] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[52] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[53] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[54] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[55] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[56] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[57] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[58] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[59] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[60] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[61] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[62] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[63] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[64] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[65] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[66] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[67] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[68] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[69] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[70] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[71] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[72] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[73] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[74] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[75] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[76] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[77] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[78] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[79] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[80] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[81] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[82] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[83] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[84] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[85] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[86] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[87] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[88] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[89] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[90] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[91] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[92] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[93] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[94] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[95] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[96] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[97] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[98] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[99] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[100] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[101] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[102] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[103] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[104] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[105] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[106] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[107] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[108] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[109] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[110] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[111] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[112] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[113] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[114] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[115] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[116] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[117] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[118] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[119] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[120] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[121] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[122] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[123] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[124] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[125] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[126] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[127] := 16#00;
+   Shuttle_MQTT.Will_Msg_Payload[128] := 16#00;
+   System.VTD_Count := 5;
+   System.Level_Count := 8;
+   System.Cnv_Count := 95;
+   System.Shuttle_Count := 23;
+   System.Shuttle_Interlock_Timeout := 999;
+   Chain_Slack_Time := t#200ms;
+
+END_DATA_BLOCK
+
+FUNCTION "Conveyors_Transfer" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+      i_Lev : UInt;
+      i_Sys : UInt;
+      Concat1 : String;
+      Concat2 : String;
+      ID : DInt;
+      StrLev : String;
+      StrSys : String;
+      Level : UInt;
+   END_VAR
+
+
+BEGIN
+	FOR #i_Sys := 1 TO 5 DO
+	    #StrSys := UINT_TO_STRING(#i_Sys);
+	    // Remove "+"
+	    IF #StrSys[1] = '+' THEN
+	        #StrSys := RIGHT(IN := #StrSys, L := LEN(#StrSys) - 1);
+	    END_IF;
+	    
+	    REGION ID OF THE VTD CONVEYOR
+	        FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+	            IF (#i_Sys >= 1) AND (#i_Sys <= 5) THEN
+	                IF "Control_DB".VTD_Sys[#i_Sys].Current_Level = #i_Lev THEN
+	                    #StrLev := UINT_TO_STRING(#i_Lev);
+	                    
+	                    // Remove "+"
+	                    IF #StrLev[1] = '+' THEN
+	                        #StrLev := RIGHT(IN := #StrLev, L := LEN(#StrLev) - 1);
+	                    END_IF;
+	                    
+	                    //Build ID
+	                    #Concat1 := CONCAT(IN1 := '120', IN2 := #StrLev);
+	                    #Concat2 := CONCAT(IN1 := #Concat1, IN2 := '0');
+	                    #ID := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat2, IN2 := #StrSys));
+	                    
+	                    "Settings_DB".ECnv_Sys[#i_Sys].ID := #ID;
+	                    "Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level := #i_Lev;
+	                END_IF;
+	            END_IF;
+	        END_FOR;
+	    END_REGION
+	        
+	        REGION READY TO RECEIVE
+	            //EXTRACTOR CONVEYOR
+	            FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+	                IF "Control_DB".VTD_Sys[#i_Sys].Current_Level = #i_Lev THEN
+	                    #StrLev := UINT_TO_STRING(#i_Lev);
+	                    
+	                    // Remove "+"
+	                    IF #StrLev[1] = '+' THEN
+	                        #StrLev := RIGHT(IN := #StrLev, L := LEN(#StrLev) - 1);
+	                    END_IF;
+	                    
+	                    //Build ID
+	                    #Concat1 := CONCAT(IN1 := '120', IN2 := #StrLev);
+	                    #Concat2 := CONCAT(IN1 := #Concat1, IN2 := '0');
+	                    #ID := STRING_TO_DINT(IN := CONCAT(IN1 := #Concat2, IN2 := #StrSys));
+	                END_IF;
+	                
+	                IF "Settings_DB".ECnv_Sys[#i_Sys].ID = #ID AND NOT "Control_DB".ECnv_Sys[#i_Sys].Error AND NOT "Control_DB".ECnv_Sys[#i_Sys].Running
+	                    AND NOT "Control_DB".ECnv_Sys[#i_Sys].Cnv_Occupied AND NOT "Control_DB".ECnv_Sys[#i_Sys].Instruction.Outbound_Ready AND
+	                    ("Control_DB".ECnv_Sys[#i_Sys].Mode = 2 OR "Control_DB".ECnv_Sys[#i_Sys].Mode = 3) THEN
+	                    "Control_DB".ECnv_Sys[#i_Sys].Instruction.Inbound_Ready := TRUE;
+	                ELSIF "Control_DB".ECnv_Sys[#i_Sys].Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+	                    "Control_DB".ECnv_Sys[#i_Sys].Instruction.Inbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+	                END_IF;
+	            END_FOR;
+	            
+	            //BUFFER CONVEYORS
+	            FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+	                //CNV 1
+	                IF NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Error AND
+	                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Running AND
+	                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Occupied AND
+	                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Outbound_Ready AND
+	                    ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Mode = 2 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Mode = 3) AND
+	                    (NOT "Control_DB".ECnv_Sys[#i_Sys].Running OR "Settings_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Level <> 1)
+	                THEN
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Inbound_Ready := TRUE;
+	                ELSIF "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Inbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+	                END_IF;
+	                
+	                //CNV 2
+	                IF NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Error AND
+	                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Running AND
+	                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Occupied AND
+	                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Outbound_Ready AND
+	                    ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Mode = 2 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Mode = 3) THEN
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Inbound_Ready := TRUE;
+	                ELSIF "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Inbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+	                END_IF;
+	            END_FOR;
+	        END_REGION
+	        
+	        REGION READY TO SEND
+	            //EXTRACTOR CONVEYOR
+	            #Level := "Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level;
+	            
+	            IF "Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level >= "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level AND
+	                "Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level <= "Settings_DB".VTD_Sys[#i_Sys].Highest_Level AND //Leveled
+	                "Control_DB".ECnv_Sys[#i_Sys].Cnv_Occupied AND //Econveyor occupied
+	                NOT "Control_DB".ECnv_Sys[#i_Sys].Error AND //not error
+	                NOT "Control_DB".ECnv_Sys[#i_Sys].Running AND //not error
+	                ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv1.Instruction.Inbound_Ready OR
+	                "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv2.Instruction.Inbound_Ready) AND //conveyor not occupied
+	                ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv1.Mode = 2 OR
+	                "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv1.Mode = 3 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv2.Mode = 2 OR
+	                "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#Level].Cnv2.Mode = 3) AND //cnv1 or cnv 2 semi or auto mode
+	                ("Control_DB".ECnv_Sys[#i_Sys].Mode = 2 OR "Control_DB".ECnv_Sys[#i_Sys].Mode = 3) THEN //Econveyor semi or auto mode 
+	                "Control_DB".ECnv_Sys[#i_Sys].Instruction.Outbound_Ready := TRUE;
+	            ELSIF  NOT "Control_DB".ECnv_Sys[#i_Sys].Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+	                "Control_DB".ECnv_Sys[#i_Sys].Instruction.Outbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+	            END_IF;
+	            
+	            
+	            //BUFFER CONVEYORS
+	            FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+	                //CNV 1
+	                IF "Control_DB".ECnv_Sys[#i_Sys].Instruction.Inbound_Ready AND
+	                    "Control_DB".VTD_Sys[#i_Sys].Current_Level = #i_Lev AND
+	                    (NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Transfer_in_Progress OR "Control_DB".VTD_Sys[#i_Sys].Current_Level = 1) AND
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Occupied AND
+	                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Error AND NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Running AND
+	                    ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Mode = 2 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Mode = 3) THEN
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Outbound_Ready := TRUE;
+	                ELSIF  NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Outbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+	                END_IF;
+	                
+	                //CNV 2
+	                IF ("Control_DB".ECnv_Sys[#i_Sys].Instruction.Inbound_Ready OR "Settings_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Level = 1) AND
+	                    ("Control_DB".VTD_Sys[#i_Sys].Current_Level = #i_Lev OR "Settings_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Level = 1) AND
+	                    (NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Transfer_in_Progress OR "Settings_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Level = 1) AND
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Occupied AND
+	                    NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Error AND NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Running AND
+	                    ("Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Mode = 2 OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Mode = 3) THEN
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Outbound_Ready := TRUE;
+	                ELSIF  NOT "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Cnv_Occupied THEN  // // // // // // // // // // // // //last change
+	                    "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Outbound_Ready := FALSE;  // // // // // // // // // // // // //last change
+	                END_IF;
+	            END_FOR;
+	        END_REGION
+	        
+	        REGION TRANSFER IN PROGRESS FOR EXTRACTOR CONVEYOR
+	            FOR #i_Lev := "Settings_DB".VTD_Sys[#i_Sys].Lowest_Level TO "Settings_DB".VTD_Sys[#i_Sys].Highest_Level DO
+	                "Control_DB".ECnv_Sys[#i_Sys].Instruction.Transfer_in_Progress :=
+	                ("Settings_DB".ECnv_Sys[#i_Sys].Cnv_Level = #i_Lev AND
+	                "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv1.Instruction.Transfer_in_Progress OR "Control_DB".LCnv_Sys[#i_Sys].Cnv_Level[#i_Lev].Cnv2.Instruction.Transfer_in_Progress);
+	            END_FOR;
+	        END_REGION
+	    END_FOR;
+	    
+	    IF "FirstScan" THEN
+	        "Time_1_Start_Buffers" := T#500MS;
+	        "Time_1_end_Buffers" := T#1S;
+	        "Time_2_Start_Buffers" := T#1S;
+	        "Time_2_End_Buffers" := T#1S_500MS;
+	        "Time_3_Buffers" := T#1S_500MS;
+	        
+	        "Time_1_Start_Ecnv" := T#1S_700MS;
+	        "Time_1_end_Ecnv" := T#2S_100MS;
+	        "Time_2_Start_Ecnv" := T#2S_100MS;
+	        "Time_2_End_Ecnv" := T#2S_600MS;
+	        "Time_3_Ecnv" := T#2S_600MS;
+	    END_IF;
+	    
+	    
+END_FUNCTION
+

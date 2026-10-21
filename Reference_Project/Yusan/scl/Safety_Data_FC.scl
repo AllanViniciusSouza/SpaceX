@@ -1,0 +1,101 @@
+FUNCTION "Safety_Data_FC"   // FC 50, author 
+
+VAR_INPUT
+   C1101_EStop : Bool;
+   C1102_EStop : Bool;
+   C1103_EStop : Bool;
+   C1101_LG1 : Bool;
+   C1101_LG2 : Bool;
+   C1102_LG1 : Bool;
+   C1102_LG2 : Bool;
+   C1103_LG1 : Bool;
+   C1103_LG2 : Bool;
+END_VAR
+
+VAR_OUTPUT
+   o_LGX_Zone01_EStop : Bool;
+   o_LGX_Zone02_EStop : Bool;
+   o_LGX_Zone03_EStop : Bool;
+   o_LGX_Zone04_EStop : Bool;
+   o_LGX_Zone05_EStop : Bool;
+   o_LGX_Zone06_EStop : Bool;
+   o_LGX_Zone07_EStop : Bool;
+   o_LGX_Zone08_EStop : Bool;
+   o_LGX_Zone09_EStop : Bool;
+   o_LGX_Zone10_EStop : Bool;
+   o_LGX_Infeed_I1103_CS : Bool;
+   o_LGX_Infeed_I1105_CS : Bool;
+   o_LGX_Infeed_I1107_CS : Bool;
+   o_LGX_Outfeed_I1401_CS : Bool;
+   o_LGX_Outfeed_I1403_CS : Bool;
+   o_LGX_Outfeed_I1407_CS : Bool;
+   o_Any_LGX_EStop_Active : Bool;
+   o_Any_LGX_Conv_CS_Active : Bool;
+END_VAR
+
+   // RETURN : Void
+BEGIN
+// // ============================================================
+// // FC_Safety_PreProcess (FC1000 on the Spacemaker side)
+// // Safety data pre-processing before OPC-UA transmission
+// // Execute in the F-Runtime Group (Main_Safety_RTG1)
+// // Ref: Section 6 of the document
+// // ============================================================
+
+// // NOTE: This FC runs in the F-Runtime safety group (Safety Program).
+// // Inputs are the actual safety signals from the SM system.
+// // Outputs populate the safety DB that will be published by the OPC-UA Server.
+
+// // --- Map E-Stops to SM → LGX safety DB ---
+// "DB_Safety_SM_To_LGX".VTD_I1310_EStop_Active := #C1101_EStop;
+// "DB_Safety_SM_To_LGX".VTD_I1320_EStop_Active := #C1102_EStop;
+// "DB_Safety_SM_To_LGX".VTD_I1330_EStop_Active := #C1103_EStop;
+
+// // --- Map Light Guards ---
+// "DB_Safety_SM_To_LGX".VTD_I1310_LG1_Active := #C1101_LG1;
+// "DB_Safety_SM_To_LGX".VTD_I1310_LG2_Active := #C1101_LG2;
+// "DB_Safety_SM_To_LGX".VTD_I1320_LG1_Active := #C1102_LG1;
+// "DB_Safety_SM_To_LGX".VTD_I1320_LG2_Active := #C1102_LG2;
+// "DB_Safety_SM_To_LGX".VTD_I1330_LG1_Active := #C1103_LG1;
+// "DB_Safety_SM_To_LGX".VTD_I1330_LG2_Active := #C1103_LG2;
+
+
+// // ============================================================
+// // FC_Safety_PostProcess (FC1001 on the Spacemaker side)
+// // Post-processing of safety data received from LGX
+// // Execute in the F-Runtime Group (Main_Safety_RTG1)
+// // Ref: Section 6 of the document
+// // ============================================================
+
+// // --- Map received data from LGX DB → SM Safety ---
+// #o_LGX_Zone01_EStop := "DB_Safety_LGX_To_SM".Zone_01_EStop_Active;
+// #o_LGX_Zone02_EStop := "DB_Safety_LGX_To_SM".Zone_02_EStop_Active;
+// #o_LGX_Zone03_EStop := "DB_Safety_LGX_To_SM".Zone_03_EStop_Active;
+// #o_LGX_Zone04_EStop := "DB_Safety_LGX_To_SM".Zone_04_EStop_Active;
+// #o_LGX_Zone05_EStop := "DB_Safety_LGX_To_SM".Zone_05_EStop_Active;
+// #o_LGX_Zone06_EStop := "DB_Safety_LGX_To_SM".Zone_06_EStop_Active;
+// #o_LGX_Zone07_EStop := "DB_Safety_LGX_To_SM".Zone_07_EStop_Active;
+// #o_LGX_Zone08_EStop := "DB_Safety_LGX_To_SM".Zone_08_EStop_Active;
+// #o_LGX_Zone09_EStop := "DB_Safety_LGX_To_SM".Zone_09_EStop_Active;
+// #o_LGX_Zone10_EStop := "DB_Safety_LGX_To_SM".Zone_10_EStop_Active;
+
+// #o_LGX_Infeed_I1103_CS := "DB_Safety_LGX_To_SM".Infeed_I1103_CS;
+// #o_LGX_Infeed_I1105_CS := "DB_Safety_LGX_To_SM".Infeed_I1105_CS;
+// #o_LGX_Infeed_I1107_CS := "DB_Safety_LGX_To_SM".Infeed_I1107_CS;
+
+// #o_LGX_Outfeed_I1401_CS := "DB_Safety_LGX_To_SM".Outfeed_I1401_CS;
+// #o_LGX_Outfeed_I1403_CS := "DB_Safety_LGX_To_SM".Outfeed_I1403_CS;
+// #o_LGX_Outfeed_I1407_CS := "DB_Safety_LGX_To_SM".Outfeed_I1407_CS;
+
+// // --- Consolidated flags for use in SM safety logic ---
+// #o_Any_LGX_EStop_Active :=
+// #o_LGX_Zone01_EStop OR #o_LGX_Zone02_EStop OR #o_LGX_Zone03_EStop OR
+// #o_LGX_Zone04_EStop OR #o_LGX_Zone05_EStop OR #o_LGX_Zone06_EStop OR
+// #o_LGX_Zone07_EStop OR #o_LGX_Zone08_EStop OR #o_LGX_Zone09_EStop OR
+// #o_LGX_Zone10_EStop;
+
+// #o_Any_LGX_Conv_CS_Active :=
+// #o_LGX_Infeed_I1103_CS OR #o_LGX_Infeed_I1105_CS OR #o_LGX_Infeed_I1107_CS OR
+// #o_LGX_Outfeed_I1401_CS OR #o_LGX_Outfeed_I1403_CS OR #o_LGX_Outfeed_I1407_CS;
+
+END_FUNCTION
