@@ -108,30 +108,30 @@ FUNCTION_BLOCK GateAccess_Station_FB
 // 	GateFault := GateAccessControl.GateFault;
 // 
 // 	IF ModeManager.CurrentState = RESETTING AND Sys_No <> 0 THEN
-// 	    FOR i := Settings_DB.VTD_Sys[Sys_No].Lowest_Level TO Settings_DB.VTD_Sys[Sys_No].Highest_Level DO
-// 	        Control.VTD_Sys[Sys_No].Instruction.Reset :=
+// 	    FOR i := Settings_DB.VTD[Sys_No].Lowest_Level TO Settings_DB.VTD[Sys_No].Highest_Level DO
+// 	        Control.VTD[Sys_No].Instruction.Reset :=
 // 	        Control.ECnv_Sys[Sys_No].Instruction.Reset :=
 // 	        Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv1.Instruction.Reset :=
 // 	        Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv2.Instruction.Reset := TRUE;
 // 	    END_FOR;
 // 
 // 	    IF AllDrivesHealthy THEN
-// 	        FOR i := Settings_DB.VTD_Sys[Sys_No].Lowest_Level TO Settings_DB.VTD_Sys[Sys_No].Highest_Level DO
-// 	            Control.VTD_Sys[Sys_No].Instruction.Reset :=
+// 	        FOR i := Settings_DB.VTD[Sys_No].Lowest_Level TO Settings_DB.VTD[Sys_No].Highest_Level DO
+// 	            Control.VTD[Sys_No].Instruction.Reset :=
 // 	            Control.ECnv_Sys[Sys_No].Instruction.Reset :=
 // 	            Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv1.Instruction.Reset :=
 // 	            Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv2.Instruction.Reset := FALSE;
 // 	        END_FOR;
 // 
-// 	        FOR i := Settings_DB.VTD_Sys[Sys_No].Lowest_Level TO Settings_DB.VTD_Sys[Sys_No].Highest_Level DO
-// 	            Control.VTD_Sys[Sys_No].Instruction.Mode_Change :=
+// 	        FOR i := Settings_DB.VTD[Sys_No].Lowest_Level TO Settings_DB.VTD[Sys_No].Highest_Level DO
+// 	            Control.VTD[Sys_No].Instruction.Mode_Change :=
 // 	            Control.ECnv_Sys[Sys_No].Instruction.Mode_Change :=
 // 	            Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv1.Instruction.Mode_Change :=
 // 	            Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv2.Instruction.Mode_Change :=
 // 	            Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Mode :=
 // 	            Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Mode := 3;
 // 
-// 	            Control.VTD_Sys[Sys_No].Instruction.Enable :=
+// 	            Control.VTD[Sys_No].Instruction.Enable :=
 // 	            Control.ECnv_Sys[Sys_No].Instruction.Enable :=
 // 	            Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv1.Instruction.Enable :=
 // 	            Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv2.Instruction.Enable := TRUE;
@@ -141,8 +141,8 @@ FUNCTION_BLOCK GateAccess_Station_FB
 // 
 // 
 // 	IF ModeManager.CurrentState = ACCESS_MANUAL_MODE AND Sys_No <> 0 THEN
-// 	    FOR i := Settings_DB.VTD_Sys[Sys_No].Lowest_Level TO Settings_DB.VTD_Sys[Sys_No].Highest_Level DO
-// 	        Control.VTD_Sys[Sys_No].Instruction.Mode_Change :=
+// 	    FOR i := Settings_DB.VTD[Sys_No].Lowest_Level TO Settings_DB.VTD[Sys_No].Highest_Level DO
+// 	        Control.VTD[Sys_No].Instruction.Mode_Change :=
 // 	        Control.ECnv_Sys[Sys_No].Instruction.Mode_Change :=
 // 	        Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv1.Instruction.Mode_Change :=
 // 	        Control.LCnv_Sys[Sys_No].Cnv_Level[i].Cnv2.Instruction.Mode_Change :=

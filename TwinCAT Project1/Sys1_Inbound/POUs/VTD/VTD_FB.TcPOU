@@ -1265,7 +1265,7 @@ END_VAR]]></Declaration>
     //Acceleration: same load/weight ranges as before, as a factor in %
     diPalletWeight := 0;
     IF System_no >= 1 AND System_no <= 2 THEN // Control.VTD_Order_Table is ARRAY[1..2]
-        diPalletWeight := INT_TO_DINT(Control.VTD_Order_Table[System_no].Pallet_Weight);
+        diPalletWeight := INT_TO_DINT(Control.VTD_Order_Table.Pallet_Weight);
     END_IF
 
     IF VTD_Control.Pallet_Loaded = 0 AND VTD_Control.Shuttle_Loaded = 0 THEN

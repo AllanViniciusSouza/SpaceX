@@ -20,6 +20,12 @@
     <Released>false</Released>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DUTs\Profiling_Station_DUT.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Shuttle_Position_UDT.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="GVLs\HMI\CNV_HMI_IO.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
@@ -28,7 +34,14 @@
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
+    <Compile Include="GVLs\System.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
     <Compile Include="POUs\Outputs.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Profile_Station_FC.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\System\Tests\FC_TestTIAParsing.TcPOU">
@@ -54,6 +67,10 @@
       <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
     </Compile>
     <Compile Include="VISUs\CNV_Settings.TcVIS">
+      <SubType>Code</SubType>
+      <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
+    </Compile>
+    <Compile Include="VISUs\Dialog.TcVIS">
       <SubType>Code</SubType>
       <DependentUpon>Visualization Manager.TcVMO</DependentUpon>
     </Compile>
@@ -638,6 +655,10 @@
     <PlaceholderReference Include="VisuDialogs">
       <DefaultResolution>VisuDialogs, * (System)</DefaultResolution>
       <Namespace>VisuDialogs</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="VisuSymbols">
+      <DefaultResolution>VisuSymbols, 4.5.0.0 (System)</DefaultResolution>
+      <Namespace>VisuSymbols</Namespace>
     </PlaceholderReference>
   </ItemGroup>
   <ItemGroup>

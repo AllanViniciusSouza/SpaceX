@@ -25,16 +25,16 @@ FUNCTION_BLOCK Conveyor_HMI_FB
 // // See docs/TIA_Missing_Blocks.md before importing as PLC code.
 // CNV_Selector();
 // 
-// 	    IF CNV_System_Selected = 1 AND NOT Control.VTD_Sys[1].Running AND Control.VTD_Sys[1].Current_Level <> 0 THEN
+// 	    IF CNV_System_Selected = 1 AND NOT Control.VTD.Running AND Control.VTD.Current_Level <> 0 THEN
 // 	        IF CNV2_Selected = 1 AND HMI_DB.ScreenNo_Main = 2 THEN
 // 
-// 	            IF Control.ECnv_Sys[1].Cnv_Occupied AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[1].Running AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv1.Running AND
-// 	                Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv1.Pallet_Type <> 1 AND Control.ECnv_Sys[1].Pallet_Type <> 5 THEN
+// 	            IF Control.ECnv_Sys[1].Cnv_Occupied AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[1].Running AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv1.Running AND
+// 	                Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv1.Pallet_Type <> 1 AND Control.ECnv_Sys[1].Pallet_Type <> 5 THEN
 // 	                CNV_HMI.In_Out[1] := TRUE;
 // 	                CNV_In_Out := TRUE;
-// 	            ELSIF NOT Control.ECnv_Sys[1].Cnv_Occupied AND Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[1].Running AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv1.Running THEN
+// 	            ELSIF NOT Control.ECnv_Sys[1].Cnv_Occupied AND Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[1].Running AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv1.Running THEN
 // 	                CNV_HMI.In_Out[1] := FALSE;
 // 	                CNV_In_Out := FALSE;
 // 	            ELSE
@@ -42,13 +42,13 @@ FUNCTION_BLOCK Conveyor_HMI_FB
 // 	            END_IF;
 // 
 // 	        ELSIF CNV2_Selected = 2 AND HMI_DB.ScreenNo_Main = 2 THEN
-// 	            IF Control.ECnv_Sys[1].Cnv_Occupied AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv2.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[1].Running AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv2.Running AND
-// 	                Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv2.Pallet_Type <> 1 AND Control.ECnv_Sys[1].Pallet_Type <> 5 THEN
+// 	            IF Control.ECnv_Sys[1].Cnv_Occupied AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv2.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[1].Running AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv2.Running AND
+// 	                Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv2.Pallet_Type <> 1 AND Control.ECnv_Sys[1].Pallet_Type <> 5 THEN
 // 	                CNV_HMI.In_Out[1] := TRUE;
 // 	                CNV_In_Out := TRUE;
-// 	            ELSIF NOT Control.ECnv_Sys[1].Cnv_Occupied AND Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv2.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[1].Running AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD_Sys[1].Current_Level].Cnv2.Running THEN
+// 	            ELSIF NOT Control.ECnv_Sys[1].Cnv_Occupied AND Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv2.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[1].Running AND NOT Control.LCnv_Sys[1].Cnv_Level[Control.VTD.Current_Level].Cnv2.Running THEN
 // 	                CNV_HMI.In_Out[1] := FALSE;
 // 	                CNV_In_Out := FALSE;
 // 	            ELSE
@@ -57,16 +57,16 @@ FUNCTION_BLOCK Conveyor_HMI_FB
 // 	        END_IF;
 // 	    END_IF;
 // 
-// 	    IF CNV_System_Selected = 2 AND NOT Control.VTD_Sys[2].Running AND Control.VTD_Sys[2].Current_Level <> 0 THEN
+// 	    IF CNV_System_Selected = 2 AND NOT Control.VTD[2].Running AND Control.VTD[2].Current_Level <> 0 THEN
 // 	        IF CNV2_Selected = 1 AND HMI_DB.ScreenNo_Main = 2 THEN
 // 
-// 	            IF Control.ECnv_Sys[2].Cnv_Occupied AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[2].Running AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv1.Running AND
-// 	                Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv1.Pallet_Type <> 1 AND Control.ECnv_Sys[2].Pallet_Type <> 5 THEN
+// 	            IF Control.ECnv_Sys[2].Cnv_Occupied AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[2].Running AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv1.Running AND
+// 	                Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv1.Pallet_Type <> 1 AND Control.ECnv_Sys[2].Pallet_Type <> 5 THEN
 // 	                CNV_HMI.In_Out[2] := TRUE;
 // 	                CNV_In_Out := TRUE;
-// 	            ELSIF NOT Control.ECnv_Sys[2].Cnv_Occupied AND Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[2].Running AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv1.Running THEN
+// 	            ELSIF NOT Control.ECnv_Sys[2].Cnv_Occupied AND Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[2].Running AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv1.Running THEN
 // 	                CNV_HMI.In_Out[2] := FALSE;
 // 	                CNV_In_Out := FALSE;
 // 	            ELSE
@@ -74,13 +74,13 @@ FUNCTION_BLOCK Conveyor_HMI_FB
 // 	            END_IF;
 // 
 // 	        ELSIF CNV2_Selected = 2 AND HMI_DB.ScreenNo_Main = 2 THEN
-// 	            IF Control.ECnv_Sys[2].Cnv_Occupied AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv2.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[2].Running AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv2.Running AND
-// 	                Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv2.Pallet_Type <> 1 AND Control.ECnv_Sys[2].Pallet_Type <> 5 THEN
+// 	            IF Control.ECnv_Sys[2].Cnv_Occupied AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv2.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[2].Running AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv2.Running AND
+// 	                Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv2.Pallet_Type <> 1 AND Control.ECnv_Sys[2].Pallet_Type <> 5 THEN
 // 	                CNV_HMI.In_Out[2] := TRUE;
 // 	                CNV_In_Out := TRUE;
-// 	            ELSIF NOT Control.ECnv_Sys[2].Cnv_Occupied AND Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv2.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[2].Running AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD_Sys[2].Current_Level].Cnv2.Running THEN
+// 	            ELSIF NOT Control.ECnv_Sys[2].Cnv_Occupied AND Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv2.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[2].Running AND NOT Control.LCnv_Sys[2].Cnv_Level[Control.VTD[2].Current_Level].Cnv2.Running THEN
 // 	                CNV_HMI.In_Out[2] := FALSE;
 // 	                CNV_In_Out := FALSE;
 // 	            ELSE
@@ -89,15 +89,15 @@ FUNCTION_BLOCK Conveyor_HMI_FB
 // 	        END_IF;
 // 	    END_IF;
 // 
-// 	    IF CNV_System_Selected = 3 AND NOT Control.VTD_Sys[3].Running AND Control.VTD_Sys[3].Current_Level <> 0 THEN
+// 	    IF CNV_System_Selected = 3 AND NOT Control.VTD[3].Running AND Control.VTD[3].Current_Level <> 0 THEN
 // 	        IF CNV2_Selected = 1 AND HMI_DB.ScreenNo_Main = 2 THEN
 // 
-// 	            IF Control.ECnv_Sys[3].Cnv_Occupied AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD_Sys[3].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[3].Running AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD_Sys[3].Current_Level].Cnv1.Running THEN
+// 	            IF Control.ECnv_Sys[3].Cnv_Occupied AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD[3].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[3].Running AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD[3].Current_Level].Cnv1.Running THEN
 // 	                CNV_HMI.In_Out[3] := TRUE;
 // 	                CNV_In_Out := TRUE;
-// 	            ELSIF NOT Control.ECnv_Sys[3].Cnv_Occupied AND Control.LCnv_Sys[3].Cnv_Level[Control.VTD_Sys[3].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[3].Running AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD_Sys[3].Current_Level].Cnv1.Running THEN
+// 	            ELSIF NOT Control.ECnv_Sys[3].Cnv_Occupied AND Control.LCnv_Sys[3].Cnv_Level[Control.VTD[3].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[3].Running AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD[3].Current_Level].Cnv1.Running THEN
 // 	                CNV_HMI.In_Out[3] := FALSE;
 // 	                CNV_In_Out := FALSE;
 // 	            ELSE
@@ -105,12 +105,12 @@ FUNCTION_BLOCK Conveyor_HMI_FB
 // 	            END_IF;
 // 
 // 	        ELSIF CNV2_Selected = 2 AND HMI_DB.ScreenNo_Main = 2 THEN
-// 	            IF Control.ECnv_Sys[3].Cnv_Occupied AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD_Sys[3].Current_Level].Cnv2.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[3].Running AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD_Sys[3].Current_Level].Cnv2.Running THEN
+// 	            IF Control.ECnv_Sys[3].Cnv_Occupied AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD[3].Current_Level].Cnv2.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[3].Running AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD[3].Current_Level].Cnv2.Running THEN
 // 	                CNV_HMI.In_Out[3] := TRUE;
 // 	                CNV_In_Out := TRUE;
-// 	            ELSIF NOT Control.ECnv_Sys[3].Cnv_Occupied AND Control.LCnv_Sys[3].Cnv_Level[Control.VTD_Sys[3].Current_Level].Cnv2.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[3].Running AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD_Sys[3].Current_Level].Cnv2.Running THEN
+// 	            ELSIF NOT Control.ECnv_Sys[3].Cnv_Occupied AND Control.LCnv_Sys[3].Cnv_Level[Control.VTD[3].Current_Level].Cnv2.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[3].Running AND NOT Control.LCnv_Sys[3].Cnv_Level[Control.VTD[3].Current_Level].Cnv2.Running THEN
 // 	                CNV_HMI.In_Out[3] := FALSE;
 // 	                CNV_In_Out := FALSE;
 // 	            ELSE
@@ -119,15 +119,15 @@ FUNCTION_BLOCK Conveyor_HMI_FB
 // 	        END_IF;
 // 	    END_IF;
 // 
-// 	    IF CNV_System_Selected = 4 AND NOT Control.VTD_Sys[4].Running AND Control.VTD_Sys[4].Current_Level <> 0 THEN
+// 	    IF CNV_System_Selected = 4 AND NOT Control.VTD[4].Running AND Control.VTD[4].Current_Level <> 0 THEN
 // 	        IF CNV2_Selected = 1 AND HMI_DB.ScreenNo_Main = 2 THEN
 // 
-// 	            IF Control.ECnv_Sys[4].Cnv_Occupied AND NOT Control.LCnv_Sys[4].Cnv_Level[Control.VTD_Sys[4].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[4].Running AND NOT Control.LCnv_Sys[4].Cnv_Level[Control.VTD_Sys[4].Current_Level].Cnv1.Running THEN
+// 	            IF Control.ECnv_Sys[4].Cnv_Occupied AND NOT Control.LCnv_Sys[4].Cnv_Level[Control.VTD[4].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[4].Running AND NOT Control.LCnv_Sys[4].Cnv_Level[Control.VTD[4].Current_Level].Cnv1.Running THEN
 // 	                CNV_HMI.In_Out[4] := TRUE;
 // 	                CNV_In_Out := TRUE;
-// 	            ELSIF NOT Control.ECnv_Sys[4].Cnv_Occupied AND Control.LCnv_Sys[4].Cnv_Level[Control.VTD_Sys[4].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[4].Running AND NOT Control.LCnv_Sys[4].Cnv_Level[Control.VTD_Sys[4].Current_Level].Cnv1.Running THEN
+// 	            ELSIF NOT Control.ECnv_Sys[4].Cnv_Occupied AND Control.LCnv_Sys[4].Cnv_Level[Control.VTD[4].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[4].Running AND NOT Control.LCnv_Sys[4].Cnv_Level[Control.VTD[4].Current_Level].Cnv1.Running THEN
 // 	                CNV_HMI.In_Out[4] := FALSE;
 // 	                CNV_In_Out := FALSE;
 // 	            ELSE
@@ -136,15 +136,15 @@ FUNCTION_BLOCK Conveyor_HMI_FB
 // 	        END_IF;
 // 	    END_IF;
 // 
-// 	    IF CNV_System_Selected = 5 AND NOT Control.VTD_Sys[5].Running AND Control.VTD_Sys[5].Current_Level <> 0 THEN
+// 	    IF CNV_System_Selected = 5 AND NOT Control.VTD[5].Running AND Control.VTD[5].Current_Level <> 0 THEN
 // 	        IF CNV2_Selected = 1 AND HMI_DB.ScreenNo_Main = 2 THEN
 // 
-// 	            IF Control.ECnv_Sys[5].Cnv_Occupied AND NOT Control.LCnv_Sys[5].Cnv_Level[Control.VTD_Sys[5].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[5].Running AND NOT Control.LCnv_Sys[5].Cnv_Level[Control.VTD_Sys[5].Current_Level].Cnv1.Running THEN
+// 	            IF Control.ECnv_Sys[5].Cnv_Occupied AND NOT Control.LCnv_Sys[5].Cnv_Level[Control.VTD[5].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[5].Running AND NOT Control.LCnv_Sys[5].Cnv_Level[Control.VTD[5].Current_Level].Cnv1.Running THEN
 // 	                CNV_HMI.In_Out[5] := TRUE;
 // 	                CNV_In_Out := TRUE;
-// 	            ELSIF NOT Control.ECnv_Sys[5].Cnv_Occupied AND Control.LCnv_Sys[5].Cnv_Level[Control.VTD_Sys[5].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                NOT Control.ECnv_Sys[5].Running AND NOT Control.LCnv_Sys[5].Cnv_Level[Control.VTD_Sys[5].Current_Level].Cnv1.Running THEN
+// 	            ELSIF NOT Control.ECnv_Sys[5].Cnv_Occupied AND Control.LCnv_Sys[5].Cnv_Level[Control.VTD[5].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                NOT Control.ECnv_Sys[5].Running AND NOT Control.LCnv_Sys[5].Cnv_Level[Control.VTD[5].Current_Level].Cnv1.Running THEN
 // 	                CNV_HMI.In_Out[5] := FALSE;
 // 	                CNV_In_Out := FALSE;
 // 	            ELSE

@@ -3,6 +3,280 @@
   <GVL Name="IO_RemoteModules" Id="{0254d243-1834-442e-8a39-13d2ae3a5b5f}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
+    // Source: INBOUND VTD ELECTRICAL DRAWING_9_17_26.pdf (rev D), sheets 43.0-48.6 and 53.0-53.5.
+    // EtherCAT P remote I/O boxes and TwinSAFE boxes. Local rack cards are in IO_Cards.
+    // Box headers give the TwinCAT box name (SpaceX.tsproj) and the drawing tag. The box-to-tag
+    // mapping follows the numbering order (confirmed by the user, 2026-10-21).
+    // Channel comments: <drawing tag> CH<nn> | <connector> | <description>.
+    //   EPP1008: one input per M12 socket X01-X08 (pin 4).
+    //   EPP1809: two inputs per M12 socket, X01-X16 (first channel pin 4, second channel pin 2).
+    //   EPP2328: four M12 sockets; channel A = pin 4, channel B = pin 2 (sheet 53.0 pinout).
+    // AT %I* / AT %Q* declarations require individual channel links in TwinCAT XAE.
+    // Spare and unnamed channels are reserved; do not use them in control logic.
+    // EtherCAT diagnostics (WcState / EcState) are not linked yet: link them manually in XAE.
+
+    // ---------------------------------------------------------------- Carousel conveyors, EPP1008-0022
+    // Sheets 45.0-45.1 / 46.0: boxes for carousel conveyor popups 1-2 and turntable + roller.
+    // All EPP1008 channels are shown as '?????????' in drawing rev D: declared as reserved,
+    // rename them when the drawing names the signals.
+    // 45RIO4 = ENCODER (EPP5001-0002), turntable SSI encoder, sheet 45.5: not part of this GVL.
+
+    // DI-01 (EPP1008-0022) = 45RIO1 - carousel conveyors area section 3 - sheet 45.2.
+    _45RIO1_CH01 AT %I* : BOOL; // 45RIO1 CH01 | X01 | Not named in drawing rev D
+    _45RIO1_CH02 AT %I* : BOOL; // 45RIO1 CH02 | X02 | Not named in drawing rev D
+    _45RIO1_CH03 AT %I* : BOOL; // 45RIO1 CH03 | X03 | Not named in drawing rev D
+    _45RIO1_CH04 AT %I* : BOOL; // 45RIO1 CH04 | X04 | Not named in drawing rev D
+    _45RIO1_CH05 AT %I* : BOOL; // 45RIO1 CH05 | X05 | Not named in drawing rev D
+    _45RIO1_CH06 AT %I* : BOOL; // 45RIO1 CH06 | X06 | Not named in drawing rev D
+    _45RIO1_CH07 AT %I* : BOOL; // 45RIO1 CH07 | X07 | Not named in drawing rev D
+    _45RIO1_CH08 AT %I* : BOOL; // 45RIO1 CH08 | X08 | Not named in drawing rev D
+    _45RIO1_WcState AT %I* : BOOL; // DI-01 > WcState > WcState (TRUE = data invalid)
+    _45RIO1_EcState AT %I* : UINT; // DI-01 > InfoData > State (8 = OP)
+
+    // DI-02 (EPP1008-0022) = 45RIO2 - carousel conveyors area section 3 - sheet 45.3.
+    _45RIO2_CH01 AT %I* : BOOL; // 45RIO2 CH01 | X01 | Not named in drawing rev D
+    _45RIO2_CH02 AT %I* : BOOL; // 45RIO2 CH02 | X02 | Not named in drawing rev D
+    _45RIO2_CH03 AT %I* : BOOL; // 45RIO2 CH03 | X03 | Not named in drawing rev D
+    _45RIO2_CH04 AT %I* : BOOL; // 45RIO2 CH04 | X04 | Not named in drawing rev D
+    _45RIO2_CH05 AT %I* : BOOL; // 45RIO2 CH05 | X05 | Not named in drawing rev D
+    _45RIO2_CH06 AT %I* : BOOL; // 45RIO2 CH06 | X06 | Not named in drawing rev D
+    _45RIO2_CH07 AT %I* : BOOL; // 45RIO2 CH07 | X07 | Not named in drawing rev D
+    _45RIO2_CH08 AT %I* : BOOL; // 45RIO2 CH08 | X08 | Not named in drawing rev D
+    _45RIO2_WcState AT %I* : BOOL; // DI-02 > WcState > WcState (TRUE = data invalid)
+    _45RIO2_EcState AT %I* : UINT; // DI-02 > InfoData > State (8 = OP)
+
+    // DI-03 (EPP1008-0022) = 45RIO3 - carousel conveyors area section 3 - sheet 45.4.
+    _45RIO3_CH01 AT %I* : BOOL; // 45RIO3 CH01 | X01 | Not named in drawing rev D
+    _45RIO3_CH02 AT %I* : BOOL; // 45RIO3 CH02 | X02 | Not named in drawing rev D
+    _45RIO3_CH03 AT %I* : BOOL; // 45RIO3 CH03 | X03 | Not named in drawing rev D
+    _45RIO3_CH04 AT %I* : BOOL; // 45RIO3 CH04 | X04 | Not named in drawing rev D
+    _45RIO3_CH05 AT %I* : BOOL; // 45RIO3 CH05 | X05 | Not named in drawing rev D
+    _45RIO3_CH06 AT %I* : BOOL; // 45RIO3 CH06 | X06 | Not named in drawing rev D
+    _45RIO3_CH07 AT %I* : BOOL; // 45RIO3 CH07 | X07 | Not named in drawing rev D
+    _45RIO3_CH08 AT %I* : BOOL; // 45RIO3 CH08 | X08 | Not named in drawing rev D
+    _45RIO3_WcState AT %I* : BOOL; // DI-03 > WcState > WcState (TRUE = data invalid)
+    _45RIO3_EcState AT %I* : UINT; // DI-03 > InfoData > State (8 = OP)
+
+    // DI-04 (EPP1008-0022) = 46RIO1 - carousel conveyors area sections 1 & 2 - sheet 46.1.
+    _46RIO1_CH01 AT %I* : BOOL; // 46RIO1 CH01 | X01 | Not named in drawing rev D
+    _46RIO1_CH02 AT %I* : BOOL; // 46RIO1 CH02 | X02 | Not named in drawing rev D
+    _46RIO1_CH03 AT %I* : BOOL; // 46RIO1 CH03 | X03 | Not named in drawing rev D
+    _46RIO1_CH04 AT %I* : BOOL; // 46RIO1 CH04 | X04 | Not named in drawing rev D
+    _46RIO1_CH05 AT %I* : BOOL; // 46RIO1 CH05 | X05 | Not named in drawing rev D
+    _46RIO1_CH06 AT %I* : BOOL; // 46RIO1 CH06 | X06 | Not named in drawing rev D
+    _46RIO1_CH07 AT %I* : BOOL; // 46RIO1 CH07 | X07 | Not named in drawing rev D
+    _46RIO1_CH08 AT %I* : BOOL; // 46RIO1 CH08 | X08 | Not named in drawing rev D
+    _46RIO1_WcState AT %I* : BOOL; // DI-04 > WcState > WcState (TRUE = data invalid)
+    _46RIO1_EcState AT %I* : UINT; // DI-04 > InfoData > State (8 = OP)
+
+    // DI-05 (EPP1008-0022) = 46RIO2 - carousel conveyors area sections 1 & 2 - sheet 46.2.
+    _46RIO2_CH01 AT %I* : BOOL; // 46RIO2 CH01 | X01 | Not named in drawing rev D
+    _46RIO2_CH02 AT %I* : BOOL; // 46RIO2 CH02 | X02 | Not named in drawing rev D
+    _46RIO2_CH03 AT %I* : BOOL; // 46RIO2 CH03 | X03 | Not named in drawing rev D
+    _46RIO2_CH04 AT %I* : BOOL; // 46RIO2 CH04 | X04 | Not named in drawing rev D
+    _46RIO2_CH05 AT %I* : BOOL; // 46RIO2 CH05 | X05 | Not named in drawing rev D
+    _46RIO2_CH06 AT %I* : BOOL; // 46RIO2 CH06 | X06 | Not named in drawing rev D
+    _46RIO2_CH07 AT %I* : BOOL; // 46RIO2 CH07 | X07 | Not named in drawing rev D
+    _46RIO2_CH08 AT %I* : BOOL; // 46RIO2 CH08 | X08 | Not named in drawing rev D
+    _46RIO2_WcState AT %I* : BOOL; // DI-05 > WcState > WcState (TRUE = data invalid)
+    _46RIO2_EcState AT %I* : UINT; // DI-05 > InfoData > State (8 = OP)
+
+    // DI-06 (EPP1008-0022) = 46RIO3 - carousel conveyors area sections 1 & 2 - sheet 46.3.
+    _46RIO3_CH01 AT %I* : BOOL; // 46RIO3 CH01 | X01 | Not named in drawing rev D
+    _46RIO3_CH02 AT %I* : BOOL; // 46RIO3 CH02 | X02 | Not named in drawing rev D
+    _46RIO3_CH03 AT %I* : BOOL; // 46RIO3 CH03 | X03 | Not named in drawing rev D
+    _46RIO3_CH04 AT %I* : BOOL; // 46RIO3 CH04 | X04 | Not named in drawing rev D
+    _46RIO3_CH05 AT %I* : BOOL; // 46RIO3 CH05 | X05 | Not named in drawing rev D
+    _46RIO3_CH06 AT %I* : BOOL; // 46RIO3 CH06 | X06 | Not named in drawing rev D
+    _46RIO3_CH07 AT %I* : BOOL; // 46RIO3 CH07 | X07 | Not named in drawing rev D
+    _46RIO3_CH08 AT %I* : BOOL; // 46RIO3 CH08 | X08 | Not named in drawing rev D
+    _46RIO3_WcState AT %I* : BOOL; // DI-06 > WcState > WcState (TRUE = data invalid)
+    _46RIO3_EcState AT %I* : UINT; // DI-06 > InfoData > State (8 = OP)
+
+    // DI-07 (EPP1008-0022) = 46RIO4 - carousel conveyors area sections 1 & 2 - sheet 46.4.
+    _46RIO4_CH01 AT %I* : BOOL; // 46RIO4 CH01 | X01 | Not named in drawing rev D
+    _46RIO4_CH02 AT %I* : BOOL; // 46RIO4 CH02 | X02 | Not named in drawing rev D
+    _46RIO4_CH03 AT %I* : BOOL; // 46RIO4 CH03 | X03 | Not named in drawing rev D
+    _46RIO4_CH04 AT %I* : BOOL; // 46RIO4 CH04 | X04 | Not named in drawing rev D
+    _46RIO4_CH05 AT %I* : BOOL; // 46RIO4 CH05 | X05 | Not named in drawing rev D
+    _46RIO4_CH06 AT %I* : BOOL; // 46RIO4 CH06 | X06 | Not named in drawing rev D
+    _46RIO4_CH07 AT %I* : BOOL; // 46RIO4 CH07 | X07 | Not named in drawing rev D
+    _46RIO4_CH08 AT %I* : BOOL; // 46RIO4 CH08 | X08 | Not named in drawing rev D
+    _46RIO4_WcState AT %I* : BOOL; // DI-07 > WcState > WcState (TRUE = data invalid)
+    _46RIO4_EcState AT %I* : UINT; // DI-07 > InfoData > State (8 = OP)
+
+    // DI-08 (EPP1008-0022) = 46RIO5 - carousel conveyors area sections 1 & 2 - sheet 46.5.
+    _46RIO5_CH01 AT %I* : BOOL; // 46RIO5 CH01 | X01 | Not named in drawing rev D
+    _46RIO5_CH02 AT %I* : BOOL; // 46RIO5 CH02 | X02 | Not named in drawing rev D
+    _46RIO5_CH03 AT %I* : BOOL; // 46RIO5 CH03 | X03 | Not named in drawing rev D
+    _46RIO5_CH04 AT %I* : BOOL; // 46RIO5 CH04 | X04 | Not named in drawing rev D
+    _46RIO5_CH05 AT %I* : BOOL; // 46RIO5 CH05 | X05 | Not named in drawing rev D
+    _46RIO5_CH06 AT %I* : BOOL; // 46RIO5 CH06 | X06 | Not named in drawing rev D
+    _46RIO5_CH07 AT %I* : BOOL; // 46RIO5 CH07 | X07 | Not named in drawing rev D
+    _46RIO5_CH08 AT %I* : BOOL; // 46RIO5 CH08 | X08 | Not named in drawing rev D
+    _46RIO5_WcState AT %I* : BOOL; // DI-08 > WcState > WcState (TRUE = data invalid)
+    _46RIO5_EcState AT %I* : UINT; // DI-08 > InfoData > State (8 = OP)
+
+    // DI-09 (EPP1008-0022) = 46RIO6 - carousel conveyors area sections 1 & 2 - sheet 46.6.
+    _46RIO6_CH01 AT %I* : BOOL; // 46RIO6 CH01 | X01 | Not named in drawing rev D
+    _46RIO6_CH02 AT %I* : BOOL; // 46RIO6 CH02 | X02 | Not named in drawing rev D
+    _46RIO6_CH03 AT %I* : BOOL; // 46RIO6 CH03 | X03 | Not named in drawing rev D
+    _46RIO6_CH04 AT %I* : BOOL; // 46RIO6 CH04 | X04 | Not named in drawing rev D
+    _46RIO6_CH05 AT %I* : BOOL; // 46RIO6 CH05 | X05 | Not named in drawing rev D
+    _46RIO6_CH06 AT %I* : BOOL; // 46RIO6 CH06 | X06 | Not named in drawing rev D
+    _46RIO6_CH07 AT %I* : BOOL; // 46RIO6 CH07 | X07 | Not named in drawing rev D
+    _46RIO6_CH08 AT %I* : BOOL; // 46RIO6 CH08 | X08 | Not named in drawing rev D
+    _46RIO6_WcState AT %I* : BOOL; // DI-09 > WcState > WcState (TRUE = data invalid)
+    _46RIO6_EcState AT %I* : UINT; // DI-09 > InfoData > State (8 = OP)
+
+    // DI-10 (EPP1008-0022) = 46RIO7 - carousel conveyors area sections 1 & 2 - sheet 46.7.
+    _46RIO7_CH01 AT %I* : BOOL; // 46RIO7 CH01 | X01 | Not named in drawing rev D
+    _46RIO7_CH02 AT %I* : BOOL; // 46RIO7 CH02 | X02 | Not named in drawing rev D
+    _46RIO7_CH03 AT %I* : BOOL; // 46RIO7 CH03 | X03 | Not named in drawing rev D
+    _46RIO7_CH04 AT %I* : BOOL; // 46RIO7 CH04 | X04 | Not named in drawing rev D
+    _46RIO7_CH05 AT %I* : BOOL; // 46RIO7 CH05 | X05 | Not named in drawing rev D
+    _46RIO7_CH06 AT %I* : BOOL; // 46RIO7 CH06 | X06 | Not named in drawing rev D
+    _46RIO7_CH07 AT %I* : BOOL; // 46RIO7 CH07 | X07 | Not named in drawing rev D
+    _46RIO7_CH08 AT %I* : BOOL; // 46RIO7 CH08 | X08 | Not named in drawing rev D
+    _46RIO7_WcState AT %I* : BOOL; // DI-10 > WcState > WcState (TRUE = data invalid)
+    _46RIO7_EcState AT %I* : UINT; // DI-10 > InfoData > State (8 = OP)
+
+    // ---------------------------------------------------------------- Docking pins and VTD detection
+
+    // DIO-01 (EPP2328-0002) = 47RIO1 - docking pins - sheet 47.3.
+    // Outputs go to the docking pins junction box (separate drawing, see note on sheet 47.3).
+    // Two signals per socket through Y-cables 6ES7194-6KA00-0XA0 (legs II / III):
+    // confirm the leg-to-channel order at the I/O check.
+    LEFT_LOCKING_PINS_EXTENDED AT %I* : BOOL; // 47RIO1 CH01 | M12-1 pin 4 | From left locking pins extended proximity sensors
+    RIGHT_LOCKING_PINS_EXTENDED AT %I* : BOOL; // 47RIO1 CH02 | M12-1 pin 2 | From right locking pins extended proximity sensors
+    LEFT_LOCKING_PINS_RETRACTED AT %I* : BOOL; // 47RIO1 CH03 | M12-2 pin 4 | From left locking pins retracted proximity sensors
+    RIGHT_LOCKING_PINS_RETRACTED AT %I* : BOOL; // 47RIO1 CH04 | M12-2 pin 2 | From right locking pins retracted proximity sensors
+    DOCKING_PINS_3KA1 AT %Q* : BOOL; // 47RIO1 CH05 | M12-3 pin 4 | To 3KA1 in docking pins junction box
+    DOCKING_PINS_3KA2 AT %Q* : BOOL; // 47RIO1 CH06 | M12-3 pin 2 | To 3KA2 in docking pins junction box
+    DOCKING_PINS_3KA3 AT %Q* : BOOL; // 47RIO1 CH07 | M12-4 pin 4 | To 3KA3 in docking pins junction box
+    DOCKING_PINS_3KA4 AT %Q* : BOOL; // 47RIO1 CH08 | M12-4 pin 2 | To 3KA4 in docking pins junction box
+    _47RIO1_WcState AT %I* : BOOL; // DIO-01 > WcState > WcState (TRUE = data invalid)
+    _47RIO1_EcState AT %I* : UINT; // DIO-01 > InfoData > State (8 = OP)
+
+    // DI-11 (EPP1809-0022) = 47RIO2 - VTD level, speed and pallet / shuttle detection - sheet 47.4.
+    LEVEL_DETECT_1_SENSOR AT %I* : BOOL; // 47RIO2 CH01 | X01 | Level detect 1 sensor
+    LEVEL_DETECT_2_SENSOR AT %I* : BOOL; // 47RIO2 CH02 | X02 | Level detect 2 sensor
+    CREEP_SENSOR AT %I* : BOOL; // 47RIO2 CH03 | X03 | Creep sensor
+    SLOWDOWN_SENSOR AT %I* : BOOL; // 47RIO2 CH04 | X04 | Slowdown sensor
+    _47RIO2_CH05 AT %I* : BOOL; // 47RIO2 CH05 | X05 | Wired, not named in drawing rev D
+    _47RIO2_SPARE_CH06 AT %I* : BOOL; // 47RIO2 CH06 | X06 | Spare
+    _47RIO2_CH07 AT %I* : BOOL; // 47RIO2 CH07 | X07 | Wired, not named in drawing rev D
+    _47RIO2_SPARE_CH08 AT %I* : BOOL; // 47RIO2 CH08 | X08 | Spare
+    PALLET_DETECTION_1 AT %I* : BOOL; // 47RIO2 CH09 | X09 | Pallet detection #1
+    PALLET_DETECTION_2 AT %I* : BOOL; // 47RIO2 CH10 | X10 | Pallet detection #2
+    PALLET_DETECTION_3 AT %I* : BOOL; // 47RIO2 CH11 | X11 | Pallet detection #3
+    PALLET_DETECTION_4 AT %I* : BOOL; // 47RIO2 CH12 | X12 | Pallet detection #4
+    PALLET_DETECTION_5 AT %I* : BOOL; // 47RIO2 CH13 | X13 | Pallet detection #5
+    PALLET_DETECTION_6 AT %I* : BOOL; // 47RIO2 CH14 | X14 | Pallet detection #6
+    SHUTTLE_DETECTION_1 AT %I* : BOOL; // 47RIO2 CH15 | X15 | Shuttle detection #1
+    SHUTTLE_DETECTION_2 AT %I* : BOOL; // 47RIO2 CH16 | X16 | Shuttle detection #2
+    _47RIO2_WcState AT %I* : BOOL; // DI-11 > WcState > WcState (TRUE = data invalid)
+    _47RIO2_EcState AT %I* : UINT; // DI-11 > InfoData > State (8 = OP)
+
+    // ---------------------------------------------------------------- Buffer conveyors with stopper, EPP2328-0002
+    // Outputs drive the coil of stopper motor relays SR8-BB-06A1 (sheets 53.0-53.5).
+
+    // DIO-02 (EPP2328-0002) = 48RIO1 - conveyor with stopper, level 1 - sheets 48.1 and 53.0.
+    BUFFER_L1_SAFETY_STOPPER_UPPER_SENSOR AT %I* : BOOL; // 48RIO1 CH01 | M12-1 pin 4 | Safety stopper upper sensor
+    BUFFER_L1_SAFETY_STOPPER_LOWER_SENSOR AT %I* : BOOL; // 48RIO1 CH02 | M12-1 pin 2 | Safety stopper lower sensor
+    BUFFER_L1_CONVEYOR_SENSOR_1 AT %I* : BOOL; // 48RIO1 CH03 | M12-2 pin 4 | Buffer conveyor sensor 1
+    BUFFER_L1_CONVEYOR_SENSOR_2 AT %I* : BOOL; // 48RIO1 CH04 | M12-2 pin 2 | Buffer conveyor sensor 2
+    BUFFER_L1_STOPPER_RELAY_53RR1 AT %Q* : BOOL; // 48RIO1 CH05 | M12-3 pin 4 | 53RR1 coil, stopper motor #1 53M1, sheet 53.0/5A
+    _48RIO1_SPARE_CH06 AT %Q* : BOOL; // 48RIO1 CH06 | M12-3 pin 2 | Spare
+    BUFFER_L1_STOPPER_RELAY_53RR2 AT %Q* : BOOL; // 48RIO1 CH07 | M12-4 pin 4 | 53RR2 coil, sheet 53.0/7E (relay not detailed in drawing rev D)
+    _48RIO1_SPARE_CH08 AT %Q* : BOOL; // 48RIO1 CH08 | M12-4 pin 2 | Spare
+    _48RIO1_WcState AT %I* : BOOL; // DIO-02 > WcState > WcState (TRUE = data invalid)
+    _48RIO1_EcState AT %I* : UINT; // DIO-02 > InfoData > State (8 = OP)
+
+    // DIO-03 (EPP2328-0002) = 48RIO2 - conveyor with stopper, level 2 - sheets 48.2 and 53.1.
+    BUFFER_L2_SAFETY_STOPPER_UPPER_SENSOR AT %I* : BOOL; // 48RIO2 CH01 | M12-1 pin 4 | Safety stopper upper sensor
+    BUFFER_L2_SAFETY_STOPPER_LOWER_SENSOR AT %I* : BOOL; // 48RIO2 CH02 | M12-1 pin 2 | Safety stopper lower sensor
+    BUFFER_L2_CONVEYOR_SENSOR_1 AT %I* : BOOL; // 48RIO2 CH03 | M12-2 pin 4 | Buffer conveyor sensor 1
+    BUFFER_L2_CONVEYOR_SENSOR_2 AT %I* : BOOL; // 48RIO2 CH04 | M12-2 pin 2 | Buffer conveyor sensor 2
+    BUFFER_L2_STOPPER_RELAY_53RR3 AT %Q* : BOOL; // 48RIO2 CH05 | M12-3 pin 4 | 53RR3 coil, stopper motor #3 53M3, sheet 53.1/5A
+    _48RIO2_SPARE_CH06 AT %Q* : BOOL; // 48RIO2 CH06 | M12-3 pin 2 | Spare
+    BUFFER_L2_STOPPER_RELAY_53RR4 AT %Q* : BOOL; // 48RIO2 CH07 | M12-4 pin 4 | 53RR4 coil, sheet 53.1/7E (relay not detailed in drawing rev D)
+    _48RIO2_SPARE_CH08 AT %Q* : BOOL; // 48RIO2 CH08 | M12-4 pin 2 | Spare
+    _48RIO2_WcState AT %I* : BOOL; // DIO-03 > WcState > WcState (TRUE = data invalid)
+    _48RIO2_EcState AT %I* : UINT; // DIO-03 > InfoData > State (8 = OP)
+
+    // DIO-04 (EPP2328-0002) = 48RIO3 - conveyor with stopper, level 3 - sheets 48.3 and 53.2.
+    BUFFER_L3_SAFETY_STOPPER_UPPER_SENSOR AT %I* : BOOL; // 48RIO3 CH01 | M12-1 pin 4 | Safety stopper upper sensor
+    BUFFER_L3_SAFETY_STOPPER_LOWER_SENSOR AT %I* : BOOL; // 48RIO3 CH02 | M12-1 pin 2 | Safety stopper lower sensor
+    BUFFER_L3_CONVEYOR_SENSOR_1 AT %I* : BOOL; // 48RIO3 CH03 | M12-2 pin 4 | Buffer conveyor sensor 1
+    BUFFER_L3_CONVEYOR_SENSOR_2 AT %I* : BOOL; // 48RIO3 CH04 | M12-2 pin 2 | Buffer conveyor sensor 2
+    BUFFER_L3_STOPPER_RELAY_53RR5 AT %Q* : BOOL; // 48RIO3 CH05 | M12-3 pin 4 | 53RR5 coil, stopper motor #5 53M5, sheet 53.2/5A
+    _48RIO3_SPARE_CH06 AT %Q* : BOOL; // 48RIO3 CH06 | M12-3 pin 2 | Spare
+    BUFFER_L3_STOPPER_RELAY_53RR6 AT %Q* : BOOL; // 48RIO3 CH07 | M12-4 pin 4 | 53RR6 coil, sheet 53.2/7E (relay not detailed in drawing rev D)
+    _48RIO3_SPARE_CH08 AT %Q* : BOOL; // 48RIO3 CH08 | M12-4 pin 2 | Spare
+    _48RIO3_WcState AT %I* : BOOL; // DIO-04 > WcState > WcState (TRUE = data invalid)
+    _48RIO3_EcState AT %I* : UINT; // DIO-04 > InfoData > State (8 = OP)
+
+    // DIO-05 (EPP2328-0002) = 48RIO4 - conveyor with stopper, level 4 - sheets 48.4 and 53.3.
+    BUFFER_L4_SAFETY_STOPPER_UPPER_SENSOR AT %I* : BOOL; // 48RIO4 CH01 | M12-1 pin 4 | Safety stopper upper sensor
+    BUFFER_L4_SAFETY_STOPPER_LOWER_SENSOR AT %I* : BOOL; // 48RIO4 CH02 | M12-1 pin 2 | Safety stopper lower sensor
+    BUFFER_L4_CONVEYOR_SENSOR_1 AT %I* : BOOL; // 48RIO4 CH03 | M12-2 pin 4 | Buffer conveyor sensor 1
+    BUFFER_L4_CONVEYOR_SENSOR_2 AT %I* : BOOL; // 48RIO4 CH04 | M12-2 pin 2 | Buffer conveyor sensor 2
+    BUFFER_L4_STOPPER_RELAY_53RR7 AT %Q* : BOOL; // 48RIO4 CH05 | M12-3 pin 4 | 53RR7 coil, stopper motor #7 53M7, sheet 53.3/5A
+    _48RIO4_SPARE_CH06 AT %Q* : BOOL; // 48RIO4 CH06 | M12-3 pin 2 | Spare
+    BUFFER_L4_STOPPER_RELAY_53RR8 AT %Q* : BOOL; // 48RIO4 CH07 | M12-4 pin 4 | 53RR8 coil, sheet 53.3/7E (relay not detailed in drawing rev D)
+    _48RIO4_SPARE_CH08 AT %Q* : BOOL; // 48RIO4 CH08 | M12-4 pin 2 | Spare
+    _48RIO4_WcState AT %I* : BOOL; // DIO-05 > WcState > WcState (TRUE = data invalid)
+    _48RIO4_EcState AT %I* : UINT; // DIO-05 > InfoData > State (8 = OP)
+
+    // DIO-06 (EPP2328-0002) = 48RIO5 - conveyor with stopper, level 5 - sheets 48.5 and 53.4.
+    BUFFER_L5_SAFETY_STOPPER_UPPER_SENSOR AT %I* : BOOL; // 48RIO5 CH01 | M12-1 pin 4 | Safety stopper upper sensor
+    BUFFER_L5_SAFETY_STOPPER_LOWER_SENSOR AT %I* : BOOL; // 48RIO5 CH02 | M12-1 pin 2 | Safety stopper lower sensor
+    BUFFER_L5_CONVEYOR_SENSOR_1 AT %I* : BOOL; // 48RIO5 CH03 | M12-2 pin 4 | Buffer conveyor sensor 1
+    BUFFER_L5_CONVEYOR_SENSOR_2 AT %I* : BOOL; // 48RIO5 CH04 | M12-2 pin 2 | Buffer conveyor sensor 2
+    BUFFER_L5_STOPPER_RELAY_53RR9 AT %Q* : BOOL; // 48RIO5 CH05 | M12-3 pin 4 | 53RR9 coil, stopper motor #9 53M9, sheet 53.4/5A
+    _48RIO5_SPARE_CH06 AT %Q* : BOOL; // 48RIO5 CH06 | M12-3 pin 2 | Spare
+    BUFFER_L5_STOPPER_RELAY_53RR10 AT %Q* : BOOL; // 48RIO5 CH07 | M12-4 pin 4 | 53RR10 coil, sheet 53.4/7E (relay not detailed in drawing rev D)
+    _48RIO5_SPARE_CH08 AT %Q* : BOOL; // 48RIO5 CH08 | M12-4 pin 2 | Spare
+    _48RIO5_WcState AT %I* : BOOL; // DIO-06 > WcState > WcState (TRUE = data invalid)
+    _48RIO5_EcState AT %I* : UINT; // DIO-06 > InfoData > State (8 = OP)
+
+    // DIO-07 (EPP2328-0002) = 48RIO6 - conveyor with stopper, level 6 - sheets 48.6 and 53.5.
+    BUFFER_L6_SAFETY_STOPPER_UPPER_SENSOR AT %I* : BOOL; // 48RIO6 CH01 | M12-1 pin 4 | Safety stopper upper sensor
+    BUFFER_L6_SAFETY_STOPPER_LOWER_SENSOR AT %I* : BOOL; // 48RIO6 CH02 | M12-1 pin 2 | Safety stopper lower sensor
+    BUFFER_L6_CONVEYOR_SENSOR_1 AT %I* : BOOL; // 48RIO6 CH03 | M12-2 pin 4 | Buffer conveyor sensor 1
+    BUFFER_L6_CONVEYOR_SENSOR_2 AT %I* : BOOL; // 48RIO6 CH04 | M12-2 pin 2 | Buffer conveyor sensor 2
+    BUFFER_L6_STOPPER_RELAY_53RR11 AT %Q* : BOOL; // 48RIO6 CH05 | M12-3 pin 4 | 53RR11 coil, stopper motor #11 53M11, sheet 53.5/5A
+    _48RIO6_SPARE_CH06 AT %Q* : BOOL; // 48RIO6 CH06 | M12-3 pin 2 | Spare
+    BUFFER_L6_STOPPER_RELAY_53RR12 AT %Q* : BOOL; // 48RIO6 CH07 | M12-4 pin 4 | 53RR12 coil, sheet 53.5/7E (relay not detailed in drawing rev D)
+    _48RIO6_SPARE_CH08 AT %Q* : BOOL; // 48RIO6 CH08 | M12-4 pin 2 | Spare
+    _48RIO6_WcState AT %I* : BOOL; // DIO-07 > WcState > WcState (TRUE = data invalid)
+    _48RIO6_EcState AT %I* : UINT; // DIO-07 > InfoData > State (8 = OP)
+
+    // ---------------------------------------------------------------- TwinSAFE boxes
+    // Safe channels travel in the FSoE frame to the TwinSAFE logic. They are NOT standard PLC I/O:
+    // the standard PLC gets their state only through TwinSAFE logic outputs (IO_Safety).
+    // Only diagnostics and the EP1957 standard (non-safe) data are declared here.
+
+    // FDI-01 (EP1918-0002) = 43SRIO1 - safe inputs - sheets 43.0-43.1.
+    //   In1/In2: 43SC1 to overtravel upper (NC).
+    //   In3/In4: 43SC2 to overtravel lower (NC).
+    //   In5-In8: spare.
+    _43SRIO1_WcState AT %I* : BOOL; // FDI-01 > WcState > WcState (TRUE = data invalid)
+    _43SRIO1_EcState AT %I* : UINT; // FDI-01 > InfoData > State (8 = OP)
+
+    // FDIO-01 (EP1957-0022) = 43SRIO2 - safe inputs / outputs - sheets 43.2-43.4.
+    //   In1/In2: 43LC1 light curtain receiver OSSD1 / OSSD2 (SICK C4C-EV13530B10000), sheet 43.4.
+    //   In3/In4: 43LC2 light curtain sender (SICK C4C-SV13530B10000), sheet 43.4.
+    //   Other safe inputs and safe outputs 1-4: not used in drawing rev D.
+    _43SRIO2_SPARE_STD_OUT1 AT %Q* : BOOL; // FDIO-01 > Outputs > Module 1.Standard Output | Spare (no output used in drawing rev D)
+    _43SRIO2_SPARE_STD_OUT2 AT %Q* : BOOL; // FDIO-01 > Outputs > Module 2.Standard Output | Spare (no output used in drawing rev D)
+    _43SRIO2_SPARE_STD_OUT3 AT %Q* : BOOL; // FDIO-01 > Outputs > Module 3.Standard Output | Spare (no output used in drawing rev D)
+    _43SRIO2_SPARE_STD_OUT4 AT %Q* : BOOL; // FDIO-01 > Outputs > Module 4.Standard Output | Spare (no output used in drawing rev D)
+    _43SRIO2_FIELDVOLTAGE_UNDERRANGE AT %I* : BOOL; // FDIO-01 > FIELDVOLTAGE Field Voltage Status > Fieldvoltage Underrange
+    _43SRIO2_FIELDVOLTAGE_OVERRANGE AT %I* : BOOL; // FDIO-01 > FIELDVOLTAGE Field Voltage Status > Fieldvoltage Overrange
+    _43SRIO2_WcState AT %I* : BOOL; // FDIO-01 > WcState > WcState (TRUE = data invalid)
+    _43SRIO2_EcState AT %I* : UINT; // FDIO-01 > InfoData > State (8 = OP)
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

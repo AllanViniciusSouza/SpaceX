@@ -269,7 +269,7 @@ FUNCTION_BLOCK EConveyor_FB
 // 
 // 	        10:
 // 	            IF (R_Start_DB.Q OR Cnv_Control.Instruction.Start_Transfer) AND
-// 	                Control.VTD_Sys[Id].Current_Level = Cnv_Settings.Cnv_Level AND NOT Cnv_Control.Running AND Cnv_Control.Error = 0 AND
+// 	                Control.VTD[Id].Current_Level = Cnv_Settings.Cnv_Level AND NOT Cnv_Control.Running AND Cnv_Control.Error = 0 AND
 // 	                (Cnv_Control.Instruction.Inbound_Ready OR Cnv_Control.Instruction.Outbound_Ready)
 // 	            THEN
 // 	                Cnv_Control.Instruction.Inbound_Ready := FALSE;
@@ -280,7 +280,7 @@ FUNCTION_BLOCK EConveyor_FB
 // 	                Cnv_Control.Current_Task_ID := Cnv_Control.Instruction.Task_ID;
 // 	                VTD_Level := VTD_Current_Level;
 // 	                State := 20;
-// 	            ELSIF Cnv_Control.Instruction.Start_Transfer AND Control.VTD_Sys[Id].Current_Level <> Cnv_Settings.Cnv_Level THEN
+// 	            ELSIF Cnv_Control.Instruction.Start_Transfer AND Control.VTD[Id].Current_Level <> Cnv_Settings.Cnv_Level THEN
 // 
 // 	                Set_Bit_F(Bit := 2,
 // 	                            Bit_Value := 1,

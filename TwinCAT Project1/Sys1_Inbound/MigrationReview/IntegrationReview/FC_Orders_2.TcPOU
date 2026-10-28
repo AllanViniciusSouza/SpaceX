@@ -322,25 +322,25 @@ FUNCTION FC_Orders_2 : BOOL
 // 	        END_IF;
 // 
 // 
-// 	        IF NOT Control.VTD_Sys[Sys].Running AND Control.VTD_Sys[Sys].Current_Level <> 0 THEN
+// 	        IF NOT Control.VTD[Sys].Running AND Control.VTD[Sys].Current_Level <> 0 THEN
 // 	            IF Auto_Test.Tower = 1 AND HMI_DB.ScreenNo_Main = 9 THEN
 // 
-// 	                IF Control.ECnv_Sys[Sys].Cnv_Occupied AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD_Sys[Sys].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                    NOT Control.ECnv_Sys[Sys].Running AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD_Sys[Sys].Current_Level].Cnv1.Running THEN
+// 	                IF Control.ECnv_Sys[Sys].Cnv_Occupied AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD[Sys].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                    NOT Control.ECnv_Sys[Sys].Running AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD[Sys].Current_Level].Cnv1.Running THEN
 // 	                    Auto_Test.Transfer_From_To := OrderTable_HMI.Transfer_From_To := 2;
-// 	                ELSIF NOT Control.ECnv_Sys[Sys].Cnv_Occupied AND Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD_Sys[Sys].Current_Level].Cnv1.Cnv_Occupied AND
-// 	                    NOT Control.ECnv_Sys[Sys].Running AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD_Sys[Sys].Current_Level].Cnv1.Running THEN
+// 	                ELSIF NOT Control.ECnv_Sys[Sys].Cnv_Occupied AND Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD[Sys].Current_Level].Cnv1.Cnv_Occupied AND
+// 	                    NOT Control.ECnv_Sys[Sys].Running AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD[Sys].Current_Level].Cnv1.Running THEN
 // 	                    Auto_Test.Transfer_From_To := OrderTable_HMI.Transfer_From_To := 1;
 // 	                ELSE
 // 	                    Auto_Test.Transfer_From_To := OrderTable_HMI.Transfer_From_To;
 // 	                END_IF;
 // 
 // 	            ELSIF Auto_Test.Tower = 2 AND HMI_DB.ScreenNo_Main = 9 THEN
-// 	                IF Control.ECnv_Sys[Sys].Cnv_Occupied AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD_Sys[Sys].Current_Level].Cnv2.Cnv_Occupied AND
-// 	                    NOT Control.ECnv_Sys[Sys].Running AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD_Sys[Sys].Current_Level].Cnv2.Running THEN
+// 	                IF Control.ECnv_Sys[Sys].Cnv_Occupied AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD[Sys].Current_Level].Cnv2.Cnv_Occupied AND
+// 	                    NOT Control.ECnv_Sys[Sys].Running AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD[Sys].Current_Level].Cnv2.Running THEN
 // 	                    Auto_Test.Transfer_From_To := OrderTable_HMI.Transfer_From_To := 2;
-// 	                ELSIF NOT Control.ECnv_Sys[Sys].Cnv_Occupied AND Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD_Sys[Sys].Current_Level].Cnv2.Cnv_Occupied AND
-// 	                    NOT Control.ECnv_Sys[Sys].Running AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD_Sys[Sys].Current_Level].Cnv2.Running THEN
+// 	                ELSIF NOT Control.ECnv_Sys[Sys].Cnv_Occupied AND Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD[Sys].Current_Level].Cnv2.Cnv_Occupied AND
+// 	                    NOT Control.ECnv_Sys[Sys].Running AND NOT Control.LCnv_Sys[Sys].Cnv_Level[Control.VTD[Sys].Current_Level].Cnv2.Running THEN
 // 	                    Auto_Test.Transfer_From_To := OrderTable_HMI.Transfer_From_To := 1;
 // 	                ELSE
 // 	                    Auto_Test.Transfer_From_To := OrderTable_HMI.Transfer_From_To;

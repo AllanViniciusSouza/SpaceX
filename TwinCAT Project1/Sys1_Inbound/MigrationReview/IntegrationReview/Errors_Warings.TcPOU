@@ -1561,8 +1561,8 @@ FUNCTION Errors_Warings : BOOL
 // 
 // 
 // 	    FOR i := 1 TO 5 DO
-// 	        IF Control.VTD_Sys[i].Inputs.LE_Status.%X0 THEN
-// 	            IF Control.VTD_Sys[i].Inputs.LE_Position = 1 THEN
+// 	        IF Control.VTD[i].Inputs.LE_Status.%X0 THEN
+// 	            IF Control.VTD[i].Inputs.LE_Position = 1 THEN
 // 	                IF i = 1 THEN
 // 	                    Linear_Encoder_Device_Errors_1.%X0 := TRUE;
 // 	                ELSIF i = 2 THEN
@@ -1574,7 +1574,7 @@ FUNCTION Errors_Warings : BOOL
 // 	                ELSIF i = 5 THEN
 // 	                    Linear_Encoder_Device_Errors_5.%X0 := TRUE;
 // 	                END_IF;
-// 	            ELSIF Control.VTD_Sys[i].Inputs.LE_Position = 2 THEN
+// 	            ELSIF Control.VTD[i].Inputs.LE_Position = 2 THEN
 // 	                IF i = 1 THEN
 // 	                    Linear_Encoder_Device_Errors_1.%X1 := TRUE;
 // 	                ELSIF i = 2 THEN
@@ -1586,7 +1586,7 @@ FUNCTION Errors_Warings : BOOL
 // 	                ELSIF i = 5 THEN
 // 	                    Linear_Encoder_Device_Errors_5.%X1 := TRUE;
 // 	                END_IF;
-// 	            ELSIF Control.VTD_Sys[i].Inputs.LE_Position = 1000 THEN
+// 	            ELSIF Control.VTD[i].Inputs.LE_Position = 1000 THEN
 // 	                IF i = 1 THEN
 // 	                    Linear_Encoder_Device_Errors_1.%X2 := TRUE;
 // 	                ELSIF i = 2 THEN
@@ -1598,7 +1598,7 @@ FUNCTION Errors_Warings : BOOL
 // 	                ELSIF i = 5 THEN
 // 	                    Linear_Encoder_Device_Errors_5.%X2 := TRUE;
 // 	                END_IF;
-// 	            ELSIF Control.VTD_Sys[i].Inputs.LE_Status.%X1 THEN
+// 	            ELSIF Control.VTD[i].Inputs.LE_Status.%X1 THEN
 // 	                IF i = 1 THEN
 // 	                    Linear_Encoder_Device_Errors_1.%X3 := TRUE;
 // 	                ELSIF i = 2 THEN
@@ -1610,7 +1610,7 @@ FUNCTION Errors_Warings : BOOL
 // 	                ELSIF i = 5 THEN
 // 	                    Linear_Encoder_Device_Errors_5.%X3 := TRUE;
 // 	                END_IF;
-// 	            ELSIF Control.VTD_Sys[i].Inputs.LE_Status.%X0 THEN
+// 	            ELSIF Control.VTD[i].Inputs.LE_Status.%X0 THEN
 // 	                IF i = 1 THEN
 // 	                    Linear_Encoder_Device_Errors_1.%X4 := TRUE;
 // 	                ELSIF i = 2 THEN
@@ -1637,57 +1637,57 @@ FUNCTION Errors_Warings : BOOL
 // 	            END_IF;
 // 
 // 
-// 	            IF Control.VTD_Sys[i].Inputs.LE_Status.%X2 THEN
+// 	            IF Control.VTD[i].Inputs.LE_Status.%X2 THEN
 // 	                IF i = 1 THEN
-// 	                    Linear_Encoder_Warnings_1.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
-// 	                    Linear_Encoder_Warnings_1.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
-// 	                    Linear_Encoder_Warnings_1.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
-// 	                    Linear_Encoder_Warnings_1.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
-// 	                    Linear_Encoder_Warnings_1.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
-// 	                    Linear_Encoder_Warnings_1.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
-// 	                    Linear_Encoder_Warnings_1.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
-// 	                    Linear_Encoder_Warnings_1.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
-// 	                    Linear_Encoder_Warnings_1.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                    Linear_Encoder_Warnings_1.%X0 := Control.VTD[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_1.%X1 := Control.VTD[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_1.%X2 := Control.VTD[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_1.%X3 := Control.VTD[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_1.%X4 := Control.VTD[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_1.%X5 := Control.VTD[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_1.%X6 := Control.VTD[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_1.%X7 := Control.VTD[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_1.%X8 := Control.VTD[i].Inputs.LE_Warnings.%X8;
 // 	                ELSIF i = 2 THEN
-// 	                    Linear_Encoder_Warnings_2.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
-// 	                    Linear_Encoder_Warnings_2.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
-// 	                    Linear_Encoder_Warnings_2.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
-// 	                    Linear_Encoder_Warnings_2.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
-// 	                    Linear_Encoder_Warnings_2.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
-// 	                    Linear_Encoder_Warnings_2.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
-// 	                    Linear_Encoder_Warnings_2.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
-// 	                    Linear_Encoder_Warnings_2.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
-// 	                    Linear_Encoder_Warnings_2.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                    Linear_Encoder_Warnings_2.%X0 := Control.VTD[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_2.%X1 := Control.VTD[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_2.%X2 := Control.VTD[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_2.%X3 := Control.VTD[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_2.%X4 := Control.VTD[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_2.%X5 := Control.VTD[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_2.%X6 := Control.VTD[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_2.%X7 := Control.VTD[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_2.%X8 := Control.VTD[i].Inputs.LE_Warnings.%X8;
 // 	                ELSIF i = 3 THEN
-// 	                    Linear_Encoder_Warnings_3.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
-// 	                    Linear_Encoder_Warnings_3.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
-// 	                    Linear_Encoder_Warnings_3.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
-// 	                    Linear_Encoder_Warnings_3.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
-// 	                    Linear_Encoder_Warnings_3.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
-// 	                    Linear_Encoder_Warnings_3.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
-// 	                    Linear_Encoder_Warnings_3.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
-// 	                    Linear_Encoder_Warnings_3.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
-// 	                    Linear_Encoder_Warnings_3.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                    Linear_Encoder_Warnings_3.%X0 := Control.VTD[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_3.%X1 := Control.VTD[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_3.%X2 := Control.VTD[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_3.%X3 := Control.VTD[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_3.%X4 := Control.VTD[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_3.%X5 := Control.VTD[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_3.%X6 := Control.VTD[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_3.%X7 := Control.VTD[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_3.%X8 := Control.VTD[i].Inputs.LE_Warnings.%X8;
 // 	                ELSIF i = 4 THEN
-// 	                    Linear_Encoder_Warnings_4.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
-// 	                    Linear_Encoder_Warnings_4.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
-// 	                    Linear_Encoder_Warnings_4.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
-// 	                    Linear_Encoder_Warnings_4.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
-// 	                    Linear_Encoder_Warnings_4.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
-// 	                    Linear_Encoder_Warnings_4.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
-// 	                    Linear_Encoder_Warnings_4.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
-// 	                    Linear_Encoder_Warnings_4.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
-// 	                    Linear_Encoder_Warnings_4.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                    Linear_Encoder_Warnings_4.%X0 := Control.VTD[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_4.%X1 := Control.VTD[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_4.%X2 := Control.VTD[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_4.%X3 := Control.VTD[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_4.%X4 := Control.VTD[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_4.%X5 := Control.VTD[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_4.%X6 := Control.VTD[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_4.%X7 := Control.VTD[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_4.%X8 := Control.VTD[i].Inputs.LE_Warnings.%X8;
 // 	                ELSIF i = 5 THEN
-// 	                    Linear_Encoder_Warnings_5.%X0 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X0;
-// 	                    Linear_Encoder_Warnings_5.%X1 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X1;
-// 	                    Linear_Encoder_Warnings_5.%X2 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X2;
-// 	                    Linear_Encoder_Warnings_5.%X3 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X3;
-// 	                    Linear_Encoder_Warnings_5.%X4 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X4;
-// 	                    Linear_Encoder_Warnings_5.%X5 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X5;
-// 	                    Linear_Encoder_Warnings_5.%X6 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X6;
-// 	                    Linear_Encoder_Warnings_5.%X7 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X7;
-// 	                    Linear_Encoder_Warnings_5.%X8 := Control.VTD_Sys[i].Inputs.LE_Warnings.%X8;
+// 	                    Linear_Encoder_Warnings_5.%X0 := Control.VTD[i].Inputs.LE_Warnings.%X0;
+// 	                    Linear_Encoder_Warnings_5.%X1 := Control.VTD[i].Inputs.LE_Warnings.%X1;
+// 	                    Linear_Encoder_Warnings_5.%X2 := Control.VTD[i].Inputs.LE_Warnings.%X2;
+// 	                    Linear_Encoder_Warnings_5.%X3 := Control.VTD[i].Inputs.LE_Warnings.%X3;
+// 	                    Linear_Encoder_Warnings_5.%X4 := Control.VTD[i].Inputs.LE_Warnings.%X4;
+// 	                    Linear_Encoder_Warnings_5.%X5 := Control.VTD[i].Inputs.LE_Warnings.%X5;
+// 	                    Linear_Encoder_Warnings_5.%X6 := Control.VTD[i].Inputs.LE_Warnings.%X6;
+// 	                    Linear_Encoder_Warnings_5.%X7 := Control.VTD[i].Inputs.LE_Warnings.%X7;
+// 	                    Linear_Encoder_Warnings_5.%X8 := Control.VTD[i].Inputs.LE_Warnings.%X8;
 // 	                END_IF;
 // 	            END_IF;
 // 	        END_IF;

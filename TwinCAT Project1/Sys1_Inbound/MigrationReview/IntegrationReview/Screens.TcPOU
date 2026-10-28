@@ -21,15 +21,15 @@ FUNCTION Screens : BOOL
 // // Types, globals, calls, units and behavior require manual reconciliation.
 // // See docs/TIA_Missing_Blocks.md before importing as PLC code.
 // IF Automatic_Button_1 THEN
-// 	            FOR i := Settings_DB.VTD_Sys[1].Lowest_Level TO Settings_DB.VTD_Sys[1].Highest_Level DO
-// 	                Control.VTD_Sys[1].Instruction.Mode_Change :=
+// 	            FOR i := Settings_DB.VTD.Lowest_Level TO Settings_DB.VTD.Highest_Level DO
+// 	                Control.VTD.Instruction.Mode_Change :=
 // 	                Control.ECnv_Sys[1].Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[1].Cnv_Level[i].Cnv1.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[1].Cnv_Level[i].Cnv2.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[1].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Mode :=
 // 	                Control.LCnv_Sys[1].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Mode := 3;
 // 
-// 	                Control.VTD_Sys[1].Instruction.Enable :=
+// 	                Control.VTD.Instruction.Enable :=
 // 	                Control.ECnv_Sys[1].Instruction.Enable :=
 // 	                Control.LCnv_Sys[1].Cnv_Level[i].Cnv1.Instruction.Enable :=
 // 	                Control.LCnv_Sys[1].Cnv_Level[i].Cnv2.Instruction.Enable := TRUE;
@@ -38,15 +38,15 @@ FUNCTION Screens : BOOL
 // 
 // 
 // 	        IF Automatic_Button_2 THEN
-// 	            FOR i := Settings_DB.VTD_Sys[2].Lowest_Level TO Settings_DB.VTD_Sys[2].Highest_Level DO
-// 	                Control.VTD_Sys[2].Instruction.Mode_Change :=
+// 	            FOR i := Settings_DB.VTD[2].Lowest_Level TO Settings_DB.VTD[2].Highest_Level DO
+// 	                Control.VTD[2].Instruction.Mode_Change :=
 // 	                Control.ECnv_Sys[2].Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[2].Cnv_Level[i].Cnv1.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[2].Cnv_Level[i].Cnv2.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[2].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Mode :=
 // 	                Control.LCnv_Sys[2].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Mode := 3;
 // 
-// 	                Control.VTD_Sys[2].Instruction.Enable :=
+// 	                Control.VTD[2].Instruction.Enable :=
 // 	                Control.ECnv_Sys[2].Instruction.Enable :=
 // 	                Control.LCnv_Sys[2].Cnv_Level[i].Cnv1.Instruction.Enable :=
 // 	                Control.LCnv_Sys[2].Cnv_Level[i].Cnv2.Instruction.Enable := TRUE;
@@ -55,15 +55,15 @@ FUNCTION Screens : BOOL
 // 
 // 
 // 	        IF Automatic_Button_3 THEN
-// 	            FOR i := Settings_DB.VTD_Sys[3].Lowest_Level TO Settings_DB.VTD_Sys[3].Highest_Level DO
-// 	                Control.VTD_Sys[3].Instruction.Mode_Change :=
+// 	            FOR i := Settings_DB.VTD[3].Lowest_Level TO Settings_DB.VTD[3].Highest_Level DO
+// 	                Control.VTD[3].Instruction.Mode_Change :=
 // 	                Control.ECnv_Sys[3].Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[3].Cnv_Level[i].Cnv1.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[3].Cnv_Level[i].Cnv2.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[3].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Mode :=
 // 	                Control.LCnv_Sys[3].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Mode := 3;
 // 
-// 	                Control.VTD_Sys[3].Instruction.Enable :=
+// 	                Control.VTD[3].Instruction.Enable :=
 // 	                Control.ECnv_Sys[3].Instruction.Enable :=
 // 	                Control.LCnv_Sys[3].Cnv_Level[i].Cnv1.Instruction.Enable :=
 // 	                Control.LCnv_Sys[3].Cnv_Level[i].Cnv2.Instruction.Enable := TRUE;
@@ -72,15 +72,15 @@ FUNCTION Screens : BOOL
 // 
 // 
 // 	        IF Automatic_Button_4 THEN
-// 	            FOR i := Settings_DB.VTD_Sys[4].Lowest_Level TO Settings_DB.VTD_Sys[4].Highest_Level DO
-// 	                Control.VTD_Sys[4].Instruction.Mode_Change :=
+// 	            FOR i := Settings_DB.VTD[4].Lowest_Level TO Settings_DB.VTD[4].Highest_Level DO
+// 	                Control.VTD[4].Instruction.Mode_Change :=
 // 	                Control.ECnv_Sys[4].Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[4].Cnv_Level[i].Cnv1.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[4].Cnv_Level[i].Cnv2.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[4].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Mode :=
 // 	                Control.LCnv_Sys[4].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Mode := 3;
 // 
-// 	                Control.VTD_Sys[4].Instruction.Enable :=
+// 	                Control.VTD[4].Instruction.Enable :=
 // 	                Control.ECnv_Sys[4].Instruction.Enable :=
 // 	                Control.LCnv_Sys[4].Cnv_Level[i].Cnv1.Instruction.Enable :=
 // 	                Control.LCnv_Sys[4].Cnv_Level[i].Cnv2.Instruction.Enable := TRUE;
@@ -89,15 +89,15 @@ FUNCTION Screens : BOOL
 // 
 // 
 // 	        IF Automatic_Button_5 THEN
-// 	            FOR i := Settings_DB.VTD_Sys[5].Lowest_Level TO Settings_DB.VTD_Sys[5].Highest_Level DO
-// 	                Control.VTD_Sys[5].Instruction.Mode_Change :=
+// 	            FOR i := Settings_DB.VTD[5].Lowest_Level TO Settings_DB.VTD[5].Highest_Level DO
+// 	                Control.VTD[5].Instruction.Mode_Change :=
 // 	                Control.ECnv_Sys[5].Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[5].Cnv_Level[i].Cnv1.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[5].Cnv_Level[i].Cnv2.Instruction.Mode_Change :=
 // 	                Control.LCnv_Sys[5].Cnv_Level[i].Cnv1.Safety_Stop_Cnrl.Mode :=
 // 	                Control.LCnv_Sys[5].Cnv_Level[i].Cnv2.Safety_Stop_Cnrl.Mode := 3;
 // 
-// 	                Control.VTD_Sys[5].Instruction.Enable :=
+// 	                Control.VTD[5].Instruction.Enable :=
 // 	                Control.ECnv_Sys[5].Instruction.Enable :=
 // 	                Control.LCnv_Sys[5].Cnv_Level[i].Cnv1.Instruction.Enable :=
 // 	                Control.LCnv_Sys[5].Cnv_Level[i].Cnv2.Instruction.Enable := TRUE;
@@ -105,7 +105,7 @@ FUNCTION Screens : BOOL
 // 	        END_IF;
 // 
 // 
-// 	        All_In_Automatic_1 := Control.VTD_Sys[1].Mode = 3 AND
+// 	        All_In_Automatic_1 := Control.VTD.Mode = 3 AND
 // 	        Control.ECnv_Sys[1].Mode = 3 AND
 // 
 // 	        Control.LCnv_Sys[1].Cnv_Level[1].Cnv1.Mode = 3 AND
@@ -143,7 +143,7 @@ FUNCTION Screens : BOOL
 // 	        Control.LCnv_Sys[1].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Mode = 3;
 // 
 // 
-// 	        All_In_Automatic_2 := Control.VTD_Sys[2].Mode = 3 AND
+// 	        All_In_Automatic_2 := Control.VTD[2].Mode = 3 AND
 // 	        Control.ECnv_Sys[2].Mode = 3 AND
 // 
 // 	        Control.LCnv_Sys[2].Cnv_Level[1].Cnv1.Mode = 3 AND
@@ -181,7 +181,7 @@ FUNCTION Screens : BOOL
 // 	        Control.LCnv_Sys[2].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Mode = 3;
 // 
 // 
-// 	        All_In_Automatic_3 := Control.VTD_Sys[3].Mode = 3 AND
+// 	        All_In_Automatic_3 := Control.VTD[3].Mode = 3 AND
 // 	        Control.ECnv_Sys[3].Mode = 3 AND
 // 
 // 	        Control.LCnv_Sys[3].Cnv_Level[1].Cnv1.Mode = 3 AND
@@ -219,7 +219,7 @@ FUNCTION Screens : BOOL
 // 	        Control.LCnv_Sys[3].Cnv_Level[8].Cnv2.Safety_Stop_Cnrl.Mode = 3;
 // 
 // 
-// 	        All_In_Automatic_4 := Control.VTD_Sys[4].Mode = 3 AND
+// 	        All_In_Automatic_4 := Control.VTD[4].Mode = 3 AND
 // 	        Control.ECnv_Sys[4].Mode = 3 AND
 // 
 // 	        Control.LCnv_Sys[4].Cnv_Level[1].Cnv1.Mode = 3 AND
@@ -241,7 +241,7 @@ FUNCTION Screens : BOOL
 // 	        Control.LCnv_Sys[4].Cnv_Level[8].Cnv1.Safety_Stop_Cnrl.Mode = 3;
 // 
 // 
-// 	        All_In_Automatic_5 := Control.VTD_Sys[5].Mode = 3 AND
+// 	        All_In_Automatic_5 := Control.VTD[5].Mode = 3 AND
 // 	        Control.ECnv_Sys[5].Mode = 3 AND
 // 
 // 	        Control.LCnv_Sys[5].Cnv_Level[1].Cnv1.Mode = 3 AND
@@ -598,7 +598,7 @@ FUNCTION Screens : BOOL
 // 
 // 	HMI_DB.Password := '12345';
 // 
-// 	    CASE VTD_System_Selected_HMI OF
+// 	    CASE VTDtem_Selected_HMI OF
 // 	        1:
 // 	            Screen_DB.VTD_Barcode := Control.VTDBarcode_Station[1].Barcode;
 // 	            Screen_DB.VTD_Barcode_Visu := Control.VTDBarcode_Station[1].Barcode <> '';

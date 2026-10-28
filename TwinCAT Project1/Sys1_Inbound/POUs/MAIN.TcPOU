@@ -24,24 +24,24 @@ END_IF
 
 // TEST ONLY - VTD MOVIPRO process data communication check.
 fbVtdProcessDataTest(
-    i_aProcessInput := Control.VTD_Sys[1].Motor.stProcessInput.aWord,
-    i_bWcStateError := Control.VTD_Sys[1].Motor.stProcessInput.bWcStateError,
-    i_uiEcState := Control.VTD_Sys[1].Motor.stProcessInput.uiEcState,
+    i_aProcessInput := Control.VTD.Motor.stProcessInput.aWord,
+    i_bWcStateError := Control.VTD.Motor.stProcessInput.bWcStateError,
+    i_uiEcState := Control.VTD.Motor.stProcessInput.uiEcState,
     i_bTestWriteEnable := GVL_HMI_VTD.stPdCommand.bTestWriteEnable,
     i_bTestAllowControlWord := GVL_HMI_VTD.stPdCommand.bTestAllowControlWord,
     i_aTestProcessOutput := GVL_HMI_VTD.stPdCommand.aTestProcessOutput);
 
 // TEST ONLY - VTD manual control (jog, modes, speed, software stop, reset).
 fbVtdManualControl(
-    i_stProcessInput := Control.VTD_Sys[1].Motor.stProcessInput,
+    i_stProcessInput := Control.VTD.Motor.stProcessInput,
     i_bInhibit := fbVtdProcessDataTest.q_bTestWriteActive,
     i_stSettings := GVL_HMI_VTD.stManualSettings,
     io_stCommand := GVL_HMI_VTD.stManualCommand);
 
 IF fbVtdProcessDataTest.q_bTestWriteActive THEN
-    Control.VTD_Sys[1].Motor.aProcessOutput := fbVtdProcessDataTest.q_aProcessOutput;
+    Control.VTD.Motor.aProcessOutput := fbVtdProcessDataTest.q_aProcessOutput;
 ELSE
-    Control.VTD_Sys[1].Motor.aProcessOutput := fbVtdManualControl.q_aProcessOutput;
+    Control.VTD.Motor.aProcessOutput := fbVtdManualControl.q_aProcessOutput;
 END_IF
 
 // 3. HMI status
@@ -49,7 +49,7 @@ FC_VTD_PdHmiUpdateStatus(
     io_fbProcessData := fbVtdProcessDataTest,
     io_stStatus := GVL_HMI_VTD.stPdStatus);
 // PO really sent to the drive (raw write or manual control).
-GVL_HMI_VTD.stPdStatus.aProcessOutputSent := Control.VTD_Sys[1].Motor.aProcessOutput;
+GVL_HMI_VTD.stPdStatus.aProcessOutputSent := Control.VTD.Motor.aProcessOutput;
 GVL_HMI_VTD.stManualStatus := fbVtdManualControl.q_stStatus;
 
 // 4. Internal variables -> IO outputs

@@ -134,7 +134,7 @@ FUNCTION_BLOCK Auto_Test_1
 // 	        END_IF;
 // 
 // 	    20:
-// 	        IF Control.VTD_Sys[Sys_No].Current_Level <> #From_level THEN
+// 	        IF Control.VTD[Sys_No].Current_Level <> #From_level THEN
 // 	            VTD_Order_FC(i_Sys := Sys_No,
 // 	                           Level := #From_level,
 // 	                           StepTable_0 := Step_Table_0);
@@ -162,7 +162,7 @@ FUNCTION_BLOCK Auto_Test_1
 // 
 // 	    40:
 // 	        CNV_Order_FC(i_Sys := Sys_No,
-// 	                       Level := Control.VTD_Sys[Sys_No].Current_Level,
+// 	                       Level := Control.VTD[Sys_No].Current_Level,
 // 	                       Tower := 1,
 // 	                       Transfer_From_To := 2,
 // 	                       Pallet_Type := #Pallet_Type,
@@ -190,7 +190,7 @@ FUNCTION_BLOCK Auto_Test_1
 // 
 // 	    70:
 // 	        CNV_Order_FC(i_Sys := Sys_No,
-// 	                       Level := Control.VTD_Sys[Sys_No].Current_Level,
+// 	                       Level := Control.VTD[Sys_No].Current_Level,
 // 	                       Tower := 1,
 // 	                       Transfer_From_To := 1,
 // 	                       Pallet_Type := #Pallet_Type,
@@ -215,9 +215,9 @@ FUNCTION_BLOCK Auto_Test_1
 // 	        END_IF;
 // 
 // 	    100:
-// 	        IF Control.VTD_Sys[Sys_No].Current_Level < #To_level THEN
+// 	        IF Control.VTD[Sys_No].Current_Level < #To_level THEN
 // 	            VTD_Order_FC(i_Sys := Sys_No,
-// 	                           Level := Control.VTD_Sys[Sys_No].Current_Level + 1,
+// 	                           Level := Control.VTD[Sys_No].Current_Level + 1,
 // 	                           StepTable_0 := Step_Table_0);
 // 	            System_OrderSent := TRUE;
 // 	            State := State + 10;
@@ -322,7 +322,7 @@ FUNCTION_BLOCK Auto_Test_1
 // 
 // 	        IF Send_CNV_Order THEN
 // 	            CNV_Order_FC(i_Sys := Sys_No,
-// 	                           Level := Control.VTD_Sys[Sys_No].Current_Level,
+// 	                           Level := Control.VTD[Sys_No].Current_Level,
 // 	                           Tower := Tower,
 // 	                           Transfer_From_To := Transfer_From_To,
 // 	                           Pallet_Type := #Pallet_Type,

@@ -16,39 +16,39 @@ FUNCTION_BLOCK VTD_HMI_FB
 // // Reference: Reference_Project/VTD_HMI_FB.scl, object VTD_HMI_FB.
 // // Types, globals, calls, units and behavior require manual reconciliation.
 // // See docs/TIA_Missing_Blocks.md before importing as PLC code.
-// IF VTD_System_Selected_HMI <> VTD_ID_HMI_OLD THEN
+// IF VTDtem_Selected_HMI <> VTD_ID_HMI_OLD THEN
 // 	    Screen_DB.Charge_VTD_Commands := TRUE;
-// 	    VTD_ID_HMI_OLD := VTD_System_Selected_HMI;
+// 	    VTD_ID_HMI_OLD := VTDtem_Selected_HMI;
 // 	END_IF;
 // 
 // 
 // 	IF Screen_DB.Charge_VTD_Commands THEN
-// 	    CASE VTD_System_Selected_HMI OF
+// 	    CASE VTDtem_Selected_HMI OF
 // 	        1:
-// 	            VTD_Mode_Change_HMI := Control.VTD_Sys[1].Mode;
-// 	            VTD_Enable_HMI := Control.VTD_Sys[1].Instruction.Enable;
+// 	            VTD_Mode_Change_HMI := Control.VTD.Mode;
+// 	            VTD_Enable_HMI := Control.VTD.Instruction.Enable;
 // 	            LE_Bypass := LE_Bypass_1_;
-// 	            VTD_Stop_HMI := Control.VTD_Sys[1].Instruction.Stop;
+// 	            VTD_Stop_HMI := Control.VTD.Instruction.Stop;
 // 	        2:
-// 	            VTD_Mode_Change_HMI := Control.VTD_Sys[2].Mode;
-// 	            VTD_Enable_HMI := Control.VTD_Sys[2].Instruction.Enable;
+// 	            VTD_Mode_Change_HMI := Control.VTD[2].Mode;
+// 	            VTD_Enable_HMI := Control.VTD[2].Instruction.Enable;
 // 	            LE_Bypass := LE_Bypass_2_;
-// 	            VTD_Stop_HMI := Control.VTD_Sys[2].Instruction.Stop;
+// 	            VTD_Stop_HMI := Control.VTD[2].Instruction.Stop;
 // 	        3:
-// 	            VTD_Mode_Change_HMI := Control.VTD_Sys[3].Mode;
-// 	            VTD_Enable_HMI := Control.VTD_Sys[3].Instruction.Enable;
+// 	            VTD_Mode_Change_HMI := Control.VTD[3].Mode;
+// 	            VTD_Enable_HMI := Control.VTD[3].Instruction.Enable;
 // 	            LE_Bypass := LE_Bypass_3_;
-// 	            VTD_Stop_HMI := Control.VTD_Sys[3].Instruction.Stop;
+// 	            VTD_Stop_HMI := Control.VTD[3].Instruction.Stop;
 // 	        4:
-// 	            VTD_Mode_Change_HMI := Control.VTD_Sys[4].Mode;
-// 	            VTD_Enable_HMI := Control.VTD_Sys[4].Instruction.Enable;
+// 	            VTD_Mode_Change_HMI := Control.VTD[4].Mode;
+// 	            VTD_Enable_HMI := Control.VTD[4].Instruction.Enable;
 // 	            LE_Bypass := LE_Bypass_4_;
-// 	            VTD_Stop_HMI := Control.VTD_Sys[4].Instruction.Stop;
+// 	            VTD_Stop_HMI := Control.VTD[4].Instruction.Stop;
 // 	        5:
-// 	            VTD_Mode_Change_HMI := Control.VTD_Sys[5].Mode;
-// 	            VTD_Enable_HMI := Control.VTD_Sys[5].Instruction.Enable;
+// 	            VTD_Mode_Change_HMI := Control.VTD[5].Mode;
+// 	            VTD_Enable_HMI := Control.VTD[5].Instruction.Enable;
 // 	            LE_Bypass := LE_Bypass_5_;
-// 	            VTD_Stop_HMI := Control.VTD_Sys[5].Instruction.Stop;
+// 	            VTD_Stop_HMI := Control.VTD[5].Instruction.Stop;
 // 	    END_CASE;
 // 
 // 	    T_Charge.TON(IN := TRUE,
@@ -61,7 +61,7 @@ FUNCTION_BLOCK VTD_HMI_FB
 // 
 // 
 // 	ELSIF HMI_DB.ScreenNo_Main = 1 AND NOT Screen_DB.Charge_VTD_Commands THEN
-// 	    CASE VTD_System_Selected_HMI OF
+// 	    CASE VTDtem_Selected_HMI OF
 // 	        1:
 // 	            Feed_VTD_HMI_FC(Sys_No := 1,
 // 	                              Rem_Loc_Keys:= HMI_DB.Rem_Loc_Keys[1].Level,

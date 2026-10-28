@@ -147,9 +147,7 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
     END_IF;
     
     IF ID_Decoded.Device_Type = 10 THEN
-        Settings.LCnv_Sys[ID_Decoded.VTD].Cnv_Level[ID_Decoded.Level].Cnv1.Cnv_Level := INT_TO_UINT(ID_Decoded.Level);
-    ELSIF ID_Decoded.Device_Type = 11 THEN
-        Settings.LCnv_Sys[ID_Decoded.VTD].Cnv_Level[ID_Decoded.Level].Cnv2.Cnv_Level := INT_TO_UINT(ID_Decoded.Level);
+        Settings.LCnv[ID_Decoded.Level].Cnv_Level := INT_TO_UINT(ID_Decoded.Level);
     END_IF;
 {endregion}
 
@@ -191,30 +189,14 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
             //----------------------- Pallet Movement -----------------------
         20: //Set the direction of transfer
             IF ID_Decoded.Device_Type = 10 AND ID_Decoded_From.Device_Type = 12 AND NOT Cnv_Control.Cnv_Occupied AND
-                Control.ECnv_Sys[ID_Decoded.VTD].Cnv_Occupied THEN //Extractor to CNV 1
+                Control.ECnv.Cnv_Occupied THEN //Extractor to CNV 1
                 Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
                 Cnv_Control.Motor.Forward := TRUE;
                 Transfer_Direction := 'Forward';
                 State := 30;
-            ELSIF ID_Decoded.Device_Type = 10 AND ID_Decoded_To.Device_Type = 11 AND Cnv_Control.Cnv_Occupied AND
-                NOT Control.LCnv_Sys[ID_Decoded.VTD].Cnv_Level[ID_Decoded.Level].Cnv2.Cnv_Occupied THEN // CNV 1 to CNV 2
-                IF Control.LCnv_Sys[ID_Decoded.VTD].Cnv_Level[ID_Decoded.Level].Cnv2.SM_State = 30 THEN //Wait CNV 2 Run
-                    Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
-                    Cnv_Control.Motor.Forward := TRUE;
-                    Transfer_Direction := 'Forward';
-                    State := 30;
-                END_IF;
-            ELSIF ID_Decoded.Device_Type = 11 AND ID_Decoded_To.Device_Type = 10 AND Cnv_Control.Cnv_Occupied AND
-                NOT Control.LCnv_Sys[ID_Decoded.VTD].Cnv_Level[ID_Decoded.Level].Cnv1.Cnv_Occupied THEN //CNV 2 To Cnv 1
-                IF Control.LCnv_Sys[ID_Decoded.VTD].Cnv_Level[ID_Decoded.Level].Cnv1.SM_State = 30 THEN //Wait CNV1 RUn
-                    Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
-                    Cnv_Control.Motor.Reverse := TRUE;
-                    Transfer_Direction := 'Backward';
-                    State := 30;
-                END_IF;
             ELSIF ID_Decoded.Device_Type = 10 AND ID_Decoded_To.Device_Type = 12 AND Cnv_Control.Cnv_Occupied AND
-                NOT Control.ECnv_Sys[ID_Decoded.VTD].Cnv_Occupied THEN //CNV 1 To extractor
-                IF Control.ECnv_Sys[ID_Decoded.VTD].SM_State = 30 THEN //Wait CVTD RUn
+                NOT Control.ECnv.Cnv_Occupied THEN //CNV 1 To extractor
+                IF Control.ECnv.SM_State = 30 THEN //Wait CVTD RUn
                     Cnv_Control.Motor.Speed := Cnv_Settings.Full_Speed;
                     Cnv_Control.Motor.Reverse := TRUE;
                     Transfer_Direction := 'Backward';
@@ -245,16 +227,12 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
             END_IF;
             
             //Check conditions to stop the motor
-            IF (ID_Decoded.Device_Type = 10 AND ID_Decoded_From.Device_Type = 12) OR //ECONV To CNV 1 - 10(CNV1)
-                (ID_Decoded.Device_Type = 11 AND ID_Decoded_From.Device_Type = 10) OR //CNV 1 To CNV 2 - 11(CNV2)
-                (ID_Decoded.Device_Type = 10 AND ID_Decoded_From.Device_Type = 11) //CNV 2 To CNV 1 - 10(CNV1)
+            IF (ID_Decoded.Device_Type = 10 AND ID_Decoded_From.Device_Type = 12) //ECONV To CNV 1 - 10(CNV1)
             THEN
                 IF Cnv_Control.Cnv_Occupied THEN //Stop the motor if the conveyor is not occupied anymore
                     State := 35;
                 END_IF;
-            ELSIF (ID_Decoded.Device_Type = 10 AND ID_Decoded_To.Device_Type = 12) OR //CNV 1 To ECNV - 10(CNV1)
-                (ID_Decoded.Device_Type = 10 AND ID_Decoded_To.Device_Type = 11) OR //CNV 1 To CNV 2 - 10(CNV1)
-                (ID_Decoded.Device_Type = 11 AND ID_Decoded_To.Device_Type = 10) //CNV 2 To CNV 1 - 11(CNV2)
+            ELSIF (ID_Decoded.Device_Type = 10 AND ID_Decoded_To.Device_Type = 12) //CNV 1 To ECNV - 10(CNV1)
             THEN
                 IF NOT Cnv_Control.Cnv_Occupied THEN //Stop the motor if the conveyor is occupied
                     State := 35;
@@ -312,16 +290,14 @@ Example: 110203 Conveyor at the rear of VTD 3 on level 2
             IF Cnv_Control.Enabled THEN
                 IF Cnv_Control.Instruction.Foward OR
                     (ID_Decoded.Device_Type = 10 AND Cnv_Control.Instruction.Start_Transfer AND NOT CNV_In_Out AND CNV1_2_Selected = 1 (*RECEIVE = 0*)) OR
-                    (ID_Decoded.Device_Type = 10 AND Cnv_Control.Instruction.Start_Transfer AND CNV_In_Out AND CNV1_2_Selected = 2 (*SEND = 1*)) OR
-                    (ID_Decoded.Device_Type = 11 AND Cnv_Control.Instruction.Start_Transfer AND NOT CNV_In_Out AND NOT Forward (*RECEIVE = 0*))
+                    (ID_Decoded.Device_Type = 10 AND Cnv_Control.Instruction.Start_Transfer AND CNV_In_Out AND CNV1_2_Selected = 2 (*SEND = 1*))
                 THEN
                     Cnv_Control.Motor.Speed := Cnv_Settings.Manual_Speed;
                     Cnv_Control.Motor.Forward := TRUE;
                     Cnv_Control.Running := TRUE;
                 ELSIF Cnv_Control.Instruction.Backward OR
                     (ID_Decoded.Device_Type = 10 AND Cnv_Control.Instruction.Start_Transfer AND NOT CNV_In_Out AND CNV1_2_Selected = 2 (*RECEIVE = 0*)) OR
-                    (ID_Decoded.Device_Type = 10 AND Cnv_Control.Instruction.Start_Transfer AND CNV_In_Out AND CNV1_2_Selected = 1 (*SEND = 1*)) OR
-                    (ID_Decoded.Device_Type = 11 AND Cnv_Control.Instruction.Start_Transfer AND CNV_In_Out (*SEND = 1*))
+                    (ID_Decoded.Device_Type = 10 AND Cnv_Control.Instruction.Start_Transfer AND CNV_In_Out AND CNV1_2_Selected = 1 (*SEND = 1*))
                 THEN
                     Cnv_Control.Motor.Speed := Cnv_Settings.Manual_Speed;
                     Cnv_Control.Motor.Reverse := TRUE;

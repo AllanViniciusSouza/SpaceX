@@ -28,7 +28,7 @@
 // Drive status is evaluated from the previous call of FB_SEW_Drive (one PLC cycle).
 FUNCTION_BLOCK FB_VTD_ManualControl
 VAR_INPUT
-    i_stProcessInput : ST_SEW_ProcessInput8;  // Raw PI 1..8 + EtherCAT diagnostics (Control.VTD_Sys[1].Motor)
+    i_stProcessInput : ST_SEW_ProcessInput8;  // Raw PI 1..8 + EtherCAT diagnostics (Control.VTD.Motor)
     i_bInhibit : BOOL;                        // TRUE = another source writes the PO (raw PD test); enable is dropped
     i_stSettings : ST_VTD_ManualSettings;     // Max speed, ramps (user units) and jog max time
 END_VAR
@@ -36,7 +36,7 @@ VAR_IN_OUT
     io_stCommand : ST_VTD_ManualHmiCommand;   // HMI commands; bEnable, eModeRequest and iSpeedPercent are written back
 END_VAR
 VAR_OUTPUT
-    q_aProcessOutput : ARRAY[1..8] OF UINT;   // Raw PO 1..8 (to Control.VTD_Sys[1].Motor.aProcessOutput)
+    q_aProcessOutput : ARRAY[1..8] OF UINT;   // Raw PO 1..8 (to Control.VTD.Motor.aProcessOutput)
     q_stStatus : ST_VTD_ManualHmiStatus;      // To GVL_HMI_VTD.stManualStatus
 END_VAR
 VAR
