@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Conveyor_MotorInterlock" Id="{abd95d09-d4c1-4a28-884a-45253480b8c4}" SpecialFunc="None">
+    <Declaration><![CDATA[// Grants one motor at a time inside a group of motors that must not run together
+// (break-before-make). Examples: lift and transfer of a popup (inside PopUp_Conveyor_FB);
+// turntable rotation and turntable roller conveyor (Control.Turn_Table.Interlock /
+// Control.TBCnv.Interlock, one instance called before both device FBs).
+//
+// This block does NOT command any motor. The owner FB requests a motor, drives it only
+// while q_abAllowed[n] is TRUE, removes Forward/Reverse as soon as the permission drops,
+// and reports i_abStopped[n] (motor not turning and output stage off, from the SEW status).
+// A motor whose drive communication is not OK must be reported as NOT stopped (unknown),
+// so the group stays blocked until the status is valid again.
+//
+// Behavior:
+//  - A motor is granted only when every motor of the group has been stopped for at least
+//    i_tChangeover (brake closed, mechanics at rest), at start-up and at every change.
+//  - The granted motor keeps the permission while its request stays TRUE.
+//  - Several requests at the same time: the lowest index wins.
+//  - i_iMotorCount outside 1..4 or i_tChangeover = T#0S: not configured, nothing is granted.
+//  - Drive status is the owner's value of the previous cycle: one PLC cycle delay.
+//
+// Diagnostics:
+//  - q_bConflict: more than one motor of the group is not stopped. Should never happen;
+//    the owner must stop its motors and report an error.
+//
+// Functional interlock in the standard PLC. It is NOT a safety function.
+FUNCTION_BLOCK FB_Conveyor_MotorInterlock
+VAR_INPUT
+    i_abRequest : ARRAY[1..4] OF BOOL;      // Owner -> block: motor n wants to run
+    i_abStopped : ARRAY[1..4] OF BOOL;      // Owner -> block: motor n not turning and output stage off
+
+    i_iMotorCount : INT;                    // Motors used in this group, 1..4 (0 = not configured)
+    i_tChangeover : TIME;                   // Min. time all motors are stopped before a grant (T#0S = not configured)
+END_VAR
+VAR_OUTPUT
+    q_abAllowed : ARRAY[1..4] OF BOOL;      // Block -> owner: motor n may run
+
+    q_iActive : INT;                        // Granted motor 1..4, 0 = none
+    q_bChangeover : BOOL;                   // A motor is requested and waits for the group to be stopped
+    q_bAllStopped : BOOL;                   // Every motor of the group is stopped
+    q_bConflict : BOOL;                     // More than one motor of the group is not stopped
+    q_bSettingsValid : BOOL;                // i_iMotorCount in 1..4 and i_tChangeover > T#0S
+END_VAR
+VAR
+    iMotor : INT;                           // Loop index over the motors of the group
+    iNotStopped : INT;                      // Number of motors not stopped
+    bAnyRequest : BOOL;                     // At least one motor is requested
+
+    tonAllStopped : TON;                    // All motors stopped for i_tChangeover
+END_VAR
+VAR CONSTANT
+    MAX_MOTORS : INT := 4;                  // Size of the motor arrays
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{region "Supervision"}
+q_bSettingsValid := (i_iMotorCount >= 1)
+                    AND (i_iMotorCount <= MAX_MOTORS)
+                    AND (i_tChangeover > T#0S);
+
+iNotStopped := 0;
+bAnyRequest := FALSE;
+IF q_bSettingsValid THEN
+    FOR iMotor := 1 TO i_iMotorCount DO
+        IF NOT i_abStopped[iMotor] THEN
+            iNotStopped := iNotStopped + 1;
+        END_IF
+        IF i_abRequest[iMotor] THEN
+            bAnyRequest := TRUE;
+        END_IF
+    END_FOR
+END_IF
+
+q_bAllStopped := q_bSettingsValid AND (iNotStopped = 0);
+q_bConflict := (iNotStopped > 1);
+
+// Restarts whenever a motor of the group turns.
+tonAllStopped(IN := q_bAllStopped, PT := i_tChangeover);
+{endregion}
+
+{region "Release"}
+// The granted motor keeps its permission only while it is requested and the group is healthy.
+IF q_iActive <> 0 THEN
+    IF (q_iActive < 1)
+       OR (q_iActive > i_iMotorCount)
+       OR NOT q_bSettingsValid
+       OR q_bConflict
+    THEN
+        q_iActive := 0;
+    ELSIF NOT i_abRequest[q_iActive] THEN
+        q_iActive := 0;
+    END_IF
+END_IF
+{endregion}
+
+{region "Grant"}
+// A new motor is granted only after every motor has been stopped for i_tChangeover.
+// The loop runs downwards so that the lowest requested index wins.
+IF (q_iActive = 0) AND tonAllStopped.Q THEN
+    FOR iMotor := i_iMotorCount TO 1 BY -1 DO
+        IF i_abRequest[iMotor] THEN
+            q_iActive := iMotor;
+        END_IF
+    END_FOR
+END_IF
+{endregion}
+
+{region "Outputs"}
+FOR iMotor := 1 TO MAX_MOTORS DO
+    q_abAllowed[iMotor] := (iMotor = q_iActive);
+END_FOR
+
+q_bChangeover := bAnyRequest AND (q_iActive = 0);
+{endregion}
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Roller_Settings_DUT" Id="{670928d4-4cc3-4797-afb1-b7f1d2f54a61}">
+    <Declaration><![CDATA[// Parameters of one carousel roller conveyor (Settings.Roller_Cnv[1..5]).
+// Based on ECnv_Settings_DUT / Buffer_Cnv_Settings_DUT and Dallas Inbound/Outbound_Cnv_Settings.
+// 0 = not configured: the function that uses the value is blocked.
+TYPE Roller_Settings_DUT :
+STRUCT
+	ID:	DINT;	// XXYYZZ
+	Barcode_ID:	UINT;	// Barcode station at this roller, 0 = none
+	Motor:	Cnv_Motor_Settings_DUT;	// Same name as Control.<device>.Motor
+	No_Forklift_Detect_Timer:	UINT;	// [s] forklift stations: time without forklift before Automatic_Start / Empty
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

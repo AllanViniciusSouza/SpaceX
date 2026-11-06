@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_Carousel_PopUpMotor" Id="{8dbed6ed-1c5a-46c8-bcff-adec59122c9b}">
+    <Declaration><![CDATA[// Motor of a carousel popup that is allowed to run (Control.Pop_Up_Cnv[n].Active_Motor).
+// The values are the motor indices of the popup's FB_Conveyor_MotorInterlock instance.
+{attribute 'qualified_only'}
+TYPE E_Carousel_PopUpMotor :
+(
+    None := 0,          // No motor granted
+    Lift := 1,          // Motors.Lift
+    Transfer := 2       // Motors.Transfer
+) INT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

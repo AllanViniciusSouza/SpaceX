@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Conveyors_Transfer" Id="{0980327f-531a-4785-9f2f-d1ed9bcc0c7f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION Conveyors_Transfer : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	i_Lev:  UINT;
+	Concat1:  String;
+	Concat2:  String;
+	ID:  DInt;
+	StrLev:  String;
+	StrSys:  String;
+	Level:  UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[StrSys := '1'; // SpaceX Inbound has one VTD system: the ID suffix stays 1
+
+{region "ID OF THE VTD CONVEYOR"}
+    FOR i_Lev := Settings.VTD.Lowest_Level TO Settings.VTD.Highest_Level DO
+        IF Control.VTD.Current_Level = i_Lev THEN
+            StrLev := UINT_TO_STRING(i_Lev);
+            
+            // Remove "+"
+            IF StrLev[1] = '+' THEN
+                StrLev := RIGHT(StrLev, L := LEN(StrLev) - 1);
+            END_IF;
+            
+            //Build ID
+            Concat1 := CONCAT('120', StrLev);
+            Concat2 := CONCAT(Concat1, '0');
+            ID := STRING_TO_DINT(CONCAT(Concat2, StrSys));
+            
+            Settings.ECnv.ID := ID;
+            Settings.ECnv.Cnv_Level := i_Lev;
+        END_IF;
+    END_FOR;
+{endregion}
+    
+{region "READY TO RECEIVE"}
+    //EXTRACTOR CONVEYOR
+    FOR i_Lev := 2 TO Settings.VTD.Highest_Level DO
+        IF Control.VTD.Current_Level = i_Lev THEN
+            StrLev := UINT_TO_STRING(i_Lev);
+            
+            // Remove "+"
+            IF StrLev[1] = '+' THEN
+                StrLev := RIGHT(StrLev, L := LEN(StrLev) - 1);
+            END_IF;
+            
+            //Build ID
+            Concat1 := CONCAT('120', StrLev);
+            Concat2 := CONCAT(Concat1, '0');
+            ID := STRING_TO_DINT(CONCAT(Concat2, StrSys));
+        END_IF;
+        
+        IF Settings.ECnv.ID = ID AND NOT Control.ECnv.Error AND NOT Control.ECnv.Running
+            AND NOT Control.ECnv.Cnv_Occupied AND NOT Control.ECnv.Instruction.Outbound_Ready AND
+            NOT Control.LCnv[i_Lev].Running AND
+            (Control.ECnv.Mode = 2 OR Control.ECnv.Mode = 3) THEN
+            Control.ECnv.Instruction.Inbound_Ready := TRUE;
+        END_IF;
+    END_FOR;
+    
+    //BUFFER CONVEYORS
+    FOR i_Lev := 2 TO Settings.VTD.Highest_Level DO
+        //CNV 1
+        IF NOT Control.LCnv[i_Lev].Error AND
+            NOT Control.LCnv[i_Lev].Running AND
+            NOT Control.LCnv[i_Lev].Cnv_Occupied AND
+            NOT Control.LCnv[i_Lev].Instruction.Outbound_Ready AND
+            (Control.LCnv[i_Lev].Mode = 2 OR Control.LCnv[i_Lev].Mode = 3) AND
+            NOT Control.ECnv.Running
+        THEN
+            Control.LCnv[i_Lev].Instruction.Inbound_Ready := TRUE;
+        END_IF;
+    END_FOR;
+{endregion}
+
+{region "READY TO SEND"}
+    //EXTRACTOR CONVEYOR
+    Level := Settings.ECnv.Cnv_Level;
+    
+    IF Settings.ECnv.Cnv_Level >= 2 AND
+        Settings.ECnv.Cnv_Level <= Settings.VTD.Highest_Level AND //Leveled
+        Control.ECnv.Cnv_Occupied AND //Econveyor occupied
+        NOT Control.ECnv.Error AND //not error
+        NOT Control.ECnv.Running AND //not RUNNING
+        Control.LCnv[Level].Instruction.Inbound_Ready AND 
+        (Control.LCnv[Level].Mode = 2 OR
+        Control.LCnv[Level].Mode = 3)  AND //cnv1 semi or auto mode
+        (Control.ECnv.Mode = 2 OR Control.ECnv.Mode = 3) THEN //Econveyor semi or auto mode 
+        Control.ECnv.Instruction.Outbound_Ready := TRUE;
+    END_IF;
+    
+    
+    //BUFFER CONVEYORS
+    FOR i_Lev := 2 TO Settings.VTD.Highest_Level DO
+        //CNV 1
+        IF Control.ECnv.Instruction.Inbound_Ready AND Control.VTD.Current_Level = i_Lev AND //Extractor inbound ready
+            Control.LCnv[i_Lev].Cnv_Occupied AND //Not occupied
+            NOT Control.LCnv[i_Lev].Error AND NOT Control.LCnv[i_Lev].Running AND //NOT error and NOT running
+            (Control.LCnv[i_Lev].Mode = 2 OR Control.LCnv[i_Lev].Mode = 3)//Semi auto or auto
+        THEN 
+            Control.LCnv[i_Lev].Instruction.Outbound_Ready := TRUE;
+        END_IF;
+    END_FOR;
+{endregion}]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

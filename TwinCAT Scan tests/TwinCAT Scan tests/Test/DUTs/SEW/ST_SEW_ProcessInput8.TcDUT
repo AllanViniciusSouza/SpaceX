@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_SEW_ProcessInput8" Id="{77b86f1b-d4de-406a-8991-622fcb017196}">
+    <Declaration><![CDATA[// Raw process input image of a SEW drive with the "Standard 8 PD" interface,
+// plus the EtherCAT diagnostics of the drive box.
+TYPE ST_SEW_ProcessInput8 :
+STRUCT
+    aWord : ARRAY[1..8] OF UINT; // PI 1..8, raw
+    bWcStateError : BOOL;        // EtherCAT WcState (TRUE = data invalid)
+    uiEcState : UINT;            // EtherCAT InfoData.State (8 = OP)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

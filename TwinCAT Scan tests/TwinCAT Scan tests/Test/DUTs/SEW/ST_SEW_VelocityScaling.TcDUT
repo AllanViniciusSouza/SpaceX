@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_SEW_VelocityScaling" Id="{f9c44f7e-e327-439c-b51c-1dd8b16a5091}">
+    <Declaration><![CDATA[// Scaling and ramps of one SEW MOVIKIT Velocity drive (5 PD), user units from MOVISUITE.
+// Same meaning as the SEW fields of Buffer_Cnv_Settings_DUT. 0 = not configured: the motor does not move.
+TYPE ST_SEW_VelocityScaling :
+STRUCT
+	rSewSpeedPerUnit:	REAL;	// PO 2 setpoint [user units] per 1 unit of Cnv_Motor_DUT.Speed
+	uiSewAcceleration:	UINT;	// PO 3 acceleration [user units]
+	uiSewDeceleration:	UINT;	// PO 4 deceleration [user units]
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

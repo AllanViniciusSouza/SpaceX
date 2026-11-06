@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="PopUp_Instruction_DUT" Id="{62395150-fe30-46b3-88a4-75a747c8fd7b}">
+    <Declaration><![CDATA[// Commands of one carousel popup (WMS / order table / HMI). Same members as Dallas PopUp_Cnv_Instruction.
+TYPE PopUp_Instruction_DUT :
+STRUCT
+	Mode_Change:	UINT;	// Requested mode, see Mode
+	Stop:	BOOL;
+	Enable:	BOOL;
+	Reset:	BOOL;
+	Execute:	BOOL;	// Rising edge starts the task
+	Task_ID:	UINT;
+	Task_Metadata:	STRING;
+	Transfer_To_ID:	DINT;	// Outbound: ID (XXYYZZ) of the receiving device
+	Transfer_From_ID:	DINT;	// Inbound: ID (XXYYZZ) of the sending device
+	Transfer_in_Progress:	BOOL;	// Written by the conveyor FB
+	Inbound_Ready:	BOOL;	// Written by Conveyors_Transfer
+	Transfer_Complete:	BOOL;
+	Outbound_Ready:	BOOL;	// Written by Conveyors_Transfer
+	Start_Transfer:	BOOL;
+	Start_Transfer_Backward:	BOOL;	// Manual mode only
+
+	// Manual mode
+	Transfer_Fwd:	BOOL;	// Jog the transfer conveyor forward (only at Lift_Up)
+	Transfer_Bwd:	BOOL;	// Jog the transfer conveyor backward (only at Lift_Up)
+	Lift_Up:	BOOL;	// Auto: move the lift up. Manual: jog up
+	Lift_Down:	BOOL;	// Auto: move the lift down. Manual: jog down
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Chain_Control_DUT" Id="{7c36df47-fe3d-46b4-885a-77d5e5ab5ad8}">
+    <Declaration><![CDATA[// Internal state of the carousel chain conveyor (Control.Chain_Cnv).
+// Same layout as ECnv_Control_DUT. Drive: SEW MOVIKIT Velocity Drive, 5 PD.
+TYPE Chain_Control_DUT :
+STRUCT
+	Mode:	UINT;	// 0 Disabled, 1 Manual, 2 Semi-Auto, 3 Auto, 5 Maintenance
+	Error:	BOOL;
+	Warning:	UINT;
+	Enabled:	BOOL;
+	Stopped:	BOOL;
+	Done:	BOOL;
+	Running:	BOOL;
+	Ready_For_Task:	BOOL;
+	Current_Task_Type:	UINT;
+	Current_Task_ID:	UINT;
+	Cnv_Occupied:	BOOL;
+	SM_State:	UINT;	// State machine value
+	Motor:	Cnv_Motor_DUT;
+	Instruction:	Cnv_Instruction_DUT;
+	Inputs:	Cnv_Inputs_DUT;	// Forward/Backward_Sensor; VFD_* words not used with SEW
+	Cnv_Errors:	Cnv_Errors_DUT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

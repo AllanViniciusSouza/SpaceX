@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="System_DUT" Id="{ea7d4525-de6a-40e8-bb93-b7dc1e74b4a4}">
+    <Declaration><![CDATA[TYPE System_DUT :
+STRUCT
+	Id:  UINT;
+	CancelOrders:  BOOL;
+	PauseOrders:  Bool;
+	ResumeOrders:  Bool;
+	OrderSent:  Bool;
+	CurrentOrder:  UInt;
+	NextOrder:  UInt;
+	OrderTable:  ARRAY[0..99] OF OrderTable_DUT;
+	StepTable:  ARRAY[0..20] OF OrderTable_DUT;
+	CarParked_Confirm:  Bool;
+	Running:  Bool;
+	IDLE:  Bool;
+	Error:  Bool;
+	State:  USInt;
+	ResetError:  Bool;
+	Ready:  Bool;
+	Selected:  Bool;
+	Auto_Man:  Bool;
+	Paused:  Bool;
+// 	Watchdog_TimeOut:  STRUCT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

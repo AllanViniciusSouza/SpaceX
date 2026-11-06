@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_HMI_Gates" Id="{c0891226-8949-49d3-a019-c08e0f361cb4}">
+    <Declaration><![CDATA[// HMI interface of the screen Access_Gates. Requests only; the gate locks are
+// controlled by the safety logic (TwinSAFE / Euchner MGB2).
+// TODO: FC_GatesHmiUpdate (status from Control.Gate_Station). Until then all values stay 0/FALSE.
+{attribute 'qualified_only'}
+VAR_GLOBAL
+    astGate : ARRAY[1..2] OF ST_HMI_GateStatus;      // PLC -> HMI
+    astCommand : ARRAY[1..2] OF ST_HMI_GateCommand;  // HMI -> PLC
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

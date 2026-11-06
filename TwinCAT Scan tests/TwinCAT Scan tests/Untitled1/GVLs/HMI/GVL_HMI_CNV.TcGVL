@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_HMI_CNV" Id="{f1cd72dc-6fbe-4683-b3fc-227a71499425}">
+    <Declaration><![CDATA[// HMI interface of the screen CNV (extractor + buffer conveyors L1..L6).
+// The visualization uses only these variables.
+// TODO: FC_CnvHmiUpdate (status from Control.ECnv / Control.LCnv, commands to the selected conveyor)
+// once the Control refactor compiles. Until then all values stay 0/FALSE.
+{attribute 'qualified_only'}
+VAR_GLOBAL
+    uiSelected : UINT;                                   // HMI -> PLC: 0 = extractor, 1..6 = buffer level
+    astConveyor : ARRAY[0..6] OF ST_HMI_ConveyorStatus;  // PLC -> HMI: 0 = extractor, 1..6 = buffer L1..L6
+    stSelected : ST_HMI_ConveyorStatus;                  // PLC -> HMI: copy of the selected conveyor
+    stCommand : ST_HMI_ConveyorCommand;                  // HMI -> PLC: commands for the selected conveyor
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

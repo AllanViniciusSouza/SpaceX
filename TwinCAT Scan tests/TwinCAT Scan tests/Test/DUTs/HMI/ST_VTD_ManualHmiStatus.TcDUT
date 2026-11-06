@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_VTD_ManualHmiStatus" Id="{a1bc24db-331b-4624-9f14-09bfe5ca0d86}">
+    <Declaration><![CDATA[// PLC -> HMI: status of the VTD manual test screen VTD_ManualTest (TEST ONLY).
+// Written by FB_VTD_ManualControl, copied to GVL_HMI_VTD.stManualStatus by MAIN.
+TYPE ST_VTD_ManualHmiStatus :
+STRUCT
+    // Drive (decoded PI 1..8)
+    stDrive : ST_SEW_MovikitStatus;
+    udiErrorId : UDINT;              // FB_SEW_Drive error id: PI 3 (fault * 256 + subfault) or communication error
+    sActualModeName : STRING(40);    // PI 6 as text
+
+    // Operating mode (PO 6)
+    eModeActive : E_SEW_MovikitMode;
+    sModeActiveName : STRING(40);
+    bModeJogPosition : BOOL;         // 100 selected
+    bModeJogSpeed : BOOL;            // 101 selected
+    bModeSpeed : BOOL;               // 200 selected
+    bModeReferencing : BOOL;         // 300 selected
+    bModePositionAbsolute : BOOL;    // 400 selected
+    bModePositionRelative : BOOL;    // 401 selected
+    bModeChangeAllowed : BOOL;       // Standstill and no motion command
+
+    // Command state
+    bEnableActive : BOOL;            // Enable sent to the drive (PO 1.0 + PO 1.1)
+    bSoftwareStopActive : BOOL;      // Software stop latched, RESET required
+    bRawWriteActive : BOOL;          // Raw write of the process data test screen owns the drive
+    bSettingsValid : BOOL;           // Max speed, acceleration, deceleration and jog time > 0
+    bJogAvailable : BOOL;            // JOG buttons usable
+    bRunAvailable : BOOL;            // RUN +/- buttons usable
+    bStartAvailable : BOOL;          // START button usable
+    bJogPositiveActive : BOOL;       // PO 1.4 requested
+    bJogNegativeActive : BOOL;       // PO 1.5 requested
+    bJogTimeout : BOOL;              // Jog max time reached, release the button
+    bRunPositiveActive : BOOL;
+    bRunNegativeActive : BOOL;
+    bStartActive : BOOL;             // PO 1.7 requested in modes 300/400/401
+    bFaultResetActive : BOOL;        // PO 1.8 pulse running
+
+    // Setpoints sent to the drive
+    iSpeedSetpoint : INT;            // PO 2 user units (signed in mode 200, 0 while not enabled)
+    diTargetPositionSent : DINT;     // PO 7/8 user units
+
+    // Operator message
+    sMessage : STRING(80);
+    bMessageAlarm : BOOL;            // TRUE = stop/fault (red), FALSE = information
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

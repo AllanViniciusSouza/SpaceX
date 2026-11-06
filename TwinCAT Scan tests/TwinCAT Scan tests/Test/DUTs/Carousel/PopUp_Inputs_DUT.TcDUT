@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="PopUp_Inputs_DUT" Id="{980efa37-e049-48a2-b819-6967926c0da4}">
+    <Declaration><![CDATA[// Sensors of one carousel popup (Control.Pop_Up_Cnv[n].Inputs). Written only by FC Inputs.
+// Based on Dallas PopUp_Cnv_Inputs ("Lift Up" / "Lift Down") plus the popup pallet sensor.
+// TRUE = condition present (invert NC sensors in FC Inputs).
+TYPE PopUp_Inputs_DUT :
+STRUCT
+	Lift_Up:	BOOL;	// Lift at the top = transfer conveyor level
+	Lift_Down:	BOOL;	// Lift at the bottom = chain level (pallet on Chain_Cnv, to confirm with the layout)
+	Pallet_Present:	BOOL;	// Pallet on the popup (end of an inbound transfer)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Stack_Lights_FB" Id="{5eb0a5ab-70bd-402b-8af4-6db71314454e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Stack_Lights_FB
+VAR_INPUT
+    System_Auto : BOOL;
+    Fault : BOOL;
+    i_bFlash_05Hz : BOOL := TRUE; // Supply a 0.5 Hz clock; otherwise fault is steady red.
+END_VAR
+VAR_OUTPUT
+    Red : BOOL;
+    Green : BOOL;
+    Orange : BOOL; // Existing TwinCAT output name retained.
+    Yellow : BOOL; // Source-compatible alias for Orange.
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Source: Reference_Project/Stack_Lights_FB.scl.
+// Priority: fault, automatic, manual. Clock is explicit instead of a Siemens tag.
+Red := Fault AND i_bFlash_05Hz;
+Green := NOT Fault AND System_Auto;
+Orange := NOT Fault AND NOT System_Auto;
+Yellow := Orange;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

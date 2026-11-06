@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="PopUp_Motors_DUT" Id="{4a1ca0b5-2d22-4bc7-93a9-efde784913cd}">
+    <Declaration><![CDATA[// Motors of one carousel popup (Control.Pop_Up_Cnv[n].Motors). They never run at the same time:
+// PopUp_Conveyor_FB grants one motor at a time (FB_Conveyor_MotorInterlock, Active_Motor).
+// Drives: SEW MOVIKIT Velocity Drive, 5 PD.
+TYPE PopUp_Motors_DUT :
+STRUCT
+	Lift:	Cnv_Motor_DUT;	// Lift up / down (E_Carousel_PopUpMotor.Lift)
+	Transfer:	Cnv_Motor_DUT;	// Transfer conveyor, runs only at Lift_Up (E_Carousel_PopUpMotor.Transfer)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_VTD_PdHmiStatus" Id="{e48469f7-6232-477f-af87-16bee1ffd340}">
+    <Declaration><![CDATA[// PLC -> HMI: VTD MOVIPRO process data test status (TEST ONLY screen).
+// All values are raw; units and bit meanings are pending SEW.
+TYPE ST_VTD_PdHmiStatus :
+STRUCT
+    // Communication
+    bCommunicationOk : BOOL;
+    bWcStateError : BOOL;
+    uiEcState : UINT;                       // 8 = OP
+    udiInputChangeCount : UDINT;
+
+    // Process inputs (drive -> PLC)
+    aProcessInputRaw : ARRAY[1..8] OF UINT; // PI 1..8
+    wStatusWord : WORD;                     // PI 1
+    iActualSpeedRaw : INT;                  // PI 2
+    wFaultCode : WORD;                      // PI 3
+    iTorqueRaw : INT;                       // PI 4
+    wDigitalInputs : WORD;                  // PI 5
+    uiActualApplicationMode : UINT;         // PI 6
+    sActualModeName : STRING(40);           // PI 6 as text (FC_SEW_MovikitModeName)
+    diActualPositionRaw : DINT;             // PI 7 (high) + PI 8 (low), user units pending SEW
+
+    // TEST ONLY write
+    bTestWriteActive : BOOL;
+    bTestWriteExpired : BOOL;
+    tTestWriteElapsed : TIME;
+    aProcessOutputSent : ARRAY[1..8] OF UINT; // PO 1..8 really sent to the drive
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

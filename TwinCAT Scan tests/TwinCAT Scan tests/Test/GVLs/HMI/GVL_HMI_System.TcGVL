@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL_HMI_System" Id="{a6036b92-4dd3-457e-a685-3e4733fcfef1}">
+    <Declaration><![CDATA[// HMI interface of the system overview (screen Main). The visualization uses only
+// these variables; it must not access Control, IO GVLs or FB instances directly.
+// TODO: FC_SystemHmiUpdateStatus fills the status from Control once the Control
+// refactor (single VTD, carousel DUTs) compiles. Until then all values stay 0/FALSE.
+{attribute 'qualified_only'}
+VAR_GLOBAL
+    stStatus : ST_HMI_SystemStatus;                    // PLC -> HMI
+    stCommand : ST_HMI_SystemCommand;                  // HMI -> PLC
+    stVtd : ST_HMI_VtdOverview;                        // PLC -> HMI
+    stExtractor : ST_HMI_DeviceSummary;                // PLC -> HMI
+    astBuffer : ARRAY[1..6] OF ST_HMI_DeviceSummary;   // PLC -> HMI, buffer levels L1..L6
+    astPopUp : ARRAY[1..2] OF ST_HMI_DeviceSummary;    // PLC -> HMI, carousel popups
+    astRoller : ARRAY[1..5] OF ST_HMI_DeviceSummary;   // PLC -> HMI, carousel rollers
+    stChain : ST_HMI_DeviceSummary;                    // PLC -> HMI, carousel chain transfer
+    stTurntable : ST_HMI_DeviceSummary;                // PLC -> HMI
+    astGate : ARRAY[1..2] OF ST_HMI_GateSummary;       // PLC -> HMI
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

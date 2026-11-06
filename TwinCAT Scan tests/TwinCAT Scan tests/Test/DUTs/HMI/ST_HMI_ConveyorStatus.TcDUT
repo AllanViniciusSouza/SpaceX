@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_HMI_ConveyorStatus" Id="{2cd89b58-db39-4209-8406-8cbbbbda123e}">
+    <Declaration><![CDATA[// PLC -> HMI: status of one conveyor-type device (extractor, buffer level, popup,
+// roller, chain, turntable) for the screens CNV and Carrousel.
+TYPE ST_HMI_ConveyorStatus :
+STRUCT
+    sName : STRING(20);            // For example 'Buffer L1', 'PopUp 2'
+    bSelected : BOOL;              // Shown in the detail panel
+    bEnabled : BOOL;
+    bError : BOOL;
+    bWarning : BOOL;
+    bStopped : BOOL;
+    bRunning : BOOL;
+    bReadyForTask : BOOL;
+    bOccupied : BOOL;
+    bModeManual : BOOL;
+    bModeSemi : BOOL;
+    bModeAuto : BOOL;
+    bForwardSensor : BOOL;
+    bBackwardSensor : BOOL;
+    bShuttleHigh : BOOL;           // Buffers only
+    sMotorDirection : STRING(12);  // 'Stopped', 'Forward', 'Backward'
+    iSpeedRequested_pct : INT;
+    iSpeedActual_pct : INT;
+    rCurrent_A : REAL;
+    rTorque_pct : REAL;
+    diTransferToId : DINT;
+    diTransferFromId : DINT;
+    uiStateMachine : UINT;
+    bHasLift : BOOL;               // Popups
+    bLiftUp : BOOL;
+    bLiftDown : BOOL;
+    bHasRotation : BOOL;           // Turntable
+    rAngle_deg : REAL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

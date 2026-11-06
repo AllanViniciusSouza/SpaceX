@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FC_VTD_PdHmiUpdateStatus" Id="{82a9c16c-a52b-478d-8f6e-b4eec8724c9f}" SpecialFunc="None">
+    <Declaration><![CDATA[// HMI layer: copies the process data test results to the HMI status structure.
+// Read only towards the FB; it never changes FB inputs or drive outputs.
+FUNCTION FC_VTD_PdHmiUpdateStatus : BOOL
+VAR_IN_OUT
+    io_fbProcessData : FB_SEW_ProcessDataTest;
+    io_stStatus : ST_VTD_PdHmiStatus;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Communication
+io_stStatus.bCommunicationOk := io_fbProcessData.q_bCommunicationOk;
+io_stStatus.bWcStateError := io_fbProcessData.i_bWcStateError;
+io_stStatus.uiEcState := io_fbProcessData.i_uiEcState;
+io_stStatus.udiInputChangeCount := io_fbProcessData.q_udiInputChangeCount;
+
+// Process inputs
+io_stStatus.aProcessInputRaw := io_fbProcessData.i_aProcessInput;
+io_stStatus.wStatusWord := io_fbProcessData.q_wStatusWord;
+io_stStatus.iActualSpeedRaw := io_fbProcessData.q_iActualSpeedRaw;
+io_stStatus.wFaultCode := io_fbProcessData.q_wFaultCode;
+io_stStatus.iTorqueRaw := io_fbProcessData.q_iTorqueRaw;
+io_stStatus.wDigitalInputs := io_fbProcessData.q_wDigitalInputs;
+io_stStatus.uiActualApplicationMode := io_fbProcessData.q_uiActualApplicationMode;
+io_stStatus.sActualModeName := FC_SEW_MovikitModeName(i_uiMode := io_fbProcessData.q_uiActualApplicationMode);
+io_stStatus.diActualPositionRaw := io_fbProcessData.q_diActualPositionRaw;
+
+// TEST ONLY write
+io_stStatus.bTestWriteActive := io_fbProcessData.q_bTestWriteActive;
+io_stStatus.bTestWriteExpired := io_fbProcessData.q_bTestWriteExpired;
+io_stStatus.tTestWriteElapsed := io_fbProcessData.q_tTestWriteElapsed;
+io_stStatus.aProcessOutputSent := io_fbProcessData.q_aProcessOutput;
+
+FC_VTD_PdHmiUpdateStatus := TRUE;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

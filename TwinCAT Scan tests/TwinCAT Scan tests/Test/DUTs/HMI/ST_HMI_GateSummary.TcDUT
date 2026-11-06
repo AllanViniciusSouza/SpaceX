@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_HMI_GateSummary" Id="{a1a62c21-3f36-4605-8d16-15ef66d45665}">
+    <Declaration><![CDATA[// PLC -> HMI: access gate summary for the screen Main (display only, not a safety function).
+TYPE ST_HMI_GateSummary :
+STRUCT
+    bClosed : BOOL;          // Door closed
+    bLocked : BOOL;          // Door locked
+    bAccessRequested : BOOL; // Operator requested access
+    bError : BOOL;           // Fault active (tile turns red)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

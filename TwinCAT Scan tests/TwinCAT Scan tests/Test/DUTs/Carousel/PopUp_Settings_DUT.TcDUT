@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="PopUp_Settings_DUT" Id="{e919f56b-33b9-4bbb-902f-1ea94b3861fd}">
+    <Declaration><![CDATA[// Parameters of one carousel popup (Settings.Pop_Up_Cnv[1..2]). Based on Dallas PopUp_Cnv_Settings;
+// the G120 hardware IDs are replaced by the SEW scaling of each drive (Motors.<motor>.Drive).
+// 0 = not configured: the function that uses the value is blocked.
+TYPE PopUp_Settings_DUT :
+STRUCT
+	ID:	DINT;	// XXYYZZ
+	Side_ID:	ARRAY[1..4] OF DINT;	// Neighbour ID per side, 0 = none. 1/2 transfer Fwd/Rev end (Lift_Up), 3/4 Lift_Down level
+	Side_Boost_Time:	ARRAY[1..4] OF UINT;	// [s] start boost per side, 0 = none (Dallas TimeStartBoost_PxToPy)
+	Boost_Speed:	UINT := 100;	// Units of Motors.Transfer.Speed
+
+	// Motor group: Lift and Transfer never run at the same time
+	Motors:	PopUp_Motor_Settings_DUT;
+	Changeover_Time:	UINT;	// [ms] all motors stopped before the other motor may start (brake closed), 0 = not configured
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

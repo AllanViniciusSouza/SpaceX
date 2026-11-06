@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_SEW_VelocityStatus" Id="{d85a5f69-3299-4a48-82d7-1a52237017f1}">
+    <Declaration><![CDATA[// Decoded process input data of a MOVIKIT Velocity drive ("5 PD" profile).
+// Source: SEW manual 33959862, chapter 9.5 (only V/P words and bits).
+// Written by FB_SEW_VelocityDrive.
+TYPE ST_SEW_VelocityStatus :
+STRUCT
+    // Communication
+    bEtherCatOk : BOOL;                 // EtherCAT OP and working counter valid
+    bHandshakeError : BOOL;             // PI 1.15 did not follow PO 1.15 within the timeout
+    bCommunicationOk : BOOL;            // bEtherCatOk AND NOT bHandshakeError
+
+    // PI 1 - Status word (bits 5, 6, 7 and 12 are MOVIKIT Positioning only)
+    wStatusWord : WORD;
+    bReady : BOOL;                      // PI 1.0
+    bStoInactive : BOOL;                // PI 1.1
+    bOutputStageEnabled : BOOL;         // PI 1.2
+    bBrakeReleased : BOOL;              // PI 1.3
+    bMotorTurning : BOOL;               // PI 1.4
+    bError : BOOL;                      // PI 1.8
+    bWarning : BOOL;                    // PI 1.9
+    bDriveTrain2Active : BOOL;          // PI 1.10
+    bSpeedReached : BOOL;               // PI 1.11 setpoint/actual speed comparison
+    bStandbyActive : BOOL;              // PI 1.14
+    bHandshakeOut : BOOL;               // PI 1.15
+
+    // PI 2..5
+    iActualSpeed : INT;                 // PI 2, user units (scaling from MOVISUITE)
+    byFaultCode : BYTE;                 // PI 3 high byte (error/warning code)
+    bySubfaultCode : BYTE;              // PI 3 low byte (subfault, or active FCB if no error)
+    iActualTorque_0p1pct : INT;         // PI 4, 0.1 % of nominal motor torque
+    wDigitalInputs : WORD;              // PI 5, DI 00..
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

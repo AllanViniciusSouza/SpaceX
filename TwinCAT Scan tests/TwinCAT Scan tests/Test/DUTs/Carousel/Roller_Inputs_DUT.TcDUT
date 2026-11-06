@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="Roller_Inputs_DUT" Id="{95914c97-e212-4ae9-9a12-629efc6b1772}">
+    <Declaration><![CDATA[// Sensors of one carousel roller conveyor (Control.Roller_Cnv[n].Inputs). Written only by FC Inputs.
+// Based on Cnv_Inputs_DUT and Dallas Inbound/Outbound_Cnv_Inputs. The VFD_* words are not needed:
+// with SEW the drive data is in Motor.stProcessInput. TRUE = condition present (invert NC sensors in FC Inputs).
+TYPE Roller_Inputs_DUT :
+STRUCT
+	Forward_Sensor:	BOOL;	// Pallet at the forward end
+	Backward_Sensor:	BOOL;	// Pallet at the backward end
+	Fork_Lift_Detect:	BOOL;	// Forklift in the station (forklift stations only, FALSE otherwise)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

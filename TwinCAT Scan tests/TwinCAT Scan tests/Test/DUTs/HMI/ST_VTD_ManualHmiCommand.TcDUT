@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_VTD_ManualHmiCommand" Id="{bbbde66c-7e72-421c-a447-4cb13e546f72}">
+    <Declaration><![CDATA[// HMI -> PLC: commands of the VTD manual test screen VTD_ManualTest (TEST ONLY).
+// Read by FB_VTD_ManualControl. The PLC writes back:
+//  - bEnable       reset to FALSE when the enable is dropped (no automatic restart)
+//  - eModeRequest  set to the active mode after every evaluation
+//  - iSpeedPercent limited to 0..100
+TYPE ST_VTD_ManualHmiCommand :
+STRUCT
+    bEnable : BOOL;              // Toggle - drive enable request
+    bJogPositive : BOOL;         // Tap, hold-to-run - jog +, modes 100/101
+    bJogNegative : BOOL;         // Tap, hold-to-run - jog -, modes 100/101
+    bRunPositive : BOOL;         // Tap - run in positive direction, mode 200 (latched in the PLC)
+    bRunNegative : BOOL;         // Tap - run in negative direction, mode 200 (latched in the PLC)
+    bStart : BOOL;               // Tap - start, modes 300/400/401 (latched in the PLC)
+    bStop : BOOL;                // Tap - normal stop with the PO 4 deceleration
+    bSoftwareStop : BOOL;        // Tap - SOFTWARE STOP, not a safety function (latched in the PLC)
+    bReset : BOOL;               // Tap - clears the software stop and resets drive faults (PO 1.8)
+
+    eModeRequest : E_SEW_MovikitMode := E_SEW_MovikitMode.JogSpeedControlled; // Written by the mode buttons
+    iSpeedPercent : INT := 10;   // Speed in % of stManualSettings.iMaxSpeed (0..100)
+    diTargetPosition : DINT;     // User units. Mode 400: absolute target, mode 401: relative distance
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

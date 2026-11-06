@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="PopUp_Side_Status_DUT" Id="{70fb84c5-9413-4a12-9642-5b1e225784bc}">
+    <Declaration><![CDATA[// Device on one side of a popup (Control.Pop_Up_Cnv[n].Side[1..4]). Written every cycle by Conveyors_Transfer.
+// Replaces the hard-coded neighbour reads of the Dallas PConveyor FBs.
+TYPE PopUp_Side_Status_DUT :
+STRUCT
+	In_Position:	BOOL;	// Neighbour aligned with the popup (VTD at the level, turntable at the station). TRUE for fixed conveyors
+	Inbound_Ready:	BOOL;	// Neighbour can receive a pallet
+	Running:	BOOL;	// Neighbour transport motor turning (handshake before sending)
+	Occupied:	BOOL;	// Neighbour detects the pallet (end of an outbound transfer)
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

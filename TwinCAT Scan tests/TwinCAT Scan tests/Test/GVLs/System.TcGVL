@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="System" Id="{5fd786b4-cb73-46b1-9a3e-4ebec9f55326}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	Id:  UINT;
+	CancelOrders:  BOOL;
+	PauseOrders:  Bool;
+	ResumeOrders:  Bool;
+	OrderSent:  Bool;
+	CurrentOrder:  UInt;
+	NextOrder:  UInt;
+	OrderTable:  ARRAY[0..99] OF OrderTable_DUT;
+	StepTable:  ARRAY[0..20] OF OrderTable_DUT;
+	CarParked_Confirm:  Bool;
+	Running:  Bool;
+	IDLE:  Bool;
+	Error:  Bool;
+	State:  USInt;
+	ResetError:  Bool;
+	Ready:  Bool;
+	Selected:  Bool;
+	Auto_Man:  Bool;
+	Paused:  Bool;
+// 	Watchdog_TimeOut:  STRUCT;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>
