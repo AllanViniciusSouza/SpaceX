@@ -22,6 +22,11 @@ IO_VFDs.VTD_PO_07 := Control.VTD.Motor.aProcessOutput[7]; // Target position hig
 IO_VFDs.VTD_PO_08 := Control.VTD.Motor.aProcessOutput[8]; // Target position low word
 {endregion}
 
+{region "Safety - reset request to the TwinSAFE logic (standard PLC -> safety)"}
+IO_Safety.ErrorAcknowledgement := Control.SafetyReset; // TwinSAFE group ErrAck
+IO_Safety.SEW_Safety_Reset := Control.SafetyReset;     // TwinSAFE alias Safety_SEW_Reset
+{endregion}
+
 Outputs := TRUE;
 ]]></ST>
     </Implementation>

@@ -7,6 +7,9 @@ VAR
     fbVtdProcessDataTest : FB_SEW_ProcessDataTest;
     // TEST ONLY - VTD manual control from the screen VTD_ManualTest.
     fbVtdManualControl : FB_VTD_ManualControl;
+    // Safety reset from the HMI (button SAFETY RESET): one pulse per rising edge.
+    rtSafetyReset : R_TRIG;
+    tpSafetyReset : TP;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -16,6 +19,13 @@ END_VAR
 Inputs();
 
 // 2. Logic on internal variables
+// Safety reset from the HMI: one 500 ms pulse on IO_Safety.ErrorAcknowledgement and
+// IO_Safety.SEW_Safety_Reset (written in Outputs). It is a request only: the TwinSAFE
+// logic accepts it or not. Holding the button does not repeat the reset.
+rtSafetyReset(CLK := GVL_HMI_System.stCommand.bSafetyReset);
+tpSafetyReset(IN := rtSafetyReset.Q, PT := T#500MS);
+Control.SafetyReset := tpSafetyReset.Q;
+
 // TEST ONLY - two sources can write the VTD process outputs, only one at a time:
 //  - the raw write of the process data screen is refused (its HMI toggle is reset)
 //    while the manual screen has the drive enabled;
@@ -53,6 +63,7 @@ FC_VTD_PdHmiUpdateStatus(
 // PO really sent to the drive (raw write or manual control).
 GVL_HMI_VTD.stPdStatus.aProcessOutputSent := Control.VTD.Motor.aProcessOutput;
 GVL_HMI_VTD.stManualStatus := fbVtdManualControl.q_stStatus;
+GVL_HMI_System.stStatus.bSafetyResetActive := tpSafetyReset.Q;
 
 // 4. Internal variables -> IO outputs
 Outputs();

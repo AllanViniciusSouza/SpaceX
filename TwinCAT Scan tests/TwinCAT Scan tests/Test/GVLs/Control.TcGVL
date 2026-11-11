@@ -23,6 +23,9 @@ VAR_GLOBAL
 	
 	Gate_Station:  ARRAY[1..2] OF Gate_Station_DUT;
 	Charger_Level:  ARRAY[1..6] OF Charger_DUT;
+	
+	//SAFETY (standard PLC -> TwinSAFE logic)
+	SafetyReset: BOOL;	// Safety reset pulse (500 ms) for ErrorAcknowledgement and SEW_Safety_Reset. Written by MAIN, copied to IO_Safety by Outputs.
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

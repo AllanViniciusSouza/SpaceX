@@ -15,6 +15,13 @@
 │  └─ visu/                         Screen previews and HMI documentation
 ├─ tools/                           Offline helpers (Python): inventory, validation, generators
 ├─ Reference_Project/               Read-only comparison baseline
+├─ 10_Eletrico/                     Electrical drawings, layout (Rev 9), BOM / IO lists
+├─ 20_Manuais/                      Manuals and datasheets (SEW/ subfolder for SEW)
+├─ 30_Device_Files/                 ESI, GSDML, device XML, vendor integration kits
+├─ 40_MOVISUITE/                    SEW MOVISUITE projects (.msproj)
+├─ 50_CAD/                          Mechanical models (.STEP), not in git
+├─ 60_Siemens_TIA/                  TIA Portal projects and archives, not in git
+├─ 70_Fotos/                        Photos and screenshots, not in git
 └─ _backup_<what>_<yyyymmdd_hhmm>/  Backup taken before a generated or bulk change
 ```
 
@@ -28,7 +35,8 @@ Rules:
    XML), copy the affected folder to `_backup_<what>_<yyyymmdd_hhmm>/`.
    Backups are not part of the solution.
 4. Reference documents (manuals, datasheets, drawings, ESI/GSDML files) stay
-   outside the PLC project folder. Code cites them by document number and
+   outside the PLC project folder, in the numbered folders by type
+   (10_ to 70_). Nothing loose in the repository root. Code cites them by document number and
    chapter.
 5. `tools/` scripts run offline and never change hardware configuration.
 

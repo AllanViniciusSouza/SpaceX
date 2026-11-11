@@ -5,6 +5,8 @@
 TYPE ST_HMI_SystemCommand :
 STRUCT
     bResetAll : BOOL;  // Tap - reset of all devices of this system (evaluated on the rising edge)
+    bSafetyReset : BOOL;  // Tap - safety reset request (rising edge in MAIN -> one 500 ms pulse on IO_Safety.ErrorAcknowledgement
+                          // and IO_Safety.SEW_Safety_Reset). The TwinSAFE logic decides whether the reset is accepted.
 END_STRUCT
 END_TYPE
 ]]></Declaration>
